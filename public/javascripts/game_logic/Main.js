@@ -3,6 +3,8 @@ let mouse_y;
 
 let select_square;
 
+generate_map(100);
+
 queen = new Queen(500,500);
 queen2 = new Queen(700,700);
 
@@ -19,10 +21,10 @@ document.addEventListener("mouseup",()=>{
 document.addEventListener("mousedown", (event)=>{
     switch (event.which){
         case 1:
-            selected_goto(mouse_x, mouse_y);
+            select_square = new SelectSquare(mouse_x, mouse_y);
             break;
         case 3:
-            select_square = new SelectSquare(mouse_x, mouse_y);
+            selected_goto(mouse_x, mouse_y);
             break;
     }
 
@@ -53,5 +55,16 @@ function loop() {
     for(let minion of minions){
         minion.show_is_selected();
         if(minion.selected) minion.move();
+    }
+    for(let tree of all_trees){
+    }
+}
+
+function generate_map(number_of_trees){
+    for (let i = 0; i < number_of_trees ; i++) {
+        let x = Math.random() * window.innerWidth * .9;
+        let y = Math.random() * window.innerHeight *.85;
+
+        all_trees.push(new Tree(x, y, "tree.png"));
     }
 }

@@ -8,10 +8,18 @@ a {
 }
 
 .circle{
-
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+
+  border-bottom: 5px solid black;
 }
 
 .square {
@@ -19,6 +27,14 @@ a {
   background-color: lightgrey;
   opacity: .4;
   position: absolute;
+}
+.selector {
+  user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 .queen{

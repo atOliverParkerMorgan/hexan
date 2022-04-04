@@ -9,6 +9,8 @@ class SelectSquare{
     }
 
     create_select_square(){
+        minions.forEach((minion)=> minion.selected = false);
+
         this.select_square = document.createElement("div");
         this.select_square.classList.add("square");
         this.select_square.style.left = this.anchor_pos_x+"px";

@@ -65,7 +65,6 @@ class Minion{
             this.y += this.speed_y;
             this.set_position();
         }else{
-            this.selected = false;
             this.speed_x = 0;
             this.speed_y = 0;
         }
