@@ -2,14 +2,15 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const Console = require("console");
+const http = require("http");
+const {server} = require("socket.io");
 
-const PORT = 8000;
+
+const PORT_HTTP = 8000;
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-
-const Console = require("console");
 
 const app = express();
 app.engine('html', require('ejs').renderFile);
@@ -18,13 +19,16 @@ app.engine('html', require('ejs').renderFile);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 
-app.use(logger('dev'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+app.use('/pixi', express.static(__dirname + '/node_modules/pixi.js/dist/browser/'));
+app.use('/pixi_extras', express.static(__dirname + '/node_modules/@pixi/graphics-extras/dist/browser/'));
+app.use('/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client/dist/'));
 
 // static files
 app.use(express.static('public', {}));
@@ -45,22 +49,10 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
-
-const ws = require('ws');
-const wsServer = new ws.Server({ noServer: true });
-
-wsServer.on('connection', socket => {
-  socket.on('message', message => {console.log("Message: "+ message.toString())}
-  );
-});
-
-app.listen(PORT).on('upgrade', (request, socket, head) => {
-  wsServer.handleUpgrade(request, socket, head, socket => {
-    wsServer.emit('connection', socket, request);
-  });
-});
-
 console.log("starting metal head")
 
+app.listen(PORT_HTTP);
+
+const main = require('./javascripts/game_logic/main.js');
+main();
 
