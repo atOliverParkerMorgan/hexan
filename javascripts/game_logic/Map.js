@@ -1,3 +1,5 @@
+const Node = require("./Node");
+
 class Map{
     constructor(number_of_land_nodes, number_of_continents){
         // number must be even for a symmetrical grid
@@ -11,7 +13,7 @@ class Map{
     }
 
     create_nodes(){
-        for(let y; y<this.number_of_land_nodes/2; y++){
+        for(let y = 0; y<this.number_of_land_nodes/2; y++){
             let row = [];
             for(let x = 0; x<this.number_of_land_nodes/2; x++){
                 row.push(new Node(x, y))
@@ -27,12 +29,12 @@ class Map{
             for(let node of node_rows){
                 let x = node.x;
                 let y = node.y;
-                node.neighbors.push(this.get_node(x-1, y));
-                node.neighbors.push(this.get_node(x+1, y));
-                node.neighbors.push(this.get_node(x-1, y+1));
-                node.neighbors.push(this.get_node(x+1, y+1));
-                node.neighbors.push(this.get_node(x-1, y-1));
-                node.neighbors.push(this.get_node(x+1, y-1));
+                node.add_neighbor(this.get_node(x-1, y));
+                node.add_neighbor(this.get_node(x+1, y));
+                node.add_neighbor(this.get_node(x-1, y+1));
+                node.add_neighbor(this.get_node(x+1, y+1));
+                node.add_neighbor(this.get_node(x-1, y-1));
+                node.add_neighbor(this.get_node(x+1, y-1));
             }
         }
     }
@@ -50,6 +52,25 @@ class Map{
         this.create_nodes();
 
     }
+
+    for_each_node(fun){
+        for(let node_rows of this.all_nodes){
+            for(let node of node_rows){
+                fun(node);
+            }
+        }
+    }
+    format(){
+        let data = [];
+        for(let node_rows of this.all_nodes){
+            for(let node of node_rows) {
+                data.push({x: node.x, y: node.y, type: node.type})
+            }
+        }
+        return data;
+
+    }
+
 }
 
 module.exports = Map;

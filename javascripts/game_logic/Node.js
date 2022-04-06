@@ -15,3 +15,5 @@ class Node{
         this.neighbors.push(node);
     }
 }
+
+module.exports = Node;

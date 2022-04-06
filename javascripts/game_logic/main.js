@@ -14,7 +14,10 @@ function main() {
         map.generate_island_map();
         console.log("here");
         // send a message to the client
-        socket.emit("server", map);
+
+
+        socket.emit("server", map.format());
+
 
         // receive a message from the client
         socket.on("client", (...args) => {
