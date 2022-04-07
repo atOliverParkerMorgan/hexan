@@ -3,7 +3,7 @@ const Node = require("./Node");
 class Map{
     constructor(number_of_land_nodes, number_of_continents){
         // number must be even for a symmetrical grid
-        if(number_of_land_nodes % 2 !== 0) throw new Error("Error, number of nodes must be even for a symmetrical grid");
+        if(number_of_land_nodes ** .5 % 1 !== 0) console.log("Warning, the square root of number of nodes should be a whole number ");
         this.number_of_land_nodes = number_of_land_nodes;
         // cannot be bigger than the number of nodes
         if(number_of_land_nodes < number_of_continents) throw new Error("Error, there can't be more continents than land nodes");
@@ -13,9 +13,9 @@ class Map{
     }
 
     create_nodes(){
-        for(let y = 0; y<this.number_of_land_nodes/2; y++){
+        for(let y = 0; y<this.number_of_land_nodes ** .5; y++){
             let row = [];
-            for(let x = 0; x<this.number_of_land_nodes/2; x++){
+            for(let x = 0; x<this.number_of_land_nodes ** .5; x++){
                 row.push(new Node(x, y))
             }
             this.all_nodes.push(row);

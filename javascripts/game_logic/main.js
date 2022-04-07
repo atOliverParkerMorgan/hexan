@@ -10,7 +10,7 @@ const io = server(httpServer);
 function main() {
 
     io.on("connection", (socket) => {
-        let map = new Map(100, 2);
+        let map = new Map(2500, 2);
         map.generate_island_map();
         console.log("here");
         // send a message to the client
