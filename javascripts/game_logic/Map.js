@@ -9,7 +9,7 @@ class Map{
         if(number_of_land_nodes < number_of_continents) throw new Error("Error, there can't be more continents than land nodes");
         this.number_of_continents = number_of_continents;
 
-        this.all_nodes = [[]];
+        this.all_nodes = [];
     }
 
     create_nodes(){

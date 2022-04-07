@@ -1,38 +1,45 @@
-const app = new PIXI.Application({ transparent: true })
-const Graphics = PIXI.Graphics;
+import {Node} from "./Node.js";
+import {all_nodes} from "./Node.js";
 
-app.renderer.resize(window.innerWidth, window.innerHeight);
-app.renderer.view.style.position = 'absolute';
+const WORLD_WIDTH = 2000
+const WORLD_HEIGHT = 2000
+const STAR_SIZE = 30
+const BORDER = 10
+
+export const app = new PIXI.Application({ transparent: true })
+export const Graphics = PIXI.Graphics;
+let viewport = new pixi_viewport.Viewport({
+    worldWidth: WORLD_WIDTH,                        // world width used by viewport (automatically calculated based on container width)
+    worldHeight: WORLD_HEIGHT,                      // world height used by viewport (automatically calculated based on container height)
+    passiveWheel: false,                            // whether the 'wheel' event is set to passive (note: if false, e.preventDefault() will be called when wheel is used over the viewport)
+
+});
+viewport.fit()
+viewport.moveCenter(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
+
 document.body.appendChild(app.view)
-
-const HEX_SIDE_SIZE = 50;
-function create_hex(x, y, color) {
-    const hex = new Graphics();
-
-    let distance_between_hex = 2* (HEX_SIDE_SIZE ** 2 - (HEX_SIDE_SIZE/2) **2 ) ** .5;
-
-    let row_bias = y % 2 === 0 ? distance_between_hex/2 : 0;
-
-    hex.beginFill(color, 1)
-        .drawRegularPolygon((x * distance_between_hex+row_bias) + HEX_SIDE_SIZE, (y * 1.5 * HEX_SIDE_SIZE)+HEX_SIDE_SIZE, HEX_SIDE_SIZE, 6)
-        .endFill();
-
-    app.stage.addChild(hex);
-}
 app.ticker.add(delta=>loop(delta));
 
-socket = io("ws://127.0.0.1:8082",  { transports : ['websocket'] });
+let socket = io("ws://127.0.0.1:8082",  { transports : ['websocket'] });
 socket.emit("client", "test");
 socket.on("server", (...args) => {
     console.log(args);
 
+    let y = 0;
+    let row = [];
     for (let node of args[0]) {
 
+        if(node.y!==y){
+            all_nodes.push(row)
+            row = [];
+            y = node.y;
+        }
         console.log(node);
-        if(node.y%2===0) create_hex(node.x, node.y, 0xFFFF00);
-        else create_hex(node.x, node.y, 0x7FFF55);
+
+        row.push(new Node(node.x, node.y, node.type));
     }
 });
+
 
 function loop(){
 

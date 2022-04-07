@@ -26,8 +26,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+// modules
 app.use('/pixi', express.static(__dirname + '/node_modules/pixi.js/dist/browser/'));
 app.use('/pixi_extras', express.static(__dirname + '/node_modules/@pixi/graphics-extras/dist/browser/'));
+app.use('/pixi_viewport', express.static(__dirname + '/node_modules/pixi-viewport/dist/'));
+app.use('/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client/dist/'));
 app.use('/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client/dist/'));
 
 // static files
