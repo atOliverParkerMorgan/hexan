@@ -37,7 +37,7 @@ export class Node{
 
 
     on_click(){
-        this.set_type(GRASS);
+       // this.set_type(GRASS);
     }
     set_type(type){
         this.type = type;
