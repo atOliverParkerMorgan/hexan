@@ -56,6 +56,6 @@ console.log("starting metal head")
 
 app.listen(PORT_HTTP);
 
-const main = require('./javascripts/game_logic/main.js');
+const main = require('./javascripts/game_logic/Main.js');
 main();
 

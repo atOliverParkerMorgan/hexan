@@ -1,3 +1,4 @@
+// @TODO get rid of duplicate
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
@@ -15,6 +16,25 @@ class Node{
         this.neighbors.push(node);
     }
 
+    /*
+    * tries to get a random valid mountain neighbour
+    * if it succeeds it return the neighbour
+    * if it fails it returns null
+    */
+    get_random_neighbour_in_range(min, max, type) {
+
+        let random_neighbours = [];
+        for (let i = min; i <= max; i++) {
+            if(this.neighbors[i] != null){
+                if(this.neighbors[i].type === type){
+                    random_neighbours.push(this.neighbors[this.random_int(min, max)]);
+                }
+            }
+        }
+        if(random_neighbours.length === 0) return null;
+        return random_neighbours[this.random_int(0, random_neighbours.length)];
+    }
+
     get_random_neighbour() {
         let random_neighbour;
         do {
@@ -23,12 +43,12 @@ class Node{
 
         return random_neighbour;
     }
-    get_random_water_neighbour() {
+    get_random_neighbour_of_type(type) {
         let water_neighbour_nodes = []
 
         for (const node of this.neighbors) {
             if(node != null) {
-                if (node.type === WATER) {
+                if (node.type === type) {
                     water_neighbour_nodes.push(node);
                 }
             }
@@ -46,6 +66,12 @@ class Node{
             }
         }
         return false;
+    }
+    // @TODO get rid of duplicate
+    random_int(min, max){
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
 }

@@ -4,7 +4,7 @@ import {Graphics, viewport, HEX_SIDE_SIZE, DISTANCE_BETWEEN_HEX, WORLD_WIDTH, WO
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
-const MOUNTAIN = 0xE5E5E5;
+const MOUNTAIN = 0xF2F2F2;
 
 
 let last_selected_node_cords = [-1, -1];
