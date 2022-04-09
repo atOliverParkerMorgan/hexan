@@ -6,6 +6,14 @@ const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
 const MOUNTAIN = 0xF2F2F2;
 
+// borders
+const TOP_LEFT = 0;
+const TOP_RIGHT = 1;
+const RIGHT = 2;
+const BOTTOM_RIGHT = 3;
+const BOTTOM_LEFT = 4;
+const LEFT = 5;
+
 
 let last_selected_node_cords = [-1, -1];
 export let all_nodes = [];
@@ -16,16 +24,16 @@ export class Node{
         this.y = y;
         this.type = type;
         this.opacity = 1;
-
+        this.neighbors = [];
+        this.line_borders = [];
+        this.line_borders_cords = [BOTTOM_RIGHT];
         this.add_node_to_stage()
     }
     add_node_to_stage(){
         this.hex = new Graphics();
 
-        let row_bias = this.y % 2 === 0 ? DISTANCE_BETWEEN_HEX/2 : 0;
-
         this.hex.beginFill(this.type, this.opacity)
-            .drawRegularPolygon((this.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2, (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2, HEX_SIDE_SIZE, 6)
+            .drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6)
             .endFill();
         this.hex.interactive = true;
 
@@ -34,6 +42,59 @@ export class Node{
 
         viewport.addChild(this.hex);
     }
+
+    get_x_in_pixels(){
+        let row_bias = this.y % 2 === 0 ? DISTANCE_BETWEEN_HEX/2 : 0;
+        return (this.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
+    }
+
+    get_y_in_pixels(){
+       return  (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2
+    }
+
+
+    set_border(color, thickness, opacity, borders){
+        this.line_borders.forEach(line => line.clear())
+        this.line_borders = [];
+        let line = new Graphics();
+        line.beginFill(color, opacity);
+
+        for(const border of borders){
+            let direction_bias;
+            switch (border){
+                case TOP_RIGHT:
+                case BOTTOM_LEFT:
+                    direction_bias = border === TOP_RIGHT ? 1: -1;
+                    line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+                    line.lineStyle(thickness, color)
+                        .moveTo(0, direction_bias * - HEX_SIDE_SIZE)
+                        .lineTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * - HEX_SIDE_SIZE / 2);
+                    this.line_borders.push(line);
+                    viewport.addChild(line);
+                    break;
+                case RIGHT:
+                case LEFT:
+                    direction_bias = border === RIGHT ? 1: -1;
+                    line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+                    line.lineStyle(thickness, color)
+                        .moveTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * - HEX_SIDE_SIZE / 2)
+                        .lineTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * HEX_SIDE_SIZE / 2);
+                    this.line_borders.push(line);
+                    viewport.addChild(line);
+                    break;
+                case BOTTOM_RIGHT:
+                case TOP_LEFT:
+                    direction_bias = border === BOTTOM_RIGHT ? 1: -1;
+                    line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+                    line.lineStyle(thickness, color)
+                        .moveTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * HEX_SIDE_SIZE / 2)
+                        .lineTo(0, direction_bias * HEX_SIDE_SIZE);
+                    this.line_borders.push(line);
+                    viewport.addChild(line);
+            }
+        }
+    }
+
 
 
     on_click(){
@@ -61,5 +122,8 @@ export class Node{
     update(){
         this.hex.clear();
         this.add_node_to_stage();
+        this.set_border(WATER, 5, 1 , this.line_borders_cords);
+
+
     }
 }

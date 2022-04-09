@@ -47,6 +47,7 @@ socket.on("server", (...args) => {
         row.push(new Node(node.x, node.y, node.type));
     }
     all_nodes.push(row);
+
     console.log(all_nodes);
 
 

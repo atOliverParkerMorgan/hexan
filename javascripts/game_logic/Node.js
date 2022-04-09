@@ -10,6 +10,11 @@ class Node{
         this.x = x;
         this.y = y;
         this.type = WATER;
+
+        // used for A* searching algorithm
+        this.parent = null;
+        this.distance_from_start = 0;
+        this.distance_to_goal = 0;
     }
 
     add_neighbor(node){
@@ -17,7 +22,7 @@ class Node{
     }
 
     /*
-    * tries to get a random valid mountain neighbour
+    * tries to get a random valid neighbour
     * if it succeeds it return the neighbour
     * if it fails it returns null
     */
@@ -76,6 +81,12 @@ class Node{
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    get_distance_to_node(node) {
+        return Math.sqrt((node.x - this.x) ** 2 + (node.y - this.y) ** 2);
+    }
+    get_heuristic_value(){
+        return this.distance_from_start + this.distance_to_goal;
     }
 
 }
