@@ -67,6 +67,10 @@ class Node{
         }
         return false;
     }
+    could_be_mountain (){
+        return this.type === GRASS || this.type === BEACH;
+    }
+
     // @TODO get rid of duplicate
     random_int(min, max){
         min = Math.ceil(min);

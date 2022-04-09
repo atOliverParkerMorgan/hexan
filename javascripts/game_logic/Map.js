@@ -87,13 +87,21 @@ class Map{
         }
     }
 
+    get_node_(node){
+        try{
+            return this.all_nodes[node.y][node.x];
+        }catch (e){
+            // array out of bounds
+            return null;
+        }
+    }
+
     generate_island_map(){
         this.create_nodes();
 
-        // pick a random node
         for (let i = 0; i < this.number_of_continents ; i++) {
             let random_x, random_y;
-
+            // pick a random water node
             do{
                 random_x = this.random_int(0, this.side_length - 1);
                 random_y = this.random_int(0, this.side_length - 1);
@@ -101,50 +109,62 @@ class Map{
 
             this.generate_continent(random_x, random_y, CONTINENT_SIZE, this.shuffleArray(CONTINENT_NAMES).shift());
        }
+        for(const continent of this.all_continents) {
+            for (const node of continent.all_nodes) {
+                if (!node.is_coast() && node.type === BEACH) {
+                    continent.change_node_to(node, GRASS);
+                }
+            }
+        }
 
     }
 
     generate_continent(seed_x, seed_y, continent_size, continent_name) {
-        this.all_continents.push(new Continent(continent_name))
+        this.all_continents.push(new Continent(continent_name, this));
+        let current_continent = this.get_continent(continent_name);
 
-        let continent_nodes = [];
-        continent_nodes.push(this.all_nodes[seed_y][seed_x]);
+        current_continent.add_beach_node(this.all_nodes[seed_y][seed_x]);
 
         for (let i = 0; i < continent_size;) {
 
-            let random_index = this.random_int(0, continent_nodes.length - 1);
-            let random_continent_node = continent_nodes[random_index];
+            let random_continent_node = current_continent.get_random_node_of_type(BEACH);
             let random_neighbour_node = random_continent_node.get_random_neighbour_of_type(WATER);
 
             if(random_neighbour_node == null){
-                random_continent_node.type = GRASS;
-                continent_nodes.splice(random_index, 1);
+                current_continent.change_node_to(random_continent_node, GRASS);
             }else{
-                continent_nodes.push(random_neighbour_node);
-                random_neighbour_node.type = BEACH;
+                current_continent.add_beach_node(random_neighbour_node);
                 i++;
             }
         }
-        for (const node of continent_nodes) {
+        // cleaning up scattered beach nodes
+        console.log("Length: "+current_continent.all_nodes.length);
+        for (const node of current_continent.beach_nodes) {
             if(!node.is_coast()){
-                node.type = GRASS;
+                current_continent.change_node_to(node, GRASS);
             }
         }
+
         let number_of_mountain_ranges = this.random_int(3, 5);
         for (let i = 0; i <= number_of_mountain_ranges; i++) {
-            this.generate_mountains(seed_x, seed_y, this.random_int(5, 20));
+            if(i === 0) this.generate_mountains(seed_x, seed_y, number_of_mountain_ranges, current_continent);
+            else{
+                let random_grass_node = current_continent.get_random_node_of_type(GRASS);
+                this.generate_mountains(random_grass_node.x, random_grass_node.y, this.random_int(5, 15), current_continent);
+            }
             console.log("Generating mountains: "+ (i) + " of "+number_of_mountain_ranges)
         }
-
     }
 
-    generate_mountains(seed_x, seed_y, size){
+    generate_mountains(seed_x, seed_y, size, current_continent){
+
+        // 10 is straight; 1 is scattered
+        const MOUNTAIN_RANGE_STRAIGHTNESS = 4;
+
         let mountain_range_orientation =  this.random_int(HORIZONTAL, VERTICAL);
         let current_node = this.get_node(seed_x, seed_y);
 
-        current_node.type = MOUNTAIN;
-        let all_mountain_nodes = [];
-        all_mountain_nodes.push(current_node);
+        current_continent.add_mountain_node(current_node);
 
         const max_number_of_continues = 18;
         let number_of_continues = 0;
@@ -152,7 +172,7 @@ class Map{
         for (let i = 0; i < size;) {
             // the chances of the next mountain being aligned with the mountain range are 50%
             let mountain_noise = this.random_int(0, 10);
-            if(mountain_noise <= 4) {
+            if(mountain_noise <= MOUNTAIN_RANGE_STRAIGHTNESS) {
                 // generate a mountain that is aligned with the general direction of the mountain range
                 let previous_node = current_node;
 
@@ -165,11 +185,11 @@ class Map{
                     let opposite_neighbour = current_node.neighbors[opposite_direction];
 
                     if(random_neighbour != null) {
-                        if (random_neighbour.type === GRASS) {
+                        if (random_neighbour.could_be_mountain()) {
                             current_node = random_neighbour;
                         }
                         else if(opposite_neighbour != null){
-                            if(opposite_neighbour === GRASS){
+                            if(opposite_neighbour.could_be_mountain()){
                                 current_node = opposite_neighbour;
                             }
                         }
@@ -180,7 +200,7 @@ class Map{
                             continue;
                         }
                     } else if(opposite_neighbour != null){
-                        if(opposite_neighbour === GRASS){
+                        if(opposite_neighbour.could_be_mountain()){
                             current_node = opposite_neighbour;
                         }
                     }
@@ -203,7 +223,7 @@ class Map{
                     for(const random_index of random_valid_node_neighbours_indexes) {
                         let random_neighbor = current_node.neighbors[random_index];
                         if(random_neighbor != null) {
-                            if (random_neighbor.type === GRASS) {
+                            if (random_neighbor.could_be_mountain()) {
                                 current_node = current_node.neighbors[random_index];
                                 found_valid_node = true;
                             }
@@ -232,9 +252,8 @@ class Map{
                     continue;
                 }
 
-                if (current_node.type === GRASS) {
-                    current_node.type = MOUNTAIN
-                    all_mountain_nodes.push(current_node);
+                if (current_node.could_be_mountain()) {
+                    current_continent.add_mountain_node(current_node);
 
                     i++
                     number_of_continues = 0;
@@ -247,12 +266,11 @@ class Map{
             }else {
                 // get a node that isn't aligned with the mountain range
                 // checkout @ this.add_neighbours_to_nodes() to understand grid arrangement
-                let random_mountain_node = all_mountain_nodes[this.random_int(0, all_mountain_nodes.length - 1)]
+                let random_mountain_node = current_continent.get_random_node_of_type(MOUNTAIN)
                     .get_random_neighbour_in_range(2, 5, GRASS);
 
                 if (random_mountain_node != null) {
-                    random_mountain_node.type = MOUNTAIN;
-                    all_mountain_nodes.push(random_mountain_node);
+                    current_continent.add_mountain_node(random_mountain_node);
 
                     i++
                     number_of_continues = 0;
@@ -303,6 +321,13 @@ class Map{
         }
 
         return array;
+    }
+
+    get_continent(name){
+        for (const continent of this.all_continents) {
+            if(continent.name === name) return continent;
+        }
+        return null;
     }
 
 }
