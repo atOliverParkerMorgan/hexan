@@ -44,7 +44,8 @@ socket.on("server", (...args) => {
             row = [];
             y = node.y;
         }
-        row.push(new Node(node.x, node.y, node.type));
+        console.log(node.borders);
+        row.push(new Node(node.x, node.y, node.type, node.borders));
     }
     all_nodes.push(row);
 

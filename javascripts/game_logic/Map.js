@@ -6,6 +6,14 @@ const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
 const MOUNTAIN = 0xF2F2F2;
 
+// borders see @Map.add_neighbors_to_nodes()
+const LEFT = 0;
+const RIGHT = 1;
+const TOP_LEFT = 2;
+const TOP_RIGHT = 3;
+const BOTTOM_LEFT = 4;
+const BOTTOM_RIGHT = 5;
+
 const HORIZONTAL = 0;
 const VERTICAL = 1;
 
@@ -54,25 +62,25 @@ class Map{
                 // adding horizontal nodes
                 // always the same neighbours
                 // index in node.neighbor are always <0; 1>
-                node.add_neighbor(this.get_node(x - 1, y));
-                node.add_neighbor(this.get_node(x + 1, y));
+                node.add_neighbor(this.get_node(x - 1, y)); // left
+                node.add_neighbor(this.get_node(x + 1, y)); // right
 
                 // adding vertical nodes
                 // index in node.neighbor are always <2; 5>
 
                 // even neighbour configuration
                 if(node.y % 2 === 0) {
-                    node.add_neighbor(this.get_node(x, y + 1));
-                    node.add_neighbor(this.get_node(x + 1, y + 1));
-                    node.add_neighbor(this.get_node(x, y - 1));
-                    node.add_neighbor(this.get_node(x + 1, y - 1));
+                    node.add_neighbor(this.get_node(x, y + 1)); // top left
+                    node.add_neighbor(this.get_node(x + 1, y + 1)); // top right
+                    node.add_neighbor(this.get_node(x, y - 1)); // bottom left
+                    node.add_neighbor(this.get_node(x + 1, y - 1)); // bottom right
                 }
                 // odd neighbour configuration
                 else{
-                    node.add_neighbor(this.get_node(x - 1, y + 1));
-                    node.add_neighbor(this.get_node(x, y + 1));
-                    node.add_neighbor(this.get_node(x - 1, y - 1));
-                    node.add_neighbor(this.get_node(x, y - 1));
+                    node.add_neighbor(this.get_node(x - 1, y + 1)); // top left
+                    node.add_neighbor(this.get_node(x, y + 1)); // top right
+                    node.add_neighbor(this.get_node(x - 1, y - 1)); // bottom left
+                    node.add_neighbor(this.get_node(x, y - 1)); // bottom right
                 }
             }
         }
@@ -133,13 +141,13 @@ class Map{
             }
         }
         // cleaning up scattered beach nodes
-        console.log("Length: "+current_continent.all_nodes.length);
         for (const node of current_continent.beach_nodes) {
             if(!node.is_coast()){
                 current_continent.change_node_to(node, GRASS);
             }
         }
 
+        // generate mountains
         let number_of_mountain_ranges = this.random_int(3, 5);
         for (let i = 0; i <= number_of_mountain_ranges; i++) {
             if(i === 0) this.generate_mountains(seed_x, seed_y, number_of_mountain_ranges, current_continent);
@@ -147,8 +155,11 @@ class Map{
                 let random_grass_node = current_continent.get_random_node_of_type(GRASS);
                 this.generate_mountains(random_grass_node.x, random_grass_node.y, this.random_int(5, 15), current_continent);
             }
-            console.log("Generating mountains: "+ (i) + " of "+number_of_mountain_ranges)
+            // console.log("Generating mountains: "+ (i) + " of "+number_of_mountain_ranges)
         }
+
+        // generate rivers
+        this.generate_river(current_continent);
     }
 
     generate_mountains(seed_x, seed_y, size, current_continent){
@@ -277,8 +288,45 @@ class Map{
         }
     }
 
-    generate_river(){
-        // TODO
+    generate_river(continent){
+        let random_mountain_node = continent.get_random_node_of_type(MOUNTAIN);
+        let random_beach_node = continent.get_random_node_of_type(BEACH);
+
+        let river_path = this.a_star(random_mountain_node, random_beach_node);
+        console.log("length: "+river_path.length);
+        let last_side = river_path[0].get_neighbor_opposite_position(river_path[1]);
+        for (let i = 0; i < river_path.length; i++) {
+            let next_node = river_path[i + 1];
+            let node = river_path[i];
+
+            if(next_node == null) continue;
+
+            let current_side = this.river(node.get_neighbor_position(next_node));
+            for(const b of node.create_river(last_side, current_side)){
+                console.log(b);
+                node.borders.push(b);
+            }
+            last_side = current_side;
+        }
+        // river_path[0].type = 64165410;
+
+    }
+
+    river(current_side){
+        switch (current_side) {
+            case LEFT:
+                return this.random_int(0, 1) === 1 ? BOTTOM_LEFT : TOP_LEFT;
+            case RIGHT:
+                return this.random_int(0, 1) === 1 ? BOTTOM_RIGHT : TOP_RIGHT;
+            case TOP_LEFT:
+                return this.random_int(0, 1) === 1 ? LEFT : TOP_RIGHT;
+            case TOP_RIGHT:
+                return this.random_int(0, 1) === 1 ? RIGHT : TOP_LEFT;
+            case BOTTOM_LEFT:
+                return this.random_int(0, 1) === 1 ? BOTTOM_RIGHT : LEFT;
+            case BOTTOM_RIGHT:
+                return this.random_int(0, 1) === 1 ? RIGHT : BOTTOM_LEFT;
+        }
     }
 
     // get shortest path between two nodes
@@ -307,10 +355,9 @@ class Map{
 
             if(current_node.x === goal_node.x && current_node.y === goal_node.y){
                 let solution_path = [current_node];
-                while (solution_path[solution_path.length - 1] === start_node){
+                while (solution_path[solution_path.length - 1] !== start_node){
                     solution_path.push(solution_path[solution_path.length - 1].parent);
                 }
-                console.log("Solution path: "+solution_path);
                 return solution_path.reverse();
             }
 
@@ -352,7 +399,7 @@ class Map{
         let data = [];
         for(let node_rows of this.all_nodes){
             for(let node of node_rows) {
-                data.push({x: node.x, y: node.y, type: node.type})
+                data.push({x: node.x, y: node.y, type: node.type, borders: node.borders})
             }
         }
         return data;

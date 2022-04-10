@@ -6,30 +6,32 @@ const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
 const MOUNTAIN = 0xF2F2F2;
 
-// borders
-const TOP_LEFT = 0;
-const TOP_RIGHT = 1;
-const RIGHT = 2;
-const BOTTOM_RIGHT = 3;
+// borders see @Map.add_neighbors_to_nodes()
+const LEFT = 0;
+const RIGHT = 1;
+const TOP_LEFT = 2;
+const TOP_RIGHT = 3;
 const BOTTOM_LEFT = 4;
-const LEFT = 5;
+const BOTTOM_RIGHT = 5;
 
 
 let last_selected_node_cords = [-1, -1];
 export let all_nodes = [];
 
 export class Node{
-    constructor(x, y, type) {
+    constructor(x, y, type, line_borders) {
         this.x = x;
         this.y = y;
         this.type = type;
         this.opacity = 1;
         this.neighbors = [];
         this.line_borders = [];
-        this.line_borders_cords = [BOTTOM_RIGHT];
+        this.line_borders_cords = line_borders;
         this.add_node_to_stage()
+        this.set_border(WATER, 5, 1 , this.line_borders_cords);
     }
     add_node_to_stage(){
+
         this.hex = new Graphics();
 
         this.hex.beginFill(this.type, this.opacity)

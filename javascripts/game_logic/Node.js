@@ -4,12 +4,21 @@ const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
 const MOUNTAIN = 0xE5E5E5;
 
+// borders see @Map.add_neighbors_to_nodes() to understand values
+const LEFT = 0;
+const RIGHT = 1;
+const TOP_LEFT = 2;
+const TOP_RIGHT = 3;
+const BOTTOM_LEFT = 4;
+const BOTTOM_RIGHT = 5;
+
 class Node{
     constructor(x, y){
         this.neighbors = [];
         this.x = x;
         this.y = y;
         this.type = WATER;
+        this.borders = [];
 
         // used for A* searching algorithm
         this.parent = null;
@@ -19,6 +28,57 @@ class Node{
 
     add_neighbor(node){
         this.neighbors.push(node);
+    }
+
+    get_neighbor_position(neighbor){
+        return this.neighbors.indexOf(neighbor);
+    }
+
+    create_river(border_side_start, border_side_end){
+        let sides = [LEFT, TOP_LEFT, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT];
+        let output_sides = [];
+        let index = sides.indexOf(border_side_start);
+        let direction_of_search = this.random_int(0, 1) === 1? 1 : -1;
+        do{
+            index += direction_of_search;
+            if(index === sides.length) index = 0;
+            else if(index < 0) index = sides.length - 1;
+            output_sides.push(sides[index]);
+        }
+        while(sides[index] === border_side_end)
+
+        return output_sides;
+    }
+
+    // get_random_valid_border_neighbor(border_position){
+    //     if(border_position == null) return null;
+    //     let neighboring_borders = this.get_border_neighbor_borders(border_position);
+    //     let valid_borders = [];
+    //     for(const border of neighboring_borders){
+    //         if(!this.boarders.includes(border)){
+    //             valid_borders.push(border);
+    //         }
+    //     }
+    //     if(valid_borders.length === 0) return null;
+    //     return valid_borders[this.random_int(0, valid_borders.length - 1)];
+    //
+    // }
+
+    get_neighbor_opposite_position(neighbor){
+        switch (this.neighbors.indexOf(neighbor)){
+            case LEFT:
+                return RIGHT;
+            case RIGHT:
+                return LEFT;
+            case TOP_LEFT:
+                return BOTTOM_RIGHT;
+            case TOP_RIGHT:
+                return BOTTOM_LEFT;
+            case BOTTOM_LEFT:
+                return TOP_RIGHT;
+            case BOTTOM_RIGHT:
+                return TOP_LEFT;
+        }
     }
 
     /*
