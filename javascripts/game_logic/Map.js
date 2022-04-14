@@ -50,10 +50,9 @@ class Map{
     }
 
     add_neighbors_to_nodes(){
-        for(let node_rows of this.all_nodes){
-            for(let node of node_rows){
-                let x = node.x;
-                let y = node.y;
+        for(let y = 0; y < this.side_length; y++){
+            for(let x = 0; x < this.side_length; x++){
+                let node = this.get_node(x, y);
 
                 // hex grid is unique in neighbour configuration
                 // odd and  even rows have different neighbour cords
@@ -62,37 +61,34 @@ class Map{
                 // adding horizontal nodes
                 // always the same neighbours
                 // index in node.neighbor are always <0; 1>
-                node.add_neighbor(this.get_node(x - 1, y)); // left
-                node.add_neighbor(this.get_node(x + 1, y)); // right
+                node.neighbors.push(this.get_node(x - 1, y)); // left
+                node.neighbors.push(this.get_node(x + 1, y)); // right
 
                 // adding vertical nodes
                 // index in node.neighbor are always <2; 5>
 
                 // even neighbour configuration
                 if(node.y % 2 === 0) {
-                    node.add_neighbor(this.get_node(x, y + 1)); // top left
-                    node.add_neighbor(this.get_node(x + 1, y + 1)); // top right
-                    node.add_neighbor(this.get_node(x, y - 1)); // bottom left
-                    node.add_neighbor(this.get_node(x + 1, y - 1)); // bottom right
+                    node.neighbors.push(this.get_node(x, y - 1)); // top left
+                    node.neighbors.push(this.get_node(x + 1, y - 1)); // top right
+                    node.neighbors.push(this.get_node(x, y + 1)); // bottom left
+                    node.neighbors.push(this.get_node(x + 1, y + 1)); // bottom right
                 }
                 // odd neighbour configuration
                 else{
-                    node.add_neighbor(this.get_node(x - 1, y + 1)); // top left
-                    node.add_neighbor(this.get_node(x, y + 1)); // top right
-                    node.add_neighbor(this.get_node(x - 1, y - 1)); // bottom left
-                    node.add_neighbor(this.get_node(x, y - 1)); // bottom right
+                    node.neighbors.push(this.get_node(x - 1, y - 1)); // top left
+                    node.neighbors.push(this.get_node(x, y - 1)); // top right
+                    node.neighbors.push(this.get_node(x - 1, y + 1)); // bottom left
+                    node.neighbors.push(this.get_node(x, y + 1)); // bottom right
                 }
             }
         }
     }
 
     get_node(x, y){
-        try{
-            return this.all_nodes[y][x];
-        }catch (e){
-            // array out of bounds
-            return null;
-        }
+        if(x<0 || y<0 || x >= this.side_length || y>=this.side_length) return null;
+        return this.all_nodes[y][x];
+
     }
 
     get_node_(node){
@@ -112,6 +108,7 @@ class Map{
 
             this.generate_continent(random_x, random_y, CONTINENT_SIZE, this.shuffleArray(CONTINENT_NAMES).shift());
        }
+        this.generate_river(this.all_continents[0]);
         for(const continent of this.all_continents) {
             for (const node of continent.all_nodes) {
                 if (!node.is_coast() && node.type === BEACH) {
@@ -159,7 +156,7 @@ class Map{
         }
 
         // generate rivers
-        this.generate_river(current_continent);
+        // this.generate_river(current_continent);
     }
 
     generate_mountains(seed_x, seed_y, size, current_continent){
@@ -291,41 +288,58 @@ class Map{
     generate_river(continent){
         let random_mountain_node = continent.get_random_node_of_type(MOUNTAIN);
         let random_beach_node = continent.get_random_node_of_type(BEACH);
-
+        let direction;
         let river_path = this.a_star(random_mountain_node, random_beach_node);
         console.log("length: "+river_path.length);
-        let last_side = river_path[0].get_neighbor_opposite_position(river_path[1]);
+        let current_side = LEFT;
         for (let i = 0; i < river_path.length; i++) {
             let next_node = river_path[i + 1];
             let node = river_path[i];
 
             if(next_node == null) continue;
-
-            let current_side = this.river(node.get_neighbor_position(next_node));
-            for(const b of node.create_river(last_side, current_side)){
-                console.log(b);
+            let neighbor = node.get_neighbor_position(next_node);
+            let river_nodes = node.create_river(current_side, neighbor, direction);
+            for(const b of river_nodes){
                 node.borders.push(b);
             }
-            last_side = current_side;
+            console.log(direction);
+            // console.log(i+") current side: "+current_side);
+            // console.log(i+") neighbor: "+neighbor);
+            let output_river = this.river(river_nodes[river_nodes.length - 1], neighbor);
+            current_side = output_river[0];
+            direction = output_river[1];
+
         }
-        // river_path[0].type = 64165410;
+        river_path[0].type = 64165410;
 
     }
 
-    river(current_side){
+    river(current_side, neighbor_side){
         switch (current_side) {
             case LEFT:
-                return this.random_int(0, 1) === 1 ? BOTTOM_LEFT : TOP_LEFT;
+                if(neighbor_side === TOP_LEFT) return this.shuffleArray([[BOTTOM_RIGHT, -1], [BOTTOM_LEFT, 1]])[0];
+                // BOTTOM_LEFT
+                return this.shuffleArray([[TOP_RIGHT, 1], [TOP_LEFT, -1]])[0];
             case RIGHT:
-                return this.random_int(0, 1) === 1 ? BOTTOM_RIGHT : TOP_RIGHT;
+                if(neighbor_side === TOP_RIGHT) return  this.shuffleArray([[BOTTOM_RIGHT, -1], [BOTTOM_LEFT, 1]])[0];
+                // BOTTOM_RIGHT
+                return  this.shuffleArray([[TOP_RIGHT, 1], [TOP_LEFT, -1]])[0];
             case TOP_LEFT:
-                return this.random_int(0, 1) === 1 ? LEFT : TOP_RIGHT;
+                if (neighbor_side === LEFT)return  this.shuffleArray([[LEFT, 1], [TOP_RIGHT, -1]])[0];
+                // TOP_RIGHT
+                return  this.shuffleArray([[RIGHT, 1], [TOP_LEFT, -1]])[0];
             case TOP_RIGHT:
-                return this.random_int(0, 1) === 1 ? RIGHT : TOP_LEFT;
+                if (neighbor_side === RIGHT)return  this.shuffleArray([[RIGHT, -1], [TOP_LEFT, 1]])[0]
+                // TOP_LEFT
+                return  this.shuffleArray([[RIGHT, -1], [BOTTOM_RIGHT, 1]])[0]
             case BOTTOM_LEFT:
-                return this.random_int(0, 1) === 1 ? BOTTOM_RIGHT : LEFT;
+                if (neighbor_side === LEFT)return  this.shuffleArray([[RIGHT, -1], [BOTTOM_RIGHT, 1]])[0]
+                // BOTTOM_RIGHT
+                return  this.shuffleArray([[LEFT, -1], [TOP_LEFT, 1]])[0]
             case BOTTOM_RIGHT:
-                return this.random_int(0, 1) === 1 ? RIGHT : BOTTOM_LEFT;
+                if (neighbor_side === RIGHT)return  this.shuffleArray([[LEFT, 1], [BOTTOM_LEFT, -1]])[0]
+                // BOTTOM_LEFT
+                return  this.shuffleArray([[RIGHT, 1], [TOP_RIGHT, -1]])[0]
         }
     }
 

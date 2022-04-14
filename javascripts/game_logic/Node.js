@@ -2,7 +2,7 @@
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
-const MOUNTAIN = 0xE5E5E5;
+const MOUNTAIN = 0xF2F2F2;
 
 // borders see @Map.add_neighbors_to_nodes() to understand values
 const LEFT = 0;
@@ -30,22 +30,24 @@ class Node{
         this.neighbors.push(node);
     }
 
-    get_neighbor_position(neighbor){
+    get_neighbor_position(neighbor) {
         return this.neighbors.indexOf(neighbor);
     }
 
-    create_river(border_side_start, border_side_end){
+    create_river(border_side_start, border_side_end, direction_of_search){
         let sides = [LEFT, TOP_LEFT, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT];
-        let output_sides = [];
+        let output_sides = [border_side_start];
         let index = sides.indexOf(border_side_start);
-        let direction_of_search = this.random_int(0, 1) === 1? 1 : -1;
-        do{
+        if(direction_of_search == null) direction_of_search = this.random_int(0, 1) === 1? 1 : -1;
+        while(sides[index] !== border_side_end){
+            // make cycle
             index += direction_of_search;
             if(index === sides.length) index = 0;
-            else if(index < 0) index = sides.length - 1;
+            else if(index < 0) index = sides.length - 1
+
             output_sides.push(sides[index]);
         }
-        while(sides[index] === border_side_end)
+
 
         return output_sides;
     }
@@ -147,6 +149,16 @@ class Node{
     }
     get_heuristic_value(){
         return this.distance_from_start + this.distance_to_goal;
+    }
+    get_type(){
+        switch (this.type){
+            case GRASS: return "GRASS";
+            case BEACH: return "BEACH";
+            case MOUNTAIN: return "MOUNTAIN";
+            case WATER: return "WATER";
+        }
+        return "NOT FOUND";
+
     }
 
 }
