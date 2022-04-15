@@ -12,6 +12,8 @@ const TOP_RIGHT = 3;
 const BOTTOM_LEFT = 4;
 const BOTTOM_RIGHT = 5;
 
+const MOUNTAIN_TRAVEL_BIAS = 10;
+
 class Node{
     constructor(x, y){
         this.neighbors = [];
@@ -34,18 +36,22 @@ class Node{
         return this.neighbors.indexOf(neighbor);
     }
 
-    create_river(border_side_start, border_side_end, direction_of_search){
+    create_river(border_side_start, border_side_end, direction_of_search, add_neighbouring_tile){
         let sides = [LEFT, TOP_LEFT, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT];
-        let output_sides = [border_side_start];
+        let output_sides = [];
         let index = sides.indexOf(border_side_start);
-        if(direction_of_search == null) direction_of_search = this.random_int(0, 1) === 1? 1 : -1;
-        while(sides[index] !== border_side_end){
-            // make cycle
-            index += direction_of_search;
-            if(index === sides.length) index = 0;
-            else if(index < 0) index = sides.length - 1
 
+        if(add_neighbouring_tile) {
+            index += direction_of_search;
+            if (index === sides.length) index = 0;
+            else if (index < 0) index = sides.length - 1;
+        }
+
+        while(sides[index] !== border_side_end){
             output_sides.push(sides[index]);
+            if(index === sides.length) index = -1;
+            else if(index < 0) index = sides.length;
+            index += direction_of_search;
         }
 
 
@@ -148,6 +154,8 @@ class Node{
         return Math.sqrt((node.x - this.x) ** 2 + (node.y - this.y) ** 2);
     }
     get_heuristic_value(){
+        if (this.type === WATER) return  this.distance_from_start + this.distance_to_goal + 100;
+        if(this.type === MOUNTAIN) return this.distance_from_start + this.distance_to_goal + MOUNTAIN_TRAVEL_BIAS;
         return this.distance_from_start + this.distance_to_goal;
     }
     get_type(){

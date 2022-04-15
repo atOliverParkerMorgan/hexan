@@ -108,7 +108,6 @@ class Map{
 
             this.generate_continent(random_x, random_y, CONTINENT_SIZE, this.shuffleArray(CONTINENT_NAMES).shift());
        }
-        this.generate_river(this.all_continents[0]);
         for(const continent of this.all_continents) {
             for (const node of continent.all_nodes) {
                 if (!node.is_coast() && node.type === BEACH) {
@@ -155,8 +154,10 @@ class Map{
             // console.log("Generating mountains: "+ (i) + " of "+number_of_mountain_ranges)
         }
 
-        // generate rivers
-        // this.generate_river(current_continent);
+        for (let i = 0; i <= number_of_mountain_ranges; i++) {
+            // generate rivers
+            this.generate_river(current_continent);
+        }
     }
 
     generate_mountains(seed_x, seed_y, size, current_continent){
@@ -288,58 +289,65 @@ class Map{
     generate_river(continent){
         let random_mountain_node = continent.get_random_node_of_type(MOUNTAIN);
         let random_beach_node = continent.get_random_node_of_type(BEACH);
-        let direction;
+        let last_direction;
         let river_path = this.a_star(random_mountain_node, random_beach_node);
-        console.log("length: "+river_path.length);
+
+        console.log("length: "+river_path.length+"\n\n\n");
         let current_side = LEFT;
         for (let i = 0; i < river_path.length; i++) {
+
+            let direction = this.random_int(0, 1) === 1 ? 1: -1;
             let next_node = river_path[i + 1];
             let node = river_path[i];
 
-            if(next_node == null) continue;
+            if(next_node == null){
+                next_node = node.get_random_neighbour();
+            }
+
             let neighbor = node.get_neighbor_position(next_node);
-            let river_nodes = node.create_river(current_side, neighbor, direction);
+
+
+            let river_nodes = node.create_river(current_side, neighbor, direction, direction === last_direction);
             for(const b of river_nodes){
                 node.borders.push(b);
             }
-            console.log(direction);
-            // console.log(i+") current side: "+current_side);
-            // console.log(i+") neighbor: "+neighbor);
-            let output_river = this.river(river_nodes[river_nodes.length - 1], neighbor);
-            current_side = output_river[0];
-            direction = output_river[1];
+            current_side = this.switch_position(neighbor);
+            last_direction = direction;
+           // if(i === river_path.length - 1) //node.type = 1534541;
 
         }
-        river_path[0].type = 64165410;
 
     }
-
-    river(current_side, neighbor_side){
-        switch (current_side) {
+    print_position(pos){
+        switch (pos){
+            case 0:
+                return "LEFT";
+            case 1:
+                return "RIGHT";
+            case 2:
+                return "TOP LEFT";
+            case 3:
+                return "TOP RIGHT";
+            case 4:
+                return "BOTTOM LEFT";
+            case 5:
+                return "BOTTOM RIGHT";
+        }
+    }
+    switch_position(pos){
+        switch (pos){
             case LEFT:
-                if(neighbor_side === TOP_LEFT) return this.shuffleArray([[BOTTOM_RIGHT, -1], [BOTTOM_LEFT, 1]])[0];
-                // BOTTOM_LEFT
-                return this.shuffleArray([[TOP_RIGHT, 1], [TOP_LEFT, -1]])[0];
+                return RIGHT;
             case RIGHT:
-                if(neighbor_side === TOP_RIGHT) return  this.shuffleArray([[BOTTOM_RIGHT, -1], [BOTTOM_LEFT, 1]])[0];
-                // BOTTOM_RIGHT
-                return  this.shuffleArray([[TOP_RIGHT, 1], [TOP_LEFT, -1]])[0];
+                return LEFT;
             case TOP_LEFT:
-                if (neighbor_side === LEFT)return  this.shuffleArray([[LEFT, 1], [TOP_RIGHT, -1]])[0];
-                // TOP_RIGHT
-                return  this.shuffleArray([[RIGHT, 1], [TOP_LEFT, -1]])[0];
+                return BOTTOM_RIGHT;
             case TOP_RIGHT:
-                if (neighbor_side === RIGHT)return  this.shuffleArray([[RIGHT, -1], [TOP_LEFT, 1]])[0]
-                // TOP_LEFT
-                return  this.shuffleArray([[RIGHT, -1], [BOTTOM_RIGHT, 1]])[0]
+                return BOTTOM_LEFT;
             case BOTTOM_LEFT:
-                if (neighbor_side === LEFT)return  this.shuffleArray([[RIGHT, -1], [BOTTOM_RIGHT, 1]])[0]
-                // BOTTOM_RIGHT
-                return  this.shuffleArray([[LEFT, -1], [TOP_LEFT, 1]])[0]
+                return TOP_RIGHT;
             case BOTTOM_RIGHT:
-                if (neighbor_side === RIGHT)return  this.shuffleArray([[LEFT, 1], [BOTTOM_LEFT, -1]])[0]
-                // BOTTOM_LEFT
-                return  this.shuffleArray([[RIGHT, 1], [TOP_RIGHT, -1]])[0]
+                return TOP_LEFT;
         }
     }
 
