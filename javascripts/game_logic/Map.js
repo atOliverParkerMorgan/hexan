@@ -154,9 +154,17 @@ class Map{
             // console.log("Generating mountains: "+ (i) + " of "+number_of_mountain_ranges)
         }
 
-        for (let i = 0; i <= number_of_mountain_ranges; i++) {
-            // generate rivers
+        // generate rivers
+        let number_of_rivers = this.random_int(2, 4);
+        for (let i = 0; i <= number_of_rivers; i++) {
             this.generate_river(current_continent);
+        }
+
+        // generating lakes
+        for (const node of current_continent.all_nodes) {
+            if(node.borders.length === 6){
+                current_continent.change_node_to(node, WATER);
+            }
         }
     }
 
@@ -292,10 +300,10 @@ class Map{
         let last_direction;
         let river_path = this.a_star(random_mountain_node, random_beach_node);
 
-        console.log("length: "+river_path.length+"\n\n\n");
-        let current_side = LEFT;
+        let current_side = this.random_int(LEFT, BOTTOM_RIGHT);
         for (let i = 0; i < river_path.length; i++) {
 
+            // random direction of river see Node.create_river()
             let direction = this.random_int(0, 1) === 1 ? 1: -1;
             let next_node = river_path[i + 1];
             let node = river_path[i];
@@ -306,11 +314,15 @@ class Map{
 
             let neighbor = node.get_neighbor_position(next_node);
 
-
+            // generate river path and add river path to node
             let river_nodes = node.create_river(current_side, neighbor, direction, direction === last_direction);
             for(const b of river_nodes){
                 node.borders.push(b);
             }
+
+            // if node is beach break
+            if(node.type === BEACH) break;
+
             current_side = this.switch_position(neighbor);
             last_direction = direction;
            // if(i === river_path.length - 1) //node.type = 1534541;
