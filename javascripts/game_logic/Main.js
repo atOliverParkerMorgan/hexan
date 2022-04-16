@@ -10,7 +10,7 @@ const io = server(httpServer);
 function main() {
 
     io.on("connection", (socket) => {
-        let map = new Map(2500, 2);
+        let map = new Map(2500, 4);
         map.generate_island_map();
 
         // send a message to the client
@@ -19,6 +19,9 @@ function main() {
 
         // receive a message from the client
         socket.on("client", (...args) => {
+            console.log(args);
+        });
+        socket.on("create_game_with_ai", (...args) => {
             console.log(args);
         });
     });

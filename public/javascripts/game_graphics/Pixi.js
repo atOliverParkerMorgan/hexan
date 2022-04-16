@@ -1,5 +1,8 @@
 import {Node} from "./Node.js";
 import {all_nodes} from "./Node.js";
+import {ClientSocket} from "/javascripts/ClientSocket.js"
+
+const client_socket = new ClientSocket();
 
 export const HEX_SIDE_SIZE = 50;
 export const DISTANCE_BETWEEN_HEX = 2 * (HEX_SIDE_SIZE ** 2 - (HEX_SIDE_SIZE/2) ** 2) ** .5;
@@ -30,7 +33,7 @@ document.body.appendChild(app.view)
 app.ticker.add(delta=>loop(delta));
 
 let socket = io("ws://127.0.0.1:8082",  { transports : ['websocket'] });
-socket.emit("client", "test");
+client_socket.send_data("test", "test")
 socket.on("server", (...args) => {
     console.log(args);
 
