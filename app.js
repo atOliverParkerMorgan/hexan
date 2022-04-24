@@ -23,7 +23,7 @@ app.set('view engine', 'html');
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'client')));
 app.use('/', indexRouter);
 app.use('/game', gameRouter);
 app.use('/users', usersRouter);
@@ -36,7 +36,7 @@ app.use('/socket.io-client', express.static(__dirname + '/node_modules/socket.io
 app.use('/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client/dist/'));
 
 // static files
-app.use(express.static('public', {}));
+app.use(express.static('client', {}));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -58,6 +58,6 @@ console.log("starting metal head")
 
 app.listen(PORT_HTTP);
 
-const main = require('./javascripts/game_logic/Main.js');
+const main = require('./server/game_logic/Main.js');
 main();
 

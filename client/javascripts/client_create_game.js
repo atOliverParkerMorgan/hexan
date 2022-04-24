@@ -5,6 +5,12 @@ const client_socket = new ClientSocket();
 nick_input.addEventListener("keypress", function onEvent(event) {
     let nick = nick_input.value;
     if (event.key === "Enter" && nick.length > 0) {
-        client_socket.send_data("create_game_with_ai", nick);
+        //client_socket.send_data("create_game_with_ai", nick);
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://127.0.0.1:8000/", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            value: nick
+        }));
     }
 });

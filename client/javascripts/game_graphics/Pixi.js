@@ -1,6 +1,6 @@
 import {Node} from "./Node.js";
 import {all_nodes} from "./Node.js";
-import {ClientSocket} from "/javascripts/ClientSocket.js"
+import {ClientSocket} from "/Users/Oliver/WebstormProjects/metalhead/server/ClientSocket.js"
 
 const client_socket = new ClientSocket();
 

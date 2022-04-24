@@ -9,7 +9,6 @@ export class ClientSocket{
 
     get_data(fun){
         this.socket.on("server", (...args) => {
-           //fun
         });
     }
 
