@@ -29,4 +29,5 @@
 //     httpServer.listen(PORT_SOCKET);
 // }
 //
-// module.exports = main;
+function main(){}
+module.exports = main;

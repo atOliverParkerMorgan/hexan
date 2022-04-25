@@ -5,7 +5,8 @@ const cookieParser = require('cookie-parser');
 const Console = require("console");
 const http = require("http");
 const {server} = require("socket.io");
-
+const mysql = require('mysql');
+//const db = mysql.createConnection()
 
 const PORT_HTTP = process.env.PORT || 8000;
 
@@ -15,6 +16,32 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 app.engine('html', require('ejs').renderFile);
+
+// Create a connection to the database
+// const connection = mysql.createConnection({
+//   host: 'localhost',
+// //Importing modules
+//
+//   user: 'root',
+//   password: 'yourpassword',
+//   database: "ExpressIntegration"
+// });
+//
+// // open the MySQL connection
+// connection.connect(error => {
+//   if (error){
+//     console.log("A error has been occurred "
+//         + "while connecting to database.");
+//     throw error;
+//   }
+//
+//   //If Everything goes correct, Then start Express Server
+//   app.listen(PORT, ()=>{
+//     console.log("Database connection is Ready and "
+//         + "Server is Listening on Port ", PORT);
+//   })
+// });
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
