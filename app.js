@@ -7,7 +7,7 @@ const http = require("http");
 const {server} = require("socket.io");
 
 
-const PORT_HTTP = 8000;
+const PORT_HTTP = process.env.PORT || 8000;
 
 const indexRouter = require('./routes/index');
 const gameRouter = require('./routes/game');
@@ -59,5 +59,5 @@ console.log("starting metal head")
 app.listen(PORT_HTTP);
 
 const main = require('./server/game_logic/Main.js');
-main();
+//main();
 

@@ -12,5 +12,14 @@ nick_input.addEventListener("keypress", function onEvent(event) {
         xhr.send(JSON.stringify({
             value: nick
         }));
+        xhr.onreadystatechange = ()=>
+        {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    const json_data = xhr.responseText;
+                    console.log(json_data);
+                }
+            }
+        }
     }
 });
