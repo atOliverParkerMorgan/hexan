@@ -1,12 +1,18 @@
 import {Node} from "./Node.js";
 import {all_nodes} from "./Node.js";
-import {ClientSocket} from "/Users/Oliver/WebstormProjects/metalhead/server/ClientSocket.js"
+import {ClientSocket} from "../ClientSocket.js"
 
-const client_socket = new ClientSocket();
+if (!localStorage || !'player_token' in localStorage || !'game_token' in localStorage) {
+    console.error("Error: no tokens were found")
+}
+const player_token = localStorage.player_token;
+const game_token = localStorage.game_token;
+
+console.log("Player: " + player_token);
+console.log("Game: " + game_token);
 
 export const HEX_SIDE_SIZE = 50;
 export const DISTANCE_BETWEEN_HEX = 2 * (HEX_SIDE_SIZE ** 2 - (HEX_SIDE_SIZE/2) ** 2) ** .5;
-console.log(DISTANCE_BETWEEN_HEX);
 export const WORLD_WIDTH = DISTANCE_BETWEEN_HEX * 50;
 export const WORLD_HEIGHT = HEX_SIDE_SIZE * 1.5 * 50;
 
@@ -32,30 +38,28 @@ app.stage.addChild(viewport)
 document.body.appendChild(app.view)
 app.ticker.add(delta=>loop(delta));
 
-let socket = io("ws://127.0.0.1:8082",  { transports : ['websocket'] });
-client_socket.send_data("test", "test")
-socket.on("server", (...args) => {
-    console.log(args);
+const client_socket = new ClientSocket(player_token, game_token);
 
+client_socket.send_data("blah")
+client_socket.get_data((...args)=>{
     // adding nodes from linear array to 2d array
     let y = 0;
     let row = [];
-    for (let node of args[0]) {
+    for (let node of args[0][0]) {
 
         if(node.y!==y){
             all_nodes.push(row)
             row = [];
             y = node.y;
         }
-        console.log(node.borders);
         row.push(new Node(node.x, node.y, node.type, node.borders));
     }
     all_nodes.push(row);
 
     console.log(all_nodes);
 
-
 });
+
 
 
 function loop(){
