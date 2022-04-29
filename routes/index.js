@@ -53,6 +53,16 @@ function generate_token(nick_name){
 
 function create_or_assign_game(game_token, player_token){
   let game = new Game(game_token);
+
+  let player;
+  for(const p of all_players){
+    if(p.token === player_token){
+      player = p;
+    }
+
+  }
+
+  game.place_start_city(player);
   game.connect_player();
   game.send_player_map(player_token);
 

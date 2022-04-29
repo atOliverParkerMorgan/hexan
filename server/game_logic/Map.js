@@ -363,7 +363,8 @@ class Map{
         }
     }
 
-    // get shortest path between two nodes
+
+    // get the shortest path between two nodes
     a_star(start_node, goal_node){
         let open_set = [start_node];
         let closed_set = []
@@ -429,16 +430,25 @@ class Map{
             }
         }
     }
-    format(){
+    format(player_token){
         let data = [];
         for(let node_rows of this.all_nodes){
             for(let node of node_rows) {
-                data.push({x: node.x, y: node.y, type: node.type, borders: node.borders})
+                const hidden = !player_token in node.is_shown;
+
+                data.push({
+                     x: node.x, y: node.y,
+                     type: node.type,
+                     borders: node.borders,
+                     is_hidden: hidden,
+                     city: node.city
+                });
             }
         }
         return data;
 
     }
+
     // range: <min; max>
     random_int(min, max){
         min = Math.ceil(min);

@@ -21,6 +21,9 @@ class Node{
         this.y = y;
         this.type = WATER;
         this.borders = [];
+        // ids for player who seen this node
+        this.is_shown = [];
+        this.city = null;
 
         // used for A* searching algorithm
         this.parent = null;

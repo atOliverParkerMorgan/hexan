@@ -52,7 +52,7 @@ client_socket.get_data((...args)=>{
             row = [];
             y = node.y;
         }
-        row.push(new Node(node.x, node.y, node.type, node.borders));
+        row.push(new Node(node.x, node.y, node.type, node.borders, node.is_hidden, node.city));
     }
     all_nodes.push(row);
 

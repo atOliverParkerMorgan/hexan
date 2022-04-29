@@ -5,6 +5,9 @@ const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
 const MOUNTAIN = 0xF2F2F2;
+const HIDDEN = 0xE0D257;
+const CITY = 0xF53E3E;
+
 
 // borders see @Map.add_neighbors_to_nodes()
 const LEFT = 0;
@@ -19,24 +22,30 @@ let last_selected_node_cords = [-1, -1];
 export let all_nodes = [];
 
 export class Node{
-    constructor(x, y, type, line_borders) {
+    constructor(x, y, type, line_borders, is_hidden, city) {
         this.x = x;
         this.y = y;
         this.type = type;
         this.opacity = 1;
+        this.is_hidden = is_hidden;
+        this.city = city;
+
         this.neighbors = [];
         this.line_borders = [];
         this.line_borders_cords = line_borders;
         this.add_node_to_stage()
-        this.set_border(WATER, 5, 1 , this.line_borders_cords);
+        if(!this.is_hidden) this.set_border(WATER, 5, 1 , this.line_borders_cords);
     }
     add_node_to_stage(){
 
         this.hex = new Graphics();
 
-        this.hex.beginFill(this.type, this.opacity)
-            .drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6)
+        if(this.city != null) this.hex.beginFill(CITY, this.opacity);
+        else if(this.is_hidden) this.hex.beginFill(HIDDEN, this.opacity);
+        else if(this.city != null && this.is_hidden) this.hex.beginFill(this.type, this.opacity);
+        this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6)
             .endFill();
+
         this.hex.interactive = true;
 
         this.hex.on('pointerdown', (event) => { this.on_click() });
@@ -124,7 +133,7 @@ export class Node{
     update(){
         this.hex.clear();
         this.add_node_to_stage();
-        this.set_border(WATER, 5, 1 , this.line_borders_cords);
+        if(!this.is_hidden) this.set_border(WATER, 5, 1 , this.line_borders_cords);
 
 
     }

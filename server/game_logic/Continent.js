@@ -1,3 +1,5 @@
+const City = require("./City").City;
+
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
@@ -8,12 +10,24 @@ class Continent{
         this.name = name;
         this.map = map;
 
-        this.all_nodes = []
+        this.all_nodes = [];
 
-        this.grass_nodes = []
-        this.beach_nodes = []
-        this.mountain_nodes = []
+        this.grass_nodes = [];
+        this.has_player = false;
+
+        this.beach_nodes = [];
+        this.mountain_nodes = [];
     }
+    add_player_city(player){
+        if(!this.has_player){
+            const city_node = this.get_random_node_of_type(GRASS);
+            city_node.city = new City(player);
+            city_node.neighbors.forEach((node) => node.is_shown.push(player.token));
+
+            this.has_player = true;
+        }
+    }
+
     add_grass_node(node){
         node.type = GRASS;
 
