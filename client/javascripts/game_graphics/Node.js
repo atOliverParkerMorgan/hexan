@@ -42,7 +42,7 @@ export class Node{
 
         if(this.city != null) this.hex.beginFill(CITY, this.opacity);
         else if(this.is_hidden) this.hex.beginFill(HIDDEN, this.opacity);
-        else if(this.city != null && this.is_hidden) this.hex.beginFill(this.type, this.opacity);
+        else this.hex.beginFill(this.type, this.opacity);
         this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6)
             .endFill();
 
@@ -60,7 +60,7 @@ export class Node{
     }
 
     get_y_in_pixels(){
-       return  (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2
+       return  (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
     }
 
 
@@ -106,8 +106,6 @@ export class Node{
         }
     }
 
-
-
     on_click(){
        // this.set_type(GRASS);
     }
@@ -134,7 +132,5 @@ export class Node{
         this.hex.clear();
         this.add_node_to_stage();
         if(!this.is_hidden) this.set_border(WATER, 5, 1 , this.line_borders_cords);
-
-
     }
 }

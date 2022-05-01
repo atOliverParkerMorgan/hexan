@@ -17,8 +17,6 @@ const BOTTOM_RIGHT = 5;
 const HORIZONTAL = 0;
 const VERTICAL = 1;
 
-const CONTINENT_SIZE = 300;
-
 const CONTINENT_NAMES = ["Drolend", "Dritune", "Figith", "Esox", "Okea", "Owrai", "Aneoqeon", "Vliutufor", "Strineaces", "Uaqixesh"]
 
 
@@ -27,6 +25,8 @@ class Map{
         // number must be even for a symmetrical grid
         if(number_of_land_nodes ** .5 % 1 !== 0) console.log("Warning, the square root of number of nodes should be a whole number ");
         this.number_of_land_nodes = number_of_land_nodes;
+        this.continent_size = (number_of_land_nodes / number_of_continents);
+        this.continent_size /= this.random_int(2, 4);
         this.side_length = Math.floor(number_of_land_nodes ** .5);
 
         // cannot be bigger than the number of nodes
@@ -106,7 +106,7 @@ class Map{
                 random_y = this.random_int(0, this.side_length - 1);
             }while(this.all_nodes[random_y][random_x].type !== WATER);
 
-            this.generate_continent(random_x, random_y, CONTINENT_SIZE, this.shuffleArray(CONTINENT_NAMES).shift());
+            this.generate_continent(random_x, random_y, this.continent_size, this.shuffleArray(CONTINENT_NAMES).shift());
        }
         for(const continent of this.all_continents) {
             for (const node of continent.all_nodes) {
@@ -127,6 +127,7 @@ class Map{
         for (let i = 0; i < continent_size;) {
 
             let random_continent_node = current_continent.get_random_node_of_type(BEACH);
+            if(random_continent_node == null) continue;
             let random_neighbour_node = random_continent_node.get_random_neighbour_of_type(WATER);
 
             if(random_neighbour_node == null){
@@ -434,7 +435,7 @@ class Map{
         let data = [];
         for(let node_rows of this.all_nodes){
             for(let node of node_rows) {
-                const hidden = !player_token in node.is_shown;
+                const hidden = !(node.is_shown.includes(player_token));
 
                 data.push({
                      x: node.x, y: node.y,

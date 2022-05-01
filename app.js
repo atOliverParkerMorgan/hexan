@@ -53,7 +53,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'client')));
 app.use('/', indexRouter);
 app.use('/game', gameRouter);
-app.use('/users', usersRouter);
 
 // modules
 app.use('/pixi', express.static(__dirname + '/node_modules/pixi.js/dist/browser/'));
@@ -70,17 +69,19 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
+  console.error(err);
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {
+    message: err.message,
+    error: err
+  });
 });
-
 console.log("starting metal head")
 
 app.listen(PORT_HTTP);

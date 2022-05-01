@@ -37,7 +37,6 @@ router.post("/",(req,res, next) => {
     res.status(422).send();
   }
 
-
   player_token = generate_token(nick_name);
   all_players.push(new Player(player_token));
 
@@ -52,14 +51,13 @@ function generate_token(nick_name){
 }
 
 function create_or_assign_game(game_token, player_token){
-  let game = new Game(game_token);
+  let game = new Game(game_token, 2500, 1);
 
   let player;
   for(const p of all_players){
     if(p.token === player_token){
       player = p;
     }
-
   }
 
   game.place_start_city(player);
@@ -67,7 +65,6 @@ function create_or_assign_game(game_token, player_token){
   game.send_player_map(player_token);
 
   return game;
-
 }
 
 module.exports = router;
