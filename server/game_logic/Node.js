@@ -143,6 +143,7 @@ class Node{
         }
         return false;
     }
+
     could_be_mountain (){
         return this.type === GRASS || this.type === BEACH;
     }

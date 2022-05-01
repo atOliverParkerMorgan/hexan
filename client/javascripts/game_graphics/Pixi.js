@@ -34,19 +34,21 @@ function init_canvas(map, city_cords){
     const city_x = (city_cords[0] * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
     const city_y = (city_cords[1] * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
 
-    let v = new pixi_viewport.Viewport();
-    v.moveCenter(city_x, city_y);
-    viewport = app.stage.addChild(v);
+    viewport = app.stage.addChild(new pixi_viewport.Viewport());
 
     console.log(city_x);
     console.log(city_y);
 
     viewport
-        .moveCenter(city_x, city_x)
         .drag()
         .pinch()
         .decelerate()
-        .clamp({ top: - WORLD_HEIGHT / 2 - HEX_SIDE_SIZE, left: - WORLD_WIDTH / 2- HEX_SIDE_SIZE, right: WORLD_WIDTH / 2, bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE/2})
+        .moveCenter(0, 0)
+        .snap(city_x, city_y, {removeOnComplete: true})
+        .clamp({ top: - WORLD_HEIGHT / 2 - HEX_SIDE_SIZE, left: - WORLD_WIDTH / 2- HEX_SIDE_SIZE, right: WORLD_WIDTH / 2, bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE/2, underflow: "center"})
+
+
+
 
     app.stage.addChild(viewport);
     document.body.appendChild(app.view);

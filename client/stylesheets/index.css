@@ -31,10 +31,11 @@ body {
 
 .form__input {
     font-family: 'Roboto', sans-serif;
+
     color: #333;
     font-size: 1.2rem;
     margin: 0 auto;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 1.5rem;
     border-radius: 0.2rem;
     background-color: rgb(255, 255, 255);
     border: none;
@@ -42,6 +43,14 @@ body {
     display: block;
     border-bottom: 0.3rem solid transparent;
     transition: all 0.3s;
+}
+.title{
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 6px;
+    color: white;
+    font-size: 9.2rem;
+    margin: 0 auto;
+    padding-bottom: 64px;
 }
 
 .form__input:placeholder-shown + .form__label {
