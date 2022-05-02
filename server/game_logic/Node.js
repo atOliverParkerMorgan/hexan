@@ -57,7 +57,6 @@ class Node{
             index += direction_of_search;
         }
 
-
         return output_sides;
     }
 
@@ -119,6 +118,7 @@ class Node{
 
         return random_neighbour;
     }
+
     get_random_neighbour_of_type(type) {
         let water_neighbour_nodes = []
 
@@ -139,6 +139,19 @@ class Node{
                 if(node_neighbour.type === WATER){
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    is_river(){
+        if(this.borders.length !== 0){
+            return true;
+        }
+        for(const neighbor of this.neighbors){
+            if(neighbor == null) continue;
+            if(neighbor.borders.includes(this.get_neighbor_opposite_position(neighbor))){
+                return true;
             }
         }
         return false;

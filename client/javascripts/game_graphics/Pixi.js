@@ -45,7 +45,9 @@ function init_canvas(map, city_cords){
         .decelerate()
         .moveCenter(0, 0)
         .snap(city_x, city_y, {removeOnComplete: true})
-        .clamp({ top: - WORLD_HEIGHT / 2 - HEX_SIDE_SIZE, left: - WORLD_WIDTH / 2- HEX_SIDE_SIZE, right: WORLD_WIDTH / 2, bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE/2, underflow: "center"})
+        .clamp({ top: - WORLD_HEIGHT / 2 - HEX_SIDE_SIZE, left: - WORLD_WIDTH / 2 - HEX_SIDE_SIZE,
+                         right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE,
+                         bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2})
 
 
 

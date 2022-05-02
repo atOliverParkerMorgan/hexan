@@ -21,7 +21,7 @@ class Continent{
     }
     add_player_city(player){
         if(!this.has_player){
-            const city_node = this.get_random_node_of_type(GRASS);
+            const city_node = this.get_random_river_node();
 
             city_node.city = new City(player, city_node.x, city_node.y);
             all_cities.push(city_node.city);
@@ -70,6 +70,15 @@ class Continent{
     remove_mountain_node(node){
         this.mountain_nodes.splice(this.mountain_nodes.indexOf(node), 1);
         this.all_nodes.splice(this.mountain_nodes.indexOf(node), 1);
+    }
+
+    get_random_river_node(){
+        let all_river_nodes = [];
+        for(const node of this.all_nodes){
+            if(node.is_river()) all_river_nodes.push(node);
+        }
+
+        return all_river_nodes[this.random_int(0, all_river_nodes.length - 1)];
     }
 
     change_node_to(node, new_type){

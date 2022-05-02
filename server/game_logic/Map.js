@@ -115,7 +115,6 @@ class Map{
                 }
             }
         }
-
     }
 
     generate_continent(seed_x, seed_y, continent_size, continent_name) {
