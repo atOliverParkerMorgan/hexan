@@ -28,7 +28,10 @@ export class Node{
         this.type = type;
         this.opacity = 1;
         this.is_hidden = is_hidden;
+
+        // -1 if this node doesn't have a city
         this.city = city;
+        this.unit = null;
 
         this.neighbors = [];
         this.line_borders = [];
@@ -36,6 +39,11 @@ export class Node{
         this.add_node_to_stage()
         if(!this.is_hidden) this.set_border(WATER, 5, 1 , this.line_borders_cords);
     }
+
+    produce(){
+
+    }
+
     add_node_to_stage(){
 
         this.hex = new Graphics();
@@ -50,7 +58,6 @@ export class Node{
 
         this.hex.on('pointerdown', (event) => { this.on_click() });
         this.hex.on('mouseover', (event) => { this.set_select() });
-
         viewport.addChild(this.hex);
     }
 
@@ -131,6 +138,7 @@ export class Node{
     update(){
         this.hex.clear();
         this.add_node_to_stage();
+        if(this.unit != null) this.unit.add_unit_to_stage();
         if(!this.is_hidden) this.set_border(WATER, 5, 1 , this.line_borders_cords);
     }
 }

@@ -1,4 +1,4 @@
-const Map = require("./Map");
+const Map = require("./Map/Map");
 const City = require("./City");
 const http = require("http");
 const server = require("socket.io");
@@ -34,7 +34,9 @@ class Game{
         io.on("connection", (socket) => {
             // receive a message from the client
             socket.on(this.token, (...args) => {
-                console.log(args);
+                if(args[0][0].request === "production"){
+
+                }
             });
         });
         if(!is_listening) {
@@ -49,13 +51,10 @@ class Game{
             let city_cords = cities.length === 0 ? null:
                 [cities[this.current_city_index].x, cities[this.current_city_index].y];
 
-            console.log(city_cords);
-
             socket.emit(player_token, {
-                                       city_cords: city_cords,
-                                       map: this.map.format(player_token)
-                                       });
-
+                city_cords: city_cords,
+                map: this.map.format(player_token)
+            });
         });
     }
 

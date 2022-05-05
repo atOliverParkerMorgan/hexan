@@ -1,6 +1,7 @@
 import {Node} from "./Node.js";
 import {all_nodes} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
+import {Unit} from "./Unit/Unit.js";
 
 export let HEX_SIDE_SIZE;
 export let DISTANCE_BETWEEN_HEX;
@@ -21,6 +22,7 @@ console.log("Player: " + player_token);
 console.log("Game: " + game_token);
 
 function init_canvas(map, city_cords){
+
     HEX_SIDE_SIZE = map.length ** .5;
 
     DISTANCE_BETWEEN_HEX = 2 * (HEX_SIDE_SIZE ** 2 - (HEX_SIDE_SIZE/2) ** 2) ** .5;
@@ -49,13 +51,9 @@ function init_canvas(map, city_cords){
                          right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE,
                          bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2})
 
-
-
-
     app.stage.addChild(viewport);
     document.body.appendChild(app.view);
     app.ticker.add(delta=>loop(delta));
-
 }
 
 const client_socket = new ClientSocket(player_token, game_token);
@@ -79,9 +77,14 @@ client_socket.get_data((...args)=>{
             row = [];
             y = node.y;
         }
+        // init node => add nodes to PIXI stage
         row.push(new Node(node.x, node.y, node.type, node.borders, node.is_hidden, node.city));
     }
     all_nodes.push(row);
+
+    // add units
+    //let unit = new Unit(0, 0, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
+    all_nodes[2][2].unit = new Unit(2, 2, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
 });
 
 function loop(){

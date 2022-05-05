@@ -1,5 +1,5 @@
-const City = require("./City").City;
-let all_cities = require("./City").all_cities;
+const City = require("../City").City;
+let all_cities = require("../City").all_cities;
 
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
@@ -23,7 +23,9 @@ class Continent{
         if(!this.has_player){
             const city_node = this.get_random_river_node();
 
-            city_node.city = new City(player, city_node.x, city_node.y);
+            // create a new city for a player
+            city_node.city = new City(player, city_node.x, city_node.y, player.current_city_id);
+            player.current_city_id++;
             all_cities.push(city_node.city);
 
             this.has_player = true;

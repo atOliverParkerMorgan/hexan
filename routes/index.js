@@ -51,7 +51,7 @@ function generate_token(nick_name){
 }
 
 function create_or_assign_game(game_token, player_token){
-  let game = new Game(game_token, 2500, 1);
+  let game = new Game(game_token, 2500, 4);
 
   let player;
   for(const p of all_players){
