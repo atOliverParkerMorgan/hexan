@@ -3,7 +3,7 @@
   overflow:hidden;
 }
 :root {
-  --gutter: 20px;
+  --gutter: 5px;
 }
 
 .app {

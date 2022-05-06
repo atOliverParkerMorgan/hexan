@@ -1,5 +1,5 @@
 import {Graphics, viewport, HEX_SIDE_SIZE, DISTANCE_BETWEEN_HEX, WORLD_WIDTH, WORLD_HEIGHT} from "./Pixi.js";
-
+import {hide_bottom_menu, show_bottom_menu} from "../bottom_menu.js";
 // types of nodes displayed as colors
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
@@ -132,6 +132,11 @@ export class Node{
             last_selected_node_cords = [this.x, this.y];
             this.opacity = .5;
             this.update();
+
+            // show bottom menu
+            if(this.city != null) {
+                show_bottom_menu();
+            }
         }
     }
 
