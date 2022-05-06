@@ -5,7 +5,7 @@ class City{
         this.owner = owner;
         this.x = x;
         this.y = y;
-        this.name = "prague";
+        this.name = name;
         this.food_per_a_minute = 20;
         this.production_per_a_minute = 10;
         this.id = id;

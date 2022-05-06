@@ -1,5 +1,4 @@
 const Map = require("./Map/Map");
-const City = require("./City");
 const http = require("http");
 const server = require("socket.io");
 const {all_cities} = require("./City");

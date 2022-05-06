@@ -38,9 +38,6 @@ function init_canvas(map, city_cords){
 
     viewport = app.stage.addChild(new pixi_viewport.Viewport());
 
-    console.log(city_x);
-    console.log(city_y);
-
     viewport
         .drag()
         .pinch()

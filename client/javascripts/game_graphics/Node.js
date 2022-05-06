@@ -19,6 +19,7 @@ const BOTTOM_RIGHT = 5;
 
 
 let last_selected_node_cords = [-1, -1];
+let bottom_menu_shown = false;
 export let all_nodes = [];
 
 export class Node{
@@ -112,9 +113,17 @@ export class Node{
             }
         }
     }
-
     on_click(){
-       // this.set_type(GRASS);
+        // show bottom menu
+        if(this.city != null) {
+            bottom_menu_shown = !bottom_menu_shown;
+            if(bottom_menu_shown){
+                show_bottom_menu(this.city);
+            }else{
+                hide_bottom_menu();
+            }
+        }
+
     }
     set_type(type){
         this.type = type;
@@ -133,10 +142,6 @@ export class Node{
             this.opacity = .5;
             this.update();
 
-            // show bottom menu
-            if(this.city != null) {
-                show_bottom_menu();
-            }
         }
     }
 

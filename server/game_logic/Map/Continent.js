@@ -24,7 +24,7 @@ class Continent{
             const city_node = this.get_random_river_node();
 
             // create a new city for a player
-            city_node.city = new City(player, city_node.x, city_node.y, player.current_city_id);
+            city_node.city = new City(player, city_node.x, city_node.y, player.current_city_id, "Prague");
             player.current_city_id++;
             all_cities.push(city_node.city);
 
