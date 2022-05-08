@@ -25,7 +25,7 @@
 .hs {
   display: grid;
   grid-gap: calc(var(--gutter) / 2);
-  grid-template-columns: 10px repeat(6, calc(30% - var(--gutter) * 2)) 10px;
+  grid-template-columns: 10px repeat(6, calc(50% - var(--gutter) * 2)) 10px;
   grid-template-rows: minmax(100px, 1fr);
 
   overflow-x: scroll;

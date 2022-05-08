@@ -1,5 +1,4 @@
 const City = require("../City").City;
-let all_cities = require("../City").all_cities;
 
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
@@ -18,27 +17,6 @@ class Continent{
 
         this.beach_nodes = [];
         this.mountain_nodes = [];
-    }
-    add_player_city(player){
-        if(!this.has_player){
-            const city_node = this.get_random_river_node();
-
-            // create a new city for a player
-            city_node.city = new City(player, city_node.x, city_node.y, player.current_city_id, "Prague");
-            player.current_city_id++;
-            all_cities.push(city_node.city);
-
-            this.has_player = true;
-            city_node.neighbors.forEach((node) => this.make_neighbour_nodes_shown(player, node));
-        }
-    }
-
-    make_neighbour_nodes_shown(player, node){
-        node.is_shown.push(player.token);
-        for(const neighbor of node.neighbors){
-            if(neighbor == null || neighbor.is_shown.includes(player.token)) continue;
-            neighbor.is_shown.push(player.token);
-        }
     }
 
     add_grass_node(node){

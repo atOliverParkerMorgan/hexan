@@ -53,7 +53,7 @@ function init_canvas(map, city_cords){
     app.ticker.add(delta=>loop(delta));
 }
 
-const client_socket = new ClientSocket(player_token, game_token);
+export const client_socket = new ClientSocket(player_token, game_token);
 
 client_socket.send_data("blah")
 client_socket.get_data((...args)=>{

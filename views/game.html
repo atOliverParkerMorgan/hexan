@@ -13,29 +13,31 @@
 <script type="module" src="javascripts/game_graphics/Pixi.js"></script>
 <script type="module" src="javascripts/game_graphics/Unit/Unit.js"></script>
 <script type="module" src="javascripts/bottom_menu.js"></script>
-<script></script>
 <div class="w3-gray w3-container w3-bottom" id="bottom_menu" style="visibility: hidden">
     <div class="w3-row">
-        <div class="w3-col m3 l3 w3-card">
+        <div class="w3-col m4 l4 w3-card">
             <br><h2 id="city_name"></h2><br>
             <p>Food: <span id="food_per_a_minute"></span> / per a minute<br>
-               Population growth in: <span id="population_growth_in"></span> seconds<br>
+               Population growth in: <span id="population_growth_in">50</span> seconds<br>
                Production: <span id="production_per_a_minute"></span> / per a minute
+               <span id="city_id" style="visibility: hidden"></span>
             </p>
         </div>
 
-        <div class="w3-col m9 l9 w3-left">
+        <div class="w3-col m8 l8 w3-left">
                 <ul class="hs">
-                    <li class="item"><div class="w3-container"><img src="/images/helmet.png" style="width: 40%; margin-top: 10%; float:left">
-                        <div style="padding-left: 25px; padding-top: 15px">
-                            <h3>Knight</h3>
-                            <p>
-                                production: 50<br>
-                                attack: 10<br>
-                                health: 100<br>
-                                movement: 2
-                            </p>
-                        </div>
+                    <li class="item" id="warrior">
+                        <div class="w3-container">
+                            <img src="/images/helmet.png" style="width: 40%; margin-top: 10%; float:left">
+                            <div style="padding-left: 25px; padding-top: 15px">
+                                <h3>Knight</h3>
+                                <p>
+                                    production: 50<br>
+                                    attack: 10<br>
+                                    health: 100<br>
+                                    movement: 2
+                                </p>
+                            </div>
                     </div></li>
                 </ul>
         </div>

@@ -1,5 +1,3 @@
-let all_cities = []
-
 class City{
     constructor(owner, x, y, id, name){
         this.owner = owner;
@@ -12,17 +10,17 @@ class City{
         this.is_producing = false;
     }
 
-    start_production(){
+    start_production(production_time){
         if(!this.is_producing){
-            setTimeout(this.produce(), 5000);
+            this.is_producing = true
+            setTimeout(this.produce, production_time);
         }
     }
+
     produce(){
-
+        this.owner.units.add(new Unit(this.owner, this.x, this.y));
+        this.is_producing = false;
     }
-
-
 }
 
 module.exports.City = City;
-module.exports.all_cities = all_cities;

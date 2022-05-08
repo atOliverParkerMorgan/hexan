@@ -363,7 +363,6 @@ class Map{
         }
     }
 
-
     // get the shortest path between two nodes
     a_star(start_node, goal_node){
         let open_set = [start_node];
@@ -446,7 +445,6 @@ class Map{
             }
         }
         return data;
-
     }
 
     // range: <min; max>
@@ -464,7 +462,6 @@ class Map{
             array[i] = array[j];
             array[j] = temp;
         }
-
         return array;
     }
 
@@ -473,6 +470,14 @@ class Map{
             if(continent.name === name) return continent;
         }
         return null;
+    }
+
+    make_neighbour_nodes_shown(player, node){
+        node.is_shown.push(player.token);
+        for(const neighbor of node.neighbors){
+            if(neighbor == null || neighbor.is_shown.includes(player.token)) continue;
+            neighbor.is_shown.push(player.token);
+        }
     }
 
 }
