@@ -17,14 +17,13 @@ function show_city_data(city){
     document.getElementById("city_name").innerText = city.name;
     document.getElementById("food_per_a_minute").innerText = city.food_per_a_minute;
     document.getElementById("production_per_a_minute").innerText = city.production_per_a_minute;
-    document.getElementById("city_id").innerText = city.id;
 }
 
 function request_production(){
     client_socket.send_data({
         request_type: KNIGHT,
         token: localStorage.player_token,
-        city_id: document.getElementById("city_id").textContent
+        city_name: document.getElementById("city_name").textContent
     })
 }
 

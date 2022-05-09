@@ -1,6 +1,4 @@
 const express = require('express');
-const http = require("http");
-const server = require("socket.io");
 const now = require('nano-time');
 const {createHash} = require('crypto');
 
@@ -10,6 +8,9 @@ const Player = player_exports.Player;
 const game_exports = require("../server/game_logic/Game");
 const Game = game_exports.Game;
 const all_games = game_exports.all_games;
+
+const socket = require("../server/socket.js");
+socket.init();
 
 let player_token;
 let game_token;
@@ -47,7 +48,7 @@ router.post("/",(req,res, next) => {
   all_games.push(game);
 
   game.place_start_city(current_player);
-  game.connect_player();
+  socket.receive_data(game);
   game.send_player_map(current_player);
 
 

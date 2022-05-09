@@ -1,11 +1,6 @@
 const Map = require("./Map/Map");
-const http = require("http");
-const server = require("socket.io");
-const {all_cities, City} = require("./City");
-const httpServer = http.createServer();
-const io = server(httpServer);
-
-const PORT_SOCKET = 8082;
+const {City} = require("./City");
+const socket = require("../socket");
 
 const KNIGHT = 0;
 const ARCHER = 1;
@@ -33,34 +28,15 @@ class Game{
         }
     }
 
-    connect_player(){
-        io.on("connection", (socket) => {
-            // receive a message from the client
-            socket.on(this.token, (...args) => {
-                const request_data = args[0];
-                if(request_data.request_type === KNIGHT){
-                    let player = this.get_player(request_data.token);
-                    if(player == null) return;
-
-                }
-            });
-        });
-        if(!is_listening) {
-            httpServer.listen(PORT_SOCKET);
-            is_listening = true;
-        }
-    }
-
     send_player_map(player){
-        io.on("connection", (socket) => {
-            let cities = this.get_cities_that_player_owns(player);
-            let city_cords = cities.length === 0 ? null:
-                [cities[this.current_city_index].x, cities[this.current_city_index].y];
+        let cities = this.get_cities_that_player_owns(player);
+        let city_cords = cities.length === 0 ? null:
+            [cities[this.current_city_index].x, cities[this.current_city_index].y];
 
-            socket.emit(player.token, {
-                city_cords: city_cords,
-                map: this.map.format(player.token)
-            });
+        socket.send_data(player, {
+            response_type: "MAP",
+            city_cords: city_cords,
+            map: this.map.format(player.token)
         });
     }
     get_player(token){
@@ -81,11 +57,17 @@ class Game{
         }
         return cities;
     }
+    get_city(city_name, city_owner){
+        for (const city of this.all_cities) {
+            if(city.name === city_name && city.owner.token === city_owner.token){
+                return city;
+            }
+        }
+    }
 
     add_city(player, city_node){
         // create a new city for a player
-        city_node.city = new City(player, city_node.x, city_node.y, player.current_city_id, "Prague");
-        player.current_city_id++;
+        city_node.city = new City(player, city_node.x, city_node.y, "Prague");
         this.all_cities.push(city_node.city);
         city_node.neighbors.forEach((node) => this.map.make_neighbour_nodes_shown(player, node));
     }
