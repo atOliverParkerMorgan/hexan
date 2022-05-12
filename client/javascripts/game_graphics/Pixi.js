@@ -21,7 +21,8 @@ const game_token = localStorage.game_token;
 console.log("Player: " + player_token);
 console.log("Game: " + game_token);
 
-function init_canvas(map, city_cords){
+
+function init_canvas(map, cities){
 
     HEX_SIDE_SIZE = map.length ** .5;
 
@@ -30,11 +31,12 @@ function init_canvas(map, city_cords){
     WORLD_HEIGHT = HEX_SIDE_SIZE * 1.5 * HEX_SIDE_SIZE;
 
     document.body.appendChild(app.view);
+    let starting_city = cities[0];
 
-    let row_bias = city_cords[1] % 2 === 0 ? DISTANCE_BETWEEN_HEX/2 : 0;
+    let row_bias = starting_city.y % 2 === 0 ? DISTANCE_BETWEEN_HEX/2 : 0;
 
-    const city_x = (city_cords[0] * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
-    const city_y = (city_cords[1] * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
+    const city_x = (starting_city.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
+    const city_y = (starting_city.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
 
     viewport = app.stage.addChild(new pixi_viewport.Viewport());
 
@@ -54,13 +56,10 @@ function init_canvas(map, city_cords){
 }
 const process_data = (...args)=>{
     const response_data = args[0][0];
-
-    const city_cords = response_data.city_cords;
     const map = response_data.map;
-    console.log(city_cords);
-    console.log(map);
+    const cities = response_data.cities;
 
-    init_canvas(map, city_cords);
+    init_canvas(map, cities);
 
     // adding nodes from linear array to 2d array
     let y = 0;
