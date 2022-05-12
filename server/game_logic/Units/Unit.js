@@ -5,3 +5,5 @@ class Unit {
         this.y = y;
     }
 }
+
+module.exports.Unit = Unit;

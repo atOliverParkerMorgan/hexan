@@ -1,4 +1,4 @@
-import {client_socket} from "/javascripts/game_graphics/Pixi.js";
+import {ClientSocket} from "./ClientSocket.js";
 const KNIGHT = 0;
 
 
@@ -20,9 +20,10 @@ function show_city_data(city){
 }
 
 function request_production(){
-    client_socket.send_data({
+    ClientSocket.send_data({
         request_type: KNIGHT,
-        token: localStorage.player_token,
+        player_token: localStorage.player_token,
+        game_token: localStorage.game_token,
         city_name: document.getElementById("city_name").textContent
     })
 }

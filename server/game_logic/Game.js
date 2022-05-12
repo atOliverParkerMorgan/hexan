@@ -1,13 +1,5 @@
 const Map = require("./Map/Map");
 const {City} = require("./City");
-const socket = require("../socket");
-
-const KNIGHT = 0;
-const ARCHER = 1;
-
-let all_games = [];
-
-let is_listening = false;
 
 class Game{
     constructor(token, number_of_land_nodes, number_of_continents) {
@@ -28,17 +20,6 @@ class Game{
         }
     }
 
-    send_player_map(player){
-        let cities = this.get_cities_that_player_owns(player);
-        let city_cords = cities.length === 0 ? null:
-            [cities[this.current_city_index].x, cities[this.current_city_index].y];
-
-        socket.send_data(player, {
-            response_type: "MAP",
-            city_cords: city_cords,
-            map: this.map.format(player.token)
-        });
-    }
     get_player(token){
         for (const player of this.all_players) {
             if(player.token === token){
@@ -71,7 +52,14 @@ class Game{
         this.all_cities.push(city_node.city);
         city_node.neighbors.forEach((node) => this.map.make_neighbour_nodes_shown(player, node));
     }
+
+    get_data(player){
+        return {
+            map: this.map.format(player.token),
+            cities: this.get_cities_that_player_owns(player),
+            units: this.get_player(player.token).units
+        }
+    }
 }
 
 module.exports.Game = Game;
-module.exports.all_games = all_games;

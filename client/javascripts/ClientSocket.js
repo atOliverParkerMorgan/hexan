@@ -1,27 +1,29 @@
-export class ClientSocket{
-    constructor(player_token, game_token){
-        this.game_token = game_token;
-        this.player_token = player_token;
-        this.socket = io("ws://127.0.0.1:8082",  { transports : ['websocket'] });
-    }
+// singleton
+export const ClientSocket = {
+    socket: io("ws://127.0.0.1:8082", {transports: ['websocket']}),
 
-    send_data(data){
-        this.socket.emit(this.game_token, data);
-    }
+    send_data: (data)=>{
+        ClientSocket.socket.emit("send-data", data);
+    },
 
-    get_data(fun){
-        this.socket.on(this.player_token, (...args) => {
+    add_data_listener: (fun, player_token)=>{
+        ClientSocket.socket.on(player_token, (...args) => {
+            console.log(args[0]);
             fun(args);
         });
+    },
 
-    }
-
-    set_token(){
-
-    }
-
-
-
+    get_data(request, game_token, player_token) {
+        ClientSocket.socket.emit("get-data", {
+            request: request,
+            game_token: game_token,
+            player_token: player_token
 
 
+        })
+    },
+
+    set_token() {
+
+    },
 }

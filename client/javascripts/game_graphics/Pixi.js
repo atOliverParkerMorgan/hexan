@@ -52,13 +52,11 @@ function init_canvas(map, city_cords){
     document.body.appendChild(app.view);
     app.ticker.add(delta=>loop(delta));
 }
+const process_data = (...args)=>{
+    const response_data = args[0][0];
 
-export const client_socket = new ClientSocket(player_token, game_token);
-
-client_socket.send_data("blah")
-client_socket.get_data((...args)=>{
-    const city_cords = args[0][0].city_cords;
-    const map = args[0][0].map;
+    const city_cords = response_data.city_cords;
+    const map = response_data.map;
     console.log(city_cords);
     console.log(map);
 
@@ -82,7 +80,11 @@ client_socket.get_data((...args)=>{
     // add units
     //let unit = new Unit(0, 0, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
     all_nodes[2][2].unit = new Unit(2, 2, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
-});
+};
+
+ClientSocket.add_data_listener(process_data, player_token)
+ClientSocket.send_data("blah")
+ClientSocket.get_data("map", game_token, player_token)
 
 function loop(){
 

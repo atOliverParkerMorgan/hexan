@@ -1,4 +1,4 @@
-const send_data = require("../socket").send_data;
+const send_data = require("../ServerSocket").send_data;
 
 class City{
     constructor(owner, x, y, name){
@@ -14,16 +14,17 @@ class City{
     start_production(production_time){
         if(!this.is_producing){
             this.is_producing = true
-            setTimeout(this.produce, production_time);
+            this.produce(this);
+            // setTimeout(this.produce.bind(null, this), production_time);
         }
     }
 
-    produce(){
-        this.owner.units.add(new Unit(this.owner, this.x, this.y));
-        this.is_producing = false;
-        send_data(this.owner, {
+    produce(city){
+        city.owner.add_unit(city.x, city.y);
+        city.is_producing = false;
+        send_data(city.owner, {
             response_type: "UNITS",
-            units: this.owner.units,
+            units: city.owner.units,
         })
     }
 }

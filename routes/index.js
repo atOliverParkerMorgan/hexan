@@ -7,22 +7,16 @@ const Player = player_exports.Player;
 
 const game_exports = require("../server/game_logic/Game");
 const Game = game_exports.Game;
-const all_games = game_exports.all_games;
 
-const socket = require("../server/socket.js");
-socket.init();
+const ServerSocket = require("../server/ServerSocket.js").ServerSocket;
+ServerSocket.init();
+
 
 let player_token;
 let game_token;
 
 const router = express.Router();
 
-function is_token_valid(token){
-    for(const player of all_players){
-      if(player.token === token) return true;
-    }
-    return false;
-}
 
 
 /* GET home page. */
@@ -45,12 +39,12 @@ router.post("/",(req,res, next) => {
   
   game.all_players.push(current_player);
 
-  all_games.push(game);
+  ServerSocket.all_games.push(game);
 
   game.place_start_city(current_player);
-  socket.receive_data(game);
-  game.send_player_map(current_player);
 
+  ServerSocket.add_request_listener();
+  ServerSocket.add_response_listener();
 
   res.status(200).send(JSON.stringify({player_token: player_token, game_token: game_token}));
 });
