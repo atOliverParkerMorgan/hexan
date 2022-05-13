@@ -1,6 +1,5 @@
 class Unit {
-    constructor(player, x, y){
-        this.player = player;
+    constructor(x, y){
         this.x = x;
         this.y = y;
     }

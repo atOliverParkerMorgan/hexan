@@ -9,6 +9,8 @@ export let WORLD_WIDTH;
 export let WORLD_HEIGHT;
 export let viewport;
 
+export let all_units = [];
+
 export const app = new PIXI.Application({resizeTo: window, transparent: true,  autoresize: true })
 export const Graphics = PIXI.Graphics;
 
@@ -54,27 +56,42 @@ function init_canvas(map, cities){
     document.body.appendChild(app.view);
     app.ticker.add(delta=>loop(delta));
 }
+
 const process_data = (...args)=>{
-    const response_data = args[0][0];
-    const map = response_data.map;
-    const cities = response_data.cities;
+    const response_type = args[0][0].response_type;
+    const response_data = args[0][0].data;
+    switch (response_type) {
+        case ClientSocket.response_types.UNITS_RESPONSE:
 
-    init_canvas(map, cities);
+            all_units = [];
+            for(const unit of response_data.units){
+                const graphics_unit = new Unit(unit.x, unit.y, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
+                all_units.push(graphics_unit);
+                all_nodes[unit.y][unit.x].unit = graphics_unit;
+            }
+            break;
+        case ClientSocket.response_types.ALL_RESPONSE:
+            const map = response_data.map;
+            const cities = response_data.cities;
 
-    // adding nodes from linear array to 2d array
-    let y = 0;
-    let row = [];
-    for (let node of map) {
+            init_canvas(map, cities);
 
-        if(node.y!==y){
-            all_nodes.push(row)
-            row = [];
-            y = node.y;
-        }
-        // init node => add nodes to PIXI stage
-        row.push(new Node(node.x, node.y, node.type, node.borders, node.is_hidden, node.city));
+            // adding nodes from linear array to 2d array
+            let y = 0;
+            let row = [];
+            for (let node of map) {
+
+                if (node.y !== y) {
+                    all_nodes.push(row)
+                    row = [];
+                    y = node.y;
+                }
+                // init node => add nodes to PIXI stage
+                row.push(new Node(node.x, node.y, node.type, node.borders, node.is_hidden, node.city));
+            }
+            all_nodes.push(row);
+            break;
     }
-    all_nodes.push(row);
 
     // add units
     //let unit = new Unit(0, 0, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");

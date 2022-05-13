@@ -1,5 +1,17 @@
 // singleton
 export const ClientSocket = {
+
+    response_types: {
+        MAP_RESPONSE: "MAP_RESPONSE",
+        UNITS_RESPONSE: "UNITS_RESPONSE",
+        ALL_RESPONSE: "ALL_RESPONSE"
+    },
+    request_types: {
+        GET_MAP: "GET_MAP",
+        GET_UNITS: "GET_UNITS",
+        GET_ALL: "GET_ALL",
+        PRODUCE_UNIT: "PRODUCE_UNIT",
+    },
     socket: io("ws://127.0.0.1:8082", {transports: ['websocket']}),
 
     send_data: (data)=>{
@@ -13,11 +25,13 @@ export const ClientSocket = {
         });
     },
 
-    get_data(request, game_token, player_token) {
+    get_data(request_type, game_token, player_token) {
         ClientSocket.socket.emit("get-data", {
-            request: request,
-            game_token: game_token,
-            player_token: player_token
+            request_type: request_type,
+            data: {
+                game_token: game_token,
+                player_token: player_token
+            }
 
 
         })

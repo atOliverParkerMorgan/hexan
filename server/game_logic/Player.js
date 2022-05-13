@@ -7,7 +7,7 @@ class Player{
         this.units = [];
     }
     add_unit(x, y){
-        this.units.push(new Unit(this, x, y));
+        this.units.push(new Unit(x, y));
     }
 
 }

@@ -1,6 +1,4 @@
 import {ClientSocket} from "./ClientSocket.js";
-const KNIGHT = 0;
-
 
 let bottom_menu = document.getElementById("bottom_menu");
 
@@ -19,13 +17,21 @@ function show_city_data(city){
     document.getElementById("production_per_a_minute").innerText = city.production_per_a_minute;
 }
 
-function request_production(){
+function request_production(unit_type, time){
+
     ClientSocket.send_data({
-        request_type: KNIGHT,
-        player_token: localStorage.player_token,
-        game_token: localStorage.game_token,
-        city_name: document.getElementById("city_name").textContent
+        request_type: ClientSocket.request_types.PRODUCE_UNIT,
+        data: {
+            unit_type: unit_type,
+            player_token: localStorage.player_token,
+            game_token: localStorage.game_token,
+            city_name: document.getElementById("city_name").textContent
+        }
     })
+    setTimeout(()=>{
+       // ClientSocket.get_data(ClientSocket.request_types.GET_UNITS, localStorage.game_token, localStorage.player_token);
+    }, time);
 }
 
-document.getElementById("warrior").addEventListener("click", request_production);
+
+document.getElementById("warrior").addEventListener("click", ()=>{request_production("UNITS", 5000)});

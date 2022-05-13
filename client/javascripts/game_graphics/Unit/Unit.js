@@ -12,8 +12,8 @@ export class Unit {
         this.texture_path = texture_path;
 
         this.add_unit_to_stage();
-
     }
+
 
     add_unit_to_stage(){
         // if(this.sprite != null)
