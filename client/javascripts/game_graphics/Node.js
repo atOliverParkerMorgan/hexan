@@ -19,6 +19,7 @@ const BOTTOM_RIGHT = 5;
 
 
 let last_selected_node_cords = [-1, -1];
+let selected_node_with_units = null;
 let bottom_menu_shown = false;
 export let all_nodes = [];
 
@@ -32,7 +33,7 @@ export class Node{
 
         // -1 if this node doesn't have a city
         this.city = city;
-        this.unit = null;
+        this.units = [];
 
         this.neighbors = [];
         this.line_borders = [];
@@ -115,6 +116,20 @@ export class Node{
     }
     on_click(){
         // show bottom menu
+        if(this.units.length > 0){
+            if(selected_node_with_units == null) {
+                selected_node_with_units = last_selected_node_cords;
+            }else{
+                let node_to = all_nodes[last_selected_node_cords[1]][last_selected_node_cords[0]];
+                let node_from = all_nodes[selected_node_with_units[1]][selected_node_with_units[0]];
+                //
+                // selected_node_with_units = null;
+                //
+                // node_to.units = node_from.units;
+                // node_to.update();
+                // node_from.update();
+            }
+        }
         if(this.city != null) {
             bottom_menu_shown = !bottom_menu_shown;
             if(bottom_menu_shown){
@@ -125,6 +140,7 @@ export class Node{
         }
 
     }
+
     set_type(type){
         this.type = type;
         this.update();
@@ -148,7 +164,10 @@ export class Node{
     update(){
         this.hex.clear();
         this.add_node_to_stage();
-        if(this.unit != null) this.unit.add_unit_to_stage();
+        for(const unit of this.units){
+            unit.add_unit_to_stage();
+        }
+
         if(!this.is_hidden) this.set_border(WATER, 5, 1 , this.line_borders_cords);
     }
 }

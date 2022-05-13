@@ -67,7 +67,7 @@ const process_data = (...args)=>{
             for(const unit of response_data.units){
                 const graphics_unit = new Unit(unit.x, unit.y, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
                 all_units.push(graphics_unit);
-                all_nodes[unit.y][unit.x].unit = graphics_unit;
+                all_nodes[unit.y][unit.x].units.push(graphics_unit);
             }
             break;
         case ClientSocket.response_types.ALL_RESPONSE:
@@ -95,11 +95,10 @@ const process_data = (...args)=>{
 
     // add units
     //let unit = new Unit(0, 0, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
-    all_nodes[2][2].unit = new Unit(2, 2, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
+    all_nodes[2][2].units.push(new Unit(2, 2, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png"));
 };
 
 ClientSocket.add_data_listener(process_data, player_token)
-ClientSocket.send_data("blah")
 ClientSocket.get_data("map", game_token, player_token)
 
 function loop(){

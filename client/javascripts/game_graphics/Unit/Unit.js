@@ -3,8 +3,8 @@ import {DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH
 export class Unit {
     constructor(x, y, width, height, texture_path) {
         //this.player = player;
-        this.width = width;
-        this.height = height;
+        this.width = 10;
+        this.height = 12;
 
         this.x = this.get_x_in_pixels(x, y);
         this.y = this.get_y_in_pixels(y);
@@ -17,6 +17,7 @@ export class Unit {
 
     add_unit_to_stage(){
         // if(this.sprite != null)
+        console.log("unit add to stage");
 
         this.sprite = new PIXI.Sprite.from(this.texture_path);
 

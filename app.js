@@ -84,7 +84,3 @@ app.use(function (err, req, res, next) {
 console.log("starting metal head")
 
 app.listen(PORT_HTTP);
-
-const main = require('./server/game_logic/Main.js');
-//main();
-
