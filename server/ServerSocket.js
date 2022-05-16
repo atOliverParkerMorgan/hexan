@@ -85,7 +85,7 @@ const ServerSocket = {
                         if (player != null) {
                             const city = game.get_city(request_data.city_name, player);
                             if (city != null) {
-                                city.start_production(5000, socket);
+                                city.start_production(1000, socket);
                             }
                         }
                     }

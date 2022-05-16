@@ -16,8 +16,9 @@ export class Unit {
 
 
     add_unit_to_stage(){
-        // if(this.sprite != null)
-        console.log("unit add to stage");
+        if(this.sprite != null){
+            viewport.removeChild(this.sprite);
+        }
 
         this.sprite = new PIXI.Sprite.from(this.texture_path);
 
@@ -55,5 +56,12 @@ export class Unit {
 
     set y_cord(y){
         this.y = y;
+    }
+
+    move_to(from_node, to_node){
+        to_node.units = from_node.units;
+        from_node.units = [];
+        this.x = this.get_x_in_pixels(to_node.x, to_node.y);
+        this.y = this.get_y_in_pixels(to_node.y);
     }
 }

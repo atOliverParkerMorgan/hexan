@@ -11,6 +11,7 @@ export const ClientSocket = {
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         PRODUCE_UNIT: "PRODUCE_UNIT",
+        MOVE_UNITS: "MOVE_UNITS",
     },
     socket: io("ws://127.0.0.1:8082", {transports: ['websocket']}),
 
