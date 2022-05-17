@@ -13,33 +13,69 @@
 <script type="module" src="javascripts/game_graphics/Pixi.js"></script>
 <script type="module" src="javascripts/game_graphics/Unit/Unit.js"></script>
 <script type="module" src="javascripts/bottom_menu.js"></script>
-<div class="w3-gray w3-container w3-bottom" id="bottom_menu" style="visibility: hidden">
+
+<div class="w3-blue-grey" id="bottom_menu" style="visibility: hidden; position: absolute; bottom: 0; width: 30%; height: auto">
     <div class="w3-row">
         <div class="w3-col m4 l4 w3-card">
-            <br><h2 id="city_name"></h2><br>
-            <p>Food: <span id="food_per_a_minute"></span> / per a minute<br>
-               Population growth in: <span id="population_growth_in">50</span> seconds<br>
-               Production: <span id="production_per_a_minute"></span> / per a minute
-               <span id="city_id" style="visibility: hidden"></span>
+            <p>Food: <span id="food_per_a_minute"></span> <br>
+               Wood: <span id="population_growth_in">50</span> <br>
+               Gold: <span id="production_per_a_minute"></span> <br>
             </p>
         </div>
 
-        <div class="w3-col m8 l8 w3-left">
-                <ul class="hs">
-                    <li class="item" id="warrior">
-                        <div class="w3-container">
-                            <img src="/images/helmet.png" style="width: 40%; margin-top: 10%; float:left">
-                            <div style="padding-left: 25px; padding-top: 15px">
-                                <h3>Knight</h3>
-                                <p>
-                                    production: 50<br>
-                                    attack: 10<br>
-                                    health: 100<br>
-                                    movement: 2
-                                </p>
-                            </div>
-                    </div></li>
-                </ul>
+        <div class="w3-rest w3-card" style="padding-left: 0px" >
+            <div class="w3-row w3-grey" id="production_menu">
+                <div class="w3-col m6 l6">
+                    <h2 class="w3-center" id="city_name">Prague</h2>
+                    <h3 id="city_population"></h3>
+                    <span id="city_id" style="visibility: hidden"></span>
+                </div>
+            </div>
+
+            <div class="w3-row" id="warrior">
+                <div class="w3-col" style="width:60px">
+                    <div class="w3-center w3-border">
+                        <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
+                    </div>
+                </div>
+                <div class="w3-col w3-border" style="width:60px">
+                    <div class="w3-col" style="width:60px">
+                        <div class="w3-center w3-border">
+                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
+                        </div>
+                    </div>
+                </div>
+                <div class="w3-col w3-border" style="width:60px">
+                    <div class="w3-col" style="width:60px">
+                        <div class="w3-center w3-border">
+                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-row">
+                <div class="w3-col" style="width:60px">
+                    <div class="w3-col" style="width:60px">
+                        <div class="w3-center w3-border">
+                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
+                        </div>
+                    </div>
+                </div>
+                <div class="w3-col" style="width:60px">
+                    <div class="w3-col" style="width:60px">
+                        <div class="w3-center w3-border">
+                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
+                        </div>
+                    </div>
+                </div>
+                <div class="w3-col" style="width:60px">
+                    <div class="w3-col" style="width:60px">
+                        <div class="w3-center w3-border">
+                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

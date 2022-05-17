@@ -12,9 +12,9 @@ export function hide_bottom_menu(){
     console.log("here");
 }
 function show_city_data(city){
-    document.getElementById("city_name").innerText = city.name;
-    document.getElementById("food_per_a_minute").innerText = city.food_per_a_minute;
-    document.getElementById("production_per_a_minute").innerText = city.production_per_a_minute;
+   // document.getElementById("city_name").innerText = city.name;
+   // document.getElementById("food_per_a_minute").innerText = city.food_per_a_minute;
+  //  document.getElementById("production_per_a_minute").innerText = city.production_per_a_minute;
 }
 
 function request_production(unit_type, time){
