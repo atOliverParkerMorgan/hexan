@@ -9,7 +9,6 @@ class Player{
     add_unit(x, y){
         this.units.push(new Unit(x, y));
     }
-
 }
 
 module.exports.Player = Player;

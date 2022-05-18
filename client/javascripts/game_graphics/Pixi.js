@@ -87,7 +87,7 @@ const process_data = (...args)=>{
                     y = node.y;
                 }
                 // init node => add nodes to PIXI stage
-                row.push(new Node(node.x, node.y, node.type, node.borders, node.is_hidden, node.city));
+                row.push(new Node(node.x, node.y, node.type, node.borders, false, node.city));
             }
             all_nodes.push(row);
             break;

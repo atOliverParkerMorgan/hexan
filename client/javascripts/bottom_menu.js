@@ -17,8 +17,7 @@ function show_city_data(city){
   //  document.getElementById("production_per_a_minute").innerText = city.production_per_a_minute;
 }
 
-function request_production(unit_type, time){
-
+function request_production(unit_type){
     ClientSocket.send_data({
         request_type: ClientSocket.request_types.PRODUCE_UNIT,
         data: {
@@ -28,10 +27,6 @@ function request_production(unit_type, time){
             city_name: document.getElementById("city_name").textContent
         }
     })
-    setTimeout(()=>{
-       // ClientSocket.get_data(ClientSocket.request_types.GET_UNITS, localStorage.game_token, localStorage.player_token);
-    }, time);
 }
 
-
-document.getElementById("warrior").addEventListener("click", ()=>{request_production("UNITS", 5000)});
+document.getElementById("warrior").addEventListener("click", ()=>{request_production("UNITS")});

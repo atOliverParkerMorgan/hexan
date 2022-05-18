@@ -1,5 +1,6 @@
 import {Graphics, viewport, HEX_SIDE_SIZE, DISTANCE_BETWEEN_HEX, WORLD_WIDTH, WORLD_HEIGHT} from "./Pixi.js";
 import {hide_bottom_menu, show_bottom_menu} from "../bottom_menu.js";
+import {ClientSocket} from "../ClientSocket";
 // types of nodes displayed as colors
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
@@ -118,24 +119,21 @@ export class Node{
     }
     on_click(){
         // show bottom menu
+        if(selected_node.units.length > 0){
+            let to_node = last_hovered_node;
+            let node_from = selected_node;
+
+            ClientSocket.send_data({
+                game_token: localStorage.game_token,
+                player_token: localStorage.player_token,
+                units: selected_node.units,
+                node_from: node_from,
+                to_node: to_node
+            });
+        }
 
 
         last_hovered_node.set_selected();
-
-
-        // unit movement
-       // if(selected_node != null){
-       //      let to_node = last_hovered_node;
-       //      let node_from = selected_node;
-       //
-       //      for (const unit of node_from.units) {
-       //          unit.move_to(node_from, to_node);
-       //      }
-       //
-       //      to_node.update();
-       //      node_from.update();
-       //
-       //  }
 
         if(this.city != null) {
             bottom_menu_shown = !bottom_menu_shown;

@@ -20,6 +20,7 @@ const ServerSocket = {
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         PRODUCE_UNIT: "PRODUCE_UNIT",
+        MOVE_UNIT: "MOVE_UNIT"
     },
 
     init:()=> {
@@ -60,6 +61,8 @@ const ServerSocket = {
                                     },
                                 });
                                 break;
+                            case ServerSocket.request_types.MOVE_UNIT:
+
                             default:
                                 socket.emit(player.token, {
                                     response_type: ServerSocket.response_types.ALL_RESPONSE,
