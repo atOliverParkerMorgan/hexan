@@ -15,14 +15,14 @@ class City{
         if(!this.is_producing){
             this.is_producing = true
             
-            setTimeout(()=> this.produce(socket), production_time);
+            setTimeout(()=> this.produce_and_send_response(socket), production_time);
         }
     }
 
-    produce(socket){
+    produce_and_send_response(socket){
         this.owner.add_unit(this.x, this.y);
         this.is_producing = false;
-        console.log(socket)
+
         ServerSocket.send_data(socket,
              ServerSocket.response_types.UNITS_RESPONSE,
             {units: this.owner.units},

@@ -1,6 +1,6 @@
-import {Graphics, viewport, HEX_SIDE_SIZE, DISTANCE_BETWEEN_HEX, WORLD_WIDTH, WORLD_HEIGHT} from "./Pixi.js";
+import {DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "./Pixi.js";
 import {hide_bottom_menu, show_bottom_menu} from "../bottom_menu.js";
-import {ClientSocket} from "../ClientSocket";
+import {ClientSocket} from "../ClientSocket.js";
 // types of nodes displayed as colors
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
@@ -26,9 +26,10 @@ let bottom_menu_shown = false;
 export let all_nodes = [];
 
 export class Node{
-    constructor(x, y, type, line_borders, is_hidden, city) {
+    constructor(x, y, id, type, line_borders, is_hidden, city) {
         this.x = x;
         this.y = y;
+        this.id = id;
         this.type = type;
         this.opacity = 1;
         this.is_hidden = is_hidden;
@@ -120,15 +121,11 @@ export class Node{
     on_click(){
         // show bottom menu
         if(selected_node.units.length > 0){
-            let to_node = last_hovered_node;
-            let node_from = selected_node;
-
             ClientSocket.send_data({
                 game_token: localStorage.game_token,
                 player_token: localStorage.player_token,
                 units: selected_node.units,
-                node_from: node_from,
-                to_node: to_node
+                to_node: last_hovered_node
             });
         }
 

@@ -13,7 +13,9 @@ const ServerSocket = {
     response_types: {
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
-        ALL_RESPONSE: "ALL_RESPONSE"
+        ALL_RESPONSE: "ALL_RESPONSE",
+        INVALID_MOVE: "INVALID_MOVE",
+        UNIT_MOVED: "UNIT_MOVED"
     },
     request_types: {
         GET_MAP: "GET_MAP",
@@ -62,6 +64,11 @@ const ServerSocket = {
                                 });
                                 break;
                             case ServerSocket.request_types.MOVE_UNIT:
+                                for(const unit of request_data.units){
+                                    player.get_unit(unit.id).move_and_send_response(request_data.to_node, game,
+                                                                                    player.token, socket);
+                                }
+                                break;
 
                             default:
                                 socket.emit(player.token, {

@@ -87,7 +87,7 @@ const process_data = (...args)=>{
                     y = node.y;
                 }
                 // init node => add nodes to PIXI stage
-                row.push(new Node(node.x, node.y, node.type, node.borders, false, node.city));
+                row.push(new Node(node.x, node.y, node.id, node.type, node.borders, false, node.city));
             }
             all_nodes.push(row);
             break;
@@ -95,7 +95,7 @@ const process_data = (...args)=>{
 
     // add units
     //let unit = new Unit(0, 0, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
-    all_nodes[2][2].units.push(new Unit(2, 2, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png"));
+    // all_nodes[2][2].units.push(new Unit(2, 2, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png"));
 };
 
 ClientSocket.add_data_listener(process_data, player_token)
