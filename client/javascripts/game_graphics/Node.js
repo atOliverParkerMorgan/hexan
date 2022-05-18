@@ -172,7 +172,6 @@ export class Node{
 
         // adding an outline to the node that is currently selected
         for (let i = 0, direction_bias = 1; i < 2 ; i++, direction_bias = -1) {
-            console.log(direction_bias);
             selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
             selected_line.lineStyle(thickness, color)
                 .moveTo(0, direction_bias * (- HEX_SIDE_SIZE + thickness / 2))
