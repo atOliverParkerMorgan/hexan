@@ -23,6 +23,7 @@ let last_hovered_node = null;
 let selected_node = null;
 let selected_line;
 let bottom_menu_shown = false;
+let already_selected = false;
 export let all_nodes = [];
 
 export class Node{
@@ -120,26 +121,35 @@ export class Node{
     }
     on_click(){
         // show bottom menu
-        if(selected_node.units.length > 0){
-            ClientSocket.send_data({
-                game_token: localStorage.game_token,
-                player_token: localStorage.player_token,
-                units: selected_node.units,
-                to_node: last_hovered_node
-            });
+        already_selected = this === selected_node && !already_selected;
+        if(!already_selected) last_hovered_node.set_selected()
+
+        if(this.city != null && !already_selected) {
+            bottom_menu_shown = !bottom_menu_shown;
+            show_bottom_menu(this.city);
+        }else{
+            hide_bottom_menu();
         }
 
+       // unit movement
+        if(selected_node != null) {
+            if(selected_node.units.length > 0) {
+                let to_node = last_hovered_node;
+                let node_from = selected_node;
+                ClientSocket.get_data(ClientSocket.request_types.MOVE_UNITS, {
+                    game_token: localStorage.game_token,
+                    player_token: localStorage.player_token,
 
-        last_hovered_node.set_selected();
+                    units: this.units,
 
-        if(this.city != null) {
-            bottom_menu_shown = !bottom_menu_shown;
-            if(bottom_menu_shown){
-                show_bottom_menu(this.city);
-            }else{
-                hide_bottom_menu();
+                    to_node: to_node,
+                })
+
+                to_node.update();
+                node_from.update();
             }
         }
+
 
     }
 
