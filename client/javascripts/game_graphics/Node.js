@@ -76,6 +76,14 @@ export class Node{
        return  (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
     }
 
+    get_unit_ids(){
+        let all_unit_data = []
+        for (const unit of this.units) {
+           all_unit_data.push(unit.id);
+        }
+        return all_unit_data;
+    }
+
 
     set_border(color, thickness, opacity, borders){
         this.line_borders.forEach(line => line.clear())
@@ -122,24 +130,20 @@ export class Node{
     on_click(){
        // unit movement
         if(selected_node != null) {
-            if(selected_node !== this) {
+            if(selected_node !== this && selected_node.units.length > 0) {
                 let to_node = last_hovered_node;
                 let node_from = selected_node;
-                console.log("here2");
-                console.log(selected_node.units);
-                console.log(to_node);
-                console.log("yes")
+
                 ClientSocket.send_data({
                     request_type: ClientSocket.request_types.MOVE_UNITS,
                     data: {
                         game_token: localStorage.game_token,
                         player_token: localStorage.player_token,
-                        units: selected_node.units,
+                        unit_ids: selected_node.get_unit_ids(),
                         to_x: to_node.x,
                         to_y: to_node.y,
                     }
                 })
-                console.log("here2");
 
                 to_node.update();
                 node_from.update();

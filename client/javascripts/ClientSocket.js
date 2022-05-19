@@ -4,7 +4,8 @@ export const ClientSocket = {
     response_types: {
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
-        ALL_RESPONSE: "ALL_RESPONSE"
+        ALL_RESPONSE: "ALL_RESPONSE",
+        UNIT_MOVED: "UNIT_MOVED"
     },
     request_types: {
         GET_MAP: "GET_MAP",

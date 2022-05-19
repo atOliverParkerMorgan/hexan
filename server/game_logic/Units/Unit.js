@@ -13,21 +13,21 @@ class Unit {
         const from_node = game.map.all_nodes[this.y][this.x];
         const to_node = game.map.all_nodes[to_y][to_x];
         console.log("DIST: "+from_node.get_distance_to_node(to_node));
-        if(from_node.get_distance_to_node(to_node) <= this.movement){
+        if(true){//if(from_node.get_distance_to_node(to_node) <= this.movement){
             const path = game.map.a_star(from_node, to_node);
             for (const node of path) {
                 console.log("here");
                 setTimeout(() => {
                     this.move(node.x, node.y);
-                    socket.send_data(socket,
+                    ServerSocket.send_data(socket,
                         {
                          response_type: ServerSocket.response_types.UNIT_MOVED,
-                         data: {unit: this}
+                         data: {unit: {x: this.x, y: this.y, id: this.id}}
                         }, player_token)
                 }, this.speed);
             }
         }else{
-            socket.send_data(socket,
+            ServerSocket.send_data(socket,
                 {
                 response_type: ServerSocket.response_types.INVALID_MOVE,
                 data: {unit: this}

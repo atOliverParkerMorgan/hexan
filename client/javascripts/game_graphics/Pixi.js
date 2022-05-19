@@ -65,11 +65,12 @@ const process_data = (...args)=>{
 
             all_units = [];
             for(const unit of response_data.units){
-                const graphics_unit = new Unit(unit.x, unit.y, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
+                const graphics_unit = new Unit(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
                 all_units.push(graphics_unit);
                 all_nodes[unit.y][unit.x].units.push(graphics_unit);
             }
             break;
+
         case ClientSocket.response_types.ALL_RESPONSE:
             const map = response_data.map;
             const cities = response_data.cities;
@@ -90,6 +91,25 @@ const process_data = (...args)=>{
                 row.push(new Node(node.x, node.y, node.id, node.type, node.borders, false, node.city));
             }
             all_nodes.push(row);
+            break;
+        case ClientSocket.response_types.UNIT_MOVED:
+            let found = false;
+
+            for (const unit of all_units) {
+                if(unit.id === response_data.unit.id){
+                    found = true;
+                    unit.move_to(response_data.unit.x, response_data.unit.y);
+                }
+            }
+
+            if(!found){
+                console.error("Error, something has gone wrong with the sever client communication")
+                break;
+            }
+
+
+
+
             break;
     }
 

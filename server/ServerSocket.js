@@ -55,6 +55,8 @@ const ServerSocket = {
                     const player = game.get_player(request_data.player_token);
                     console.log(player);
                     if (player != null){
+
+                        // switch for different responses
                         switch (request_type){
                             case ServerSocket.request_types.GET_UNITS:
                                 socket.emit(player.token, {
@@ -88,6 +90,7 @@ const ServerSocket = {
                 if (game != null) {
                     const player = game.get_player(request_data.player_token);
                     if (player != null) {
+                        // switch for different request types
                         switch (request_type){
                             case ServerSocket.request_types.PRODUCE_UNIT:
                                 const city = game.get_city(request_data.city_name, player);
@@ -95,12 +98,14 @@ const ServerSocket = {
                                     city.start_production(1000, socket);
                                 }
                                 break;
+
                             case ServerSocket.request_types.MOVE_UNIT:
                                 console.log("MOVE_UNIT")
                                 console.log(request_data.units)
-                                for(const unit of request_data.units){
-                                    player.get_unit(unit.id).
-                                    move_and_send_response(request_data.to_x, request_data.to_y, game, player.token, socket);
+                                for(const id of request_data.unit_ids){
+                                    const unit = player.get_unit(id)
+                                    if(unit == null) continue;
+                                    unit.move_and_send_response(request_data.to_x, request_data.to_y, game, player.token, socket);
                                 }
                                 break;
 
