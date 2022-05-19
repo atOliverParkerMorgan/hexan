@@ -23,9 +23,12 @@ class City{
         this.owner.add_unit(this.x, this.y);
         this.is_producing = false;
 
-        ServerSocket.send_data(socket,
-             ServerSocket.response_types.UNITS_RESPONSE,
-            {units: this.owner.units},
+        ServerSocket.send_data(socket, {
+                response_type: ServerSocket.response_types.UNITS_RESPONSE,
+                data: {
+                    units: this.owner.units
+                }
+            },
             this.owner.token);
     }
 }

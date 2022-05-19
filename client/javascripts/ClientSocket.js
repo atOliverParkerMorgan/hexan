@@ -11,7 +11,7 @@ export const ClientSocket = {
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         PRODUCE_UNIT: "PRODUCE_UNIT",
-        MOVE_UNITS: "MOVE_UNITS",
+        MOVE_UNITS: "MOVE_UNIT",
     },
     socket: io("ws://127.0.0.1:8082", {transports: ['websocket']}),
 
@@ -21,7 +21,7 @@ export const ClientSocket = {
 
     add_data_listener: (fun, player_token)=>{
         ClientSocket.socket.on(player_token, (...args) => {
-            console.log(args[0]);
+            console.log("RESPONSE: "+args[0]);
             fun(args);
         });
     },
@@ -33,8 +33,6 @@ export const ClientSocket = {
                 game_token: game_token,
                 player_token: player_token
             }
-
-
         })
     },
 

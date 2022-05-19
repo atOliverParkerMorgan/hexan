@@ -41,6 +41,7 @@ const ServerSocket = {
         }
     },
 
+    // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
     add_response_listener: () => {
         io.on("connection", (socket) => {
             socket.on("get-data", (...args) => {
@@ -63,12 +64,6 @@ const ServerSocket = {
                                     },
                                 });
                                 break;
-                            case ServerSocket.request_types.MOVE_UNIT:
-                                for(const unit of request_data.units){
-                                    player.get_unit(unit.id).move_and_send_response(request_data.to_node, game,
-                                                                                    player.token, socket);
-                                }
-                                break;
 
                             default:
                                 socket.emit(player.token, {
@@ -82,21 +77,33 @@ const ServerSocket = {
         });
     },
 
+    // acts as a setter - changes game_state according to clients request and game rules.
     add_request_listener: ()=> {
         io.on("connection", (socket) => {
             // receive a message from the client
             socket.on("send-data", (...args) => {
                 const request_type = args[0].request_type;
                 const request_data = args[0].data;
-                if (request_type === ServerSocket.request_types.PRODUCE_UNIT) {
-                    const game = ServerSocket.get_game(request_data.game_token);
-                    if (game != null) {
-                        const player = game.get_player(request_data.player_token);
-                        if (player != null) {
-                            const city = game.get_city(request_data.city_name, player);
-                            if (city != null) {
-                                city.start_production(1000, socket);
-                            }
+                const game = ServerSocket.get_game(request_data.game_token);
+                if (game != null) {
+                    const player = game.get_player(request_data.player_token);
+                    if (player != null) {
+                        switch (request_type){
+                            case ServerSocket.request_types.PRODUCE_UNIT:
+                                const city = game.get_city(request_data.city_name, player);
+                                if (city != null) {
+                                    city.start_production(1000, socket);
+                                }
+                                break;
+                            case ServerSocket.request_types.MOVE_UNIT:
+                                console.log("MOVE_UNIT")
+                                console.log(request_data.units)
+                                for(const unit of request_data.units){
+                                    player.get_unit(unit.id).
+                                    move_and_send_response(request_data.to_x, request_data.to_y, game, player.token, socket);
+                                }
+                                break;
+
                         }
                     }
                 }
@@ -104,8 +111,8 @@ const ServerSocket = {
         });
     },
 
-    send_data(socket, response_type, data, player_token){
-        socket.emit(player_token, {response_type, data});
+    send_data(socket, data, player_token){
+        socket.emit(player_token, data);
     }
 }
 

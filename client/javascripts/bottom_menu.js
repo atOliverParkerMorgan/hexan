@@ -5,11 +5,9 @@ let bottom_menu = document.getElementById("bottom_menu");
 export function show_bottom_menu(city){
     show_city_data(city);
     bottom_menu.style.visibility = "visible";
-    console.log("here");
 }
 export function hide_bottom_menu(){
     bottom_menu.style.visibility = "hidden";
-    console.log("here");
 }
 function show_city_data(city){
    // document.getElementById("city_name").innerText = city.name;

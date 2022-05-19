@@ -120,6 +120,32 @@ export class Node{
         }
     }
     on_click(){
+       // unit movement
+        if(selected_node != null) {
+            if(selected_node !== this) {
+                let to_node = last_hovered_node;
+                let node_from = selected_node;
+                console.log("here2");
+                console.log(selected_node.units);
+                console.log(to_node);
+                console.log("yes")
+                ClientSocket.send_data({
+                    request_type: ClientSocket.request_types.MOVE_UNITS,
+                    data: {
+                        game_token: localStorage.game_token,
+                        player_token: localStorage.player_token,
+                        units: selected_node.units,
+                        to_x: to_node.x,
+                        to_y: to_node.y,
+                    }
+                })
+                console.log("here2");
+
+                to_node.update();
+                node_from.update();
+            }
+        }
+
         // show bottom menu
         already_selected = this === selected_node && !already_selected;
         if(!already_selected) last_hovered_node.set_selected()
@@ -131,24 +157,6 @@ export class Node{
             hide_bottom_menu();
         }
 
-       // unit movement
-        if(selected_node != null) {
-            if(selected_node.units.length > 0) {
-                let to_node = last_hovered_node;
-                let node_from = selected_node;
-                ClientSocket.get_data(ClientSocket.request_types.MOVE_UNITS, {
-                    game_token: localStorage.game_token,
-                    player_token: localStorage.player_token,
-
-                    units: this.units,
-
-                    to_node: to_node,
-                })
-
-                to_node.update();
-                node_from.update();
-            }
-        }
 
 
     }
