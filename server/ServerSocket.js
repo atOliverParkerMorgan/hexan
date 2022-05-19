@@ -100,8 +100,8 @@ const ServerSocket = {
                                 break;
 
                             case ServerSocket.request_types.MOVE_UNIT:
-                                console.log("MOVE_UNIT")
-                                console.log(request_data.units)
+                                // console.log("MOVE_UNIT")
+                                // console.log(request_data.units)
                                 for(const id of request_data.unit_ids){
                                     const unit = player.get_unit(id)
                                     if(unit == null) continue;

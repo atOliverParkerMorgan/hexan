@@ -22,7 +22,7 @@ class Unit {
                     ServerSocket.send_data(socket,
                         {
                          response_type: ServerSocket.response_types.UNIT_MOVED,
-                         data: {unit: {x: this.x, y: this.y, id: this.id}}
+                         data: {unit: this.get_data()}
                         }, player_token)
                 }, this.speed);
             }
@@ -38,6 +38,13 @@ class Unit {
     move(x, y){
         this.x = x;
         this.y = y;
+    }
+    get_data(){
+        return{
+            id: this.id,
+            x: this.x,
+            y: this.y,
+        }
     }
 
 

@@ -15,6 +15,16 @@ class Player{
             if(unit.id === id) return unit;
         }
     }
+    // used to send simplified unit data structure threw socket.io
+    get_unit_data(){
+        let unit_data = [];
+        for(const unit of this.units){
+            unit_data.push(unit.get_data());
+        }
+
+        return unit_data;
+
+    }
 }
 
 module.exports.Player = Player;

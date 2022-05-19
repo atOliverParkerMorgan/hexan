@@ -169,6 +169,13 @@ export class Node{
         this.type = type;
         this.update();
     }
+    remove_selected(){
+        if(selected_line!=null){
+            viewport.removeChild(selected_line);
+        }
+        selected_node = null;
+        this.update()
+    }
 
     set_selected(){
         if(selected_line!=null){
@@ -205,21 +212,24 @@ export class Node{
     }
 
     set_hovered(){
-
         function set_last_node_hovered(this_node){
             last_hovered_node = this_node;
             this_node.opacity = .5;
             this_node.update();
         }
 
+        // restores last node to original value
         if(last_hovered_node != null) {
             if(last_hovered_node.x !== this.x || last_hovered_node.y!== this.y) {
                 last_hovered_node.opacity = 1;
                 last_hovered_node.update();
 
+                // sets new node (this node) to hovered
                 set_last_node_hovered(this);
             }
-        }else{
+        }
+        // initial hover - no previous node
+        else{
             set_last_node_hovered(this);
         }
     }

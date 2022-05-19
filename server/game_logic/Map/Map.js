@@ -473,6 +473,9 @@ class Map{
     }
 
     make_neighbour_nodes_shown(player, node){
+
+        if(node == null) return;
+
         node.is_shown.push(player.token);
         for(const neighbor of node.neighbors){
             if(neighbor == null || neighbor.is_shown.includes(player.token)) continue;

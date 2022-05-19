@@ -88,13 +88,16 @@ const process_data = (...args)=>{
                     y = node.y;
                 }
                 // init node => add nodes to PIXI stage
-                row.push(new Node(node.x, node.y, node.id, node.type, node.borders, false, node.city));
+                row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.is_hidden, node.city));
             }
             all_nodes.push(row);
             break;
+
+        // deal with sever UNIT_MOVED response
         case ClientSocket.response_types.UNIT_MOVED:
             let found = false;
 
+            // find the unit in question
             for (const unit of all_units) {
                 if(unit.id === response_data.unit.id){
                     found = true;
@@ -102,12 +105,11 @@ const process_data = (...args)=>{
                 }
             }
 
+            // if not found something went wrong
             if(!found){
                 console.error("Error, something has gone wrong with the sever client communication")
                 break;
             }
-
-
 
 
             break;

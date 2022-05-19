@@ -57,7 +57,7 @@ class Game{
         return {
             map: this.map.format(player.token),
             cities: this.get_cities_that_player_owns(player),
-            units: this.get_player(player.token).units
+            units: this.get_player(player.token).get_unit_data()
         }
     }
 }

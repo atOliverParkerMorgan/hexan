@@ -1,4 +1,5 @@
 import {DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.js"
+import {all_nodes} from "../Node.js";
 
 export class Unit {
     constructor(x, y, id, width, height, texture_path) {
@@ -55,7 +56,18 @@ export class Unit {
     }
 
     move_to(x, y){
+        const old_node = all_nodes[this.y][this.x];
+        old_node.units.splice(old_node.units.indexOf(this));
+
+        const new_node = all_nodes[y][x];
+        new_node.units.push(this);
+
         this.x = x;
         this.y = y;
+
+        // redraw sprite
+        new_node.remove_selected();
+        this.add_unit_to_stage();
+
     }
 }
