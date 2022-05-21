@@ -183,7 +183,20 @@ class Node{
             case WATER: return "WATER";
         }
         return "NOT FOUND";
+    }
 
+    // simplify node for socket.emit()
+    get_data(player_token){
+        const hidden = !(this.is_shown.includes(player_token));
+
+       return {
+           x: this.x,
+           y: this.y,
+           type: this.type,
+           borders: this.borders,
+           is_hidden: hidden,
+           city: this.city
+       }
     }
 
 }

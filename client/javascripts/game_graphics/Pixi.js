@@ -104,6 +104,10 @@ const process_data = (...args)=>{
                     unit.move_to(response_data.unit.x, response_data.unit.y);
                 }
             }
+            for(const node of response_data.nodes){
+                all_nodes[node.y][node.x].is_hidden = !node.is_hidden
+                all_nodes[node.y][node.x].update();
+            }
 
             // if not found something went wrong
             if(!found){

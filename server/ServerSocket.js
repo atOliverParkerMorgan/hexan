@@ -105,7 +105,7 @@ const ServerSocket = {
                                 for(const id of request_data.unit_ids){
                                     const unit = player.get_unit(id)
                                     if(unit == null) continue;
-                                    unit.move_and_send_response(request_data.to_x, request_data.to_y, game, player.token, socket);
+                                    unit.move_and_send_response(request_data.to_x, request_data.to_y, game, player, socket);
                                 }
                                 break;
 

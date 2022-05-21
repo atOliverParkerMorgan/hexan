@@ -433,15 +433,7 @@ class Map{
         let data = [];
         for(let node_rows of this.all_nodes){
             for(let node of node_rows) {
-                const hidden = !(node.is_shown.includes(player_token));
-
-                data.push({
-                     x: node.x, y: node.y,
-                     type: node.type,
-                     borders: node.borders,
-                     is_hidden: hidden,
-                     city: node.city
-                });
+               data.push(node.get_data(player_token));
             }
         }
         return data;
