@@ -31,7 +31,7 @@ const selected_thickness = 5;
 let movement_hint_lines = [];
 const movement_hint_color = 0xFFAC1C;
 const movement_hint_opacity = 1;
-const movement_hint_thickness = 5;
+const movement_hint_thickness = 3;
 
 let bottom_menu_shown = false;
 let already_selected = false;
@@ -228,6 +228,13 @@ export class Node{
     }
 
     set_selected(){
+
+        // clear all hint lines
+        for(const movement_hint_line of movement_hint_lines){
+            movement_hint_line.clear();
+        }
+        movement_hint_lines = [];
+
         if(selected_line!=null){
             viewport.removeChild(selected_line);
         }
@@ -285,16 +292,18 @@ export class Node{
 
                         const path = a_star(selected_node, last_hovered_node);
 
-                        let last_node = last_hovered_node;
-                        for (let i = 0; i < 1 ; i++) {
+                        let last_node = selected_node;
+                        for (let i = 1; i < path.length ; i++) {
                             let movement_hint_line = new Graphics();
                             viewport.addChild(movement_hint_line);
-                            console.log(last_node.get_x_in_pixels()+" "+last_node.get_y_in_pixels());
+                            console.log("Last node "+last_node.get_x_in_pixels()+" "+last_node.get_y_in_pixels());
+                            console.log("PATH[i] "+path[i].get_x_in_pixels()+" "+path[i].get_y_in_pixels())
                             movement_hint_line.position.set(last_node.get_x_in_pixels(), last_node.get_y_in_pixels());
 
                             movement_hint_line.lineStyle(movement_hint_thickness, movement_hint_color)
                                 .moveTo(0, 0)
-                                .lineTo(path[i].get_x_in_pixels(), path[i].get_y_in_pixels());
+                                .lineTo(path[i].get_x_in_pixels() - last_node.get_x_in_pixels(),
+                                    path[i].get_y_in_pixels() - last_node.get_y_in_pixels());
                             movement_hint_lines.push(movement_hint_line);
 
 
