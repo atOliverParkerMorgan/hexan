@@ -167,9 +167,20 @@ class Node{
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+
     get_distance_to_node(node) {
-        return Math.sqrt((node.x - this.x) ** 2 + (node.y - this.y) ** 2);
+        return Math.sqrt((node.get_x_in_units() - this.get_x_in_units()) ** 2 + (node.get_y_in_units() - this.get_y_in_units()) ** 2);
     }
+
+    get_x_in_units(){
+        let row_bias = this.y % 2 === 0 ? 1/2 : 0;
+        return (this.x + row_bias);
+    }
+
+    get_y_in_units(){
+        return  (this.y * 1.5);
+    }
+
     get_heuristic_value(){
         if (this.type === WATER) return  this.distance_from_start + this.distance_to_goal + 100;
         if(this.type === MOUNTAIN) return this.distance_from_start + this.distance_to_goal + MOUNTAIN_TRAVEL_BIAS;

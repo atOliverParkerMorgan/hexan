@@ -24,6 +24,64 @@ console.log("Player: " + player_token);
 console.log("Game: " + game_token);
 
 
+export function a_star(start_node, goal_node){
+    let open_set = [start_node];
+    let closed_set = []
+    let distance_from_start_to_goal = start_node.get_distance_to_node(goal_node);
+
+    // resetting node values
+    start_node.distance_from_start = 0;
+    start_node.distance_to_goal = start_node.get_distance_to_node(goal_node);
+
+    while (open_set.length > 0){
+        let current_node = open_set[0];
+        let current_index = 0;
+
+        for(let i = 0; i < open_set.length; i++){
+            if(open_set[i].get_heuristic_value() < current_node.get_heuristic_value()){
+                current_node = open_set[i];
+                current_index = i;
+            }
+        }
+
+        open_set.splice(current_index, 1);
+        closed_set.push(current_node);
+
+        if(current_node.x === goal_node.x && current_node.y === goal_node.y){
+            let solution_path = [current_node];
+            while (solution_path[solution_path.length - 1] !== start_node){
+                solution_path.push(solution_path[solution_path.length - 1].parent);
+            }
+            return solution_path.reverse();
+        }
+
+        for(const node of current_node.get_neighbours()) {
+
+            if (closed_set.includes(node) || node == null) {
+                continue;
+            }
+
+            let current_score = node.distance_from_start + current_node.get_distance_to_node(node);
+            let is_better = false;
+
+            if (!open_set.includes(node)) {
+                open_set.push(node);
+                is_better = true;
+            }
+            else if (current_score < node.distance_from_start) {
+                is_better = true;
+            }
+
+            if (is_better){
+                node.parent = current_node;
+                node.distance_from_start = current_score;
+                node.distance_to_goal = node.get_distance_to_node(goal_node);
+            }
+        }
+    }
+    return null;
+}
+
 function init_canvas(map, cities){
 
     HEX_SIDE_SIZE = map.length ** .5;
