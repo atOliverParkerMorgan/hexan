@@ -26,7 +26,7 @@ let selected_node = null;
 let selected_line;
 const selected_color = 0xFFAC1C;
 const selected_opacity = 1;
-const selected_thickness = 5;
+const selected_thickness = 4;
 
 let movement_hint_lines = [];
 const movement_hint_color = 0xFFAC1C;
@@ -79,7 +79,7 @@ export class Node{
         for(const cord of cords){
             const x = (parseInt(this.x) + cord[0]);
             const y = (parseInt(this.y) + cord[1]);
-            if(x>=0 && y >= 0 && x < all_nodes.length && y < all_nodes.length){
+            if(x >= 0 && y >= 0 && x < all_nodes.length && y < all_nodes.length){
                 neighbours.push(all_nodes[y][x]);
             }else{
                 neighbours.push(undefined);
@@ -133,7 +133,6 @@ export class Node{
         return all_unit_data;
     }
 
-
     set_border(color, thickness, opacity, borders){
         this.line_borders.forEach(line => line.clear())
         this.line_borders = [];
@@ -176,6 +175,7 @@ export class Node{
             }
         }
     }
+
     on_click(){
        // unit movement
         if(selected_node != null) {
@@ -293,17 +293,28 @@ export class Node{
                         const path = a_star(selected_node, last_hovered_node);
 
                         let last_node = selected_node;
+
                         for (let i = 1; i < path.length ; i++) {
                             let movement_hint_line = new Graphics();
                             viewport.addChild(movement_hint_line);
-                            console.log("Last node "+last_node.get_x_in_pixels()+" "+last_node.get_y_in_pixels());
-                            console.log("PATH[i] "+path[i].get_x_in_pixels()+" "+path[i].get_y_in_pixels())
-                            movement_hint_line.position.set(last_node.get_x_in_pixels(), last_node.get_y_in_pixels());
 
-                            movement_hint_line.lineStyle(movement_hint_thickness, movement_hint_color)
-                                .moveTo(0, 0)
-                                .lineTo(path[i].get_x_in_pixels() - last_node.get_x_in_pixels(),
-                                    path[i].get_y_in_pixels() - last_node.get_y_in_pixels());
+                            const last_x = last_node.get_x_in_pixels();
+                            const last_y = last_node.get_y_in_pixels();
+                            const current_x = path[i].get_x_in_pixels();
+                            const current_y = path[i].get_y_in_pixels();
+
+                            if(i===1) {
+                                movement_hint_line.position.set((last_x + current_x) / 2, (last_y + current_y) / 2);
+                                movement_hint_line.lineStyle(movement_hint_thickness, movement_hint_color)
+                                    .moveTo(0, 0)
+                                    .lineTo((current_x - last_x) / 2, (current_y - last_y) / 2);
+                            }else{
+                                movement_hint_line.position.set(last_x, last_y);
+                                movement_hint_line.lineStyle(movement_hint_thickness, movement_hint_color)
+                                    .moveTo(0, 0)
+                                    .lineTo(current_x - last_x, current_y - last_y);
+                            }
+
                             movement_hint_lines.push(movement_hint_line);
 
 
