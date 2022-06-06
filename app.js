@@ -81,6 +81,6 @@ app.use(function (err, req, res, next) {
     error: err
   });
 });
-console.log("starting metal head")
+console.log("starting hexan")
 
 app.listen(PORT_HTTP);

@@ -24,6 +24,7 @@ console.log("Player: " + player_token);
 console.log("Game: " + game_token);
 
 
+// get the shortest path between two nodes
 export function a_star(start_node, goal_node){
     let open_set = [start_node];
     let closed_set = []

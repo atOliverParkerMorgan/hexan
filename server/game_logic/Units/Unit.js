@@ -15,7 +15,7 @@ class Unit {
 
         // apply Math.floor to account for hex grid
         if(to_node.type !== WATER){
-            this.move_along_path(game, player, socket, game.map.a_star(from_node, to_node));
+            this.move_along_path(game, player, socket, game.map.a_star(from_node, to_node, player));
 
         }else{
             ServerSocket.send_data(socket,

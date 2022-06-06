@@ -1,4 +1,9 @@
 // @TODO get rid of duplicate
+
+const HEX_SIDE_SIZE = 25000 ** .5;
+const DISTANCE_BETWEEN_HEX = 2 * (HEX_SIDE_SIZE ** 2 - (HEX_SIDE_SIZE/2) ** 2) ** .5;
+const WORLD_WIDTH = DISTANCE_BETWEEN_HEX * HEX_SIDE_SIZE;
+const WORLD_HEIGHT = HEX_SIDE_SIZE * 1.5 * HEX_SIDE_SIZE;
 const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
@@ -169,7 +174,16 @@ class Node{
     }
 
     get_distance_to_node(node) {
-        return Math.sqrt((node.get_x_in_units() - this.get_x_in_units()) ** 2 + (node.get_y_in_units() - this.get_y_in_units()) ** 2);
+        return Math.sqrt((node.get_x_in_pixels() - this.get_x_in_pixels()) ** 2 + (node.get_y_in_pixels() - this.get_y_in_pixels()) ** 2);
+    }
+
+    get_x_in_pixels(){
+        let row_bias = this.y % 2 === 0 ? DISTANCE_BETWEEN_HEX/2 : 0;
+        return (this.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
+    }
+
+    get_y_in_pixels(){
+        return  (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
     }
 
     get_x_in_units(){
@@ -181,7 +195,10 @@ class Node{
         return  (this.y * 1.5);
     }
 
-    get_heuristic_value(){
+    get_heuristic_value(player){
+        if(player != null){
+            if (this.is_shown.includes(player.token)) return this.distance_from_start + this.distance_to_goal;
+        }
         if (this.type === WATER) return  this.distance_from_start + this.distance_to_goal + 100;
         if(this.type === MOUNTAIN) return this.distance_from_start + this.distance_to_goal + MOUNTAIN_TRAVEL_BIAS;
         return this.distance_from_start + this.distance_to_goal;

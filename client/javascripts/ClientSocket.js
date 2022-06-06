@@ -22,7 +22,7 @@ export const ClientSocket = {
 
     add_data_listener: (fun, player_token)=>{
         ClientSocket.socket.on(player_token, (...args) => {
-            console.log("RESPONSE: "+args[0]);
+            console.log("RESPONSE: "+args[0].response_type);
             fun(args);
         });
     },

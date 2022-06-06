@@ -70,9 +70,9 @@ export class Node{
 
         let cords;
         if(this.y % 2 === 0){
-           cords = [[1, 0], [-1, 0], [0, -1], [1, -1], [0, 1], [1, 1]];
+           cords = [[-1, 0], [1, 0], [0, -1], [1, -1], [0, 1], [1, 1]];
         }else {
-           cords = [[1, 0], [-1, 0], [-1, -1], [0, -1], [-1, 1], [0, 1]];
+           cords = [[-1, 0], [1, 0], [-1, -1], [0, -1], [-1, 1], [0, 1]];
         }
 
         let neighbours = [];
@@ -90,6 +90,7 @@ export class Node{
     }
 
     get_heuristic_value(){
+        if (this.is_hidden) return this.distance_from_start + this.distance_to_goal;
         if (this.type === WATER) return  this.distance_from_start + this.distance_to_goal + 100;
         if(this.type === MOUNTAIN) return this.distance_from_start + this.distance_to_goal + MOUNTAIN_TRAVEL_BIAS;
         return this.distance_from_start + this.distance_to_goal;

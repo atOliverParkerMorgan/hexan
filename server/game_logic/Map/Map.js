@@ -298,7 +298,7 @@ class Map{
         let random_mountain_node = continent.get_random_node_of_type(MOUNTAIN);
         let random_beach_node = continent.get_random_node_of_type(BEACH);
         let last_direction;
-        let river_path = this.a_star(random_mountain_node, random_beach_node);
+        let river_path = this.a_star(random_mountain_node, random_beach_node, null);
 
         let current_side = this.random_int(LEFT, BOTTOM_RIGHT);
         for (let i = 0; i < river_path.length; i++) {
@@ -364,7 +364,7 @@ class Map{
     }
 
     // get the shortest path between two nodes
-    a_star(start_node, goal_node){
+    a_star(start_node, goal_node, player){
         let open_set = [start_node];
         let closed_set = []
         let distance_from_start_to_goal = start_node.get_distance_to_node(goal_node);
@@ -378,7 +378,7 @@ class Map{
             let current_index = 0;
 
             for(let i = 0; i < open_set.length; i++){
-                if(open_set[i].get_heuristic_value() < current_node.get_heuristic_value()){
+                if(open_set[i].get_heuristic_value(player) < current_node.get_heuristic_value(player)){
                     current_node = open_set[i];
                     current_index = i;
                 }

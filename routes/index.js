@@ -17,6 +17,7 @@ let game_token;
 
 const router = express.Router();
 
+let map_size = 2500;
 
 
 /* GET home page. */
@@ -34,7 +35,7 @@ router.post("/",(req,res, next) => {
   game_token = generate_token(player_token);
   player_token = generate_token(nick_name);
 
-  const game = new Game(game_token, 2500, 4);
+  const game = new Game(game_token, map_size, 4);
   const current_player = new Player(player_token);
   
   game.all_players.push(current_player);
