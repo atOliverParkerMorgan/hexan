@@ -58,8 +58,6 @@ export class Node{
 
         // used for A* searching algorithm
         this.parent = null;
-        this.distance_from_start = 0;
-        this.distance_to_goal = 0;
     }
 
     produce(){
@@ -77,8 +75,8 @@ export class Node{
 
         let neighbours = [];
         for(const cord of cords){
-            const x = (parseInt(this.x) + cord[0]);
-            const y = (parseInt(this.y) + cord[1]);
+            const x = this.x + cord[0];
+            const y = this.y + cord[1];
             if(x >= 0 && y >= 0 && x < all_nodes.length && y < all_nodes.length){
                 neighbours.push(all_nodes[y][x]);
             }else{
@@ -89,11 +87,12 @@ export class Node{
         return neighbours;
     }
 
-    get_heuristic_value(){
-        if (this.is_hidden) return this.distance_from_start + this.distance_to_goal;
-        if (this.type === WATER) return  this.distance_from_start + this.distance_to_goal + 100;
-        if(this.type === MOUNTAIN) return this.distance_from_start + this.distance_to_goal + MOUNTAIN_TRAVEL_BIAS;
-        return this.distance_from_start + this.distance_to_goal;
+    get_heuristic_value(start_node, goal_node){
+        const value = this.get_distance_to_node(start_node) + this.get_distance_to_node(goal_node);
+        if (this.is_hidden) return value;
+        if (this.type === WATER) value + 1000;
+        if (this.type === MOUNTAIN) value + MOUNTAIN_TRAVEL_BIAS;
+        return value;
     }
 
     add_node_to_stage(){
@@ -199,13 +198,13 @@ export class Node{
                 node_from.update();
             }
         }
-
-        // show bottom menu
         already_selected = this === selected_node && !already_selected;
         if(!already_selected) last_hovered_node.set_selected()
 
+        // show bottom information menu
         if(this.city != null && !already_selected) {
             bottom_menu_shown = !bottom_menu_shown;
+            //ClientSocket.get
             show_bottom_menu(this.city);
         }else{
             hide_bottom_menu();

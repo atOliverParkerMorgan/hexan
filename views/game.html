@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <link rel="stylesheet" href="/stylesheets/w3.css">
+<link href="//db.onlinewebfonts.com/c/f3258385782c4c96aa24fe8b5d5f9782?family=Old+English+Text+MT" rel="stylesheet" type="text/css"/>
 <link rel="stylesheet" href="/stylesheets/game.css">
 
 <body oncontextmenu="return false;">
@@ -16,18 +17,18 @@
 
 <div class="w3-blue-grey" id="bottom_menu" style="visibility: hidden; position: absolute; bottom: 0; width: 30%; height: auto">
     <div class="w3-row">
-        <div class="w3-col m4 l4 w3-card">
-            <p>Food: <span id="food_per_a_minute"></span> <br>
+        <div class="w3-col m5 l5 w3-card">
+            <h2 class="w3-center w3-wide" id="city_name">Prague</h2>
+            <p style="padding:16px">Food: <span id="food_per_a_minute"></span> <br>
                 Wood: <span id="population_growth_in">50</span> <br>
                 Gold: <span id="production_per_a_minute"></span> <br>
             </p>
         </div>
 
-        <div class="w3-rest w3-card" style="padding-left: 0px" >
-            <div class="w3-row w3-grey" id="production_menu">
-                <div class="w3-col m6 l6">
-                    <h2 class="w3-center" id="city_name">Prague</h2>
-                    <h3 id="city_population"></h3>
+        <div class="w3-rest w3-card" style="padding-left: 5px" >
+            <div class="w3-row" id="production_menu">
+                <div class="w3-col m6 l6 w3-center">
+                    <h5>Production</h5>
                     <span id="city_id" style="visibility: hidden"></span>
                 </div>
             </div>

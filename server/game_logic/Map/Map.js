@@ -367,18 +367,13 @@ class Map{
     a_star(start_node, goal_node, player){
         let open_set = [start_node];
         let closed_set = []
-        let distance_from_start_to_goal = start_node.get_distance_to_node(goal_node);
-
-        // resetting node values
-        start_node.distance_from_start = 0;
-        start_node.distance_to_goal = start_node.get_distance_to_node(goal_node);
 
         while (open_set.length > 0){
             let current_node = open_set[0];
             let current_index = 0;
 
             for(let i = 0; i < open_set.length; i++){
-                if(open_set[i].get_heuristic_value(player) < current_node.get_heuristic_value(player)){
+                if(open_set[i].get_heuristic_value(player, start_node, goal_node) < current_node.get_heuristic_value(player, start_node, goal_node)){
                     current_node = open_set[i];
                     current_index = i;
                 }
@@ -401,21 +396,20 @@ class Map{
                     continue;
                 }
 
-                let current_score = node.distance_from_start + current_node.get_distance_to_node(node);
+                let distance_from_start = node.get_distance_to_node(start_node);
+                let current_score = distance_from_start + current_node.get_distance_to_node(node);
                 let is_better = false;
 
                 if (!open_set.includes(node)) {
                     open_set.push(node);
                     is_better = true;
                 }
-                else if (current_score < node.distance_from_start) {
+                else if (current_score < distance_from_start) {
                     is_better = true;
                 }
 
                 if (is_better){
                     node.parent = current_node;
-                    node.distance_from_start = current_score;
-                    node.distance_to_goal = node.get_distance_to_node(goal_node);
                 }
             }
         }

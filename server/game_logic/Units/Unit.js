@@ -14,17 +14,19 @@ class Unit {
         const to_node = game.map.all_nodes[to_y][to_x];
 
         // apply Math.floor to account for hex grid
-        if(to_node.type !== WATER){
+        if(to_node.type !== WATER) {
             this.move_along_path(game, player, socket, game.map.a_star(from_node, to_node, player));
 
-        }else{
-            ServerSocket.send_data(socket,
-                {
-                response_type: ServerSocket.response_types.INVALID_MOVE,
-                data: {unit: this}
-                },
-                player.token)
         }
+        // don't send invalid move
+        // }else{
+        //     ServerSocket.send_data(socket,
+        //         {
+        //         response_type: ServerSocket.response_types.INVALID_MOVE,
+        //         data: {unit: this}
+        //         },
+        //         player.token)
+        // }
     }
     move_along_path(game, player, socket, path){
         setTimeout(() => {

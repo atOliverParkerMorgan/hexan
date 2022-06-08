@@ -32,8 +32,6 @@ class Node{
 
         // used for A* searching algorithm
         this.parent = null;
-        this.distance_from_start = 0;
-        this.distance_to_goal = 0;
     }
 
     add_neighbor(node){
@@ -195,13 +193,14 @@ class Node{
         return  (this.y * 1.5);
     }
 
-    get_heuristic_value(player){
+    get_heuristic_value(player, start_node, goal_node){
+        const value = this.get_distance_to_node(start_node) + this.get_distance_to_node(goal_node);
         if(player != null){
-            if (this.is_shown.includes(player.token)) return this.distance_from_start + this.distance_to_goal;
-        }
-        if (this.type === WATER) return  this.distance_from_start + this.distance_to_goal + 100;
-        if(this.type === MOUNTAIN) return this.distance_from_start + this.distance_to_goal + MOUNTAIN_TRAVEL_BIAS;
-        return this.distance_from_start + this.distance_to_goal;
+             if (!this.is_shown.includes(player.token)) return value;
+         }
+        if (this.type === WATER) return value + 1000;
+        if(this.type === MOUNTAIN) return value + MOUNTAIN_TRAVEL_BIAS;
+        return value;
     }
     get_type(){
         switch (this.type){
