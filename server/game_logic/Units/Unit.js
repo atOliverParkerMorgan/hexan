@@ -41,7 +41,7 @@ class Unit {
 
             ServerSocket.send_data(socket,
                 {
-                    response_type: ServerSocket.response_types.UNIT_MOVED,
+                    response_type: ServerSocket.response_types.UNIT_MOVED_RESPONSE,
                     data: {unit: this.get_data(),
                         nodes: all_discovered_nodes}
                 }, player.token)

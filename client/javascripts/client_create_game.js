@@ -25,11 +25,24 @@ if(nick_input != null) {
 
                         localStorage && (localStorage.player_token = player_token);
                         localStorage && (localStorage.game_token = game_token);
-
-                        window.location.replace("http://127.0.0.1:8000/game");
+                        const main_div = document.getElementById("app");
+                        let game_html = loadFile("/views/game.html")
+                        console.log(game_html);
+                        main_div.innerHTML = game_html;
+                        //window.location.replace("http://127.0.0.1:8000/game");
                     }
                 }
             }
         }
     });
+}
+function loadFile(filePath) {
+    let result = null;
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", filePath, false);
+    xhr.send();
+    if (xhr.status===200) {
+        result = xhr.responseText;
+    }
+    return result;
 }

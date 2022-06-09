@@ -2,6 +2,7 @@ import {Node} from "./Node.js";
 import {all_nodes} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
 import {Unit} from "./Unit/Unit.js";
+import {show_bottom_menu} from "../bottom_menu.js";
 
 export let HEX_SIDE_SIZE;
 export let DISTANCE_BETWEEN_HEX;
@@ -145,8 +146,12 @@ const process_data = (...args)=>{
             all_nodes.push(row);
             break;
 
+        case ClientSocket.response_types.MENU_INFO_RESPONSE:
+            show_bottom_menu(response_data.city);
+            break;
+
         // deal with sever UNIT_MOVED response
-        case ClientSocket.response_types.UNIT_MOVED:
+        case ClientSocket.response_types.UNIT_MOVED_RESPONSE:
             let found = false;
 
             // find the unit in question

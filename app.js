@@ -2,12 +2,6 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const Console = require("console");
-const http = require("http");
-const {server} = require("socket.io");
-const mysql = require('mysql');
-//const db = mysql.createConnection()
-
 const PORT_HTTP = process.env.PORT || 8000;
 
 const indexRouter = require('./routes/index');
@@ -51,8 +45,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'client')));
+
 app.use('/', indexRouter);
-app.use('/game', gameRouter);
+// app.use('/game', gameRouter);
 
 // modules
 app.use('/pixi', express.static(__dirname + '/node_modules/pixi.js/dist/browser/'));
@@ -60,8 +55,11 @@ app.use('/pixi_extras', express.static(__dirname + '/node_modules/@pixi/graphics
 app.use('/pixi_viewport', express.static(__dirname + '/node_modules/pixi-viewport/dist/'));
 app.use('/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client/dist/'));
 
+// html files
+app.use('/views', express.static('views', {}));
 // static files
 app.use(express.static('client', {}));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

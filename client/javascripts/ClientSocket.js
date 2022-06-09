@@ -5,12 +5,14 @@ export const ClientSocket = {
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
-        UNIT_MOVED: "UNIT_MOVED"
+        UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
+        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE"
     },
     request_types: {
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
+        GET_MENU_INFO: "GET_MENU_INFO",
         PRODUCE_UNIT: "PRODUCE_UNIT",
         MOVE_UNITS: "MOVE_UNIT",
     },

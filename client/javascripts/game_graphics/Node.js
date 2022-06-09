@@ -204,14 +204,20 @@ export class Node{
         // show bottom information menu
         if(this.city != null && !already_selected) {
             bottom_menu_shown = !bottom_menu_shown;
-            //ClientSocket.get
+            // get bottom menu information
+            ClientSocket.socket.emit("get-data", {
+                request_type: ClientSocket.request_types.GET_MENU_INFO,
+                data: {
+                    game_token: localStorage.game_token,
+                    player_token: localStorage.player_token,
+                    city: this.city
+                }
+            })
+
             show_bottom_menu(this.city);
         }else{
             hide_bottom_menu();
         }
-
-
-
     }
 
     set_type(type){

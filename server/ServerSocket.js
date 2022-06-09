@@ -15,12 +15,14 @@ const ServerSocket = {
         UNITS_RESPONSE: "UNITS_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
         INVALID_MOVE: "INVALID_MOVE",
-        UNIT_MOVED: "UNIT_MOVED"
+        UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
+        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE"
     },
     request_types: {
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
+        GET_MENU_INFO: "GET_MENU_INFO",
         PRODUCE_UNIT: "PRODUCE_UNIT",
         MOVE_UNIT: "MOVE_UNIT"
     },
@@ -65,6 +67,23 @@ const ServerSocket = {
                                         units: player.units
                                     },
                                 });
+                                break;
+                            case ServerSocket.request_types.GET_MENU_INFO:
+                                // get city information and possible units to produce
+                                let request_city;
+                                for(const city of game.get_cities_that_player_owns(player)){
+                                    if(city.name === request_data.city.name){
+                                        request_city = city;
+                                        break;
+                                    }
+                                }
+
+                                socket.emit(player.token, {
+                                    response_type: ServerSocket.response_types.MENU_INFO_RESPONSE,
+                                    data: {
+                                        city: request_city
+                                    },
+                                })
                                 break;
 
                             default:

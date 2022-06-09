@@ -1,6 +1,7 @@
 const express = require('express');
 const now = require('nano-time');
 const {createHash} = require('crypto');
+const fs = require("fs");
 
 const player_exports = require("../server/game_logic/Player");
 const Player = player_exports.Player;
@@ -47,7 +48,11 @@ router.post("/",(req,res, next) => {
   ServerSocket.add_request_listener();
   ServerSocket.add_response_listener();
 
-  res.status(200).send(JSON.stringify({player_token: player_token, game_token: game_token}));
+  res.status(200).send(JSON.stringify(
+      {
+        player_token: player_token,
+        game_token: game_token,
+      }));
 });
 
 function generate_token(nick_name){
