@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-<link rel="stylesheet" href="/stylesheets/index.css">
-<head>
-    <meta charset="UTF-8">
-    <title>HEXAN</title>
-</head>
-<body>
 
-<div class="form__group" id="app">
-    <div class="title">HEXAN</div>
-    <input type="text" class="form__input" id="nick_input" placeholder="nickname"/>
-    <label for="nick_input" class="form__label">Press enter to play</label>
-</div>
+<head>
+    <title>HEXAN</title>
+    <link rel="stylesheet" href="/stylesheets/w3.css">
+    <link href="//db.onlinewebfonts.com/c/f3258385782c4c96aa24fe8b5d5f9782?family=Old+English+Text+MT" rel="stylesheet" type="text/css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="/pixi/pixi.min.js"></script>
+    <script src="/pixi_extras/graphics-extras.min.js"></script>
+    <script src="/pixi_viewport/viewport.min.js"></script>
+    <script src="/socket.io-client/socket.io.js"></script>
+    <script type="module" src="/javascripts/client_create_game.js"></script>
+</head>
+
+<body oncontextmenu="return false;" id="app">
+
+    <div class="form__group">
+
+        <link rel="stylesheet" href="/stylesheets/index.css">
+        <div class="title">HEXAN</div>
+            <input type="text" class="form__input" id="nick_input" placeholder="nickname"/>
+        <label for="nick_input" class="form__label">Press enter to play</label>
+    </div>
 </body>
-<script src="/socket.io-client/socket.io.js"></script>
-<script type="module" src="/javascripts/client_create_game.js"></script>
+
 </html>

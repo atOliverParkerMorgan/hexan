@@ -45,4 +45,4 @@ function request_production(unit_type){
     })
 }
 
-document.getElementById("warrior").addEventListener("click", ()=>{request_production("UNITS")});
+//document.getElementById("warrior").addEventListener("click", ()=>{request_production("UNITS")});

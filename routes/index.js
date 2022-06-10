@@ -33,8 +33,8 @@ router.post("/",(req,res, next) => {
     res.status(422).send();
   }
 
-  game_token = generate_token(player_token);
   player_token = generate_token(nick_name);
+  game_token = generate_token(player_token);
 
   const game = new Game(game_token, map_size, 4);
   const current_player = new Player(player_token);
@@ -47,6 +47,9 @@ router.post("/",(req,res, next) => {
 
   ServerSocket.add_request_listener();
   ServerSocket.add_response_listener();
+
+  console.log(player_token);
+  console.log(game_token);
 
   res.status(200).send(JSON.stringify(
       {

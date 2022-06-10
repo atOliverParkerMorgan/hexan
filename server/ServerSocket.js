@@ -55,9 +55,7 @@ const ServerSocket = {
 
                 if (game != null) {
                     const player = game.get_player(request_data.player_token);
-                    console.log(player);
                     if (player != null){
-
                         // switch for different responses
                         switch (request_type){
                             case ServerSocket.request_types.GET_UNITS:

@@ -1,8 +1,8 @@
-export let player_token;
-export let game_token;
+import {init_game} from "./game_graphics/Pixi.js";
 
 let JSON_response;
 
+localStorage.clear()
 const nick_input = document.getElementById("nick_input");
 if(nick_input != null) {
     nick_input.addEventListener("keypress", function onEvent(event) {
@@ -20,16 +20,17 @@ if(nick_input != null) {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         JSON_response = JSON.parse(xhr.responseText);
-                        player_token = JSON_response.player_token;
-                        game_token = JSON_response.game_token;
 
-                        localStorage && (localStorage.player_token = player_token);
-                        localStorage && (localStorage.game_token = game_token);
+                        localStorage.setItem("player_token", JSON_response.player_token);
+                        localStorage.setItem("game_token", JSON_response.game_token);
+
                         const main_div = document.getElementById("app");
-                        let game_html = loadFile("/views/game.html")
-                        console.log(game_html);
-                        main_div.innerHTML = game_html;
-                        //window.location.replace("http://127.0.0.1:8000/game");
+
+                        // replace index.html with game.html
+                        main_div.innerHTML = loadFile("/views/game.html");
+                        init_game();
+                        // window.location.replace("http://127.0.0.1:8000/");
+
                     }
                 }
             }

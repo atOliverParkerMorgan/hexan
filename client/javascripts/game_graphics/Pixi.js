@@ -15,14 +15,6 @@ export let all_units = [];
 export const app = new PIXI.Application({resizeTo: window, transparent: true,  autoresize: true })
 export const Graphics = PIXI.Graphics;
 
-if (!localStorage || !'player_token' in localStorage || !'game_token' in localStorage) {
-    console.error("Error: no tokens were found")
-}
-const player_token = localStorage.player_token;
-const game_token = localStorage.game_token;
-
-console.log("Player: " + player_token);
-console.log("Game: " + game_token);
 
 // @TODO client a_star doesn't always match sever a_star
 // get the shortest path between two nodes
@@ -113,6 +105,7 @@ function init_canvas(map, cities){
 const process_data = (...args)=>{
     const response_type = args[0][0].response_type;
     const response_data = args[0][0].data;
+    console.log(response_type);
     switch (response_type) {
         case ClientSocket.response_types.UNITS_RESPONSE:
 
@@ -181,8 +174,17 @@ const process_data = (...args)=>{
     // all_nodes[2][2].units.push(new Unit(2, 2, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png"));
 };
 
-ClientSocket.add_data_listener(process_data, player_token)
-ClientSocket.get_data("map", game_token, player_token)
+export function init_game() {
+
+    const player_token = localStorage.getItem("player_token");
+    const game_token = localStorage.getItem("game_token");
+
+    console.log("Player: " + player_token);
+    console.log("Game: " + game_token);
+
+    ClientSocket.add_data_listener(process_data, player_token)
+    ClientSocket.get_data("map", game_token, player_token)
+}
 
 function loop(){
 
