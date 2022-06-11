@@ -45,9 +45,6 @@ router.post("/",(req,res, next) => {
 
   game.place_start_city(current_player);
 
-  ServerSocket.add_request_listener();
-  ServerSocket.add_response_listener();
-
   console.log(player_token);
   console.log(game_token);
 

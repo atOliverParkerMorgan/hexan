@@ -23,6 +23,7 @@ export const ClientSocket = {
     },
 
     add_data_listener: (fun, player_token)=>{
+        console.log("add_data_listener");
         ClientSocket.socket.on(player_token, (...args) => {
             console.log("RESPONSE: "+args[0].response_type);
             fun(args);
@@ -30,6 +31,7 @@ export const ClientSocket = {
     },
 
     get_data(request_type, game_token, player_token) {
+        console.log("get_data");
         ClientSocket.socket.emit("get-data", {
             request_type: request_type,
             data: {

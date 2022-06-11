@@ -183,7 +183,7 @@ export function init_game() {
     console.log("Game: " + game_token);
 
     ClientSocket.add_data_listener(process_data, player_token)
-    ClientSocket.get_data("map", game_token, player_token)
+    ClientSocket.get_data(ClientSocket.request_types.GET_ALL, game_token, player_token)
 }
 
 function loop(){

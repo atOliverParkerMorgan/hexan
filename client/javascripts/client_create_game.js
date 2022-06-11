@@ -2,7 +2,6 @@ import {init_game} from "./game_graphics/Pixi.js";
 
 let JSON_response;
 
-localStorage.clear()
 const nick_input = document.getElementById("nick_input");
 if(nick_input != null) {
     nick_input.addEventListener("keypress", function onEvent(event) {

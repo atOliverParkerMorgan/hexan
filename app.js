@@ -5,36 +5,10 @@ const cookieParser = require('cookie-parser');
 const PORT_HTTP = process.env.PORT || 8000;
 
 const indexRouter = require('./routes/index');
-const gameRouter = require('./routes/game');
-const usersRouter = require('./routes/users');
+const {ServerSocket} = require("./server/ServerSocket");
 
 const app = express();
 app.engine('html', require('ejs').renderFile);
-
-// Create a connection to the database
-// const connection = mysql.createConnection({
-//   host: 'localhost',
-// //Importing modules
-//
-//   user: 'root',
-//   password: 'yourpassword',
-//   database: "ExpressIntegration"
-// });
-//
-// // open the MySQL connection
-// connection.connect(error => {
-//   if (error){
-//     console.log("A error has been occurred "
-//         + "while connecting to database.");
-//     throw error;
-//   }
-//
-//   //If Everything goes correct, Then start Express Server
-//   app.listen(PORT, ()=>{
-//     console.log("Database connection is Ready and "
-//         + "Server is Listening on Port ", PORT);
-//   })
-// });
 
 
 // view engine setup
@@ -46,8 +20,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'client')));
 
+// add sever socket request and response listeners
+ServerSocket.add_request_listener();
+ServerSocket.add_response_listener();
+
 app.use('/', indexRouter);
-// app.use('/game', gameRouter);
 
 // modules
 app.use('/pixi', express.static(__dirname + '/node_modules/pixi.js/dist/browser/'));
@@ -57,9 +34,9 @@ app.use('/socket.io-client', express.static(__dirname + '/node_modules/socket.io
 
 // html files
 app.use('/views', express.static('views', {}));
-// static files
-app.use(express.static('client', {}));
 
+// static client files
+app.use(express.static('client', {}));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,9 +1,4 @@
 <link rel="stylesheet" href="/stylesheets/game.css">
-<script type="module" src="/javascripts/ClientSocket.js"></script>
-<script type="module" src="/javascripts/game_graphics/Node.js"></script>
-<script type="module" src="/javascripts/game_graphics/Pixi.js"></script>
-<script type="module" src="/javascripts/game_graphics/Unit/Unit.js"></script>
-<script type="module" src="/javascripts/bottom_menu.js"></script>
 
 <div class="w3-blue-grey" id="bottom_menu" style="visibility: hidden; position: absolute; bottom: 0; width: 30%; height: auto">
     <div class="w3-row">
@@ -15,7 +10,7 @@
             </p>
         </div>
 
-        <div class="w3-rest w3-card" style="padding-left: 5px" >
+        <div class="w3-rest w3-card" style="padding-left: 5px"  id="production_menu">
             <div class="w3-row">
                 <div class="w3-col m6 l6 w3-center">
                     <h5>Production</h5>
@@ -23,50 +18,10 @@
                 </div>
             </div>
 
-            <div class="w3-row" id="production_menu">
-                <div class="w3-col" style="width:60px">
-                    <div class="w3-center w3-border">
-                        <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
-                    </div>
-                </div>
-                <div class="w3-col w3-border" style="width:60px">
-                    <div class="w3-col" style="width:60px">
-                        <div class="w3-center w3-border">
-                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
-                        </div>
-                    </div>
-                </div>
-                <div class="w3-col w3-border" style="width:60px">
-                    <div class="w3-col" style="width:60px">
-                        <div class="w3-center w3-border">
-                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="w3-row">
-                <div class="w3-col" style="width:60px">
-                    <div class="w3-col" style="width:60px">
-                        <div class="w3-center w3-border">
-                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
-                        </div>
-                    </div>
-                </div>
-                <div class="w3-col" style="width:60px">
-                    <div class="w3-col" style="width:60px">
-                        <div class="w3-center w3-border">
-                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
-                        </div>
-                    </div>
-                </div>
-                <div class="w3-col" style="width:60px">
-                    <div class="w3-col" style="width:60px">
-                        <div class="w3-center w3-border">
-                            <img src="/images/helmet.png" class="w3-card w3-center" style="width: 50px">
-                        </div>
-                    </div>
-                </div>
+            <div class="w3-row" id="unit_menu">
+
             </div>
         </div>
     </div>
 </div>
+
