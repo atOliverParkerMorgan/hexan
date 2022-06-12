@@ -1,12 +1,17 @@
 const {ServerSocket} = require("../../ServerSocket");
 const WATER = 0x80C5DE;
 
+const CAVALRY = "CAVALRY"
+const MELEE = "MELEE";
+const RANGE = "RANGE";
+
 class Unit {
-    constructor(x, y, id){
+    constructor(x, y, id, type, speed){
         this.x = x;
         this.y = y;
         this.id = id;
-        this.speed = 1000;
+        this.type = type;
+        this.speed = speed;
         this.sight = 3;
     }
     move_and_send_response(to_x, to_y, game, player, socket){
@@ -61,3 +66,7 @@ class Unit {
 }
 
 module.exports.Unit = Unit;
+
+module.exports.MELEE = MELEE;
+module.exports.RANGE = RANGE;
+module.exports.CAVALRY = CAVALRY;

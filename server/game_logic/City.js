@@ -11,17 +11,16 @@ class City{
         this.is_producing = false;
     }
 
-    start_production(production_time, socket){
+    start_production(production_time, socket, unit_type){
         if(!this.is_producing){
             this.is_producing = true
             
-            setTimeout(()=> this.produce_and_send_response(socket), production_time);
+            setTimeout(()=> this.produce_unit_and_send_response(socket, unit_type), production_time);
         }
     }
 
-    produce_and_send_response(socket){
-        this.owner.add_unit(this.x, this.y);
-        this.is_producing = false;
+    produce_unit_and_send_response(socket, unit_type){
+        this.owner.add_unit(this.x, this.y, unit_type);
 
         ServerSocket.send_data(socket, {
                 response_type: ServerSocket.response_types.UNITS_RESPONSE,
@@ -30,6 +29,8 @@ class City{
                 }
             },
             this.owner.token);
+
+        this.is_producing = false;
     }
 }
 

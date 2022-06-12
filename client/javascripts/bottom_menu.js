@@ -1,5 +1,8 @@
 import {ClientSocket} from "./ClientSocket.js";
 
+const WARRIOR = "WARRIOR";
+const ARCHER = "ARCHER";
+
 export function show_bottom_menu(city){
     show_city_data(city);
     document.getElementById("bottom_menu").style.visibility = "visible";
@@ -29,7 +32,10 @@ function show_city_data(city){
        }
 
        const unit_img = document.createElement("img");
-       unit_img.src = "/images/helmet.png"
+
+       if(unit_type === ) {
+           unit_img.src = "/images/helmet.png"
+       }else if()
        unit_img.style.width = "50px";
        unit_img.onclick = function () {
            console.log("click")
