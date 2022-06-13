@@ -1,8 +1,13 @@
 import {Node} from "./Node.js";
 import {all_nodes} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
-import {Unit} from "./Unit/Unit.js";
-import {show_bottom_menu} from "../bottom_menu.js";
+
+import {MELEE, RANGE, Unit} from "./Unit/Unit.js";
+import {Melee} from "./Unit/Melee.js";
+import {Range} from "./Unit/Range.js";
+import {Cavalry} from "./Unit/Cavalry.js";
+
+import {show_city_bottom_menu} from "../bottom_menu.js";
 
 export let HEX_SIDE_SIZE;
 export let DISTANCE_BETWEEN_HEX;
@@ -111,7 +116,13 @@ const process_data = (...args)=>{
 
             all_units = [];
             for(const unit of response_data.units){
-                const graphics_unit = new Unit(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
+                let graphics_unit;
+                if(unit.type === MELEE){
+                    graphics_unit = new Melee(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
+                }
+                else if(unit.type === RANGE){
+                    graphics_unit = new Range(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/archer.png");
+                }
                 all_units.push(graphics_unit);
                 all_nodes[unit.y][unit.x].units.push(graphics_unit);
             }
@@ -140,7 +151,7 @@ const process_data = (...args)=>{
             break;
 
         case ClientSocket.response_types.MENU_INFO_RESPONSE:
-            show_bottom_menu(response_data.city);
+            show_city_bottom_menu(response_data.city);
             break;
 
         // deal with sever UNIT_MOVED response

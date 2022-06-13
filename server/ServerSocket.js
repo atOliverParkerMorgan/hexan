@@ -79,8 +79,8 @@ const ServerSocket = {
                                 socket.emit(player.token, {
                                     response_type: ServerSocket.response_types.MENU_INFO_RESPONSE,
                                     data: {
-                                        city: request_city
-                                    },
+                                        city: request_city,
+                                    }
                                 })
                                 break;
 
@@ -109,10 +109,12 @@ const ServerSocket = {
                     if (player != null) {
                         // switch for different request types
                         switch (request_type){
+
                             case ServerSocket.request_types.PRODUCE_UNIT:
                                 const city = game.get_city(request_data.city_name, player);
+                                const unit_type = request_data.unit_type;
                                 if (city != null) {
-                                    city.start_production(1000, socket);
+                                    city.start_production(1000, socket, unit_type);
                                 }
                                 break;
 

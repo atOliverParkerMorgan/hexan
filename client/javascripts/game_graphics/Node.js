@@ -1,5 +1,5 @@
 import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "./Pixi.js";
-import {hide_bottom_menu, show_bottom_menu} from "../bottom_menu.js";
+import {hide_city_bottom_menu, show_city_bottom_menu} from "../bottom_menu.js";
 import {ClientSocket} from "../ClientSocket.js";
 
 // types of nodes displayed as colors
@@ -214,9 +214,9 @@ export class Node{
                 }
             })
 
-            show_bottom_menu(this.city);
+            show_city_bottom_menu(this.city);
         }else{
-            hide_bottom_menu();
+            hide_city_bottom_menu();
         }
     }
 

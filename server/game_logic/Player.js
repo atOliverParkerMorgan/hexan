@@ -13,7 +13,7 @@ class Player{
         this.token = token;
         this.units = [];
         // units that this player can produce
-        this.production_unit_types = ["WARRIOR", "SLINGSHOT"]
+        this.production_unit_types = [MELEE, RANGE];
         this.current_unit_id = 0;
     }
     add_unit(x, y, type){

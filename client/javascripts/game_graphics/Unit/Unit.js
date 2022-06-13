@@ -1,6 +1,10 @@
 import {DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.js"
 import {all_nodes} from "../Node.js";
 
+export const MELEE = "MELEE";
+export const RANGE = "RANGE";
+export const CAVALRY = "CAVALRY";
+
 export class Unit {
     constructor(x, y, id, width, height, texture_path) {
         //this.player = player;

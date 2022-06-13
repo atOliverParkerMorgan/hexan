@@ -1,14 +1,16 @@
 import {ClientSocket} from "./ClientSocket.js";
 
-const WARRIOR = "WARRIOR";
-const ARCHER = "ARCHER";
+import {MELEE} from "./game_graphics/Unit/Unit.js";
+import {RANGE} from "./game_graphics/Unit/Unit.js";
+import {CAVALRY} from "./game_graphics/Unit/Unit.js";
 
-export function show_bottom_menu(city){
+
+export function show_city_bottom_menu(city){
     show_city_data(city);
-    document.getElementById("bottom_menu").style.visibility = "visible";
+    document.getElementById("bottom_city_menu").style.visibility = "visible";
 }
-export function hide_bottom_menu(){
-    document.getElementById("bottom_menu").style.visibility = "hidden";
+export function hide_city_bottom_menu(){
+    document.getElementById("bottom_city_menu").style.visibility = "hidden";
 }
 function show_city_data(city){
    document.getElementById("city_name").innerText = city.name;
@@ -33,14 +35,23 @@ function show_city_data(city){
 
        const unit_img = document.createElement("img");
 
-       if(unit_type === ) {
+       if(unit_type === MELEE) {
            unit_img.src = "/images/helmet.png"
-       }else if()
+           unit_img.onclick = function () {
+               request_production(MELEE);
+           };
+       }else if(unit_type === RANGE){
+           unit_img.src = "/images/archer.png"
+           unit_img.onclick = function () {
+               request_production(RANGE);
+           };
+       }else if(unit_type === CAVALRY){
+           unit_img.src = "/images/knight.png"
+           unit_img.onclick = function () {
+               request_production(CAVALRY);
+           };
+       }
        unit_img.style.width = "50px";
-       unit_img.onclick = function () {
-           console.log("click")
-           request_production("UNIT")
-       };
 
        const produce_unit_div =  document.createElement("div");
        produce_unit_div.className = "w3-center w3-border"
