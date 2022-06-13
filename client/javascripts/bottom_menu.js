@@ -4,6 +4,9 @@ import {MELEE} from "./game_graphics/Unit/Unit.js";
 import {RANGE} from "./game_graphics/Unit/Unit.js";
 import {CAVALRY} from "./game_graphics/Unit/Unit.js";
 
+function get_unit_div(units){
+
+}
 
 export function show_city_bottom_menu(city){
     show_city_data(city);
@@ -69,6 +72,18 @@ function show_city_data(city){
        div_production_menu.appendChild(div_unit_menu)
    }
 }
+
+export function show_unit_info_bottom_menu(units){
+    show_city_data(units);
+    document.getElementById("bottom_unit_menu").style.visibility = "visible";
+}
+export function hide_unit_info_bottom_menu() {
+    document.getElementById("bottom_unit_menu").style.visibility = "hidden";
+}
+function show_unit_data(units){
+
+}
+
 
 function request_production(unit_type){
     ClientSocket.send_data({
