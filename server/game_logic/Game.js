@@ -4,7 +4,6 @@ const {City} = require("./City");
 class Game{
     constructor(token, number_of_land_nodes, number_of_continents) {
         this.token = token;
-        this.current_city_index = 0;
         this.all_players = [];
         this.all_cities = [];
         this.map = new Map(number_of_land_nodes, number_of_continents);

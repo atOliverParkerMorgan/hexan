@@ -1,7 +1,8 @@
-const server = require("socket.io");
 const http = require("http");
 const httpServer = http.createServer();
+const server = require("socket.io");
 const io = server(httpServer);
+const {Path} = require("./game_logic/Map/Path.js");
 
 const PORT_SOCKET = 8082;
 
@@ -123,8 +124,15 @@ const ServerSocket = {
                                 // console.log(request_data.units)
                                 for(const id of request_data.unit_ids){
                                     const unit = player.get_unit(id)
-                                    if(unit == null) continue;
-                                    unit.move_and_send_response(request_data.to_x, request_data.to_y, game, player, socket);
+                                    const path = new Path(game, request_data.path);
+                                    if(!path.is_valid() || unit == null){
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.INVALID_MOVE,
+                                            data: {unit: this}
+                                            }, player.token);
+                                        break;
+                                    }
+                                    unit.move_and_send_response(path.path, game, player, socket);
                                 }
                                 break;
 

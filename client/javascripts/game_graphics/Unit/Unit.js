@@ -8,8 +8,8 @@ export const CAVALRY = "CAVALRY";
 export class Unit {
     constructor(x, y, id, width, height, texture_path) {
         //this.player = player;
-        this.width = 10;
-        this.height = 12;
+        this.width = width;
+        this.height = height;
 
         this.x = x;
         this.y = y;
@@ -35,8 +35,8 @@ export class Unit {
         this.set_sprite_position();
         this.set_sprite_size();
 
-        this.sprite.interactive = true;
-        this.sprite.buttonMode = true;
+        this.sprite.interactive = false;
+        this.sprite.buttonMode = false;
         viewport.addChild(this.sprite);
     }
 
@@ -70,7 +70,6 @@ export class Unit {
         this.y = y;
 
         // redraw sprite
-        new_node.remove_selected();
         this.add_unit_to_stage();
 
     }

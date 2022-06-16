@@ -39,12 +39,12 @@ function show_city_data(city){
        const unit_img = document.createElement("img");
 
        if(unit_type === MELEE) {
-           unit_img.src = "/images/helmet.png"
+           unit_img.src = "/images/warrior.png"
            unit_img.onclick = function () {
                request_production(MELEE);
            };
        }else if(unit_type === RANGE){
-           unit_img.src = "/images/archer.png"
+           unit_img.src = "/images/slinger.png"
            unit_img.onclick = function () {
                request_production(RANGE);
            };

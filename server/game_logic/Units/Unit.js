@@ -1,4 +1,5 @@
 const {ServerSocket} = require("../../ServerSocket");
+
 const WATER = 0x80C5DE;
 
 const CAVALRY = "CAVALRY"
@@ -14,15 +15,10 @@ class Unit {
         this.speed = speed;
         this.sight = 3;
     }
-    move_and_send_response(to_x, to_y, game, player, socket){
-        const from_node = game.map.all_nodes[this.y][this.x];
-        const to_node = game.map.all_nodes[to_y][to_x];
+    move_and_send_response(path, game, player, socket){
 
-        // apply Math.floor to account for hex grid
-        if(to_node.type !== WATER) {
-            this.move_along_path(game, player, socket, game.map.a_star(from_node, to_node, player));
+        this.move_along_path(game, player, socket, path);
 
-        }
         // don't send invalid move
         // }else{
         //     ServerSocket.send_data(socket,
@@ -33,6 +29,8 @@ class Unit {
         //         player.token)
         // }
     }
+
+
     move_along_path(game, player, socket, path){
         setTimeout(() => {
             if(path.length === 0) return;

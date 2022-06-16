@@ -2,10 +2,10 @@ import {Node} from "./Node.js";
 import {all_nodes} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
 
-import {MELEE, RANGE, Unit} from "./Unit/Unit.js";
+import {MELEE, RANGE} from "./Unit/Unit.js";
 import {Melee} from "./Unit/Melee.js";
 import {Range} from "./Unit/Range.js";
-import {Cavalry} from "./Unit/Cavalry.js";
+// import {Cavalry} from "./Unit/Cavalry.js";
 
 import {show_city_bottom_menu} from "../bottom_menu.js";
 
@@ -117,14 +117,18 @@ const process_data = (...args)=>{
             all_units = [];
             for(const unit of response_data.units){
                 let graphics_unit;
+
+                // get the correct sprite for unit depending on it's type
                 if(unit.type === MELEE){
-                    graphics_unit = new Melee(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
+                    graphics_unit = new Melee(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE, "../../images/warrior.png");
                 }
                 else if(unit.type === RANGE){
-                    graphics_unit = new Range(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/archer.png");
+                    graphics_unit = new Range(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE, "../../images/slinger.png");
                 }
+
+
                 all_units.push(graphics_unit);
-                all_nodes[unit.y][unit.x].units.push(graphics_unit);
+                all_nodes[unit.y][unit.x].units = [graphics_unit];
             }
             break;
 

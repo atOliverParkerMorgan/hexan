@@ -36,6 +36,8 @@ const movement_hint_thickness = 3;
 let bottom_menu_shown = false;
 let already_selected = false;
 
+let path;
+
 export let all_nodes = [];
 
 export class Node{
@@ -183,14 +185,19 @@ export class Node{
                 let to_node = last_hovered_node;
                 let node_from = selected_node;
 
+                // get cords of path to send to server application
+                let path_node_cords = []
+                for (const node of path) {
+                    path_node_cords.push([node.x, node.y]);
+                }
+
                 ClientSocket.send_data({
                     request_type: ClientSocket.request_types.MOVE_UNITS,
                     data: {
                         game_token: localStorage.game_token,
                         player_token: localStorage.player_token,
                         unit_ids: selected_node.get_unit_ids(),
-                        to_x: to_node.x,
-                        to_y: to_node.y,
+                        path: path_node_cords
                     }
                 })
 
@@ -296,7 +303,7 @@ export class Node{
                            movement_hint_lines = [];
                         }
 
-                        const path = a_star(selected_node, last_hovered_node);
+                        path = a_star(selected_node, last_hovered_node);
 
                         let last_node = selected_node;
 
