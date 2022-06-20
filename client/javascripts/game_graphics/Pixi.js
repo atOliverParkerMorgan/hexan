@@ -120,10 +120,10 @@ const process_data = (...args)=>{
 
                 // get the correct sprite for unit depending on it's type
                 if(unit.type === MELEE){
-                    graphics_unit = new Melee(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE, "../../images/warrior.png");
+                    graphics_unit = new Melee(unit.x, unit.y, unit.id, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, "../../images/warrior.png");
                 }
                 else if(unit.type === RANGE){
-                    graphics_unit = new Range(unit.x, unit.y, unit.id, HEX_SIDE_SIZE, HEX_SIDE_SIZE, "../../images/slinger.png");
+                    graphics_unit = new Range(unit.x, unit.y, unit.id, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE * .75, "../../images/slinger.png");
                 }
 
 

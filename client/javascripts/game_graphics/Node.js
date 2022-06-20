@@ -181,6 +181,7 @@ export class Node{
     on_click(){
        // unit movement
         if(selected_node != null) {
+            if(selected_node === this) this.remove_selected();
             if(selected_node !== this && selected_node.units.length > 0) {
                 let to_node = last_hovered_node;
                 let node_from = selected_node;

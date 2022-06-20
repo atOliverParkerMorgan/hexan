@@ -124,6 +124,7 @@ const ServerSocket = {
                                 // console.log(request_data.units)
                                 for(const id of request_data.unit_ids){
                                     const unit = player.get_unit(id)
+                                    console.log(request_data.path)
                                     const path = new Path(game, request_data.path);
                                     if(!path.is_valid() || unit == null){
                                         ServerSocket.send_data(socket, {

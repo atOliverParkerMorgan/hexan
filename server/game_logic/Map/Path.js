@@ -1,8 +1,9 @@
 class Path{
-    constructor(game, ...path_cords_nodes) {
+    constructor(game, path_cords_nodes) {
         this.path = [];
         for(const node_cords of path_cords_nodes){
-            this.path.push(game.get_node(node_cords[0], node_cords[1]));
+
+            this.path.push(game.map.get_node(node_cords[0], node_cords[1]));
         }
     }
     is_valid(){

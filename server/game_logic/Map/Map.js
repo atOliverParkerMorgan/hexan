@@ -86,6 +86,7 @@ class Map{
     }
 
     get_node(x, y){
+        if(parseInt(x, 10) !== x || parseInt(y, 10) !== y) return null;
         if(x<0 || y<0 || x >= this.side_length || y>=this.side_length) return null;
         return this.all_nodes[y][x];
 

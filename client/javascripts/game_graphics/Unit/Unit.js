@@ -1,9 +1,12 @@
-import {DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.js"
+import {DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.js"
 import {all_nodes} from "../Node.js";
 
 export const MELEE = "MELEE";
 export const RANGE = "RANGE";
 export const CAVALRY = "CAVALRY";
+
+const HEALTH_BAR_COLOR = 0x7CFC00;
+const HEALTH_BAR_POSITION_BIAS = 50;
 
 export class Unit {
     constructor(x, y, id, width, height, texture_path) {
@@ -16,10 +19,15 @@ export class Unit {
 
         this.id = id;
 
-        this.health = 100;
+        this.health = 60;
+        this.max_health = 100;
         this.type = 100;
 
         this.texture_path = texture_path;
+
+        this.health_circle = null;
+        this.health_circle_background = null;
+        this.background_circle = null;
 
         this.add_unit_to_stage();
     }
@@ -31,7 +39,8 @@ export class Unit {
         }
 
         this.sprite = new PIXI.Sprite.from(this.texture_path);
-
+        this.show_health();
+        this.show_background();
         this.set_sprite_position();
         this.set_sprite_size();
 
@@ -43,6 +52,43 @@ export class Unit {
     set_sprite_position(){
         this.sprite.x = this.get_x_in_pixels();
         this.sprite.y = this.get_y_in_pixels();
+    }
+
+    show_background(){
+        if(this.background_circle != null){
+            viewport.removeChild(this.background_circle);
+        }
+
+        this.background_circle = new Graphics();
+        this.background_circle.beginFill(0xffffff);
+        this.background_circle.drawCircle(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2, HEX_SIDE_SIZE/1.8);
+        this.background_circle.endFill();
+        viewport.addChild(this.background_circle);
+    }
+
+    show_health(){
+        if(this.health_circle != null && this.health_circle_background != null){
+            viewport.removeChild(this.health_circle);
+            viewport.removeChild(this.health_circle_background);
+        }
+
+        this.health_circle = new Graphics();
+        this.health_circle_background = new Graphics();
+
+        this.health_circle.beginFill(HEALTH_BAR_COLOR);
+        this.health_circle.lineStyle(2, 0xffffff)
+        this.health_circle.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
+            HEX_SIDE_SIZE/1.5, 0,2 * Math.PI / (this.max_health / this.     health));
+        this.health_circle.endFill();
+
+        this.health_circle_background.beginFill(0xffffff);
+        this.health_circle_background.lineStyle(2, 0xffffff)
+        this.health_circle_background.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
+            HEX_SIDE_SIZE/1.5, 0, 2*Math.PI);
+        this.health_circle_background.endFill();
+        viewport.addChild(this.health_circle_background);
+        viewport.addChild(this.health_circle);
+
     }
 
     set_sprite_size(){
