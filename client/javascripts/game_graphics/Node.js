@@ -49,6 +49,8 @@ export class Node{
         this.opacity = 1;
         this.is_hidden = is_hidden;
 
+        this.sprite = null;
+
         // -1 if this node doesn't have a city
         this.city = city;
         this.units = [];
@@ -101,7 +103,18 @@ export class Node{
 
         this.hex = new Graphics();
 
-        if(this.city != null) this.hex.beginFill(CITY, this.opacity);
+        if(this.city != null){
+            this.sprite = new PIXI.Sprite.from("/images/village.png");
+
+            this.sprite.width = DISTANCE_BETWEEN_HEX;
+            this.sprite.height = DISTANCE_BETWEEN_HEX;
+            this.sprite.x = this.get_x_in_pixels() - DISTANCE_BETWEEN_HEX/2;
+            this.sprite.y = this.get_y_in_pixels() - DISTANCE_BETWEEN_HEX/2;
+
+            viewport.addChild(this.sprite);
+            //
+            // this.hex.beginFill(CITY, this.opacity);
+        }
         else if(this.is_hidden) this.hex.beginFill(HIDDEN, this.opacity);
         else this.hex.beginFill(this.type, this.opacity);
         this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
