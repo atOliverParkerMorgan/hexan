@@ -129,7 +129,9 @@ const ServerSocket = {
                                     if(!path.is_valid() || unit == null){
                                         ServerSocket.send_data(socket, {
                                             response_type: ServerSocket.response_types.INVALID_MOVE,
-                                            data: {unit: this}
+                                            data: {
+                                                unit: this
+                                            }
                                             }, player.token);
                                         break;
                                     }

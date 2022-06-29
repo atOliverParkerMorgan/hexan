@@ -9,6 +9,7 @@ const WATER = 0x80C5DE;
 const GRASS = 0x7FFF55;
 const BEACH = 0xFFFF00;
 const MOUNTAIN = 0xF2F2F2;
+const HIDDEN = 0xE0D257;
 
 // borders see @Map.add_neighbors_to_nodes() to understand values
 const LEFT = 0;
@@ -215,14 +216,16 @@ class Node{
 
     // simplify node for socket.emit()
     get_data(player_token){
-        const hidden = !(this.is_shown.includes(player_token));
+        let type = this.type;
+        if(!this.is_shown.includes(player_token)){
+            type = HIDDEN;
+        }
 
        return {
            x: this.x,
            y: this.y,
-           type: this.type,
+           type: type,
            borders: this.borders,
-           is_hidden: hidden,
            city: this.city
        }
     }

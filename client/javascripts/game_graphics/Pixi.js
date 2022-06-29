@@ -110,7 +110,6 @@ function init_canvas(map, cities){
 const process_data = (...args)=>{
     const response_type = args[0][0].response_type;
     const response_data = args[0][0].data;
-    console.log(response_type);
     switch (response_type) {
         case ClientSocket.response_types.UNITS_RESPONSE:
 
@@ -149,7 +148,7 @@ const process_data = (...args)=>{
                     y = node.y;
                 }
                 // init node => add nodes to PIXI stage
-                row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.is_hidden, node.city));
+                row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city));
             }
             all_nodes.push(row);
             break;
@@ -169,9 +168,9 @@ const process_data = (...args)=>{
                     unit.move_to(response_data.unit.x, response_data.unit.y);
                 }
             }
+            // update nodes
             for(const node of response_data.nodes){
-                all_nodes[node.y][node.x].is_hidden = !node.is_hidden
-                all_nodes[node.y][node.x].update();
+                all_nodes[node.y][node.x].set_type(node.type);
             }
 
             // if not found something went wrong
@@ -194,8 +193,8 @@ export function init_game() {
     const player_token = localStorage.getItem("player_token");
     const game_token = localStorage.getItem("game_token");
 
-    console.log("Player: " + player_token);
-    console.log("Game: " + game_token);
+    // console.log("Player: " + player_token);
+    // console.log("Game: " + game_token);
 
     ClientSocket.add_data_listener(process_data, player_token)
     ClientSocket.get_data(ClientSocket.request_types.GET_ALL, game_token, player_token)

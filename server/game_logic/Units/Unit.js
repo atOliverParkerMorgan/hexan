@@ -32,21 +32,32 @@ class Unit {
 
 
     move_along_path(game, player, socket, path){
+        if(path.length === 0) return;
         setTimeout(() => {
-            if(path.length === 0) return;
-            const node = path[0];
+            const current_node = path[0];
 
-            this.x = node.x;
-            this.y = node.y;
-            node.neighbors.forEach((n) => game.map.make_neighbour_nodes_shown(player, n));
-            let all_discovered_nodes = [node.get_data()]
-            node.neighbors.forEach((n) => all_discovered_nodes.push(n.get_data()));
+            this.x = current_node.x;
+            this.y = current_node.y;
 
+            let all_discovered_nodes = [];
+
+            for(const node of current_node.neighbors){
+                if(node != null){
+                    game.map.make_neighbour_nodes_shown(player, node);
+                    all_discovered_nodes.push(node.get_data(player.token))
+                }
+            }
+
+            all_discovered_nodes.push(current_node.get_data(player.token));
+
+            console.log(all_discovered_nodes);
             ServerSocket.send_data(socket,
                 {
                     response_type: ServerSocket.response_types.UNIT_MOVED_RESPONSE,
-                    data: {unit: this.get_data(),
-                        nodes: all_discovered_nodes}
+                    data: {
+                        unit: this.get_data(),
+                        nodes: all_discovered_nodes
+                    }
                 }, player.token)
 
             path.shift();

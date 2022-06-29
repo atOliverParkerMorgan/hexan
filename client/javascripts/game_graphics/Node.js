@@ -41,13 +41,13 @@ let path;
 export let all_nodes = [];
 
 export class Node{
-    constructor(x, y, id, type, line_borders, is_hidden, city) {
+    constructor(x, y, id, type, line_borders, city) {
         this.x = x;
         this.y = y;
         this.id = id;
         this.type = type;
         this.opacity = 1;
-        this.is_hidden = is_hidden;
+        this.is_hidden = this.type === HIDDEN;
 
         this.sprite = null;
 
@@ -103,20 +103,10 @@ export class Node{
 
         this.hex = new Graphics();
 
-        if(this.city != null){
-            this.sprite = new PIXI.Sprite.from("/images/village.png");
-
-            this.sprite.width = DISTANCE_BETWEEN_HEX;
-            this.sprite.height = DISTANCE_BETWEEN_HEX;
-            this.sprite.x = this.get_x_in_pixels() - DISTANCE_BETWEEN_HEX/2;
-            this.sprite.y = this.get_y_in_pixels() - DISTANCE_BETWEEN_HEX/2;
-
-            viewport.addChild(this.sprite);
-            //
-            // this.hex.beginFill(CITY, this.opacity);
-        }
+        if(this.city != null) this.hex.beginFill(CITY, this.opacity);
         else if(this.is_hidden) this.hex.beginFill(HIDDEN, this.opacity);
         else this.hex.beginFill(this.type, this.opacity);
+
         this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
         this.hex.endFill();
 
@@ -124,7 +114,21 @@ export class Node{
 
         this.hex.on('pointerdown', (event) => { this.on_click() });
         this.hex.on('mouseover', (event) => { this.set_hovered() });
+
+        // changing color of city
+
         viewport.addChild(this.hex);
+
+        if(this.city != null){
+            this.sprite = new PIXI.Sprite.from("/images/village.png");
+
+            this.sprite.width = DISTANCE_BETWEEN_HEX * .7;
+            this.sprite.height = DISTANCE_BETWEEN_HEX * .7;
+            this.sprite.x = this.get_x_in_pixels() - DISTANCE_BETWEEN_HEX/2.5;
+            this.sprite.y = this.get_y_in_pixels() - DISTANCE_BETWEEN_HEX/2.5;
+
+            viewport.addChild(this.sprite);
+        }
     }
 
     get_distance_to_node(node) {
@@ -194,7 +198,6 @@ export class Node{
     on_click(){
        // unit movement
         if(selected_node != null) {
-            if(selected_node === this) this.remove_selected();
             if(selected_node !== this && selected_node.units.length > 0) {
                 let to_node = last_hovered_node;
                 let node_from = selected_node;
@@ -220,7 +223,11 @@ export class Node{
             }
         }
         already_selected = this === selected_node && !already_selected;
-        if(!already_selected) last_hovered_node.set_selected()
+        if (!already_selected) last_hovered_node.set_selected()
+        else{
+            this.remove_selected();
+        }
+
 
         // show bottom information menu
         if(this.city != null && !already_selected) {
@@ -243,6 +250,7 @@ export class Node{
 
     set_type(type){
         this.type = type;
+        this.is_hidden = this.type === HIDDEN;
         this.update();
     }
 

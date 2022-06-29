@@ -32,7 +32,6 @@ export class Unit {
         this.add_unit_to_stage();
     }
 
-
     add_unit_to_stage(){
         if(this.sprite != null){
             viewport.removeChild(this.sprite);
@@ -88,7 +87,6 @@ export class Unit {
         this.health_circle_background.endFill();
         viewport.addChild(this.health_circle_background);
         viewport.addChild(this.health_circle);
-
     }
 
     set_sprite_size(){
@@ -111,7 +109,6 @@ export class Unit {
 
         const new_node = all_nodes[y][x];
         new_node.units.push(this);
-
         this.x = x;
         this.y = y;
 
