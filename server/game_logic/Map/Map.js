@@ -189,7 +189,7 @@ class Map{
                 // generate a mountain that is aligned with the general direction of the mountain range
                 let previous_node = current_node;
 
-                // logic for mountain range that's direction is horizontal
+                // logic for mountain ranges that have a horizontal direction
                 if (mountain_range_orientation === HORIZONTAL) {
                     let random_direction = this.random_int(0, 1);
                     let opposite_direction = random_direction === 0 ? 1: 0;

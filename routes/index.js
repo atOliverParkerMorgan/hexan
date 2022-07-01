@@ -12,14 +12,15 @@ const Game = game_exports.Game;
 const ServerSocket = require("../server/ServerSocket.js").ServerSocket;
 ServerSocket.init();
 
+const GAME_MODE_1v1 = "1v1";
+const GAME_MODE_2v2 = "2v2";
+const GAME_MODE_AI = "AI";
+
 
 let player_token;
 let game_token;
 
 const router = express.Router();
-
-let map_size = 2500;
-
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -28,9 +29,19 @@ router.get('/', function(req, res, next) {
 
 
 router.post("/",(req,res, next) => {
-  const nick_name = req.body;
-  if(nick_name===""){
-    res.status(422).send();
+  const nick_name = req.body.nick_name;
+
+  const game_mode = req.body.game_mode;
+
+  const map_size = req.body.map_size;
+
+  console.log(nick_name);
+  if(nick_name=== ""){
+    res.status(422).send("Error, try getting yourself a nickname");
+  }
+
+  else if(game_mode !== GAME_MODE_1v1 && game_mode !== GAME_MODE_2v2 && game_mode !== GAME_MODE_AI){
+    res.status(422).send("Error, try a valid game mode this time :)");
   }
 
   player_token = generate_token(nick_name);

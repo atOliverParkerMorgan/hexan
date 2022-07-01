@@ -63,7 +63,10 @@ if(nick_input != null) {
             xhr.open("POST", "http://127.0.0.1:8000/", true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify({
-                value: nick
+                nick_name: nick,
+                game_mode: game_mode,
+                map_size: 2500,
+
             }));
 
             xhr.onreadystatechange = () => {
@@ -79,14 +82,13 @@ if(nick_input != null) {
                         // replace index.html with game.html
                         main_div.innerHTML = loadFile("/views/game.html");
                         init_game();
-                        // window.location.replace("http://127.0.0.1:8000/");
-
                     }
                 }
             }
         }
     });
 }
+
 function loadFile(filePath) {
     let result = null;
     let xhr = new XMLHttpRequest();

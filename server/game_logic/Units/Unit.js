@@ -50,7 +50,6 @@ class Unit {
 
             all_discovered_nodes.push(current_node.get_data(player.token));
 
-            console.log(all_discovered_nodes);
             ServerSocket.send_data(socket,
                 {
                     response_type: ServerSocket.response_types.UNIT_MOVED_RESPONSE,
