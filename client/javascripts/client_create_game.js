@@ -1,5 +1,56 @@
 import {init_game} from "./game_graphics/Pixi.js";
 
+// client game mode logic
+const GAME_MODE_1v1 = "1v1";
+const GAME_MODE_2v2 = "2v2";
+const GAME_MODE_AI = "AI";
+
+let game_mode = GAME_MODE_1v1;
+
+function change_last_selected_button_to_red(){
+    switch (game_mode){
+        case GAME_MODE_1v1:
+            game_mode_to_1v1_button.classList.add("w3-red");
+            game_mode_to_1v1_button.classList.remove("w3-green");
+            break;
+        case GAME_MODE_2v2:
+            game_mode_to_2v2_button.classList.add("w3-red");
+            game_mode_to_2v2_button.classList.remove("w3-green");
+            break;
+        case GAME_MODE_AI:
+            game_mode_to_AI_button.classList.add("w3-red");
+            game_mode_to_AI_button.classList.remove("w3-green");
+            break;
+    }
+}
+
+const game_mode_to_1v1_button = document.getElementById("game_mode_to_1v1_button");
+game_mode_to_1v1_button.addEventListener("click",  function onEvent(event) {
+        change_last_selected_button_to_red();
+        game_mode = GAME_MODE_1v1;
+        game_mode_to_1v1_button.classList.remove("w3-red");
+        game_mode_to_1v1_button.classList.add("w3-green");
+    }
+)
+
+const game_mode_to_2v2_button = document.getElementById("game_mode_to_2v2_button");
+game_mode_to_2v2_button.addEventListener("click",  function onEvent(event) {
+        change_last_selected_button_to_red();
+        game_mode = GAME_MODE_2v2;
+        game_mode_to_2v2_button.classList.remove("w3-red");
+        game_mode_to_2v2_button.classList.add("w3-green");
+    }
+)
+
+const game_mode_to_AI_button = document.getElementById("game_mode_to_AI_button");
+game_mode_to_AI_button.addEventListener("click",  function onEvent(event) {
+        change_last_selected_button_to_red();
+        game_mode = GAME_MODE_AI;
+        game_mode_to_AI_button.classList.remove("w3-red");
+        game_mode_to_AI_button.classList.add("w3-green");
+    }
+)
+
 let JSON_response;
 
 const nick_input = document.getElementById("nick_input");
