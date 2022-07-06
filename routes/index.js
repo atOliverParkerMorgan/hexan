@@ -41,7 +41,7 @@ router.post("/",(req,res, next) => {
   }
 
   else if(game_mode !== GAME_MODE_1v1 && game_mode !== GAME_MODE_2v2 && game_mode !== GAME_MODE_AI){
-    res.status(422).send("Error, try a valid game mode this time :)");
+    res.status(422).send("Error, try a valid game mode this time");
   }
 
   player_token = generate_token(nick_name);

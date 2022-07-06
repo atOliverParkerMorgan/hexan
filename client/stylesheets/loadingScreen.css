@@ -1,0 +1,116 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+body {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  font-family: Montserrat, serif;
+}
+
+body {
+  background: #0f2027; /* fallback for old browsers */
+  background: linear-gradient(to right,#2c5364, #203a43, #0f2027);
+}
+
+.wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.elapse_text {
+  color: white;
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 25px;
+}
+
+.elapse_time {
+  color: white;
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 23px;
+}
+
+.text {
+  color: white;
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 50px;
+}
+.bounceball1 {
+  position: relative;
+  display: inline-block;
+  height: 37px;
+  width: 60px;
+}
+.bounceball1:before {
+  position: absolute;
+  content: '';
+  display: block;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: white;
+  transform-origin: 50%;
+  animation: bounce 600ms alternate infinite ease;
+}
+
+.bounceball2 {
+  position: relative;
+  display: inline-block;
+  height: 37px;
+  width: 60px;
+}
+.bounceball2:before {
+  position: absolute;
+  content: '';
+  display: block;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: white;
+  transform-origin: 50%;
+  animation: bounce 600ms alternate infinite ease;
+  animation-delay: 200ms
+}
+
+.bounceball3 {
+  position: relative;
+  display: inline-block;
+  height: 37px;
+  width: 60px;
+}
+.bounceball3:before {
+  position: absolute;
+  content: '';
+  display: block;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: white;
+  transform-origin: 50%;
+  animation: bounce 600ms alternate infinite ease;
+  animation-delay: 400ms
+}
+
+@keyframes bounce {
+  0% {
+    top: 30px;
+    height: 5px;
+    border-radius: 60px 60px 20px 20px;
+    transform: scaleX(2);
+  }
+  15% {
+    height: 15px;
+    border-radius: 50%;
+    transform: scaleX(1);
+  }
+  100% {
+    top: -100px;
+  }
+}
+

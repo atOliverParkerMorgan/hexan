@@ -53,6 +53,19 @@ game_mode_to_AI_button.addEventListener("click",  function onEvent(event) {
 
 let JSON_response;
 
+function update_timer(main_div, start){
+
+    let delta = Date.now() - start;
+    let seconds = (Math.floor(delta / 1000));
+    let minutes = Math.floor(seconds / 60);
+    let seconds_string = seconds === 1 ? "second": "seconds";
+    let minute_string = minutes > 1 ? "minutes": "minute";
+    let minute_text = minutes === 0 ? "": (minutes % 60) + " " + minute_string+ "  :  "
+
+    main_div.querySelector("span").innerText =  minute_text + (seconds % 60)+" "+seconds_string;
+
+}
+
 const nick_input = document.getElementById("nick_input");
 if(nick_input != null) {
     nick_input.addEventListener("keypress", function onEvent(event) {
@@ -79,9 +92,18 @@ if(nick_input != null) {
 
                         const main_div = document.getElementById("app");
 
+                        // replace index.html with loadingScreen.html
+                        main_div.innerHTML = loadFile("/views/loadingScreen.html");
+
+                        // update timer
+                        const start = Date.now();
+                        update_timer(main_div, start)
+                        setInterval(() => update_timer(main_div, start),1000);
+                        // set background image
+
                         // replace index.html with game.html
-                        main_div.innerHTML = loadFile("/views/game.html");
-                        init_game();
+                        // main_div.innerHTML = loadFile("/views/game.html");
+                        // init_game();
                     }
                 }
             }
