@@ -92,8 +92,8 @@ if(nick_input != null) {
 
                         const main_div = document.getElementById("app");
 
-                        // replace index.html with loadingScreen.html
-                        main_div.innerHTML = loadFile("/views/loadingScreen.html");
+                        // replace index.html with findingAnOpponent.html
+                        main_div.innerHTML = loadFile("/views/findingAnOpponent.html");
 
                         // update timer
                         const start = Date.now();
