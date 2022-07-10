@@ -4,7 +4,7 @@
   "private": true,
   "main": "app.js",
   "scripts": {
-    "start": "EXPRESS_PORT=8000 nodemon ./bin/www"
+
   },
   "dependencies": {
     "@pixi/graphics-extras": "^6.3.0",
