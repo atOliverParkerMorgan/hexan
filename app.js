@@ -2,7 +2,7 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const PORT_HTTP = process.env.PORT || 8000;
+const PORT_HTTP = process.env.port || 8000;
 
 const indexRouter = require('./routes/index');
 const {ServerSocket} = require("./server/ServerSocket");
