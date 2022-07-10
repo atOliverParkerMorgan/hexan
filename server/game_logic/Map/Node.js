@@ -217,9 +217,9 @@ class Node{
     // simplify node for socket.emit()
     get_data(player_token){
         let type = this.type;
-        // if(!this.is_shown.includes(player_token)){
-        //     type = HIDDEN;
-        // }
+        if(!this.is_shown.includes(player_token)){
+            type = HIDDEN;
+        }
 
        return {
            x: this.x,

@@ -15,7 +15,10 @@ ServerSocket.init();
 const GAME_MODE_1v1 = "1v1";
 const GAME_MODE_2v2 = "2v2";
 const GAME_MODE_AI = "AI";
+const GAME_MODE_FRIEND = "FRIEND";
 
+let all_players_searching_1v1 = []
+let all_players_searching_2v2 = []
 
 let player_token;
 let game_token;
@@ -36,12 +39,24 @@ router.post("/",(req,res, next) => {
   const map_size = req.body.map_size;
 
   console.log(nick_name);
+
+  // handle invalid request bodies
   if(nick_name=== ""){
     res.status(422).send("Error, try getting yourself a nickname");
   }
 
-  else if(game_mode !== GAME_MODE_1v1 && game_mode !== GAME_MODE_2v2 && game_mode !== GAME_MODE_AI){
+  else if(game_mode !== GAME_MODE_1v1 && game_mode !== GAME_MODE_2v2 && game_mode !== GAME_MODE_AI && game_mode !== GAME_MODE_FRIEND){
     res.status(422).send("Error, try a valid game mode this time");
+  }
+
+  // handle game modes
+
+  switch (game_mode){
+    case GAME_MODE_1v1:
+
+    case GAME_MODE_2v2:
+
+
   }
 
   player_token = generate_token(nick_name);
