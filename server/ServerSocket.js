@@ -12,20 +12,30 @@ const ServerSocket = {
     is_listening: false,
 
     response_types: {
+        // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
-        INVALID_MOVE: "INVALID_MOVE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
-        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE"
+        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+
+        // match making
+        FOUND_1v1_OPPONENT: "FOUND_1v1_OPPONENT",
+        FOUND_2v2_OPPONENTS: "FOUND_2v2_OPPONENTS"
+
     },
     request_types: {
+        // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         GET_MENU_INFO: "GET_MENU_INFO",
         PRODUCE_UNIT: "PRODUCE_UNIT",
-        MOVE_UNIT: "MOVE_UNIT"
+        MOVE_UNITS: "MOVE_UNIT",
+
+        // match making
+        FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
+        FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     },
 
     init:()=> {
@@ -110,6 +120,10 @@ const ServerSocket = {
                     if (player != null) {
                         // switch for different request types
                         switch (request_type){
+                            case ServerSocket.request_types.FIND_1v1_OPPONENT:
+                                MatchMaker.has_match_for_1v1();
+                                break
+
 
                             case ServerSocket.request_types.PRODUCE_UNIT:
                                 const city = game.get_city(request_data.city_name, player);

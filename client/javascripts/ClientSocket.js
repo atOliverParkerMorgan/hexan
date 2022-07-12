@@ -2,20 +2,33 @@
 export const ClientSocket = {
 
     response_types: {
+        // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
-        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE"
+        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+
+        // match making
+        FOUND_1v1_OPPONENT: "FOUND_1v1_OPPONENT",
+        FOUND_2v2_OPPONENTS: "FOUND_2v2_OPPONENTS"
+
     },
     request_types: {
+        // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         GET_MENU_INFO: "GET_MENU_INFO",
         PRODUCE_UNIT: "PRODUCE_UNIT",
         MOVE_UNITS: "MOVE_UNIT",
+
+        // match making
+        FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
+        FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     },
+
+
     socket: io("ws://127.0.0.1:8082", {transports: ['websocket']}),
 
     send_data: (data)=>{

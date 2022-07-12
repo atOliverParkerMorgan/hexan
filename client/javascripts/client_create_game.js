@@ -1,4 +1,6 @@
 import {init_game} from "./game_graphics/Pixi.js";
+import {ClientSocket} from "./ClientSocket.js";
+
 
 // client game mode logic
 const GAME_MODE_1v1 = "1v1";
@@ -81,6 +83,17 @@ function update_timer(main_div, start){
 
 }
 
+
+function match_making_listener(...args){
+    const response_type = args[0][0].response_type;
+    const response_data = args[0][0].data;
+    switch (response_type) {
+        case ClientSocket.response_types.FOUND_1v1_OPPONENT:
+        case ClientSocket.response_types.FOUND_2v2_OPPONENTS:
+            init_game();
+    }
+}
+
 const nick_input = document.getElementById("nick_input");
 if(nick_input != null) {
     nick_input.addEventListener("keypress", function onEvent(event) {
@@ -114,10 +127,13 @@ if(nick_input != null) {
 
                             // starting time
                             const start = Date.now();
-                            update_timer(main_div, start)
+                            update_timer(main_div, start);
+
+                            // listen for match up!
+                            ClientSocket.add_data_listener(match_making_listener, JSON_response.player_token);
 
                             // update the timer about every second
-                            setInterval(() => update_timer(main_div, start), 1000);
+                            setInterval(()=> update_timer(main_div, start), 1000);
                         }else{
                             //replace index.html with game.html
                             main_div.innerHTML = loadFile("/views/game.html");

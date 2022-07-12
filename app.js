@@ -10,6 +10,24 @@ const {ServerSocket} = require("./server/ServerSocket");
 const app = express();
 app.engine('html', require('ejs').renderFile);
 
+// create database
+const mysql = require('mysql');
+
+// let database_connection = mysql.createConnection({
+//   host: "localhost",
+//   user: "hexan",
+//   password: "1234"
+// });
+//
+// database_connection.connect(function(err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+//   database_connection.query("CREATE DATABASE mydb", function (err, result) {
+//     if (err) throw err;
+//     console.log("Database created");
+//   });
+// });
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
