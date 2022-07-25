@@ -2,7 +2,7 @@
   "name": "hexan",
   "version": "0.0.0",
   "private": true,
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {},
   "dependencies": {
     "@pixi/graphics-extras": "^6.3.0",
@@ -24,6 +24,7 @@
     "nano-time": "^1.0.0",
     "node.js": "^0.0.1-security",
     "nodemon": "^2.0.15",
+    "package.json": "^2.0.1",
     "path": "^0.12.7",
     "pg": "^8.7.3",
     "pixi-viewport": "^4.34.4",

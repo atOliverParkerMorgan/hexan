@@ -58,7 +58,7 @@ router.post("/",(req,res, next) => {
 
   ServerSocket.all_games.push(game);
 
-  // game.place_start_city(current_player);
+  game.place_start_city(current_player);
 
   // console.log(player_token);
   // console.log(game_token);

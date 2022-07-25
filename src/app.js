@@ -4,29 +4,11 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const PORT_HTTP = process.env.PORT || 8000;
 
-const indexRouter = require('./routes/index');
+const indexRouter = require('./routes');
 const {ServerSocket} = require("./server/ServerSocket");
 
 const app = express();
 app.engine('html', require('ejs').renderFile);
-
-// create database
-const mysql = require('mysql');
-
-// let database_connection = mysql.createConnection({
-//   host: "localhost",
-//   user: "hexan",
-//   password: "1234"
-// });
-//
-// database_connection.connect(function(err) {
-//   if (err) throw err;
-//   console.log("Connected!");
-//   database_connection.query("CREATE DATABASE mydb", function (err, result) {
-//     if (err) throw err;
-//     console.log("Database created");
-//   });
-// });
 
 
 // view engine setup
@@ -36,25 +18,26 @@ app.set('view engine', 'html');
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, '/client')));
 
 // add sever socket request and response listeners
 ServerSocket.add_request_listener();
 ServerSocket.add_response_listener();
 
-app.use('/', indexRouter);
 
 // modules
-app.use('/pixi', express.static(__dirname + '/node_modules/pixi.js/dist/browser/'));
-app.use('/pixi_extras', express.static(__dirname + '/node_modules/@pixi/graphics-extras/dist/browser/'));
-app.use('/pixi_viewport', express.static(__dirname + '/node_modules/pixi-viewport/dist/'));
-app.use('/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client/dist/'));
+app.use('/pixi', express.static(__dirname + '/../node_modules/pixi.js/dist/browser/'));
+app.use('/pixi_extras', express.static(__dirname + '/../node_modules/@pixi/graphics-extras/dist/browser/'));
+app.use('/pixi_viewport', express.static(__dirname + '/../node_modules/pixi-viewport/dist/'));
+app.use('/socket.io-client', express.static(__dirname + '/../node_modules/socket.io-client/dist/'));
+
+app.use('/', indexRouter);
 
 // html files
-app.use('/views', express.static('views', {}));
+app.use('/views', express.static(__dirname + '/views'));
 
 // static client files
-app.use(express.static('client', {}));
+app.use(express.static(__dirname + '/client'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
