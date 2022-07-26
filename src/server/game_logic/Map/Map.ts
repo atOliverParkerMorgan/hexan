@@ -1,27 +1,35 @@
-const Node = require("./Node");
-const Continent = require("./Continent");
-
-const WATER = 0x80C5DE;
-const GRASS = 0x7FFF55;
-const BEACH = 0xFFFF00;
-const MOUNTAIN = 0xF2F2F2;
-
-// borders see @Map.add_neighbors_to_nodes()
-const LEFT = 0;
-const RIGHT = 1;
-const TOP_LEFT = 2;
-const TOP_RIGHT = 3;
-const BOTTOM_LEFT = 4;
-const BOTTOM_RIGHT = 5;
-
-const HORIZONTAL = 0;
-const VERTICAL = 1;
-
-const CONTINENT_NAMES = ["Drolend", "Dritune", "Figith", "Esox", "Okea", "Owrai", "Aneoqeon", "Vliutufor", "Strineaces", "Uaqixesh"]
-
+import Continent from "./Continent";
+import Node from "./Node";
+import Player from "../Player";
 
 class Map{
-    constructor(number_of_land_nodes, number_of_continents){
+
+    public static readonly DISTANCE_BETWEEN_HEX = 2 * (Node.HEX_SIDE_SIZE ** 2 - (Node.HEX_SIDE_SIZE/2) ** 2) ** .5;
+    public static readonly WORLD_WIDTH = Map.DISTANCE_BETWEEN_HEX * Node.HEX_SIDE_SIZE;
+    public static readonly WORLD_HEIGHT = Node.HEX_SIDE_SIZE * 1.5 * Node.HEX_SIDE_SIZE;
+
+    // borders see @Map.add_neighbors_to_nodes()
+    public static readonly LEFT: number = 0;
+    public static readonly RIGHT: number = 1;
+    public static readonly TOP_LEFT: number = 2;
+    public static readonly TOP_RIGHT: number = 3;
+    public static readonly BOTTOM_LEFT: number = 4;
+    public static readonly BOTTOM_RIGHT: number = 5;
+
+    public static HORIZONTAL: number = 0;
+    public static VERTICAL: number = 1;
+
+    public static readonly CONTINENT_NAMES: string[] = ["Drolend", "Dritune", "Figith", "Esox", "Okea", "Owrai", "Aneoqeon", "Vliutufor", "Strineaces", "Uaqixesh"]
+
+    // attributes
+    public readonly number_of_land_nodes: number;
+    continent_size: number;
+    side_length: number;
+    number_of_continents: number;
+    all_nodes: Node[][];
+    all_continents: Continent[]
+
+    constructor(number_of_land_nodes: number, number_of_continents: number){
         // number must be even for a symmetrical grid
         if(number_of_land_nodes ** .5 % 1 !== 0) console.log("Warning, the square root of number of nodes should be a whole number ");
         this.number_of_land_nodes = number_of_land_nodes;
@@ -85,18 +93,16 @@ class Map{
         }
     }
 
-    get_node(x, y){
-        if(parseInt(x, 10) !== x || parseInt(y, 10) !== y) return null;
-        if(x<0 || y<0 || x >= this.side_length || y>=this.side_length) return null;
+    get_node(x: number, y: number): Node{
         return this.all_nodes[y][x];
 
     }
 
-    get_node_(node){
+    get_node_(node: Node): Node{
         return this.get_node(node.x, node.y);
     }
 
-    generate_island_map(){
+    generate_island_map(): void{
         this.create_nodes();
 
         for (let i = 0; i < this.number_of_continents ; i++) {
@@ -105,33 +111,34 @@ class Map{
             do{
                 random_x = this.random_int(0, this.side_length - 1);
                 random_y = this.random_int(0, this.side_length - 1);
-            }while(this.all_nodes[random_y][random_x].type !== WATER);
+            }while(this.all_nodes[random_y][random_x].type !== Node.WATER);
 
-            this.generate_continent(random_x, random_y, this.continent_size, this.shuffleArray(CONTINENT_NAMES).shift());
+            this.generate_continent(random_x, random_y, this.continent_size, this.shuffleArray(Map.CONTINENT_NAMES).shift());
        }
         for(const continent of this.all_continents) {
             for (const node of continent.all_nodes) {
-                if (!node.is_coast() && node.type === BEACH) {
-                    continent.change_node_to(node, GRASS);
+                if (!node.is_coast() && node.type === Node.BEACH) {
+                    continent.change_node_to(node, Node.GRASS);
                 }
             }
         }
     }
 
-    generate_continent(seed_x, seed_y, continent_size, continent_name) {
+    generate_continent(seed_x: number, seed_y: number, continent_size: number, continent_name: string): void {
         this.all_continents.push(new Continent(continent_name, this));
-        let current_continent = this.get_continent(continent_name);
+        // @TODO fix any type
+        let current_continent: any  = this.get_continent(continent_name);
 
         current_continent.add_beach_node(this.all_nodes[seed_y][seed_x]);
 
         for (let i = 0; i < continent_size;) {
 
-            let random_continent_node = current_continent.get_random_node_of_type(BEACH);
+            let random_continent_node = current_continent.get_random_node_of_type(Node.BEACH);
             if(random_continent_node == null) continue;
-            let random_neighbour_node = random_continent_node.get_random_neighbour_of_type(WATER);
+            let random_neighbour_node = random_continent_node.get_random_neighbour_of_type(Node.WATER);
 
             if(random_neighbour_node == null){
-                current_continent.change_node_to(random_continent_node, GRASS);
+                current_continent.change_node_to(random_continent_node, Node.GRASS);
             }else{
                 current_continent.add_beach_node(random_neighbour_node);
                 i++;
@@ -140,7 +147,7 @@ class Map{
         // cleaning up scattered beach nodes
         for (const node of current_continent.beach_nodes) {
             if(!node.is_coast()){
-                current_continent.change_node_to(node, GRASS);
+                current_continent.change_node_to(node, Node.GRASS);
             }
         }
 
@@ -149,7 +156,7 @@ class Map{
         for (let i = 0; i <= number_of_mountain_ranges; i++) {
             if(i === 0) this.generate_mountains(seed_x, seed_y, number_of_mountain_ranges, current_continent);
             else{
-                let random_grass_node = current_continent.get_random_node_of_type(GRASS);
+                let random_grass_node = current_continent.get_random_node_of_type(Node.GRASS);
                 this.generate_mountains(random_grass_node.x, random_grass_node.y, this.random_int(5, 15), current_continent);
             }
             // console.log("Generating mountains: "+ (i) + " of "+number_of_mountain_ranges)
@@ -164,38 +171,39 @@ class Map{
         // generating lakes
         for (const node of current_continent.all_nodes) {
             if(node.borders.length === 6){
-                current_continent.change_node_to(node, WATER);
+                current_continent.change_node_to(node, Node.WATER);
             }
         }
     }
 
-    generate_mountains(seed_x, seed_y, size, current_continent){
+    generate_mountains(seed_x: number, seed_y: number, size: number, current_continent: Continent): void{
 
         // 10 is straight; 1 is scattered
-        const MOUNTAIN_RANGE_STRAIGHTNESS = 4;
+        const MOUNTAIN_RANGE_STRAIGHTNESS: number = 4;
 
-        let mountain_range_orientation =  this.random_int(HORIZONTAL, VERTICAL);
-        let current_node = this.get_node(seed_x, seed_y);
+        let mountain_range_orientation: number =  this.random_int(Map.HORIZONTAL, Map.VERTICAL);
+        let current_node: Node = this.get_node(seed_x, seed_y);
 
         current_continent.add_mountain_node(current_node);
 
-        const max_number_of_continues = 18;
-        let number_of_continues = 0;
+        // ensures that the algorithm doesn't get stuck in a infinite loop
+        const max_number_of_loops: number = 18;
+        let current_number_of_loops = 0;
 
         for (let i = 0; i < size;) {
             // the chances of the next mountain being aligned with the mountain range are 50%
-            let mountain_noise = this.random_int(0, 10);
+            let mountain_noise: number = this.random_int(0, 10);
             if(mountain_noise <= MOUNTAIN_RANGE_STRAIGHTNESS) {
                 // generate a mountain that is aligned with the general direction of the mountain range
-                let previous_node = current_node;
+                let previous_node: Node = current_node;
 
                 // logic for mountain ranges that have a horizontal direction
-                if (mountain_range_orientation === HORIZONTAL) {
-                    let random_direction = this.random_int(0, 1);
-                    let opposite_direction = random_direction === 0 ? 1: 0;
+                if (mountain_range_orientation === Map.HORIZONTAL) {
+                    let random_direction: number = this.random_int(0, 1);
+                    let opposite_direction: number = random_direction === 0 ? 1: 0;
 
-                    let random_neighbour = current_node.neighbors[random_direction];
-                    let opposite_neighbour = current_node.neighbors[opposite_direction];
+                    let random_neighbour: Node = current_node.neighbors[random_direction];
+                    let opposite_neighbour: Node = current_node.neighbors[opposite_direction];
 
                     if(random_neighbour != null) {
                         if (random_neighbour.could_be_mountain()) {
@@ -207,8 +215,8 @@ class Map{
                             }
                         }
                         else {
-                            number_of_continues++;
-                            if(number_of_continues >= max_number_of_continues) break;
+                            current_number_of_loops++;
+                            if(current_number_of_loops >= max_number_of_loops) break;
 
                             continue;
                         }
@@ -219,15 +227,15 @@ class Map{
                     }
                     else{
                         // make sure the loop breaks if there are no valid nodes
-                        number_of_continues++;
-                        if(number_of_continues >= max_number_of_continues) break;
+                        current_number_of_loops++;
+                        if(current_number_of_loops >= max_number_of_loops) break;
 
                         continue;
                     }
                 }
 
                 // logic for mountain range that's direction is vertical
-                else if(mountain_range_orientation === VERTICAL){
+                else if(mountain_range_orientation === Map.VERTICAL){
                     // random order of valid nodes
                     const random_valid_node_neighbours_indexes = this.shuffleArray([2, 3, 4, 5]);
 
@@ -246,8 +254,8 @@ class Map{
                         current_node = previous_node;
 
                         // make sure the loop breaks if there are no valid nodes
-                        number_of_continues++;
-                        if(number_of_continues >= max_number_of_continues) break;
+                        current_number_of_loops++;
+                        if(current_number_of_loops >= max_number_of_loops) break;
 
                         continue;
                     }
@@ -258,8 +266,8 @@ class Map{
                     current_node = previous_node;
 
                     // make sure the loop breaks if there are no valid nodes
-                    number_of_continues++;
-                    if(number_of_continues >= max_number_of_continues) break;
+                    current_number_of_loops++;
+                    if(current_number_of_loops >= max_number_of_loops) break;
 
                     continue;
                 }
@@ -268,7 +276,7 @@ class Map{
                     current_continent.add_mountain_node(current_node);
 
                     i++
-                    number_of_continues = 0;
+                    current_number_of_loops = 0;
 
                 } else {
                     current_node = previous_node;
@@ -277,31 +285,41 @@ class Map{
             }else {
                 // get a node that isn't aligned with the mountain range
                 // checkout @ this.add_neighbours_to_nodes() to understand grid arrangement
-                let random_mountain_node = current_continent.get_random_node_of_type(MOUNTAIN)
-                    .get_random_neighbour_in_range(2, 5, GRASS);
+                let random_mountain_node = current_continent.get_random_node_of_type(Node.MOUNTAIN)
+                    ?.get_random_neighbour_in_range(2, 5, Node.GRASS);
 
                 if (random_mountain_node != null) {
                     current_continent.add_mountain_node(random_mountain_node);
 
                     i++
-                    number_of_continues = 0;
+                    current_number_of_loops = 0;
                 }else {
 
                     // make sure the loop breaks if there are no valid nodes
-                    number_of_continues++;
-                    if(number_of_continues >= max_number_of_continues) break;
+                    current_number_of_loops++;
+                    if(current_number_of_loops >= max_number_of_loops) break;
                 }
             }
         }
     }
 
-    generate_river(continent){
-        let random_mountain_node = continent.get_random_node_of_type(MOUNTAIN);
-        let random_beach_node = continent.get_random_node_of_type(BEACH);
-        let last_direction;
-        let river_path = this.a_star(random_mountain_node, random_beach_node, null);
+    // to generate river a continent must have mountains and beaches
+    generate_river(continent: Continent): void{
+        let random_mountain_node: Node | undefined = continent.get_random_node_of_type(Node.MOUNTAIN);
+        let random_beach_node: Node | undefined = continent.get_random_node_of_type(Node.BEACH);
 
-        let current_side = this.random_int(LEFT, BOTTOM_RIGHT);
+        if(random_mountain_node == undefined || random_beach_node == undefined) {
+           // there are no mountains or beaches on this continent therefore a river cannot be generated
+           return;
+        }
+
+        let last_direction: number | null = null;
+
+
+        // @TODO create path interface
+        let river_path: any = this.a_star(<Node> random_mountain_node, <Node> random_beach_node);
+
+        let current_side: number | undefined = this.random_int(Map.LEFT, Map.BOTTOM_RIGHT);
         for (let i = 0; i < river_path.length; i++) {
 
             // random direction of river see Node.create_river()
@@ -322,7 +340,7 @@ class Map{
             }
 
             // if node is beach break
-            if(node.type === BEACH) break;
+            if(node.type === Node.BEACH) break;
 
             current_side = this.switch_position(neighbor);
             last_direction = direction;
@@ -331,7 +349,7 @@ class Map{
         }
 
     }
-    print_position(pos){
+    print_position(pos: number): string | undefined{
         switch (pos){
             case 0:
                 return "LEFT";
@@ -347,25 +365,25 @@ class Map{
                 return "BOTTOM RIGHT";
         }
     }
-    switch_position(pos){
+    switch_position(pos: number): number | undefined{
         switch (pos){
-            case LEFT:
-                return RIGHT;
-            case RIGHT:
-                return LEFT;
-            case TOP_LEFT:
-                return BOTTOM_RIGHT;
-            case TOP_RIGHT:
-                return BOTTOM_LEFT;
-            case BOTTOM_LEFT:
-                return TOP_RIGHT;
-            case BOTTOM_RIGHT:
-                return TOP_LEFT;
+            case Map.LEFT:
+                return Map.RIGHT;
+            case Map.RIGHT:
+                return Map.LEFT;
+            case Map.TOP_LEFT:
+                return Map.BOTTOM_RIGHT;
+            case Map.TOP_RIGHT:
+                return Map.BOTTOM_LEFT;
+            case Map.BOTTOM_LEFT:
+                return Map.TOP_RIGHT;
+            case Map.BOTTOM_RIGHT:
+                return Map.TOP_LEFT;
         }
     }
 
     // get the shortest path between two nodes
-    a_star(start_node, goal_node, player){
+    a_star(start_node: Node, goal_node: Node, player?: Player){
         let open_set = [start_node];
         let closed_set = []
 
@@ -374,7 +392,7 @@ class Map{
             let current_index = 0;
 
             for(let i = 0; i < open_set.length; i++){
-                if(open_set[i].get_heuristic_value(player, start_node, goal_node) < current_node.get_heuristic_value(player, start_node, goal_node)){
+                if(open_set[i].get_heuristic_value(player, start_node, goal_node) < current_node.get_heuristic_value(<Player> player, start_node, goal_node)){
                     current_node = open_set[i];
                     current_index = i;
                 }
@@ -386,7 +404,7 @@ class Map{
             if(current_node.x === goal_node.x && current_node.y === goal_node.y){
                 let solution_path = [current_node];
                 while (solution_path[solution_path.length - 1] !== start_node){
-                    solution_path.push(solution_path[solution_path.length - 1].parent);
+                    solution_path.push(<Node>solution_path[solution_path.length - 1].parent);
                 }
                 return solution_path.reverse();
             }
@@ -417,14 +435,15 @@ class Map{
         return null;
     }
 
-    for_each_node(fun){
+    for_each_node(fun: (node: Node)=>void): void{
         for(let node_rows of this.all_nodes){
             for(let node of node_rows){
                 fun(node);
             }
         }
     }
-    format(player_token){
+    // @TODO type for data
+    format(player_token: string): any{
         let data = [];
         for(let node_rows of this.all_nodes){
             for(let node of node_rows) {
@@ -435,14 +454,15 @@ class Map{
     }
 
     // range: <min; max>
-    random_int(min, max){
+    // @ TODO add unit functions
+    random_int(min: number, max: number): number{
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     // Randomize array in-place using Durstenfeld shuffle algorithm
-    shuffleArray(array) {
+    shuffleArray(array: any[]): any[] {
         for (let i = array.length - 1; i > 0; i--) {
             let j = Math.floor(Math.random() * (i + 1));
             let temp = array[i];
@@ -452,14 +472,14 @@ class Map{
         return array;
     }
 
-    get_continent(name){
+    get_continent(name: string): Continent | null{
         for (const continent of this.all_continents) {
             if(continent.name === name) return continent;
         }
         return null;
     }
 
-    make_neighbour_nodes_shown(player, node){
+    make_neighbour_nodes_shown(player: Player, node: Node){
 
         if(node == null) return;
 
@@ -472,4 +492,4 @@ class Map{
 
 }
 
-module.exports = Map;
+export default Map;

@@ -1,6 +1,6 @@
 import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "./Pixi.js";
-import {hide_city_bottom_menu, show_city_bottom_menu} from "../bottom_menu.js";
-import {ClientSocket} from "../ClientSocket.js";
+import {hide_city_bottom_menu, show_city_bottom_menu} from "../bottom_menu.ts";
+import {ClientSocket} from "../ClientSocket.ts";
 
 // types of nodes displayed as colors
 const WATER = 0x80C5DE;

@@ -1,13 +1,24 @@
+import Game from "../Game";
+import Node from "../Map/Node";
+import Player from "../Player";
+import {Socket} from "socket.io";
 const {ServerSocket} = require("../../ServerSocket");
 
-const WATER = 0x80C5DE;
-
-const CAVALRY = "CAVALRY"
-const MELEE = "MELEE";
-const RANGE = "RANGE";
-
 class Unit {
-    constructor(x, y, id, type, speed){
+
+    public static readonly WATER: number = 0x80C5DE;
+    public static readonly CAVALRY: string = "CAVALRY"
+    public static readonly MELEE: string = "MELEE";
+    public static readonly RANGE: string = "RANGE";
+
+    private x: number;
+    private y: number;
+    private id: number;
+    private type: string;
+    private speed: number;
+    private sight :number;
+
+    constructor(x: number, y: number, id:number, type: string, speed: number){
         this.x = x;
         this.y = y;
         this.id = id;
@@ -15,7 +26,9 @@ class Unit {
         this.speed = speed;
         this.sight = 3;
     }
-    move_and_send_response(path, game, player, socket){
+
+    // send response to client if the unit has successfully moved
+    move_and_send_response(path: Node[], game: Game, player: Player, socket: Socket){
 
         this.move_along_path(game, player, socket, path);
 
@@ -30,16 +43,16 @@ class Unit {
         // }
     }
 
-
-    move_along_path(game, player, socket, path){
+    // move this Unit along a valid path provided by the client
+    move_along_path(game: Game, player: Player, socket: Socket, path: Node[]){
         if(path.length === 0) return;
         setTimeout(() => {
-            const current_node = path[0];
+            const current_node: Node = path[0];
 
             this.x = current_node.x;
             this.y = current_node.y;
 
-            let all_discovered_nodes = [];
+            let all_discovered_nodes: Node[] = [];
 
             for(const node of current_node.neighbors){
                 if(node != null){
@@ -64,6 +77,10 @@ class Unit {
 
         }, this.speed);
     }
+    get_id(){
+        return this.id;
+    }
+
     get_data(){
         return{
             id: this.id,
@@ -73,8 +90,4 @@ class Unit {
     }
 }
 
-module.exports.Unit = Unit;
-
-module.exports.MELEE = MELEE;
-module.exports.RANGE = RANGE;
-module.exports.CAVALRY = CAVALRY;
+export default Unit;

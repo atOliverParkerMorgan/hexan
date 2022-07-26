@@ -1,7 +1,18 @@
+import Player from "./Player";
+import {Socket} from "socket.io";
+
 const {ServerSocket} = require("../ServerSocket");
 
 class City{
-    constructor(owner, x, y, name){
+    public readonly owner: Player;
+    public readonly x: number;
+    public readonly y: number;
+    public readonly name: string;
+    food_per_a_minute: number;
+    production_per_a_minute: number;
+    is_producing: boolean;
+
+    constructor(owner: Player, x:number, y:number, name:string){
         this.owner = owner;
         this.x = x;
         this.y = y;
@@ -11,7 +22,7 @@ class City{
         this.is_producing = false;
     }
 
-    start_production(production_time, socket, unit_type){
+    start_production(production_time: number, socket: Socket, unit_type: string): void{
         if(!this.is_producing){
             this.is_producing = true
             
@@ -19,7 +30,7 @@ class City{
         }
     }
 
-    produce_unit_and_send_response(socket, unit_type){
+    produce_unit_and_send_response(socket: Socket, unit_type: string): void{
         this.owner.add_unit(this.x, this.y, unit_type);
 
         ServerSocket.send_data(socket, {
@@ -34,4 +45,4 @@ class City{
     }
 }
 
-module.exports.City = City;
+export default City;

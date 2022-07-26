@@ -1,13 +1,13 @@
-import {Node} from "./Node.js";
-import {all_nodes} from "./Node.js";
-import {ClientSocket} from "../ClientSocket.js"
+import {Node} from "./Node.ts";
+import {all_nodes} from "./Node.ts";
+import {ClientSocket} from "../ClientSocket.ts"
 
 import {MELEE, RANGE} from "./Unit/Unit.js";
 import {Melee} from "./Unit/Melee.js";
 import {Range} from "./Unit/Range.js";
-// import {Cavalry} from "./Unit/Cavalry.js";
+// import {Cavalry} from "./Unit/Cavalry.ts";
 
-import {show_city_bottom_menu} from "../bottom_menu.js";
+import {show_city_bottom_menu} from "../bottom_menu.ts";
 
 export let HEX_SIDE_SIZE;
 export let DISTANCE_BETWEEN_HEX;

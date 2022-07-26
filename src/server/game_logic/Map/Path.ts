@@ -1,8 +1,11 @@
+import Game from "../Game";
+import Node from "./Node";
+
 class Path{
-    constructor(game, path_cords_nodes) {
+    path: Node[];
+    constructor(game: Game, path_cords_nodes: [index: number []]) {
         this.path = [];
         for(const node_cords of path_cords_nodes){
-
             this.path.push(game.map.get_node(node_cords[0], node_cords[1]));
         }
     }
@@ -16,4 +19,5 @@ class Path{
     }
 }
 
-module.exports.Path = Path;
+export default Path;
+// module.exports.Path = Path;

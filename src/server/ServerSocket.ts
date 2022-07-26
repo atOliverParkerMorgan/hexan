@@ -1,8 +1,10 @@
-const http = require("http");
-const httpServer = http.createServer();
-const server = require("socket.io");
-const io = server(httpServer);
-const {Path} = require("./game_logic/Map/Path.js");
+import { createServer } from "http";
+import { Server } from "socket.io";
+import Path from "./game_logic/Map/Path.js";
+
+const httpServer = createServer();
+const io = new Server(httpServer);
+
 
 const PORT_SOCKET = 8082;
 
@@ -11,7 +13,9 @@ const ServerSocket = {
     all_games: [],
     is_listening: false,
 
-    response_types: {
+
+
+    response_types:{
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -45,7 +49,7 @@ const ServerSocket = {
         }
     },
 
-    get_game: (game_token)=> {
+    get_game: (game_token: string)=> {
         for (const game of ServerSocket.all_games) {
             console.log("GAME TOKEN: ", game.token);
             if (game.token === game_token) {
@@ -56,7 +60,7 @@ const ServerSocket = {
 
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
     add_response_listener: () => {
-        io.on("connection", (socket) => {
+        io.on("connection", (socket: s) => {
             socket.on("get-data", (...args) => {
 
                 const request_type = args[0].request_type;
@@ -161,6 +165,6 @@ const ServerSocket = {
     send_data(socket, data, player_token){
         socket.emit(player_token, data);
     }
-}
+};
 
-module.exports.ServerSocket = ServerSocket;
+export default{ServerSocket}

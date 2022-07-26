@@ -1,5 +1,5 @@
-import {DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.js"
-import {all_nodes} from "../Node.js";
+import {DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.ts"
+import {all_nodes} from "../Node.ts";
 
 export const MELEE = "MELEE";
 export const RANGE = "RANGE";
