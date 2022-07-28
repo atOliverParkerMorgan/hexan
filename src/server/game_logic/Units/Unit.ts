@@ -1,8 +1,9 @@
 import Game from "../Game";
-import Node from "../Map/Node";
+import {Node, NodeData} from "../Map/Node";
 import Player from "../Player";
 import {Socket} from "socket.io";
-const {ServerSocket} = require("../../ServerSocket");
+import {ServerSocket} from "../../ServerSocket";
+
 
 class Unit {
 
@@ -52,7 +53,7 @@ class Unit {
             this.x = current_node.x;
             this.y = current_node.y;
 
-            let all_discovered_nodes: Node[] = [];
+            let all_discovered_nodes: NodeData[] = [];
 
             for(const node of current_node.neighbors){
                 if(node != null){

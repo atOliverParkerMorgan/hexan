@@ -1,7 +1,11 @@
 // singleton
-export const ClientSocket = {
+import {io} from "socket.io-client";
 
-    response_types: {
+export namespace ClientSocket {
+    export const response_types: {readonly MAP_RESPONSE: string, readonly UNITS_RESPONSE: string,
+                                readonly ALL_RESPONSE: string, readonly UNIT_MOVED_RESPONSE: string,
+                                readonly MENU_INFO_RESPONSE: string, readonly FOUND_1v1_OPPONENT: string,
+                                readonly FOUND_2v2_OPPONENTS: string} = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -13,8 +17,10 @@ export const ClientSocket = {
         FOUND_1v1_OPPONENT: "FOUND_1v1_OPPONENT",
         FOUND_2v2_OPPONENTS: "FOUND_2v2_OPPONENTS"
 
-    },
-    request_types: {
+    };
+    export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
+                            readonly GET_MENU_INFO: string, readonly PRODUCE_UNIT: string, readonly MOVE_UNITS: string,
+                            readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string } = {
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
@@ -26,24 +32,23 @@ export const ClientSocket = {
         // match making
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
-    },
+    };
 
+    export const socket = io("ws://127.0.0.1:8082", {transports: ['websocket']});
 
-    socket: io("ws://127.0.0.1:8082", {transports: ['websocket']}),
-
-    send_data: (data)=>{
+    export function send_data(data: any): void{
         ClientSocket.socket.emit("send-data", data);
-    },
+    }
 
-    add_data_listener: (fun, player_token)=>{
+    export function add_data_listener(fun: (...args: any[]) => void, player_token: string): void{
         console.log("add_data_listener");
         ClientSocket.socket.on(player_token, (...args) => {
             console.log("RESPONSE: "+args[0].response_type);
             fun(args);
         });
-    },
+    }
 
-    get_data(request_type, game_token, player_token) {
+    export function get_data(request_type: string, game_token: string, player_token: string): void{
         console.log("REQUEST: "+request_type);
         ClientSocket.socket.emit("get-data", {
             request_type: request_type,
@@ -52,9 +57,5 @@ export const ClientSocket = {
                 player_token: player_token
             }
         })
-    },
-
-    set_token() {
-
-    },
+    }
 }

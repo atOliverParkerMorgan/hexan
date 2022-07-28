@@ -1,6 +1,5 @@
-import City from "../City";
 import Map from "./Map";
-import Node from "./Node";
+import {Node} from "./Node";
 
 class Continent{
     // attributes
@@ -99,10 +98,12 @@ class Continent{
                 break;
         }
     }
+
     get_random_node(): Node | null{
         if(this.all_nodes.length === 0) return null;
         return this.all_nodes[this.random_int(0, this.all_nodes.length-1)];
     }
+
     get_random_node_of_type(type: number): Node | undefined{
         switch (type){
             case Node.GRASS:

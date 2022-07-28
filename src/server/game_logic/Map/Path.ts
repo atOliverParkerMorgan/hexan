@@ -1,5 +1,5 @@
 import Game from "../Game";
-import Node from "./Node";
+import {Node} from "./Node";
 
 class Path{
     path: Node[];

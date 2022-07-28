@@ -1,68 +1,83 @@
 import { createServer } from "http";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
+import Game from "./game_logic/Game";
 import Path from "./game_logic/Map/Path.js";
+import {MatchMaker} from "./MatchMaker";
 
+// init sever
 const httpServer = createServer();
 const io = new Server(httpServer);
 
 
-const PORT_SOCKET = 8082;
-
 // singleton
-const ServerSocket = {
-    all_games: [],
-    is_listening: false,
+export namespace ServerSocket {
+    export const PORT_SOCKET: number = 8082;
+    export const all_games: Game[] =  [];
+    export let is_listening: boolean =  false;
 
+    export const response_types: { readonly MAP_RESPONSE: string, readonly UNITS_RESPONSE: string,
+                                            readonly ALL_RESPONSE: string, readonly UNIT_MOVED_RESPONSE: string,
+                                            readonly MENU_INFO_RESPONSE: string, readonly INVALID_MOVE: string,
+                                            readonly FOUND_1v1_OPPONENT: string, readonly FOUND_2v2_OPPONENTS: string } =  {
 
-
-    response_types:{
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+        INVALID_MOVE: "INVALID_MOVE",
 
         // match making
         FOUND_1v1_OPPONENT: "FOUND_1v1_OPPONENT",
         FOUND_2v2_OPPONENTS: "FOUND_2v2_OPPONENTS"
 
-    },
-    request_types: {
+    };
+    export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
+                                          readonly GET_ALL: string, readonly GET_MENU_INFO: string,
+                                          readonly PRODUCE_UNIT: string, readonly MOVE_UNITS: string,
+                                          readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string} = {
+
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         GET_MENU_INFO: "GET_MENU_INFO",
         PRODUCE_UNIT: "PRODUCE_UNIT",
-        MOVE_UNITS: "MOVE_UNIT",
+        MOVE_UNITS: "MOVE_UNITS",
 
         // match making
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
-    },
+    };
 
-    init:()=> {
-        if (!ServerSocket.is_listening) {
-            httpServer.listen(PORT_SOCKET);
-            ServerSocket.is_listening = true;
-        }
-    },
+      export function init(): void {
+            if (!ServerSocket.is_listening) {
+                httpServer.listen(PORT_SOCKET);
+                ServerSocket.is_listening = true;
+            }
+      }
 
-    get_game: (game_token: string)=> {
+
+    export function get_game (game_token: string): Game | undefined{
         for (const game of ServerSocket.all_games) {
             console.log("GAME TOKEN: ", game.token);
             if (game.token === game_token) {
                 return game;
             }
         }
-    },
+    }
+
+    export function send_data(socket: Socket, data: any, player_token: string): void{
+        socket.emit(player_token, data);
+    }
 
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
-    add_response_listener: () => {
-        io.on("connection", (socket: s) => {
-            socket.on("get-data", (...args) => {
+    export function add_response_listener(): void{
+        io.on("connection", (socket: Socket) => {
+            socket.on("get-data", (...args: any[]) => {
 
+                // get request data from client
                 const request_type = args[0].request_type;
                 const request_data = args[0].data;
 
@@ -73,6 +88,7 @@ const ServerSocket = {
                     if (player != null){
                         // switch for different responses
                         switch (request_type){
+
                             case ServerSocket.request_types.GET_UNITS:
                                 socket.emit(player.token, {
                                     response_type: ServerSocket.response_types.UNITS_RESPONSE,
@@ -81,6 +97,7 @@ const ServerSocket = {
                                     },
                                 });
                                 break;
+
                             case ServerSocket.request_types.GET_MENU_INFO:
                                 // get city information and possible units to produce
                                 let request_city;
@@ -108,15 +125,15 @@ const ServerSocket = {
                     }
                 }
             });
-        });
-    },
+     });
+}
 
     // acts as a setter - changes game_state according to clients request and game rules.
-    add_request_listener: ()=> {
-        io.on("connection", (socket) => {
+    export function add_request_listener(): void{
+        io.on("connection", (socket: Socket) => {
             // receive a message from the client
             socket.on("send-data", (...args) => {
-                const request_type = args[0].request_type;
+                const request_type: string = args[0].request_type;
                 const request_data = args[0].data;
                 const game = ServerSocket.get_game(request_data.game_token);
                 if (game != null) {
@@ -137,7 +154,7 @@ const ServerSocket = {
                                 }
                                 break;
 
-                            case ServerSocket.request_types.MOVE_UNIT:
+                            case ServerSocket.request_types.MOVE_UNITS:
 
                                 for(const id of request_data.unit_ids){
                                     const unit = player.get_unit(id)
@@ -146,9 +163,10 @@ const ServerSocket = {
                                         ServerSocket.send_data(socket, {
                                             response_type: ServerSocket.response_types.INVALID_MOVE,
                                             data: {
-                                                unit: this
+                                                unit: unit
                                             }
-                                            }, player.token);
+                                        }, player.token);
+
                                         break;
                                     }
                                     unit.move_and_send_response(path.path, game, player, socket);
@@ -160,11 +178,5 @@ const ServerSocket = {
                 }
             });
         });
-    },
-
-    send_data(socket, data, player_token){
-        socket.emit(player_token, data);
     }
-};
-
-export default{ServerSocket}
+}

@@ -1,29 +1,30 @@
-import {Node} from "./Node.ts";
-import {all_nodes} from "./Node.ts";
-import {ClientSocket} from "../ClientSocket.ts"
-
-import {MELEE, RANGE} from "./Unit/Unit.js";
+import * as PIXI from "pixi.js"
+import {Node} from "./Node";
+import {ClientSocket} from "../ClientSocket"
+import { Viewport } from 'pixi-viewport'
+import Unit from "./Unit/Unit";
 import {Melee} from "./Unit/Melee.js";
 import {Range} from "./Unit/Range.js";
 // import {Cavalry} from "./Unit/Cavalry.ts";
 
-import {show_city_bottom_menu} from "../bottom_menu.ts";
+import {show_city_bottom_menu} from "../bottom_menu";
 
-export let HEX_SIDE_SIZE;
-export let DISTANCE_BETWEEN_HEX;
-export let WORLD_WIDTH;
-export let WORLD_HEIGHT;
-export let viewport;
+export let HEX_SIDE_SIZE: number;
+export let DISTANCE_BETWEEN_HEX: number;
+export let WORLD_WIDTH: number;
+export let WORLD_HEIGHT: number;
+export let viewport: Viewport;
 
-export let all_units = [];
 
-export const app = new PIXI.Application({resizeTo: window, transparent: true,  autoresize: true })
+export let all_units: Unit[] = [];
+
+export const app = new PIXI.Application({resizeTo: window, transparent: true,  }) // autoresize: true
 export const Graphics = PIXI.Graphics;
 
 
 // @TODO client a_star doesn't always match sever a_star
 // get the shortest path between two nodes
-export function a_star(start_node, goal_node){
+export function a_star(start_node: Node, goal_node: Node){
     let open_set = [start_node];
     let closed_set = []
 
@@ -42,16 +43,20 @@ export function a_star(start_node, goal_node){
         closed_set.push(current_node);
 
         if(current_node.x === goal_node.x && current_node.y === goal_node.y){
-            let solution_path = [current_node];
+            let solution_path: Node[] = [current_node];
             while (solution_path[solution_path.length - 1] !== start_node){
-                solution_path.push(solution_path[solution_path.length - 1].parent);
+                solution_path.push(<Node> solution_path[solution_path.length - 1].parent);
             }
             return solution_path.reverse();
         }
 
         for(const node of current_node.get_neighbours()) {
 
-            if (closed_set.includes(node) || node == null) {
+            if(node == null){
+                continue;
+            }
+
+            if (closed_set.includes(node)) {
                 continue;
             }
 
@@ -74,7 +79,7 @@ export function a_star(start_node, goal_node){
     return null;
 }
 
-function init_canvas(map, cities){
+function init_canvas(map: any, cities: any){
 
     HEX_SIDE_SIZE = map.length ** .5;
 
@@ -83,14 +88,21 @@ function init_canvas(map, cities){
     WORLD_HEIGHT = HEX_SIDE_SIZE * 1.5 * HEX_SIDE_SIZE;
 
     document.body.appendChild(app.view);
+
+    viewport = new Viewport({
+        screenWidth: window.innerWidth,
+        screenHeight: window.innerHeight,
+        worldWidth: WORLD_WIDTH,
+        worldHeight: WORLD_HEIGHT,
+        interaction: app.renderer.plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
+    })
+
     let starting_city = cities[0];
 
     let row_bias = starting_city.y % 2 === 0 ? DISTANCE_BETWEEN_HEX/2 : 0;
 
     const city_x = (starting_city.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
     const city_y = (starting_city.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
-
-    viewport = app.stage.addChild(new pixi_viewport.Viewport());
 
     viewport
         .drag()
@@ -104,10 +116,10 @@ function init_canvas(map, cities){
 
     app.stage.addChild(viewport);
     document.body.appendChild(app.view);
-    app.ticker.add(delta=>loop(delta));
+    app.ticker.add(delta=> loop());
 }
 
-const process_data = (...args)=>{
+const process_data = (...args: any[])=>{
     const response_type = args[0][0].response_type;
     const response_data = args[0][0].data;
     switch (response_type) {
@@ -115,19 +127,22 @@ const process_data = (...args)=>{
 
             all_units = [];
             for(const unit of response_data.units){
-                let graphics_unit;
+                let graphics_unit: Unit | undefined;
 
                 // get the correct sprite for unit depending on it's type
-                if(unit.type === MELEE){
+                if(unit.type === Unit.MELEE){
                     graphics_unit = new Melee(unit.x, unit.y, unit.id, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, "../../images/warrior.png");
                 }
-                else if(unit.type === RANGE){
+                else if(unit.type === Unit.RANGE){
                     graphics_unit = new Range(unit.x, unit.y, unit.id, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE * .75, "../../images/slinger.png");
                 }
 
+                if(graphics_unit == null){
+                    return;
+                }
 
                 all_units.push(graphics_unit);
-                all_nodes[unit.y][unit.x].units = [graphics_unit];
+                Node.all_nodes[unit.y][unit.x].units = [graphics_unit];
             }
             break;
 
@@ -143,14 +158,14 @@ const process_data = (...args)=>{
             for (let node of map) {
 
                 if (node.y !== y) {
-                    all_nodes.push(row)
+                    Node.all_nodes.push(row)
                     row = [];
                     y = node.y;
                 }
                 // init node => add nodes to PIXI stage
                 row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city));
             }
-            all_nodes.push(row);
+            Node.all_nodes.push(row);
             break;
 
         case ClientSocket.response_types.MENU_INFO_RESPONSE:
@@ -161,16 +176,19 @@ const process_data = (...args)=>{
         case ClientSocket.response_types.UNIT_MOVED_RESPONSE:
             let found = false;
 
+            if(all_units == null){
+                return;
+            }
             // find the unit in question
             for (const unit of all_units) {
-                if(unit.id === response_data.unit.id){
+                if(unit?.id === response_data.unit.id){
                     found = true;
-                    unit.move_to(response_data.unit.x, response_data.unit.y);
+                    unit?.move_to(response_data.unit.x, response_data.unit.y);
                 }
             }
             // update nodes
             for(const node of response_data.nodes){
-                all_nodes[node.y][node.x].set_type(node.type);
+                Node.all_nodes[node.y][node.x].set_type(node.type);
             }
 
             // if not found something went wrong
@@ -190,11 +208,13 @@ const process_data = (...args)=>{
 
 export function init_game() {
 
-    const player_token = localStorage.getItem("player_token");
-    const game_token = localStorage.getItem("game_token");
+    const player_token: string | null = localStorage.getItem("player_token");
+    const game_token: string | null = localStorage.getItem("game_token");
 
-    // console.log("Player: " + player_token);
-    // console.log("Game: " + game_token);
+    // the server hasn't provided a token for the client
+    if (player_token == null || game_token == null){
+        return;
+    }
 
     ClientSocket.add_data_listener(process_data, player_token)
     ClientSocket.get_data(ClientSocket.request_types.GET_ALL, game_token, player_token)

@@ -13,26 +13,26 @@ let game_mode = GAME_MODE_1v1;
 function change_last_selected_button_to_red(){
     switch (game_mode){
         case GAME_MODE_1v1:
-            game_mode_to_1v1_button.classList.add("w3-red");
-            game_mode_to_1v1_button.classList.remove("w3-green");
+            game_mode_to_1v1_button?.classList.add("w3-red");
+            game_mode_to_1v1_button?.classList.remove("w3-green");
             break;
         case GAME_MODE_2v2:
-            game_mode_to_2v2_button.classList.add("w3-red");
-            game_mode_to_2v2_button.classList.remove("w3-green");
+            game_mode_to_2v2_button?.classList.add("w3-red");
+            game_mode_to_2v2_button?.classList.remove("w3-green");
             break;
         case GAME_MODE_AI:
-            game_mode_to_AI_button.classList.add("w3-red");
-            game_mode_to_AI_button.classList.remove("w3-green");
+            game_mode_to_AI_button?.classList.add("w3-red");
+            game_mode_to_AI_button?.classList.remove("w3-green");
             break;
         case GAME_MODE_FRIEND:
-            game_mode_to_FRIEND_button.classList.add("w3-red");
-            game_mode_to_FRIEND_button.classList.remove("w3-green");
+            game_mode_to_FRIEND_button?.classList.add("w3-red");
+            game_mode_to_FRIEND_button?.classList.remove("w3-green");
             break;
     }
 }
 
 const game_mode_to_1v1_button = document.getElementById("game_mode_to_1v1_button");
-game_mode_to_1v1_button.addEventListener("click",  function onEvent(event) {
+game_mode_to_1v1_button?.addEventListener("click",  function onEvent() {
         change_last_selected_button_to_red();
         game_mode = GAME_MODE_1v1;
         game_mode_to_1v1_button.classList.remove("w3-red");
@@ -41,7 +41,7 @@ game_mode_to_1v1_button.addEventListener("click",  function onEvent(event) {
 )
 
 const game_mode_to_2v2_button = document.getElementById("game_mode_to_2v2_button");
-game_mode_to_2v2_button.addEventListener("click",  function onEvent(event) {
+game_mode_to_2v2_button?.addEventListener("click",  function onEvent() {
         change_last_selected_button_to_red();
         game_mode = GAME_MODE_2v2;
         game_mode_to_2v2_button.classList.remove("w3-red");
@@ -50,7 +50,7 @@ game_mode_to_2v2_button.addEventListener("click",  function onEvent(event) {
 )
 
 const game_mode_to_AI_button = document.getElementById("game_mode_to_AI_button");
-game_mode_to_AI_button.addEventListener("click",  function onEvent(event) {
+game_mode_to_AI_button?.addEventListener("click",  function onEvent() {
         change_last_selected_button_to_red();
         game_mode = GAME_MODE_AI;
         game_mode_to_AI_button.classList.remove("w3-red");
@@ -59,7 +59,7 @@ game_mode_to_AI_button.addEventListener("click",  function onEvent(event) {
 )
 
 const game_mode_to_FRIEND_button = document.getElementById("game_mode_to_FRIEND_button");
-game_mode_to_FRIEND_button.addEventListener("click",  function onEvent(event) {
+game_mode_to_FRIEND_button?.addEventListener("click",  function onEvent() {
         change_last_selected_button_to_red();
         game_mode = GAME_MODE_FRIEND;
         game_mode_to_FRIEND_button.classList.remove("w3-red");
@@ -70,7 +70,7 @@ game_mode_to_FRIEND_button.addEventListener("click",  function onEvent(event) {
 
 let JSON_response;
 
-function update_timer(main_div, start){
+function update_timer(main_div: any, start: number){
 
     let delta = Date.now() - start;
     let seconds = (Math.floor(delta / 1000));
@@ -84,7 +84,7 @@ function update_timer(main_div, start){
 }
 
 
-function match_making_listener(...args){
+function match_making_listener(...args: any[]){
     const response_type = args[0][0].response_type;
     const response_data = args[0][0].data;
     switch (response_type) {
@@ -94,9 +94,9 @@ function match_making_listener(...args){
     }
 }
 
-const nick_input = document.getElementById("nick_input");
+const nick_input: any = document.getElementById("nick_input");
 if(nick_input != null) {
-    nick_input.addEventListener("keypress", function onEvent(event) {
+    nick_input.addEventListener("keypress", function onEvent(event: any) {
         let nick = nick_input.value;
         if (event.key === "Enter" && nick.length > 0) {
             //client_socket.send_data("create_game_with_ai", nick);
@@ -118,12 +118,12 @@ if(nick_input != null) {
                         localStorage.setItem("player_token", JSON_response.player_token);
                         localStorage.setItem("game_token", JSON_response.game_token);
 
-                        const main_div = document.getElementById("app");
+                        const main_div: any = document.getElementById("app");
                         console.log(game_mode);
 
                         if(game_mode === GAME_MODE_1v1 || game_mode === GAME_MODE_2v2 ) {
-                            // replace index.html with findingAnOpponent.html
-                            main_div.innerHTML = loadFile("/views/findingAnOpponent.html");
+                            // replace index.html.ts with findingAnOpponent.html.ts
+                            main_div.innerHTML = loadFile("/views/findingAnOpponent.html.ts");
 
                             // starting time
                             const start = Date.now();
@@ -135,8 +135,8 @@ if(nick_input != null) {
                             // update the timer about every second
                             setInterval(()=> update_timer(main_div, start), 1000);
                         }else{
-                            //replace index.html with game.html
-                            main_div.innerHTML = loadFile("/views/game.html");
+                            //replace index.html.ts with game.html.ts
+                            main_div.innerHTML = loadFile("/views/game.html.ts");
                             init_game();
                         }
 
@@ -148,7 +148,7 @@ if(nick_input != null) {
     });
 }
 
-function loadFile(filePath) {
+function loadFile(filePath: string) {
     let result = null;
     let xhr = new XMLHttpRequest();
     xhr.open("GET", filePath, false);

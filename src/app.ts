@@ -4,15 +4,15 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import IndexController from "./routes/IndexController";
 import Controller from "./routes/IndexController";
-import {ServerSocket} from './server/ServerSocket";
 import ControllerInterface from "./routes/ControllerInterface";
+import {renderFile} from 'ejs' ;
 
 class App {
   public app: Application = express();
   public port: number;
   public controllers: [ControllerInterface]
 
-  constructor(...controllers: [ControllerInterface], port: number) {
+  constructor(port: number, ...controllers: [ControllerInterface]) {
     this.controllers = controllers
     this.port = port
   }
@@ -25,7 +25,10 @@ class App {
   }
 
   private init_view_engine() {
-    this.app.engine('html', require('ejs').renderFile);
+    this.app.use(express.static(path.join(__dirname, '/client')));
+    this.app.engine('html', renderFile);
+    this.app.set('view engine', 'html');
+    this.app.set('view engine', 'html');
     this.app.use(cookieParser());
     this.app.use(express.json());
     this.app.use(express.urlencoded({extended: false}));
@@ -75,7 +78,7 @@ class App {
 }
 
 const index_controller: Controller = new IndexController()
-const app: App = new App([index_controller], 8000)
+const app = new App(8000, index_controller);
 
 app.init();
 app.handle_error();

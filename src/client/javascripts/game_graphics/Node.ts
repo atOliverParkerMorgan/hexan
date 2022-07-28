@@ -1,53 +1,71 @@
-import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "./Pixi.js";
-import {hide_city_bottom_menu, show_city_bottom_menu} from "../bottom_menu.ts";
-import {ClientSocket} from "../ClientSocket.ts";
+import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, WORLD_HEIGHT, WORLD_WIDTH, viewport} from "./Pixi.js";
+import {hide_city_bottom_menu, show_city_bottom_menu} from "../bottom_menu";
+import * as PIXI from "pixi.js"
+import {ClientSocket} from "../ClientSocket";
+import {Unit} from "./Unit/Unit";
 
-// types of nodes displayed as colors
-const WATER = 0x80C5DE;
-const GRASS = 0x7FFF55;
-const BEACH = 0xFFFF00;
-const MOUNTAIN = 0xF2F2F2;
-const HIDDEN = 0xE0D257;
-const CITY = 0xF53E3E;
-
-// borders see @Map.add_neighbors_to_nodes()
-const LEFT = 0;
-const RIGHT = 1;
-const TOP_LEFT = 2;
-const TOP_RIGHT = 3;
-const BOTTOM_LEFT = 4;
-const BOTTOM_RIGHT = 5;
-
-const MOUNTAIN_TRAVEL_BIAS = 10;
-
-let last_hovered_node = null;
-let selected_node = null;
-
-let selected_line;
-const selected_color = 0xFFAC1C;
-const selected_opacity = 1;
-const selected_thickness = 4;
-
-let movement_hint_lines = [];
-const movement_hint_color = 0xFFAC1C;
-const movement_hint_opacity = 1;
-const movement_hint_thickness = 3;
-
-let bottom_menu_shown = false;
-let already_selected = false;
-
-let path;
-
-export let all_nodes = [];
 
 export class Node{
-    constructor(x, y, id, type, line_borders, city) {
+    // types of nodes displayed as colors
+    public static readonly WATER: number = 0x80C5DE;
+    public static readonly GRASS: number = 0x7FFF55;
+    public static readonly BEACH: number = 0xFFFF00;
+    public static readonly MOUNTAIN: number = 0xF2F2F2;
+    public static readonly HIDDEN: number = 0xE0D257;
+    public static readonly CITY: number = 0xF53E3E;
+
+
+    public static readonly LEFT: number = 0;
+    public static readonly RIGHT: number = 1;
+    public static readonly TOP_LEFT: number = 2;
+    public static readonly TOP_RIGHT: number = 3;
+    public static readonly BOTTOM_LEFT: number = 4;
+    public static readonly BOTTOM_RIGHT: number = 5;
+
+    public static readonly MOUNTAIN_TRAVEL_BIAS = 10;
+
+    private static last_hovered_node: Node | null = null;
+    private static selected_node: Node | null = null;
+
+    private static selected_line: any;
+    private static selected_color: number = 0xFFAC1C;
+    private static selected_opacity: number = 1;
+    private static  selected_thickness: number = 4;
+
+    private static movement_hint_lines: any[] = [];
+    private static movement_hint_color: number = 0xFFAC1C;
+    private static movement_hint_opacity: number = 1;
+    private static movement_hint_thickness: number = 3;
+
+    private static bottom_menu_shown: boolean = false;
+    private static already_selected: boolean = false;
+
+    private static path: Node[] | null;
+    public static all_nodes: Node[][] = [];
+
+    x: number;
+    y: number;
+    id: number;
+    type: number;
+    opacity: number;
+    is_hidden: boolean;
+    sprite: PIXI.Sprite | null;
+    city: any;
+    units: Unit[];
+    line_borders: PIXI.Graphics[];
+    line_borders_cords: number[];
+    parent: Node | null;
+
+    hex: PIXI.Graphics | null;
+
+
+    constructor(x: number, y: number, id: number, type: number, line_borders: any, city: any) {
         this.x = x;
         this.y = y;
         this.id = id;
         this.type = type;
         this.opacity = 1;
-        this.is_hidden = this.type === HIDDEN;
+        this.is_hidden = this.type === Node.HIDDEN;
 
         this.sprite = null;
 
@@ -56,16 +74,13 @@ export class Node{
         this.units = [];
 
         this.line_borders = [];
-        this.line_borders_cords = line_borders;
+        this.line_borders_cords = [];
         this.add_node_to_stage()
-        if(!this.is_hidden) this.set_border(WATER, 5, 1 , this.line_borders_cords);
+        if(!this.is_hidden) this.set_border(Node.WATER, 5, 1 , this.line_borders_cords);
 
         // used for A* searching algorithm
         this.parent = null;
-    }
-
-    produce(){
-
+        this.hex = null;
     }
 
     get_neighbours(){
@@ -81,8 +96,8 @@ export class Node{
         for(const cord of cords){
             const x = this.x + cord[0];
             const y = this.y + cord[1];
-            if(x >= 0 && y >= 0 && x < all_nodes.length && y < all_nodes.length){
-                neighbours.push(all_nodes[y][x]);
+            if(x >= 0 && y >= 0 && x < Node.all_nodes.length && y < Node.all_nodes.length){
+                neighbours.push(Node.all_nodes[y][x]);
             }else{
                 neighbours.push(undefined);
             }
@@ -91,11 +106,11 @@ export class Node{
         return neighbours;
     }
 
-    get_heuristic_value(start_node, goal_node){
+    get_heuristic_value(start_node: Node, goal_node: Node): number{
         const value = this.get_distance_to_node(start_node) + this.get_distance_to_node(goal_node);
         if (this.is_hidden) return value;
-        if (this.type === WATER) value + 1000;
-        if (this.type === MOUNTAIN) value + MOUNTAIN_TRAVEL_BIAS;
+        if (this.type === Node.WATER) return value + 1000;
+        if (this.type === Node.MOUNTAIN) return value + Node.MOUNTAIN_TRAVEL_BIAS;
         return value;
     }
 
@@ -103,24 +118,25 @@ export class Node{
 
         this.hex = new Graphics();
 
-        if(this.city != null) this.hex.beginFill(CITY, this.opacity);
-        else if(this.is_hidden) this.hex.beginFill(HIDDEN, this.opacity);
+        if(this.city != null) this.hex.beginFill(Node.CITY, this.opacity);
+        else if(this.is_hidden) this.hex.beginFill(Node.HIDDEN, this.opacity);
         else this.hex.beginFill(this.type, this.opacity);
 
-        this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
+        // this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
+        this.hex.drawPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
         this.hex.endFill();
 
         this.hex.interactive = true;
 
-        this.hex.on('pointerdown', (event) => { this.on_click() });
-        this.hex.on('mouseover', (event) => { this.set_hovered() });
+        this.hex.on('pointerdown', () => { this.on_click() });
+        this.hex.on('mouseover', () => { this.set_hovered() });
 
         // changing color of city
 
         viewport.addChild(this.hex);
 
         if(this.city != null){
-            this.sprite = new PIXI.Sprite.from("/images/village.png");
+            this.sprite = PIXI.Sprite.from("/images/village.png");
 
             this.sprite.width = DISTANCE_BETWEEN_HEX * .7;
             this.sprite.height = DISTANCE_BETWEEN_HEX * .7;
@@ -131,7 +147,7 @@ export class Node{
         }
     }
 
-    get_distance_to_node(node) {
+    get_distance_to_node(node: Node) {
         return Math.sqrt((node.get_x_in_pixels() - this.get_x_in_pixels()) ** 2 + (node.get_y_in_pixels() - this.get_y_in_pixels()) ** 2);
     }
 
@@ -152,7 +168,7 @@ export class Node{
         return all_unit_data;
     }
 
-    set_border(color, thickness, opacity, borders){
+    set_border(color: number, thickness: number, opacity: number, borders: number[]){
         this.line_borders.forEach(line => line.clear())
         this.line_borders = [];
         let line = new Graphics();
@@ -162,9 +178,9 @@ export class Node{
         for(const border of borders){
             let direction_bias;
             switch (border){
-                case TOP_RIGHT:
-                case BOTTOM_LEFT:
-                    direction_bias = border === TOP_RIGHT ? 1: -1;
+                case Node.TOP_RIGHT:
+                case Node.BOTTOM_LEFT:
+                    direction_bias = border === Node.TOP_RIGHT ? 1: -1;
                     line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
                     line.lineStyle(thickness, color)
                         .moveTo(0, direction_bias * - HEX_SIDE_SIZE)
@@ -172,9 +188,9 @@ export class Node{
                     this.line_borders.push(line);
                     viewport.addChild(line);
                     break;
-                case RIGHT:
-                case LEFT:
-                    direction_bias = border === RIGHT ? 1: -1;
+                case Node.RIGHT:
+                case Node.LEFT:
+                    direction_bias = border === Node.RIGHT ? 1: -1;
                     line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
                     line.lineStyle(thickness, color)
                         .moveTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * - HEX_SIDE_SIZE / 2)
@@ -182,9 +198,9 @@ export class Node{
                     this.line_borders.push(line);
                     viewport.addChild(line);
                     break;
-                case BOTTOM_RIGHT:
-                case TOP_LEFT:
-                    direction_bias = border === BOTTOM_RIGHT ? 1: -1;
+                case Node.BOTTOM_RIGHT:
+                case Node.TOP_LEFT:
+                    direction_bias = border === Node.BOTTOM_RIGHT ? 1: -1;
                     line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
                     line.lineStyle(thickness, color)
                         .moveTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * HEX_SIDE_SIZE / 2)
@@ -197,14 +213,14 @@ export class Node{
 
     on_click(){
        // unit movement
-        if(selected_node != null) {
-            if(selected_node !== this && selected_node.units.length > 0) {
-                let to_node = last_hovered_node;
-                let node_from = selected_node;
+        if(Node.selected_node != null) {
+            if(Node.selected_node !== this && Node.selected_node.units.length > 0) {
+                let to_node: Node = <Node> Node.last_hovered_node;
+                let node_from: Node = <Node> Node.selected_node;
 
                 // get cords of path to send to server application
                 let path_node_cords = []
-                for (const node of path) {
+                for (const node of <Node[]> Node.path) {
                     path_node_cords.push([node.x, node.y]);
                 }
 
@@ -213,7 +229,7 @@ export class Node{
                     data: {
                         game_token: localStorage.game_token,
                         player_token: localStorage.player_token,
-                        unit_ids: selected_node.get_unit_ids(),
+                        unit_ids: Node.selected_node.get_unit_ids(),
                         path: path_node_cords
                     }
                 })
@@ -222,16 +238,16 @@ export class Node{
                 node_from.update();
             }
         }
-        already_selected = this === selected_node && !already_selected;
-        if (!already_selected) last_hovered_node.set_selected()
+        Node.already_selected = this === Node.selected_node && !Node.already_selected;
+        if (!Node.already_selected) Node.last_hovered_node?.set_selected()
         else{
             this.remove_selected();
         }
 
 
         // show bottom information menu
-        if(this.city != null && !already_selected) {
-            bottom_menu_shown = !bottom_menu_shown;
+        if(this.city != null && !Node.already_selected) {
+            Node.bottom_menu_shown = !Node.bottom_menu_shown;
             // get bottom menu information
             ClientSocket.socket.emit("get-data", {
                 request_type: ClientSocket.request_types.GET_MENU_INFO,
@@ -248,131 +264,132 @@ export class Node{
         }
     }
 
-    set_type(type){
+    set_type(type: number){
         this.type = type;
-        this.is_hidden = this.type === HIDDEN;
+        this.is_hidden = this.type === Node.HIDDEN;
         this.update();
     }
 
     remove_selected(){
-        if(selected_line!=null){
-            viewport.removeChild(selected_line);
+        if(Node.selected_line!=null){
+            viewport.removeChild(Node.selected_line);
         }
-        selected_node = null;
+        Node.selected_node = null;
         this.update()
     }
 
     set_selected(){
 
         // clear all hint lines
-        for(const movement_hint_line of movement_hint_lines){
+        for(const movement_hint_line of Node.movement_hint_lines){
             movement_hint_line.clear();
         }
-        movement_hint_lines = [];
+        Node.movement_hint_lines = [];
 
-        if(selected_line!=null){
-            viewport.removeChild(selected_line);
+        if(Node.selected_line!=null){
+            viewport.removeChild(Node.selected_line);
         }
-        selected_node = this;
+        Node.selected_node = this;
 
-        selected_line = new Graphics();
-        selected_line.beginFill(selected_color, selected_opacity);
+        Node.selected_line = new Graphics();
+        Node.selected_line.beginFill(Node.selected_color, Node.selected_opacity);
 
         // adding an outline to the node that is currently selected
         for (let i = 0, direction_bias = 1; i < 2 ; i++, direction_bias = -1) {
-            selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
-            selected_line.lineStyle(selected_thickness, selected_color)
-                .moveTo(0, direction_bias * (- HEX_SIDE_SIZE + selected_thickness / 2))
-                .lineTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - selected_thickness / 2), direction_bias * (- HEX_SIDE_SIZE / 2 + selected_thickness / 2));
+            Node.selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+            Node.selected_line.lineStyle(Node.selected_thickness, Node.selected_color)
+                .moveTo(0, direction_bias * (- HEX_SIDE_SIZE + Node.selected_thickness / 2))
+                .lineTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - Node.selected_thickness / 2), direction_bias * (- HEX_SIDE_SIZE / 2 + Node.selected_thickness / 2));
 
 
-            selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
-            selected_line.lineStyle(selected_thickness, selected_color)
-                .moveTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - selected_thickness / 2), direction_bias * ( - HEX_SIDE_SIZE / 2 + selected_thickness / 2))
-                .lineTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - selected_thickness / 2), direction_bias * ( HEX_SIDE_SIZE / 2 - selected_thickness / 2));
+            Node.selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+            Node.selected_line.lineStyle(Node.selected_thickness, Node.selected_color)
+                .moveTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - Node.selected_thickness / 2), direction_bias * ( - HEX_SIDE_SIZE / 2 + Node.selected_thickness / 2))
+                .lineTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - Node.selected_thickness / 2), direction_bias * ( HEX_SIDE_SIZE / 2 - Node.selected_thickness / 2));
 
 
-            selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
-            selected_line.lineStyle(selected_thickness, selected_color)
-                .moveTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - selected_thickness / 2), direction_bias * (HEX_SIDE_SIZE / 2 - selected_thickness / 2))
-                .lineTo(0, direction_bias * (HEX_SIDE_SIZE - selected_thickness / 2));
+            Node.selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+            Node.selected_line.lineStyle(Node.selected_thickness, Node.selected_color)
+                .moveTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - Node.selected_thickness / 2), direction_bias * (HEX_SIDE_SIZE / 2 - Node.selected_thickness / 2))
+                .lineTo(0, direction_bias * (HEX_SIDE_SIZE - Node.selected_thickness / 2));
         }
-        viewport.addChild(selected_line);
+        viewport.addChild(Node.selected_line);
     }
 
     set_hovered(){
-        function set_last_node_hovered(this_node){
-            last_hovered_node = this_node;
+        function set_last_node_hovered(this_node: Node){
+            Node.last_hovered_node = this_node;
             this_node.opacity = .5;
             this_node.update();
         }
 
         // restores last node to original value
-        if(last_hovered_node != null) {
-            if(last_hovered_node.x !== this.x || last_hovered_node.y!== this.y) {
-                last_hovered_node.opacity = 1;
-                last_hovered_node.update();
+        if (Node.last_hovered_node != null) {
+            if (Node.last_hovered_node.x !== this.x || Node.last_hovered_node.y !== this.y) {
+                Node.last_hovered_node.opacity = 1;
+                Node.last_hovered_node.update();
 
                 // sets new node (this node) to hovered
                 set_last_node_hovered(this);
-                if(selected_node != null) {
-                    if (selected_node.units.length > 0) {
+                if (Node.selected_node != null) {
+                    if (Node.selected_node.units.length > 0) {
 
-                        if(movement_hint_lines.length > 0){
-                            for(const movement_hint_line of movement_hint_lines){
+                        if (Node.movement_hint_lines.length > 0) {
+                            for (const movement_hint_line of Node.movement_hint_lines) {
                                 movement_hint_line.clear();
                             }
-                           movement_hint_lines = [];
+                            Node.movement_hint_lines = [];
                         }
 
-                        path = a_star(selected_node, last_hovered_node);
+                        Node.path = a_star(Node.selected_node, Node.last_hovered_node);
+                        if(Node.path == null) return;
 
-                        let last_node = selected_node;
+                        let last_node = Node.selected_node;
 
-                        for (let i = 1; i < path.length ; i++) {
+                        for (let i = 1; i < Node.path.length; i++) {
                             let movement_hint_line = new Graphics();
                             viewport.addChild(movement_hint_line);
 
                             const last_x = last_node.get_x_in_pixels();
                             const last_y = last_node.get_y_in_pixels();
-                            const current_x = path[i].get_x_in_pixels();
-                            const current_y = path[i].get_y_in_pixels();
+                            const current_x = Node.path[i].get_x_in_pixels();
+                            const current_y = Node.path[i].get_y_in_pixels();
 
-                            if(i===1) {
+                            if (i === 1) {
                                 movement_hint_line.position.set((last_x + current_x) / 2, (last_y + current_y) / 2);
-                                movement_hint_line.lineStyle(movement_hint_thickness, movement_hint_color)
+                                movement_hint_line.lineStyle(Node.movement_hint_thickness, Node.movement_hint_color)
                                     .moveTo(0, 0)
                                     .lineTo((current_x - last_x) / 2, (current_y - last_y) / 2);
-                            }else{
+                            } else {
                                 movement_hint_line.position.set(last_x, last_y);
-                                movement_hint_line.lineStyle(movement_hint_thickness, movement_hint_color)
+                                movement_hint_line.lineStyle(Node.movement_hint_thickness, Node.movement_hint_color)
                                     .moveTo(0, 0)
                                     .lineTo(current_x - last_x, current_y - last_y);
                             }
 
-                            movement_hint_lines.push(movement_hint_line);
+                            Node.movement_hint_lines.push(movement_hint_line);
 
 
-                            last_node = path[i];
+                            last_node = Node.path[i];
                         }
                     }
                 }
             }
         }
         // initial hover - no previous node
-        else{
+        else {
             set_last_node_hovered(this);
         }
     }
 
     update(){
-        this.hex.clear();
+        this.hex?.clear();
         this.add_node_to_stage();
         for(const unit of this.units){
             unit.add_unit_to_stage();
         }
-        if(this === selected_node) this.set_selected();
+        if(this === Node.selected_node) this.set_selected();
 
-        if(!this.is_hidden) this.set_border(WATER, 5, 1 , this.line_borders_cords);
+        if(!this.is_hidden) this.set_border(Node.WATER, 5, 1 , this.line_borders_cords);
     }
 }

@@ -1,29 +1,27 @@
 import {ClientSocket} from "./ClientSocket.js";
 
-import {MELEE} from "./game_graphics/Unit/Unit.js";
-import {RANGE} from "./game_graphics/Unit/Unit.js";
-import {CAVALRY} from "./game_graphics/Unit/Unit.js";
+import Unit from "./game_graphics/Unit/Unit";
 
-function get_unit_div(units){
+function get_unit_div(units: any){
 
 }
 
-export function show_city_bottom_menu(city){
+export function show_city_bottom_menu(city: any){
     show_city_data(city);
-    document.getElementById("bottom_city_menu").style.visibility = "visible";
+    (<HTMLInputElement >document.getElementById("bottom_city_menu")).style.visibility = "visible";
 }
 export function hide_city_bottom_menu(){
-    document.getElementById("bottom_city_menu").style.visibility = "hidden";
+    (<HTMLInputElement >document.getElementById("bottom_city_menu")).style.visibility = "hidden";
 }
-function show_city_data(city){
-   document.getElementById("city_name").innerText = city.name;
-   document.getElementById("food_per_a_minute").innerText = city.food_per_a_minute;
-   document.getElementById("production_per_a_minute").innerText = city.production_per_a_minute;
+function show_city_data(city: any){
+   (<HTMLInputElement >document.getElementById("city_name")).innerText = city.name;
+   (<HTMLInputElement >document.getElementById("food_per_a_minute")).innerText = city.food_per_a_minute;
+   (<HTMLInputElement >document.getElementById("production_per_a_minute")).innerText = city.production_per_a_minute;
 
    // show units that can be produced
    // create html menu with javascript
-   const div_production_menu = document.getElementById("production_menu");
-   div_production_menu.removeChild(document.getElementById("unit_menu"));
+   const div_production_menu = (<HTMLInputElement >document.getElementById("production_menu"));
+   div_production_menu.removeChild((<HTMLInputElement >document.getElementById("unit_menu")));
    const div_unit_menu = document.createElement("div");
    div_unit_menu.id = "unit_menu";
 
@@ -38,20 +36,20 @@ function show_city_data(city){
 
        const unit_img = document.createElement("img");
 
-       if(unit_type === MELEE) {
+       if(unit_type === Unit.MELEE) {
            unit_img.src = "/images/warrior.png"
            unit_img.onclick = function () {
-               request_production(MELEE);
+               request_production(Unit.MELEE);
            };
-       }else if(unit_type === RANGE){
+       }else if(unit_type === Unit.RANGE){
            unit_img.src = "/images/slinger.png"
            unit_img.onclick = function () {
-               request_production(RANGE);
+               request_production(Unit.RANGE);
            };
-       }else if(unit_type === CAVALRY){
+       }else if(unit_type === Unit.CAVALRY){
            unit_img.src = "/images/knight.png"
            unit_img.onclick = function () {
-               request_production(CAVALRY);
+               request_production(Unit.CAVALRY);
            };
        }
        unit_img.style.width = "50px";
@@ -66,33 +64,33 @@ function show_city_data(city){
 
        produce_unit_div.appendChild(unit_img);
        col_div.appendChild(produce_unit_div)
-       row_div.appendChild(col_div)
+       row_div?.appendChild(col_div)
 
-       div_unit_menu.appendChild(row_div);
+       div_unit_menu.appendChild(<HTMLInputElement> row_div);
        div_production_menu.appendChild(div_unit_menu)
    }
 }
 
-export function show_unit_info_bottom_menu(units){
+export function show_unit_info_bottom_menu(units: any){
     show_city_data(units);
-    document.getElementById("bottom_unit_menu").style.visibility = "visible";
+    (<HTMLInputElement>document.getElementById("bottom_unit_menu")).style.visibility = "visible";
 }
 export function hide_unit_info_bottom_menu() {
-    document.getElementById("bottom_unit_menu").style.visibility = "hidden";
+    (<HTMLInputElement>document.getElementById("bottom_unit_menu")).style.visibility = "hidden";
 }
-function show_unit_data(units){
+function show_unit_data(units: any){
 
 }
 
 
-function request_production(unit_type){
+function request_production(unit_type: string){
     ClientSocket.send_data({
         request_type: ClientSocket.request_types.PRODUCE_UNIT,
         data: {
             unit_type: unit_type,
             player_token: localStorage.player_token,
             game_token: localStorage.game_token,
-            city_name: document.getElementById("city_name").textContent
+            city_name: (<HTMLInputElement >document.getElementById("city_name")).textContent
         }
     })
 }

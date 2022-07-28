@@ -1,7 +1,7 @@
 import Map from "./Map/Map";
 import City from "./City";
 import Player from "./Player"
-import Node from "./Map/Node"
+import {Node} from "./Map/Node"
 
 class Game{
     token: string;

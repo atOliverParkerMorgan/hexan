@@ -1,7 +1,7 @@
 import express, {Request, Response, NextFunction} from "express";
 import {createHash} from "crypto";
 import {Router} from "express/ts4.0";
-import server from "../server/ServerSocket.ts";
+import {ServerSocket} from "../server/ServerSocket";
 import ControllerInterface from "./ControllerInterface";
 import Game from "../server/game_logic/Game";
 import Player from "../server/game_logic/Player";
@@ -16,7 +16,6 @@ export default class IndexController implements ControllerInterface{
   private game_token: string = "";
 
   public router: Router = express.Router();
-  private readonly ServerSocket: any = server.ServerSocket;
 
   constructor() {
     this.initializeRoutes()
@@ -26,7 +25,7 @@ export default class IndexController implements ControllerInterface{
     this.router.post("/", this.handle_post_request);
 
     // init the socket connection
-    this.ServerSocket.init();
+    ServerSocket.init();
 
   }
   // return the render index view
@@ -63,7 +62,7 @@ export default class IndexController implements ControllerInterface{
     const current_player = new Player(this.player_token);
 
     game.all_players.push(current_player);
-    this.ServerSocket.all_games.push(game);
+    ServerSocket.all_games.push(game);
     game.place_start_city(current_player);
 
     // console.log(player_token);

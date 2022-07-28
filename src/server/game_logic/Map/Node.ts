@@ -2,7 +2,16 @@ import City from "../City";
 import Map from "./Map";
 import Player from "../Player";
 
-class Node{
+// used for node.get_data()
+export type NodeData = {
+    x: number;
+    y: number;
+    type: number,
+    borders: any,
+    city: City | null;
+}
+
+export class Node{
     // constants
     public static readonly HEX_SIDE_SIZE = 25000 ** .5;
     public static readonly MOUNTAIN_TRAVEL_BIAS = 10;
@@ -216,7 +225,7 @@ class Node{
     }
 
     // simplify node for socket.emit()
-    get_data(player_token: string){
+    get_data(player_token: string): NodeData{
         let type = this.type;
         if(!this.is_shown.includes(player_token)){
             type = Node.HIDDEN;
@@ -232,6 +241,4 @@ class Node{
     }
 
 }
-
-export default Node;
 // module.exports = Node;
