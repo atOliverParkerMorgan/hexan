@@ -1,5 +1,4 @@
 // singleton
-import {io} from "socket.io-client";
 
 export namespace ClientSocket {
     export const response_types: {readonly MAP_RESPONSE: string, readonly UNITS_RESPONSE: string,
@@ -33,8 +32,8 @@ export namespace ClientSocket {
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
-
-    export const socket = io("ws://127.0.0.1:8082", {transports: ['websocket']});
+    // @ts-ignore
+    export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io("ws://127.0.0.1:3000", {transports: ['websocket']});
 
     export function send_data(data: any): void{
         ClientSocket.socket.emit("send-data", data);
@@ -42,7 +41,7 @@ export namespace ClientSocket {
 
     export function add_data_listener(fun: (...args: any[]) => void, player_token: string): void{
         console.log("add_data_listener");
-        ClientSocket.socket.on(player_token, (...args) => {
+        ClientSocket.socket.on(player_token, (...args: any[]) => {
             console.log("RESPONSE: "+args[0].response_type);
             fun(args);
         });
@@ -50,7 +49,7 @@ export namespace ClientSocket {
 
     export function get_data(request_type: string, game_token: string, player_token: string): void{
         console.log("REQUEST: "+request_type);
-        ClientSocket.socket.emit("get-data", {
+        ClientSocket.socket.emit("get_data", {
             request_type: request_type,
             data: {
                 game_token: game_token,

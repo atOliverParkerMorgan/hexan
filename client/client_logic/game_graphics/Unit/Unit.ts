@@ -1,8 +1,7 @@
-import {DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi"
-import {Node} from "../Node";
-import * as PIXI from "pixi.js"
+import {DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.js"
+import {Node} from "../Node.js";
 
-
+// TODO implement webpack and migrate towards a framework better than plane html
 
 export class Unit {
     public static readonly MELEE: string = "MELEE";
@@ -23,10 +22,10 @@ export class Unit {
     max_health: number;
 
     type: number;
-    health_circle: PIXI.Graphics;
-    health_circle_background: PIXI.Graphics;
-    background_circle: PIXI.Graphics;
-    sprite: PIXI.Sprite;
+    health_circle: any;
+    health_circle_background: any;
+    background_circle: any;
+    sprite: any;
 
     is_health_circle_on_viewport: boolean;
     is_health_circle_background_on_viewport: boolean;
@@ -51,6 +50,7 @@ export class Unit {
         this.health_circle = new Graphics();
         this.health_circle_background = new Graphics();
         this.background_circle = new Graphics();
+        // @ts-ignore
         this.sprite = PIXI.Sprite.from(this.texture_path);
 
         this.is_health_circle_on_viewport = false;
@@ -69,8 +69,8 @@ export class Unit {
         this.set_sprite_position();
         this.set_sprite_size();
 
-        this.sprite.interactive = false;
-        this.sprite.buttonMode = false;
+       // this.sprite.interactive = false;
+       // this.sprite.buttonMode = false;
         viewport.addChild(this.sprite);
     }
 

@@ -1,11 +1,13 @@
 import createError from "http-errors";
-import express, {Request, Response, NextFunction, Application} from "express";
-import path from "path";
-import cookieParser from "cookie-parser";
 import IndexController from "./routes/IndexController";
 import Controller from "./routes/IndexController";
 import ControllerInterface from "./routes/ControllerInterface";
-import {renderFile} from 'ejs' ;
+import * as path from "path";
+import express, {Application, NextFunction, Response, Request} from "express";
+import {renderFile} from "ejs";
+import cookieParser from "cookie-parser";
+import {ServerSocket} from "./server_logic/ServerSocket";
+
 
 class App {
   public app: Application = express();
@@ -18,21 +20,20 @@ class App {
   }
 
   init() {
-    this.app.use(express.static(path.join(__dirname, '/client')));
     this.init_view_engine();
     this.init_static_routes();
     this.init_controllers();
+    this.server_socket_connection();
   }
 
   private init_view_engine() {
-    this.app.use(express.static(path.join(__dirname, '/client')));
     this.app.engine('html', renderFile);
+    this.app.set('views', path.join(__dirname, 'views'));
     this.app.set('view engine', 'html');
-    this.app.set('view engine', 'html');
+
     this.app.use(cookieParser());
     this.app.use(express.json());
-    this.app.use(express.urlencoded({extended: false}));
-
+    this.app.use(express.urlencoded({ extended: false }));
   }
 
   private init_controllers() {
@@ -43,12 +44,22 @@ class App {
   }
 
   private init_static_routes() {
+    ServerSocket.init();
+    ServerSocket.add_request_listener();
+    ServerSocket.add_response_listener();
+    // html files
+    this.app.use('/views', express.static(__dirname + '/views/'));
+
+    // static public files
+    this.app.use('/javascript', express.static(__dirname + '/client_logic/'));
+    this.app.use('/stylesheets', express.static(__dirname + '/stylesheets/'));
+    this.app.use('/images', express.static(__dirname + '/images/'));
+
     // modules
     this.app.use('/pixi', express.static(__dirname + '/../node_modules/pixi.js/dist/browser/'));
     this.app.use('/pixi_extras', express.static(__dirname + '/../node_modules/@pixi/graphics-extras/dist/browser/'));
     this.app.use('/pixi_viewport', express.static(__dirname + '/../node_modules/pixi-viewport/dist/'));
     this.app.use('/socket.io-client', express.static(__dirname + '/../node_modules/socket.io-client/dist/'));
-
   }
 
   handle_error() {
@@ -71,9 +82,15 @@ class App {
     });
   }
 
+  server_socket_connection(){
+    // ServerSocket.add_response_listener();
+    // ServerSocket.add_request_listener();
+  }
+
+
   listen() {
     this.app.listen((this.port));
-    console.log("🔥🔥🔥 hexan is running on port: ${this.port} 🔥🔥🔥")
+    console.log(`--- hexan is running on port: ${this.port} ---`);
   }
 }
 

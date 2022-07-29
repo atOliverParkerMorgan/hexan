@@ -1,6 +1,7 @@
 import Continent from "./Continent";
 import {Node} from "./Node";
 import Player from "../Player";
+import cons from "consolidate";
 
 class Map{
 
@@ -26,8 +27,8 @@ class Map{
     continent_size: number;
     side_length: number;
     number_of_continents: number;
-    all_nodes: Node[][];
-    all_continents: Continent[]
+    all_nodes: Node[][] = [];
+    all_continents: Continent[] = [];
 
     constructor(number_of_land_nodes: number, number_of_continents: number){
         // number must be even for a symmetrical grid
@@ -43,6 +44,8 @@ class Map{
 
         this.all_nodes = [];
         this.all_continents = [];
+
+        this.create_nodes();
     }
 
     create_nodes(){
@@ -60,7 +63,8 @@ class Map{
     add_neighbors_to_nodes(){
         for(let y = 0; y < this.side_length; y++){
             for(let x = 0; x < this.side_length; x++){
-                let node = this.get_node(x, y);
+                let node: Node | undefined = this.get_node(x, y);
+                if(node == null) continue;
 
                 // hex grid is unique in neighbour configuration
                 // odd and  even rows have different neighbour cords
@@ -93,18 +97,16 @@ class Map{
         }
     }
 
-    get_node(x: number, y: number): Node{
+    get_node(x: number, y: number): Node | undefined{
+        if(y < 0 || x < 0 || y >= this.side_length || x >= this.side_length) return undefined;
         return this.all_nodes[y][x];
-
     }
 
-    get_node_(node: Node): Node{
+    get_node_(node: Node): Node | undefined{
         return this.get_node(node.x, node.y);
     }
 
     generate_island_map(): void{
-        this.create_nodes();
-
         for (let i = 0; i < this.number_of_continents ; i++) {
             let random_x, random_y;
             // pick a random water node
@@ -176,13 +178,16 @@ class Map{
         }
     }
 
+    // TODO add one random seed
     generate_mountains(seed_x: number, seed_y: number, size: number, current_continent: Continent): void{
 
         // 10 is straight; 1 is scattered
         const MOUNTAIN_RANGE_STRAIGHTNESS: number = 4;
 
         let mountain_range_orientation: number =  this.random_int(Map.HORIZONTAL, Map.VERTICAL);
-        let current_node: Node = this.get_node(seed_x, seed_y);
+        let current_node: Node | undefined = this.get_node(seed_x, seed_y);
+
+        if(current_node == undefined) return;
 
         current_continent.add_mountain_node(current_node);
 
@@ -202,8 +207,8 @@ class Map{
                     let random_direction: number = this.random_int(0, 1);
                     let opposite_direction: number = random_direction === 0 ? 1: 0;
 
-                    let random_neighbour: Node = current_node.neighbors[random_direction];
-                    let opposite_neighbour: Node = current_node.neighbors[opposite_direction];
+                    let random_neighbour: Node | undefined = current_node.neighbors[random_direction];
+                    let opposite_neighbour: Node | undefined = current_node.neighbors[opposite_direction];
 
                     if(random_neighbour != null) {
                         if (random_neighbour.could_be_mountain()) {
@@ -241,10 +246,10 @@ class Map{
 
                     let found_valid_node = false;
                     for(const random_index of random_valid_node_neighbours_indexes) {
-                        let random_neighbor = current_node.neighbors[random_index];
+                        let random_neighbor = current_node?.neighbors[random_index];
                         if(random_neighbor != null) {
                             if (random_neighbor.could_be_mountain()) {
-                                current_node = current_node.neighbors[random_index];
+                                current_node = current_node?.neighbors[random_index];
                                 found_valid_node = true;
                             }
                         }
@@ -410,8 +415,9 @@ class Map{
             }
 
             for(const node of current_node.neighbors) {
+                if(node == null) continue;
 
-                if (closed_set.includes(node) || node == null) {
+                if (closed_set.includes(node)) {
                     continue;
                 }
 
@@ -479,7 +485,7 @@ class Map{
         return null;
     }
 
-    make_neighbour_nodes_shown(player: Player, node: Node){
+    make_neighbour_nodes_shown(player: Player, node: Node | undefined){
 
         if(node == null) return;
 

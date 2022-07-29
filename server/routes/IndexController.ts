@@ -1,10 +1,10 @@
 import express, {Request, Response, NextFunction} from "express";
 import {createHash} from "crypto";
 import {Router} from "express/ts4.0";
-import {ServerSocket} from "../server/ServerSocket";
+import {ServerSocket} from "../server_logic/ServerSocket";
 import ControllerInterface from "./ControllerInterface";
-import Game from "../server/game_logic/Game";
-import Player from "../server/game_logic/Player";
+import Game from "../server_logic/game_logic/Game";
+import Player from "../server_logic/game_logic/Player";
 
 export default class IndexController implements ControllerInterface{
   public readonly GAME_MODE_1v1: string = "1v1";
@@ -24,9 +24,6 @@ export default class IndexController implements ControllerInterface{
     this.router.get("/", this.handle_get_request);
     this.router.post("/", this.handle_post_request);
 
-    // init the socket connection
-    ServerSocket.init();
-
   }
   // return the render index view
   handle_get_request = (req: Request, res: Response, next: NextFunction) => {
@@ -36,7 +33,7 @@ export default class IndexController implements ControllerInterface{
   // creates a new game
   // creates a new Game object and send the appropriate response
   handle_post_request = (req: Request,res: Response, next: NextFunction) => {
-    // access request parameters from client
+    // access request parameters from public
     const nick_name = req.body.nick_name;
     const game_mode = req.body.game_mode;
     const map_size = req.body.map_size;
@@ -56,20 +53,20 @@ export default class IndexController implements ControllerInterface{
 
     // @TODO create one game per a game lobby for 1v1 and 2v2 game_modes
     // create a new Game object based on the newly generated game_token
-    const game = new Game(this.game_token, map_size, 4);
+    const game: Game = new Game(this.game_token, map_size, 4);
 
     // create a new Player object based on the newly generated player_token
-    const current_player = new Player(this.player_token);
+    const current_player: Player = new Player(this.player_token);
 
     game.all_players.push(current_player);
     ServerSocket.all_games.push(game);
     game.place_start_city(current_player);
 
-    // console.log(player_token);
-    // console.log(game_token);
+    console.log(this.player_token);
+    console.log(this.game_token);
 
-    // the game was successfully created send player_token and game_token to client
-    // client can then access certain functionalities within the Game object thanks to the game_token
+    // the game was successfully created send player_token and game_token to public
+    // public can then access certain functionalities within the Game object thanks to the game_token
     res.status(200).send(JSON.stringify(
         {
           player_token: this.player_token,

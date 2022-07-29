@@ -28,7 +28,7 @@ class Unit {
         this.sight = 3;
     }
 
-    // send response to client if the unit has successfully moved
+    // send response to public if the unit has successfully moved
     move_and_send_response(path: Node[], game: Game, player: Player, socket: Socket){
 
         this.move_along_path(game, player, socket, path);
@@ -44,7 +44,7 @@ class Unit {
         // }
     }
 
-    // move this Unit along a valid path provided by the client
+    // move this Unit along a valid path provided by the public
     move_along_path(game: Game, player: Player, socket: Socket, path: Node[]){
         if(path.length === 0) return;
         setTimeout(() => {

@@ -1,8 +1,7 @@
 import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, WORLD_HEIGHT, WORLD_WIDTH, viewport} from "./Pixi.js";
-import {hide_city_bottom_menu, show_city_bottom_menu} from "../bottom_menu";
-import * as PIXI from "pixi.js"
-import {ClientSocket} from "../ClientSocket";
-import {Unit} from "./Unit/Unit";
+import {hide_city_bottom_menu, show_city_bottom_menu} from "../bottom_menu.js";
+import {ClientSocket} from "../ClientSocket.js";
+import {Unit} from "./Unit/Unit.js";
 
 
 export class Node{
@@ -49,14 +48,15 @@ export class Node{
     type: number;
     opacity: number;
     is_hidden: boolean;
-    sprite: PIXI.Sprite | null;
+    sprite: any | null;
     city: any;
     units: Unit[];
-    line_borders: PIXI.Graphics[];
+
+    line_borders: any[];
     line_borders_cords: number[];
     parent: Node | null;
 
-    hex: PIXI.Graphics | null;
+    hex: any | null;
 
 
     constructor(x: number, y: number, id: number, type: number, line_borders: any, city: any) {
@@ -136,6 +136,7 @@ export class Node{
         viewport.addChild(this.hex);
 
         if(this.city != null){
+            // @ts-ignore
             this.sprite = PIXI.Sprite.from("/images/village.png");
 
             this.sprite.width = DISTANCE_BETWEEN_HEX * .7;
@@ -218,7 +219,7 @@ export class Node{
                 let to_node: Node = <Node> Node.last_hovered_node;
                 let node_from: Node = <Node> Node.selected_node;
 
-                // get cords of path to send to server application
+                // get cords of path to send to typescript application
                 let path_node_cords = []
                 for (const node of <Node[]> Node.path) {
                     path_node_cords.push([node.x, node.y]);

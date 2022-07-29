@@ -1,28 +1,25 @@
-import * as PIXI from "pixi.js"
-import {Node} from "./Node";
-import {ClientSocket} from "../ClientSocket"
-import { Viewport } from 'pixi-viewport'
-import Unit from "./Unit/Unit";
+import {Node} from "./Node.js";
+import {ClientSocket} from "../ClientSocket.js"
+import Unit from "./Unit/Unit.js";
 import {Melee} from "./Unit/Melee.js";
 import {Range} from "./Unit/Range.js";
-// import {Cavalry} from "./Unit/Cavalry.ts";
-
-import {show_city_bottom_menu} from "../bottom_menu";
+import {show_city_bottom_menu} from "../bottom_menu.js";
 
 export let HEX_SIDE_SIZE: number;
 export let DISTANCE_BETWEEN_HEX: number;
 export let WORLD_WIDTH: number;
 export let WORLD_HEIGHT: number;
-export let viewport: Viewport;
+export let viewport: any;
+
+// @ts-ignore
+export const app: any = new PIXI.Application({resizeTo: window, transparent: true,  }) // autoresize: true
+// @ts-ignore
+export const Graphics = PIXI.Graphics;
 
 
 export let all_units: Unit[] = [];
 
-export const app = new PIXI.Application({resizeTo: window, transparent: true,  }) // autoresize: true
-export const Graphics = PIXI.Graphics;
-
-
-// @TODO client a_star doesn't always match sever a_star
+// @TODO public a_star doesn't always match sever a_star
 // get the shortest path between two nodes
 export function a_star(start_node: Node, goal_node: Node){
     let open_set = [start_node];
@@ -89,13 +86,6 @@ function init_canvas(map: any, cities: any){
 
     document.body.appendChild(app.view);
 
-    viewport = new Viewport({
-        screenWidth: window.innerWidth,
-        screenHeight: window.innerHeight,
-        worldWidth: WORLD_WIDTH,
-        worldHeight: WORLD_HEIGHT,
-        interaction: app.renderer.plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
-    })
 
     let starting_city = cities[0];
 
@@ -103,6 +93,9 @@ function init_canvas(map: any, cities: any){
 
     const city_x = (starting_city.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
     const city_y = (starting_city.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
+
+    // @ts-ignore
+    viewport = app.stage.addChild(new pixi_viewport.Viewport());
 
     viewport
         .drag()
@@ -116,12 +109,15 @@ function init_canvas(map: any, cities: any){
 
     app.stage.addChild(viewport);
     document.body.appendChild(app.view);
+
+    // @ts-ignore
     app.ticker.add(delta=> loop());
 }
 
 const process_data = (...args: any[])=>{
     const response_type = args[0][0].response_type;
     const response_data = args[0][0].data;
+    console.log("here-client");
     switch (response_type) {
         case ClientSocket.response_types.UNITS_RESPONSE:
 
@@ -193,7 +189,7 @@ const process_data = (...args: any[])=>{
 
             // if not found something went wrong
             if(!found){
-                console.error("Error, something has gone wrong with the sever client communication")
+                console.error("Error, something has gone wrong with the sever public communication")
                 break;
             }
 
@@ -211,7 +207,7 @@ export function init_game() {
     const player_token: string | null = localStorage.getItem("player_token");
     const game_token: string | null = localStorage.getItem("game_token");
 
-    // the server hasn't provided a token for the client
+    // the typescript hasn't provided a token for the public
     if (player_token == null || game_token == null){
         return;
     }

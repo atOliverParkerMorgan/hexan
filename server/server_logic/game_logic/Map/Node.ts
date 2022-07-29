@@ -23,7 +23,7 @@ export class Node{
     public static readonly HIDDEN: number = 0xE0D257;
 
     // attributes
-    neighbors: Node[];
+    neighbors: (Node | undefined)[];
     x: number;
     y: number;
     type: number;
@@ -111,17 +111,17 @@ export class Node{
     * if it succeeds it return the neighbour
     * if it fails it returns null
     */
-    get_random_neighbour_in_range(min: number, max: number, type: number): Node | null{
+    get_random_neighbour_in_range(min: number, max: number, type: number): Node | undefined{
 
         let random_neighbours = [];
         for (let i = min; i <= max; i++) {
             if(this.neighbors[i] != null){
-                if(this.neighbors[i].type === type){
+                if(this.neighbors[i]?.type === type){
                     random_neighbours.push(this.neighbors[this.random_int(min, max)]);
                 }
             }
         }
-        if(random_neighbours.length === 0) return null;
+        if(random_neighbours.length === 0) return undefined;
         return random_neighbours[this.random_int(0, random_neighbours.length)];
     }
 

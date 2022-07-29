@@ -1,6 +1,6 @@
 import {ClientSocket} from "./ClientSocket.js";
 
-import Unit from "./game_graphics/Unit/Unit";
+import Unit from "./game_graphics/Unit/Unit.js";
 
 function get_unit_div(units: any){
 

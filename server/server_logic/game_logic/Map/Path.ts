@@ -6,7 +6,15 @@ class Path{
     constructor(game: Game, path_cords_nodes: [index: number []]) {
         this.path = [];
         for(const node_cords of path_cords_nodes){
-            this.path.push(game.map.get_node(node_cords[0], node_cords[1]));
+            let node: Node | undefined = game.map.get_node(node_cords[0], node_cords[1]);
+
+            if(node == null){
+                console.trace("Error, invalid path")
+                this.path = [];
+                return;
+            }
+
+            this.path.push(node);
         }
     }
     is_valid(){

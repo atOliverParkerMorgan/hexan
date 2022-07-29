@@ -2,7 +2,7 @@ import {init_game} from "./game_graphics/Pixi.js";
 import {ClientSocket} from "./ClientSocket.js";
 
 
-// client game mode logic
+// public game mode logic
 const GAME_MODE_1v1 = "1v1";
 const GAME_MODE_2v2 = "2v2";
 const GAME_MODE_AI = "AI";
@@ -122,8 +122,8 @@ if(nick_input != null) {
                         console.log(game_mode);
 
                         if(game_mode === GAME_MODE_1v1 || game_mode === GAME_MODE_2v2 ) {
-                            // replace index.html.ts with findingAnOpponent.html.ts
-                            main_div.innerHTML = loadFile("/views/findingAnOpponent.html.ts");
+                            // replace index.html with findingAnOpponent.html
+                            main_div.innerHTML = loadFile("/views/findingAnOpponent.html");
 
                             // starting time
                             const start = Date.now();
@@ -135,8 +135,8 @@ if(nick_input != null) {
                             // update the timer about every second
                             setInterval(()=> update_timer(main_div, start), 1000);
                         }else{
-                            //replace index.html.ts with game.html.ts
-                            main_div.innerHTML = loadFile("/views/game.html.ts");
+                            //replace index.html with game.html
+                            main_div.innerHTML = loadFile("/views/game.html");
                             init_game();
                         }
 

@@ -1,6 +1,5 @@
 import Player from "./Player";
 import {Socket} from "socket.io";
-
 const {ServerSocket} = require("../ServerSocket");
 
 class City{
