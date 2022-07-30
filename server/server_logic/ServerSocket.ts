@@ -80,12 +80,9 @@ export namespace ServerSocket {
                 const request_data = args[0].data;
 
                 const game = ServerSocket.get_game(request_data.game_token);
-                console.log("here1");
                 if (game != null) {
-                    console.log("here2");
                     const player = game.get_player(request_data.player_token);
                     if (player != null){
-                        console.log("here3");
                         // switch for different responses
                         switch (request_type){
 

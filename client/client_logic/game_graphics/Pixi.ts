@@ -12,7 +12,7 @@ export let WORLD_HEIGHT: number;
 export let viewport: any;
 
 // @ts-ignore
-export const app: any = new PIXI.Application({resizeTo: window, transparent: true,  }) // autoresize: true
+export const app: any = new PIXI.Application({resizeTo: window, transparent: true,  autoresize: true })
 // @ts-ignore
 export const Graphics = PIXI.Graphics;
 
@@ -97,21 +97,20 @@ function init_canvas(map: any, cities: any){
     // @ts-ignore
     viewport = app.stage.addChild(new pixi_viewport.Viewport());
 
-    viewport
-        .drag()
-        .pinch()
-        .decelerate()
-        .moveCenter(0, 0)
-        .snap(city_x, city_y, {removeOnComplete: true})
-        .clamp({ top: - WORLD_HEIGHT / 2 - HEX_SIDE_SIZE, left: - WORLD_WIDTH / 2 - HEX_SIDE_SIZE,
+    viewport.drag()
+    .pinch()
+    .decelerate()
+    .moveCenter(0, 0)
+    .snap(city_x, city_y, {removeOnComplete: true})
+    .clamp({ top: - WORLD_HEIGHT / 2 - HEX_SIDE_SIZE, left: - WORLD_WIDTH / 2 - HEX_SIDE_SIZE,
                          right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE,
-                         bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2})
+                         bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2});
 
     app.stage.addChild(viewport);
     document.body.appendChild(app.view);
 
     // @ts-ignore
-    app.ticker.add(delta=> loop());
+    app.ticker.add(delta=> loop(delta));
 }
 
 const process_data = (...args: any[])=>{

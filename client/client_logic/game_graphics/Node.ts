@@ -122,11 +122,11 @@ export class Node{
         else if(this.is_hidden) this.hex.beginFill(Node.HIDDEN, this.opacity);
         else this.hex.beginFill(this.type, this.opacity);
 
-        // this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
-        this.hex.drawPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
+        this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
         this.hex.endFill();
 
         this.hex.interactive = true;
+        this.hex.button = true;
 
         this.hex.on('pointerdown', () => { this.on_click() });
         this.hex.on('mouseover', () => { this.set_hovered() });
