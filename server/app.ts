@@ -8,7 +8,6 @@ import {renderFile} from "ejs";
 import cookieParser from "cookie-parser";
 import {ServerSocket} from "./server_logic/ServerSocket";
 
-
 class App {
   public app: Application = express();
   public port: number;

@@ -1,5 +1,5 @@
 import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, WORLD_HEIGHT, WORLD_WIDTH, viewport} from "./Pixi.js";
-import {hide_city_bottom_menu, show_city_bottom_menu} from "../bottom_menu.js";
+import {hide_city_bottom_menu, show_city_bottom_menu} from "../UI_logic.js";
 import {ClientSocket} from "../ClientSocket.js";
 import {Unit} from "./Unit/Unit.js";
 
@@ -225,6 +225,7 @@ export class Node{
                     path_node_cords.push([node.x, node.y]);
                 }
 
+                // request movement from server
                 ClientSocket.send_data({
                     request_type: ClientSocket.request_types.MOVE_UNITS,
                     data: {

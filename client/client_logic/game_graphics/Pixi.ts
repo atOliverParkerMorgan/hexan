@@ -3,7 +3,7 @@ import {ClientSocket} from "../ClientSocket.js"
 import Unit from "./Unit/Unit.js";
 import {Melee} from "./Unit/Melee.js";
 import {Range} from "./Unit/Range.js";
-import {show_city_bottom_menu} from "../bottom_menu.js";
+import {show_city_bottom_menu} from "../UI_logic.js";
 
 export let HEX_SIDE_SIZE: number;
 export let DISTANCE_BETWEEN_HEX: number;
@@ -116,7 +116,7 @@ function init_canvas(map: any, cities: any){
 const process_data = (...args: any[])=>{
     const response_type = args[0][0].response_type;
     const response_data = args[0][0].data;
-    console.log("here-client");
+
     switch (response_type) {
         case ClientSocket.response_types.UNITS_RESPONSE:
 

@@ -1,44 +1,38 @@
 <link rel="stylesheet" href="/stylesheets/game.css">
-
-<div class="w3-blue-grey" id="bottom_city_menu" style="visibility: hidden; position: absolute; bottom: 0; width: 30%; height: auto">
-    <div class="w3-row">
-        <div class="w3-col m5 l5 w3-card">
-            <h2 class="w3-center w3-wide" id="city_name"></h2>
-            <p style="padding:16px">
-                Food: <span id="food_per_a_minute"></span> <br>
-                Wood: <span id="population_growth_in"></span> <br>
-                Gold: <span id="production_per_a_minute"></span> <br>
-            </p>
-        </div>
-
-        <div class="w3-rest w3-card" style="padding-left: 5px"  id="production_menu">
-            <div class="w3-row">
-                <div class="w3-col m6 l6 w3-center">
-                    <h5>Production</h5>
-                    <span id="city_id" style="visibility: hidden"></span>
-                </div>
-            </div>
-
-            <div class="w3-row" id="unit_menu">
-
-            </div>
-        </div>
+<div id="city_side_menu" class="w3-sidebar w3-container" onclick="" style="width:400px; right:0; visibility: hidden">
+    <button id="hide_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
+    <h1 id="city_name" class="w3-center w3-container w3-card w3-wide w3-padding-16"></h1>
+    <div class="w3-container w3-card w3-center w3-padding-8">
+        <div style="height: 8px"></div>
+        <h5>
+            <img src="/images/production.png" style="width: 40px" alt="Production image"> : <span id="production" style="padding-right: 16px; padding-left: 6px">0 / min</span><img src="/images/food.jpg" style="width: 40px" alt="Food image"> : <span  id="food" style="padding-right: 16px; padding-left: 6px">0 / min</span><div style="height: 13px"></div>
+            <img src="/images/science.png" style="width: 40px" alt="Science image"> : <span  id="science" style="padding-right: 16px; padding-left: 6px">0 / min</span> <img src="/images/violin.png" style="width: 40px" alt="Violin image">  : <span  id="culture" style="padding-right: 16px; padding-left: 6px">0 / min</span>
+        </h5>
     </div>
+    <br>
+    <h3 id="unit_title" class="w3-center w3-container w3-card ">Units: </h3>
+    <ul id="unit_menu"></ul>
 </div>
 
-<div class="w3-blue-grey" id="bottom_unit_menu" style="visibility: hidden; position: absolute; bottom: 0; width: 30%; height: auto">
-    <div class="w3-row">
-        <div class="w3-rest w3-card" style="padding-left: 5px"  id="unit_info_menu">
-            <div class="w3-row">
-                <div class="w3-col m6 l6 w3-center">
-                    <h5>Unit info</h5>
-                </div>
-            </div>
-
-            <div class="w3-row" id="unit_info">
-
-            </div>
-        </div>
-    </div>
+<div class="w3-display-topleft w3-bar-block" style="width: auto">
+    <h3 class="w3-container">
+        <img src="/images/science.png" style="width: 40px" alt="Science image"> : <span style="padding-right: 16px; padding-left: 6px">0 / min</span> <img src="/images/violin.png" style="width: 40px" alt="Violin image">  : <span style="padding-right: 16px; padding-left: 6px">0 / min</span>
+    </h3>
 </div>
+
+<!--<div class="w3-blue-grey" id="bottom_unit_menu" style="visibility: hidden; position: absolute; bottom: 0; width: 30%; height: auto">-->
+<!--    <div class="w3-row">-->
+<!--        <div class="w3-rest w3-card" style="padding-left: 5px"  id="unit_info_menu">-->
+<!--            <div class="w3-row">-->
+<!--                <div class="w3-col m6 l6 w3-center">-->
+<!--                    <h5>Unit info</h5>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="w3-row" id="unit_info">-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 

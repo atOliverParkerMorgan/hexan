@@ -26,7 +26,7 @@ export namespace ClientSocket {
         GET_ALL: "GET_ALL",
         GET_MENU_INFO: "GET_MENU_INFO",
         PRODUCE_UNIT: "PRODUCE_UNIT",
-        MOVE_UNITS: "MOVE_UNIT",
+        MOVE_UNITS: "MOVE_UNITS",
 
         // match making
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
