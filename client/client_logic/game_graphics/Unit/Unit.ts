@@ -2,46 +2,64 @@ import {DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, W
 import {Node} from "../Node.js";
 
 // TODO implement webpack and migrate towards a framework better than plane html
-
-export class Unit {
+export class Unit implements UnitData{
     public static readonly MELEE: string = "MELEE";
     public static readonly RANGE: string = "RANGE";
     public static readonly CAVALRY: string = "CAVALRY";
 
     private static readonly HEALTH_BAR_COLOR: number = 0x7CFC00;
-    private static readonly HEALTH_BAR_POSITION_BIAS: number = 50;
     x: number;
     y: number;
-    id: number;
+    id: string;
     width: number;
     height: number;
     texture_path: string;
 
+    attack: number;
     health: number;
+    range: number;
+    movement: number;
 
     max_health: number;
 
-    type: number;
+    type: string;
+
     health_circle: any;
     health_circle_background: any;
     background_circle: any;
     sprite: any;
 
-    constructor(x: number, y: number, id: number, width: number, height: number, texture_path: string) {
+    constructor(unit: UnitData, width: number, height: number) {
         //this.player = player;
         this.width = width;
         this.height = height;
 
-        this.x = x;
-        this.y = y;
+        this.x = unit.x;
+        this.y = unit.y;
 
-        this.id = id;
+        this.id = unit.id;
 
-        this.health = 60;
+        this.type = unit.type;
+
+        this.attack = unit.attack;
+        this.health = unit.health;
+        this.range = unit.range;
+        this.movement = unit.movement;
+
         this.max_health = 100;
-        this.type = 100;
 
-        this.texture_path = texture_path;
+        // TODO create player class with current MELEE RANGE ... units
+
+        switch (this.type) {
+            case Unit.MELEE:
+                this.texture_path = "/images/warrior.png";
+                break;
+            case Unit.RANGE:
+                this.texture_path = "/images/slinger.png";
+                break;
+            default:
+                this.texture_path = "/images/horseman.png";
+        }
 
         this.health_circle = null;
         this.health_circle_background = null;

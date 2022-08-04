@@ -4,28 +4,43 @@ import Player from "../Player";
 import {Socket} from "socket.io";
 import {ServerSocket} from "../../ServerSocket";
 
+export interface UnitInitData{
+    attack: number;
+    health: number;
+    range: number;
+    movement: number;
 
-class Unit {
+    type: string;
+}
+
+export class Unit implements UnitData{
 
     public static readonly WATER: number = 0x80C5DE;
     public static readonly CAVALRY: string = "CAVALRY"
     public static readonly MELEE: string = "MELEE";
     public static readonly RANGE: string = "RANGE";
 
-    private x: number;
-    private y: number;
-    private id: number;
-    private type: string;
-    private speed: number;
-    private sight :number;
+    x: number;
+    y: number;
+    readonly id: string;
+    type: string;
 
-    constructor(x: number, y: number, id:number, type: string, speed: number){
+    attack: number;
+    health: number;
+    movement: number;
+    range :number;
+
+    constructor(x: number, y: number, id: string, unit_init_data: UnitInitData){
         this.x = x;
         this.y = y;
+
         this.id = id;
-        this.type = type;
-        this.speed = speed;
-        this.sight = 3;
+        this.type = unit_init_data.type;
+
+        this.attack = unit_init_data.attack;
+        this.health = unit_init_data.health;
+        this.movement = unit_init_data.movement;
+        this.range = unit_init_data.range;
     }
 
     // send response to public if the unit has successfully moved
@@ -47,6 +62,10 @@ class Unit {
     // move this Unit along a valid path provided by the public
     move_along_path(game: Game, player: Player, socket: Socket, path: Node[]){
         if(path.length === 0) return;
+
+        // movement per a minute calculation
+        const MOVEMENT_PER_A_MINUTE: number = 60_000 / this.movement
+
         setTimeout(() => {
             const current_node: Node = path[0];
 
@@ -76,19 +95,24 @@ class Unit {
             path.shift();
             this.move_along_path(game, player, socket, path);
 
-        }, this.speed);
+        }, MOVEMENT_PER_A_MINUTE);
     }
-    get_id(){
+    get_id(): string{
         return this.id;
     }
 
-    get_data(){
+    get_data(): UnitData{
         return{
             id: this.id,
             x: this.x,
             y: this.y,
+
+            type: this.type,
+
+            attack: this.attack,
+            health: this.health,
+            range: this.range,
+            movement: this.movement
         }
     }
 }
-
-export default Unit;

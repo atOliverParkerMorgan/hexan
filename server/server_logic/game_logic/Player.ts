@@ -1,5 +1,5 @@
 // const {Unit} = require("./Units/Unit.ts");
-import Unit from "./Units/Unit";
+import {Unit} from "./Units/Unit";
 
 import Melee from "./Units/Melee";
 import Range from "./Units/Range";
@@ -23,19 +23,19 @@ class Player{
     add_unit(x: number, y: number, type: string): void{
         switch (type){
             case Unit.MELEE:
-                this.units.push(new Melee(x, y,this.token+this.current_unit_id, type, 1500));
-                break;
-            case Unit.CAVALRY:
-                this.units.push(new Cavalry(x, y,this.token+this.current_unit_id, type, 900));
+                this.units.push(new Unit(x, y,this.token+this.current_unit_id, Melee.WARRIOR));
                 break;
             case Unit.RANGE:
-                this.units.push(new Range(x, y,this.token+this.current_unit_id, type, 1300));
+                this.units.push(new Unit(x, y,this.token+this.current_unit_id, Range.SLINGER, ));
+                break;
+            case Unit.CAVALRY:
+                this.units.push(new Unit(x, y,this.token+this.current_unit_id, Cavalry.HORSEMAN));
                 break;
         }
         this.current_unit_id ++;
     }
 
-    get_unit(id: number) {
+    get_unit(id: string) {
         for (const unit of this.units) {
             if(unit.get_id() === id) return unit;
         }

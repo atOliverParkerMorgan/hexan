@@ -121,15 +121,17 @@ const process_data = (...args: any[])=>{
         case ClientSocket.response_types.UNITS_RESPONSE:
 
             all_units = [];
-            for(const unit of response_data.units){
+            for(let unit of response_data.units){
+                unit = <UnitData>unit;
+
                 let graphics_unit: Unit | undefined;
 
                 // get the correct sprite for unit depending on it's type
                 if(unit.type === Unit.MELEE){
-                    graphics_unit = new Melee(unit.x, unit.y, unit.id, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, "../../images/warrior.png");
+                    graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75);
                 }
                 else if(unit.type === Unit.RANGE){
-                    graphics_unit = new Range(unit.x, unit.y, unit.id, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE * .75, "../../images/slinger.png");
+                    graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75);
                 }
 
                 if(graphics_unit == null){

@@ -1,5 +1,5 @@
 import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, WORLD_HEIGHT, WORLD_WIDTH, viewport} from "./Pixi.js";
-import {hide_city_bottom_menu, show_city_bottom_menu} from "../UI_logic.js";
+import {hide_city_bottom_menu, show_city_bottom_menu, hide_info, show_info} from "../UI_logic.js";
 import {ClientSocket} from "../ClientSocket.js";
 import {Unit} from "./Unit/Unit.js";
 
@@ -33,7 +33,6 @@ export class Node{
 
     private static movement_hint_lines: any[] = [];
     private static movement_hint_color: number = 0xFFAC1C;
-    private static movement_hint_opacity: number = 1;
     private static movement_hint_thickness: number = 3;
 
     private static bottom_menu_shown: boolean = false;
@@ -80,7 +79,6 @@ export class Node{
 
         // used for A* searching algorithm
         this.parent = null;
-        this.hex = null;
     }
 
     get_neighbours(){
@@ -128,7 +126,8 @@ export class Node{
         this.hex.interactive = true;
         this.hex.button = true;
 
-        this.hex.on('pointerdown', () => { this.on_click() });
+        this.hex.on('click', () => { this.on_click() });
+        // this.hex.on('rightdown ', () => { this.on_click() });
         this.hex.on('mouseover', () => { this.set_hovered() });
 
         // changing color of city
@@ -240,12 +239,13 @@ export class Node{
                 node_from.update();
             }
         }
+
         Node.already_selected = this === Node.selected_node && !Node.already_selected;
+
         if (!Node.already_selected) Node.last_hovered_node?.set_selected()
         else{
             this.remove_selected();
         }
-
 
         // show bottom information menu
         if(this.city != null && !Node.already_selected) {
@@ -263,6 +263,13 @@ export class Node{
             show_city_bottom_menu(this.city);
         }else{
             hide_city_bottom_menu();
+        }
+
+        // unit info
+        if(this.units.length >= 1 && !Node.already_selected){
+            show_info(this.units[0]);
+        }else {
+            hide_info();
         }
     }
 

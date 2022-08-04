@@ -1,8 +1,17 @@
 import {ClientSocket} from "./ClientSocket.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 
-function get_unit_div(units: any){
+export function show_info(unit: Unit){
+    (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "visible";
+    (<HTMLInputElement >document.getElementById("info_title")).innerText = unit.type;
+    (<HTMLInputElement >document.getElementById("attack_data")).innerText = unit.attack.toString();
+    (<HTMLInputElement >document.getElementById("health_data")).innerText = unit.health.toString();
+    (<HTMLInputElement >document.getElementById("range_data")).innerText = unit.range.toString();
+    (<HTMLInputElement >document.getElementById("movement_data")).innerText = unit.movement + "/min";
+}
 
+export  function hide_info(){
+    (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "hidden";
 }
 
 export function show_city_bottom_menu(city: any){
@@ -10,14 +19,22 @@ export function show_city_bottom_menu(city: any){
     (<HTMLInputElement >document.getElementById("city_side_menu")).style.visibility = "visible";
 }
 export function hide_city_bottom_menu(){
+    // move info menu
+    (<HTMLInputElement >document.getElementById("info_menu")).style.right = "0";
+
     (<HTMLInputElement >document.getElementById("city_side_menu")).style.visibility = "hidden";
 }
+
+
 function show_city_data(city: any){
+    // move info menu
+    (<HTMLInputElement >document.getElementById("info_menu")).style.right = "420px";
+
    (<HTMLInputElement >document.getElementById("city_name")).innerText = city.name;
    (<HTMLInputElement >document.getElementById("food")).innerText = city.food_per_a_minute + " / min";
    (<HTMLInputElement >document.getElementById("production")).innerText = city.production_per_a_minute + " / min";
-    (<HTMLInputElement >document.getElementById("science")).innerText = city.food_per_a_minute + " / min";
-    (<HTMLInputElement >document.getElementById("culture")).innerText = city.production_per_a_minute + " / min";
+   (<HTMLInputElement >document.getElementById("science")).innerText = city.food_per_a_minute + " / min";
+   (<HTMLInputElement >document.getElementById("culture")).innerText = city.production_per_a_minute + " / min";
 
    // show units that can be produced
    // create html menu with javascript
@@ -104,4 +121,3 @@ function loadFile(filePath: string):string {
 
     return result;
 }
-
