@@ -1,5 +1,4 @@
 import {Unit, UnitInitData} from "./Unit";
-import Cavalry from "./Cavalry";
 
 class Range extends Unit{
     public readonly PRODUCTION_TIME: number = 10_000;
@@ -7,9 +6,9 @@ class Range extends Unit{
         attack: 10,
         health: 100,
         range: 2,
-        movement: 12,
+        movement: 120,
 
-        type: "Range"
+        type: "RANGE"
     }
     constructor(...args: any[]) {
         super(args[0], args[1], args[2], args[3]);

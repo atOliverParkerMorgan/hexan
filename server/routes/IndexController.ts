@@ -5,6 +5,7 @@ import {ServerSocket} from "../server_logic/ServerSocket";
 import ControllerInterface from "./ControllerInterface";
 import Game from "../server_logic/game_logic/Game";
 import Player from "../server_logic/game_logic/Player";
+import {MatchMaker} from "../server_logic/MatchMaker";
 
 export default class IndexController implements ControllerInterface{
   public readonly GAME_MODE_1v1: string = "1v1";
@@ -35,8 +36,10 @@ export default class IndexController implements ControllerInterface{
   handle_post_request = (req: Request,res: Response, next: NextFunction) => {
     // access request parameters from public
     const nick_name = req.body.nick_name;
-    const game_mode = req.body.game_mode;
     const map_size = req.body.map_size;
+    const game_mode = req.body.game_mode;
+
+    // const current_player: Player = MatchMaker.add_player_1v1(nick_name);
 
     // handle invalid request bodies
     if(nick_name=== ""){
@@ -48,19 +51,15 @@ export default class IndexController implements ControllerInterface{
       res.status(422).send("Error, try a valid game mode this time");
     }
 
-    this.player_token = this.generate_token(nick_name);
-    this.game_token = this.generate_token(this.player_token);
-
     // @TODO create one game per a game lobby for 1v1 and 2v2 game_modes
     // create a new Game object based on the newly generated game_token
-    const game: Game = new Game(this.game_token, map_size, 4);
+    MatchMaker.add_player_1v1(nick_name);
 
     // create a new Player object based on the newly generated player_token
-    const current_player: Player = new Player(this.player_token);
+    //const current_player: Player = new Player(this.player_token);
 
-    game.all_players.push(current_player);
-    ServerSocket.all_games.push(game);
-    game.place_start_city(current_player);
+   // game.all_players.push(current_player);
+   // game.place_start_city(current_player);
 
     console.log(this.player_token);
     console.log(this.game_token);
@@ -70,11 +69,7 @@ export default class IndexController implements ControllerInterface{
     res.status(200).send(JSON.stringify(
         {
           player_token: this.player_token,
-          game_token: this.game_token,
-        }));
+    }));
   };
 
-  generate_token(nick_name: string){
-    return createHash('sha256').update(nick_name + String(Math.random() + performance.now())).digest('hex');
-  }
 }

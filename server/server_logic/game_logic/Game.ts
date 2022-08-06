@@ -1,7 +1,8 @@
 import Map from "./Map/Map";
 import City from "./City";
-import Player from "./Player"
-import {Node} from "./Map/Node"
+import Player from "./Player";
+import {Node} from "./Map/Node";
+import {Unit} from "./Units/Unit";
 
 class Game{
     token: string;
@@ -62,8 +63,29 @@ class Game{
         return {
             map: this.map.format(player.token),
             cities: this.get_cities_that_player_owns(player),
-            units: this.get_player(player.token)?.get_unit_data()
+            units: this.get_visible_units(player)
         }
+    }
+
+    get_visible_units(player: Player): Unit[]{
+        const player_from_game_object: Player | undefined = this.get_player(player.token);
+        if(player_from_game_object == null){
+            return [];
+        }
+        let output: Unit[] = [];
+
+        // check visible player for other players
+        for(const player_ of this.all_players){
+            const raw_unit_data: Unit[] = player_.get_unit_data();
+            for(const unit of raw_unit_data){
+                // check if unit is visible
+                if(this.map.get_node(unit.x, unit.y)?.is_shown.includes(player.token)){
+                    output.push(unit);
+                }
+            }
+        }
+
+        return output;
     }
 }
 
