@@ -67,6 +67,8 @@ class Game{
         }
     }
 
+
+
     get_visible_units(player: Player): Unit[]{
         const player_from_game_object: Player | undefined = this.get_player(player.token);
         if(player_from_game_object == null){

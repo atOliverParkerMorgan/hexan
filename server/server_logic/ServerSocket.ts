@@ -10,13 +10,9 @@ const io = new Server(httpServer);
 // singleton
 export namespace ServerSocket {
     export const PORT_SOCKET: number = 3000;
-    export const all_games: Game[] =  [];
     export let is_listening: boolean =  false;
 
-    export const response_types: { readonly MAP_RESPONSE: string, readonly UNITS_RESPONSE: string,
-                                            readonly ALL_RESPONSE: string, readonly UNIT_MOVED_RESPONSE: string,
-                                            readonly MENU_INFO_RESPONSE: string, readonly INVALID_MOVE: string,
-                                            readonly FOUND_1v1_OPPONENT: string, readonly FOUND_2v2_OPPONENTS: string } =  {
+    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; INVALID_MOVE: string; UNITS_RESPONSE: string; MENU_INFO_RESPONSE: string } =  {
 
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -24,11 +20,7 @@ export namespace ServerSocket {
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
-        INVALID_MOVE: "INVALID_MOVE",
-
-        // match making
-        FOUND_1v1_OPPONENT: "FOUND_1v1_OPPONENT",
-        FOUND_2v2_OPPONENTS: "FOUND_2v2_OPPONENTS"
+        INVALID_MOVE: "INVALID_MOVE"
 
     };
     export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
@@ -56,16 +48,6 @@ export namespace ServerSocket {
             }
     }
 
-
-    export function get_game (game_token: string): Game | undefined{
-        for (const game of ServerSocket.all_games) {
-            console.log("GAME TOKEN: ", game.token);
-            if (game.token === game_token) {
-                return game;
-            }
-        }
-    }
-
     export function send_data(socket: Socket, data: any, player_token: string): void{
         socket.emit(player_token, data);
     }
@@ -74,12 +56,13 @@ export namespace ServerSocket {
     export function add_response_listener(): void{
         io.on("connection", (socket: Socket) => {
             socket.on("get_data", (...args: any[]) => {
-
                 // get request data from public
                 const request_type = args[0].request_type;
                 const request_data = args[0].data;
 
-                const game = ServerSocket.get_game(request_data.game_token);
+                console.log(`got some data player_token: ${request_data.player_token}`)
+
+                const game = MatchMaker.get_1v1_game(request_data.game_token);
                 if (game != null) {
                     const player = game.get_player(request_data.player_token);
                     if (player != null){
@@ -132,17 +115,12 @@ export namespace ServerSocket {
             socket.on("send-data", (...args: any[]) => {
                 const request_type: string = args[0].request_type;
                 const request_data = args[0].data;
-                const game = ServerSocket.get_game(request_data.game_token);
+                const game = MatchMaker.get_1v1_game(request_data.game_token);
                 if (game != null) {
                     const player = game.get_player(request_data.player_token);
                     if (player != null) {
                         // switch for different request types
                         switch (request_type){
-                            case ServerSocket.request_types.FIND_1v1_OPPONENT:
-                                MatchMaker.has_match_for_1v1();
-                                break
-
-
                             case ServerSocket.request_types.PRODUCE_UNIT:
                                 const city = game.get_city(request_data.city_name, player);
                                 const unit_type = request_data.unit_type;

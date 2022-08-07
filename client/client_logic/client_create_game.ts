@@ -1,6 +1,13 @@
 import {init_game} from "./game_graphics/Pixi.js";
 import {ClientSocket} from "./ClientSocket.js";
 
+const REQUEST_TYPES = {
+    GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
+    FIND_MATCH: "FIND_MATCH"
+}
+
+let interval_id_timer: any;
+let interval_id_match_request: any;
 
 function settings_logic_init(){
 
@@ -11,19 +18,19 @@ function settings_logic_init(){
     element.onchange = slider_onchange;
     element?.setAttribute('step', args[0].toString());
 
-    let value: number = 1225;
+    let map_size: number = 1225;
     function slider_onchange() {
         element?.removeAttribute('step')
-        value = element.value
+        map_size = element.value
         for (let i = 0; i < args.length; i++) {
-            if (args[i] > value) {
-                value = args[i];
+            if (args[i] > map_size) {
+                map_size = args[i];
                 element.value = args[i]
                 break;
             }
         }
         const node_num_text: any =  document.getElementById('number_of_nodes');
-        node_num_text.innerText = value.toString();
+        node_num_text.innerText = map_size.toString();
     }
 
     // game mode button logic
@@ -96,17 +103,19 @@ function settings_logic_init(){
     // play button logic
     const play_button: any = document.getElementById("play_button");
     play_button.onclick = ()=> {
-        const nick = localStorage.getItem("nick_name");
-        if(nick == null) return;
+        const nick_name = localStorage.getItem("nick_name");
+        if(nick_name == null) return;
         //client_socket.send_data("create_game_with_ai", nick);
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "http://127.0.0.1:8000/", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
+        console.log(`nick_name: ${nick_name} map_size: ${map_size} game_mode: ${game_mode} request_type: ${REQUEST_TYPES.GENERATE_PLAYER_TOKEN}`)
         xhr.send(JSON.stringify({
-            nick_name: nick,
-            map_size: value,
-            game_mode: game_mode
+            nick_name: nick_name,
+            map_size: map_size,
+            game_mode: game_mode,
+            request_type: REQUEST_TYPES.GENERATE_PLAYER_TOKEN
         }));
 
         xhr.onreadystatechange = () => {
@@ -115,7 +124,6 @@ function settings_logic_init(){
                     let JSON_response = JSON.parse(xhr.responseText);
 
                     localStorage.setItem("player_token", JSON_response.player_token);
-                    // localStorage.setItem("game_token", JSON_response.game_token);
 
                     const main_div: any = document.getElementById("app");
 
@@ -125,14 +133,16 @@ function settings_logic_init(){
 
                     // starting time
                     const start = Date.now();
-                    update_timer(main_div, start, JSON_response.player_token);
+                    update_timer(main_div, start);
 
                     // listen for a match up!
                     ClientSocket.add_data_listener(match_making_listener, JSON_response.player_token);
 
                     // update the timer about every second
-                    setInterval(()=> update_timer(main_div, start, JSON_response.player_token), 1000);
+                    interval_id_timer = setInterval(()=> update_timer(main_div, start), 1000);
 
+                    // send POST request if there is a available match
+                    interval_id_match_request = setInterval(() => request_match_status_update(JSON_response.player_token, nick_name, map_size, game_mode), 5000);
 
                 }
             }
@@ -140,23 +150,39 @@ function settings_logic_init(){
     };
 }
 
-// init game
-
-//replace index.html with game.html
-// main_div.innerHTML = loadFile("/views/game.html");
-// init_game();
-
 // ask if there server has a match
-function send_match_status_update(player_token: string){
+function request_match_status_update(player_token: string, nick_name: string, map_size: number, game_mode: string){
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", "http://127.0.0.1:8000/", true);
+    xhr.open("POST", "http://127.0.0.1:8000/", true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({
+        nick_name: nick_name,
         player_token: player_token,
+        map_size: map_size,
+        game_mode: game_mode,
+        request_type: REQUEST_TYPES.FIND_MATCH
     }));
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                // store game token
+                let JSON_response = JSON.parse(xhr.responseText);
+                localStorage.setItem("game_token", JSON_response.game_token);
+
+                // init game
+                const main_div: any = document.getElementById("app");
+                //replace index.html with game.html
+                main_div.innerHTML = loadFile("/views/game.html");
+                init_game();
+
+                clearInterval(interval_id_timer);
+                clearInterval(interval_id_match_request);
+            }
+        }
+    }
 }
 
-function update_timer(main_div: any, start: number, player_token: string){
+function update_timer(main_div: any, start: number){
 
     let delta = Date.now() - start;
     let seconds = (Math.floor(delta / 1000));
@@ -165,13 +191,7 @@ function update_timer(main_div: any, start: number, player_token: string){
     let minute_string = minutes > 1 ? "minutes": "minute";
     let minute_text = minutes === 0 ? "": (minutes) + " " + minute_string+ "  :  "
 
-    // ask if there is a match every five seconds
-    if(seconds % 5 === 0){
-        send_match_status_update(player_token);
-    }
-
     main_div.querySelector("span").innerText =  minute_text + (seconds % 60)+" "+seconds_string;
-
 }
 
 
