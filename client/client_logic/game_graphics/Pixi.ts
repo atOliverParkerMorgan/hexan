@@ -102,11 +102,12 @@ function init_canvas(map: any, cities: any){
     .decelerate()
     .moveCenter(0, 0)
     .snap(city_x, city_y, {removeOnComplete: true})
+    .wheel()
+    .clampZoom({minWidth: 4 * HEX_SIDE_SIZE, minHeight: 4 * HEX_SIDE_SIZE, maxWidth: WORLD_WIDTH, maxHeight: WORLD_HEIGHT})
     .clamp({ top: - WORLD_HEIGHT / 2 - HEX_SIDE_SIZE, left: - WORLD_WIDTH / 2 - HEX_SIDE_SIZE,
                          right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE,
                          bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2});
 
-    app.stage.addChild(viewport);
     document.body.appendChild(app.view);
 
     // @ts-ignore
@@ -184,16 +185,15 @@ const process_data = (...args: any[])=>{
                 }
             }
             // update nodes
-            for(const node of response_data.nodes){
-                Node.all_nodes[node.y][node.x].set_type(node.type);
-            }
+            response_data.nodes.map( (node: any) => {
+                Node.all_nodes[node.y][node.x].set_type(node.type, node.city);
+            });
 
             // if not found something went wrong
             if(!found){
                 console.error("Error, something has gone wrong with the sever public communication")
                 break;
             }
-
 
             break;
     }

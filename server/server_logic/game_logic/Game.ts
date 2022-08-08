@@ -8,6 +8,7 @@ class Game{
     token: string;
     all_players: Player[];
     all_cities: City[];
+
     map: Map;
     constructor(token: string, number_of_land_nodes: number, number_of_continents: number) {
         this.token = token;

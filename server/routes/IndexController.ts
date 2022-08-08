@@ -59,9 +59,7 @@ export default class IndexController implements ControllerInterface{
     else if(request_type === this.REQUEST_TYPES.GENERATE_PLAYER_TOKEN){
       // TODO if game_mode 1v1
         const player: Player = MatchMaker.add_player_1v1(nick_name);
-        res.status(200).send(JSON.stringify({
-            player_token: player.token,
-        }));
+        res.status(200).send(JSON.stringify({player_token: player.token,}));
     }
 
     else if(request_type === this.REQUEST_TYPES.FIND_MATCH){
@@ -74,13 +72,10 @@ export default class IndexController implements ControllerInterface{
                     res.statusMessage = "No match found";
                     res.status(204).send();
                 }else{
-                    res.status(200).send(JSON.stringify({
-                      game_token: game.token,
-                    }));
-
+                    res.status(200).send(JSON.stringify({game_token: game.token}));
                 }
-
                 break;
+
           default:
             res.statusMessage = "Invalid request, not accepted"
             res.status(400).send();

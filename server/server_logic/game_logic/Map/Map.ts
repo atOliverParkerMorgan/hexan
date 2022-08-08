@@ -448,7 +448,7 @@ class Map{
             }
         }
     }
-    // @TODO type for data
+
     format(player_token: string): any{
         let data = [];
         for(let node_rows of this.all_nodes){

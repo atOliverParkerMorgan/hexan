@@ -127,13 +127,17 @@ export class Node{
         this.hex.button = true;
 
         this.hex.on('click', () => { this.on_click() });
-        // this.hex.on('rightdown ', () => { this.on_click() });
         this.hex.on('mouseover', () => { this.set_hovered() });
 
         // changing color of city
 
         viewport.addChild(this.hex);
 
+        this.show_city(this.city);
+    }
+
+    show_city(city: any){
+        this.city = city;
         if(this.city != null){
             // @ts-ignore
             this.sprite = PIXI.Sprite.from("/images/village.png");
@@ -273,9 +277,10 @@ export class Node{
         }
     }
 
-    set_type(type: number){
+    set_type(type: number, city: any){
         this.type = type;
         this.is_hidden = this.type === Node.HIDDEN;
+        this.show_city(city);
         this.update();
     }
 

@@ -214,6 +214,7 @@ export class Node{
         if(this.type === Node.MOUNTAIN) return value + Node.MOUNTAIN_TRAVEL_BIAS;
         return value;
     }
+
     get_type(){
         switch (this.type){
             case Node.GRASS: return "GRASS";
@@ -227,8 +228,12 @@ export class Node{
     // simplify node for socket.emit()
     get_data(player_token: string): NodeData{
         let type = this.type;
+        let city = this.city;
+
+        // hide hidden node and cites
         if(!this.is_shown.includes(player_token)){
             type = Node.HIDDEN;
+            city = null;
         }
 
        return {
@@ -236,9 +241,8 @@ export class Node{
            y: this.y,
            type: type,
            borders: this.borders,
-           city: this.city
+           city: city
        }
     }
-
 }
 // module.exports = Node;

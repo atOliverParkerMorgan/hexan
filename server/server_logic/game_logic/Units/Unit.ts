@@ -3,6 +3,7 @@ import {Node, NodeData} from "../Map/Node";
 import Player from "../Player";
 import {Socket} from "socket.io";
 import {ServerSocket} from "../../ServerSocket";
+import { UnitData } from "./UnitData";
 
 export interface UnitInitData{
     attack: number;
@@ -24,6 +25,7 @@ export class Unit implements UnitData{
     y: number;
     readonly id: string;
     type: string;
+
 
     attack: number;
     health: number;
@@ -83,14 +85,20 @@ export class Unit implements UnitData{
 
             all_discovered_nodes.push(current_node.get_data(player.token));
 
-            ServerSocket.send_data(socket,
-                {
-                    response_type: ServerSocket.response_types.UNIT_MOVED_RESPONSE,
-                    data: {
-                        unit: this.get_data(),
-                        nodes: all_discovered_nodes
-                    }
-                }, player.token)
+            // show unit to player if the unit steps on a discovered node
+            game.all_players.map((player: Player)=>{
+               // if(game.map.all_nodes[this.y][this.x].is_shown.includes(player.token)){
+                    ServerSocket.send_data(socket,
+                        {
+                            response_type: ServerSocket.response_types.UNIT_MOVED_RESPONSE,
+                            data: {
+                                unit: this.get_data(),
+                                nodes: all_discovered_nodes
+                            }
+                        }, player.token)
+              //  }
+            })
+
 
             path.shift();
             this.move_along_path(game, player, socket, path);
@@ -108,6 +116,7 @@ export class Unit implements UnitData{
             y: this.y,
 
             type: this.type,
+
 
             attack: this.attack,
             health: this.health,
