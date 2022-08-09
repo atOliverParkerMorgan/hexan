@@ -143,10 +143,10 @@ export class Unit implements UnitData{
 
     move_to(x: number, y: number): void{
         const old_node = Node.all_nodes[this.y][this.x];
-        old_node.units.splice(old_node.units.indexOf(this));
+        old_node.unit = null;
 
         const new_node = Node.all_nodes[y][x];
-        new_node.units.push(this);
+        new_node.unit = this;
         this.x = x;
         this.y = y;
 

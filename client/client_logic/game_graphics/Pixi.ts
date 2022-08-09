@@ -1,9 +1,6 @@
 import {Node} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
 import Unit from "./Unit/Unit.js";
-import {Melee} from "./Unit/Melee.js";
-import {Range} from "./Unit/Range.js";
-import {show_city_bottom_menu} from "../UI_logic.js";
 
 export let HEX_SIDE_SIZE: number;
 export let DISTANCE_BETWEEN_HEX: number;
@@ -18,6 +15,7 @@ export const Graphics = PIXI.Graphics;
 
 
 export let all_units: Unit[] = [];
+export let all_enemy_visible_units: Unit[] = [];
 
 // @TODO public a_star doesn't always match sever a_star
 // get the shortest path between two nodes
@@ -76,7 +74,7 @@ export function a_star(start_node: Node, goal_node: Node){
     return null;
 }
 
-function init_canvas(map: any, cities: any){
+export function init_canvas(map: any, cities: any){
 
     HEX_SIDE_SIZE = map.length ** .5;
 
@@ -114,95 +112,6 @@ function init_canvas(map: any, cities: any){
     app.ticker.add(delta=> loop(delta));
 }
 
-const process_data = (...args: any[])=>{
-    const response_type = args[0][0].response_type;
-    const response_data = args[0][0].data;
-
-    switch (response_type) {
-        case ClientSocket.response_types.UNITS_RESPONSE:
-
-            all_units = [];
-            for(let unit of response_data.units){
-                unit = <UnitData>unit;
-
-                let graphics_unit: Unit | undefined;
-
-                // get the correct sprite for unit depending on it's type
-                if(unit.type === Unit.MELEE){
-                    graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75);
-                }
-                else if(unit.type === Unit.RANGE){
-                    graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75);
-                }
-
-                if(graphics_unit == null){
-                    return;
-                }
-
-                all_units.push(graphics_unit);
-                Node.all_nodes[unit.y][unit.x].units = [graphics_unit];
-            }
-            break;
-
-        case ClientSocket.response_types.ALL_RESPONSE:
-            const map = response_data.map;
-            const cities = response_data.cities;
-
-            init_canvas(map, cities);
-
-            // adding nodes from linear array to 2d array
-            let y = 0;
-            let row = [];
-            for (let node of map) {
-
-                if (node.y !== y) {
-                    Node.all_nodes.push(row)
-                    row = [];
-                    y = node.y;
-                }
-                // init node => add nodes to PIXI stage
-                row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city));
-            }
-            Node.all_nodes.push(row);
-            break;
-
-        case ClientSocket.response_types.MENU_INFO_RESPONSE:
-            show_city_bottom_menu(response_data.city);
-            break;
-
-        // deal with sever UNIT_MOVED response
-        case ClientSocket.response_types.UNIT_MOVED_RESPONSE:
-            let found = false;
-
-            if(all_units == null){
-                return;
-            }
-            // find the unit in question
-            for (const unit of all_units) {
-                if(unit?.id === response_data.unit.id){
-                    found = true;
-                    unit?.move_to(response_data.unit.x, response_data.unit.y);
-                }
-            }
-            // update nodes
-            response_data.nodes.map( (node: any) => {
-                Node.all_nodes[node.y][node.x].set_type(node.type, node.city);
-            });
-
-            // if not found something went wrong
-            if(!found){
-                console.error("Error, something has gone wrong with the sever public communication")
-                break;
-            }
-
-            break;
-    }
-
-    // add units
-    //let unit = new Unit(0, 0, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png");
-    // all_nodes[2][2].units.push(new Unit(2, 2, HEX_SIDE_SIZE, HEX_SIDE_SIZE * 1.5, "../../images/helmet.png"));
-};
-
 export function init_game() {
 
     const player_token: string | null = localStorage.getItem("player_token");
@@ -213,10 +122,15 @@ export function init_game() {
         return;
     }
 
-    ClientSocket.add_data_listener(process_data, player_token)
+    ClientSocket.connect();
+    ClientSocket.add_data_listener(player_token)
     ClientSocket.get_data(ClientSocket.request_types.GET_ALL, game_token, player_token)
 }
 
 function loop(){
 
+}
+
+export function reset_units(){
+    all_units = [];
 }

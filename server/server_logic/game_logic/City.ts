@@ -1,6 +1,6 @@
 import Player from "./Player";
 import {Socket} from "socket.io";
-const {ServerSocket} = require("../ServerSocket");
+import {ServerSocket} from "../ServerSocket";
 
 class City{
     public readonly owner: Player;

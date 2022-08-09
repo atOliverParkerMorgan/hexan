@@ -72,6 +72,12 @@ export default class IndexController implements ControllerInterface{
                     res.statusMessage = "No match found";
                     res.status(204).send();
                 }else{
+
+                    // connect ServerSocket
+                    ServerSocket.init();
+                    ServerSocket.add_request_listener(game.token);
+                    ServerSocket.add_response_listener();
+
                     res.status(200).send(JSON.stringify({game_token: game.token}));
                 }
                 break;

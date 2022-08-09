@@ -62,6 +62,7 @@ export namespace MatchMaker {
         return player_token;
     }
 
+    // find a game for a player if there is one
     export function find_match_for_1v1(player_token: string, map_size: number): Game | undefined{
 
         const game = found_match_1v1(player_token);

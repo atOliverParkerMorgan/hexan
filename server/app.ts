@@ -43,9 +43,6 @@ class App {
   }
 
   private init_static_routes() {
-    ServerSocket.init();
-    ServerSocket.add_request_listener();
-    ServerSocket.add_response_listener();
     // html files
     this.app.use('/views', express.static(__dirname + '/views/'));
 

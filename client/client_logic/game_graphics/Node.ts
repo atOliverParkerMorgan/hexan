@@ -49,7 +49,7 @@ export class Node{
     is_hidden: boolean;
     sprite: any | null;
     city: any;
-    units: Unit[];
+    unit: Unit | null;
 
     line_borders: any[];
     line_borders_cords: number[];
@@ -70,7 +70,7 @@ export class Node{
 
         // -1 if this node doesn't have a city
         this.city = city;
-        this.units = [];
+        this.unit = null;
 
         this.line_borders = [];
         this.line_borders_cords = [];
@@ -164,12 +164,8 @@ export class Node{
        return  (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
     }
 
-    get_unit_ids(){
-        let all_unit_data = []
-        for (const unit of this.units) {
-           all_unit_data.push(unit.id);
-        }
-        return all_unit_data;
+    get_unit_id(): string | undefined{
+        return this.unit?.id;
     }
 
     set_border(color: number, thickness: number, opacity: number, borders: number[]){
@@ -218,7 +214,7 @@ export class Node{
     on_click(){
        // unit movement
         if(Node.selected_node != null) {
-            if(Node.selected_node !== this && Node.selected_node.units.length > 0) {
+            if(Node.selected_node !== this && Node.selected_node.unit != null) {
                 let to_node: Node = <Node> Node.last_hovered_node;
                 let node_from: Node = <Node> Node.selected_node;
 
@@ -234,7 +230,7 @@ export class Node{
                     data: {
                         game_token: localStorage.game_token,
                         player_token: localStorage.player_token,
-                        unit_ids: Node.selected_node.get_unit_ids(),
+                        unit_id: Node.selected_node.get_unit_id(),
                         path: path_node_cords
                     }
                 })
@@ -270,8 +266,8 @@ export class Node{
         }
 
         // unit info
-        if(this.units.length >= 1 && !Node.already_selected){
-            show_info(this.units[0]);
+        if(this.unit != null && !Node.already_selected){
+            show_info(this.unit);
         }else {
             hide_info();
         }
@@ -346,7 +342,7 @@ export class Node{
                 // sets new node (this node) to hovered
                 set_last_node_hovered(this);
                 if (Node.selected_node != null) {
-                    if (Node.selected_node.units.length > 0) {
+                    if (Node.selected_node.unit != null) {
 
                         if (Node.movement_hint_lines.length > 0) {
                             for (const movement_hint_line of Node.movement_hint_lines) {
@@ -399,8 +395,8 @@ export class Node{
     update(){
         this.hex?.clear();
         this.add_node_to_stage();
-        for(const unit of this.units){
-            unit.add_unit_to_stage();
+        if(this.unit != null) {
+            this.unit.add_unit_to_stage();
         }
         if(this === Node.selected_node) this.set_selected();
 

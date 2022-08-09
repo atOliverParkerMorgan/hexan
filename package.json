@@ -59,6 +59,7 @@
     "@types/pixi.js": "^5.0.0",
     "@types/socket.io": "^3.0.2",
     "concurrently": "^7.3.0",
+    "cypress": "^10.4.0",
     "nodemon": "^2.0.19",
     "svelte-check": "^2.8.0",
     "svelte-preprocess": "^4.10.7",

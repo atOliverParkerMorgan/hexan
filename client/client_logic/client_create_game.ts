@@ -1,5 +1,4 @@
 import {init_game} from "./game_graphics/Pixi.js";
-import {ClientSocket} from "./ClientSocket.js";
 
 const REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
@@ -135,9 +134,6 @@ function settings_logic_init(){
                     const start = Date.now();
                     update_timer(main_div, start);
 
-                    // listen for a match up!
-                    ClientSocket.add_data_listener(match_making_listener, JSON_response.player_token);
-
                     // update the timer about every second
                     interval_id_timer = setInterval(()=> update_timer(main_div, start), 1000);
 
@@ -192,17 +188,6 @@ function update_timer(main_div: any, start: number){
     let minute_text = minutes === 0 ? "": (minutes) + " " + minute_string+ "  :  "
 
     main_div.querySelector("span").innerText =  minute_text + (seconds % 60)+" "+seconds_string;
-}
-
-
-function match_making_listener(...args: any[]){
-    const response_type = args[0][0].response_type;
-    const response_data = args[0][0].data;
-    switch (response_type) {
-        case ClientSocket.response_types.FOUND_1v1_OPPONENT:
-        case ClientSocket.response_types.FOUND_2v2_OPPONENTS:
-            init_game();
-    }
 }
 
 const nick_input: any = document.getElementById("nick_input");
