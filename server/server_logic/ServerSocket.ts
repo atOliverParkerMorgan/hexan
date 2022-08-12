@@ -3,6 +3,8 @@ import { Server, Socket } from "socket.io";
 import Game from "./game_logic/Game";
 import Path from "./game_logic/Map/Path.js";
 import {MatchMaker} from "./MatchMaker";
+import Player from "./game_logic/Player";
+import City from "./game_logic/City";
 
 const httpServer = createServer();
 const io = new Server(httpServer);
@@ -13,7 +15,7 @@ export namespace ServerSocket {
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
-        INVALID_MOVE: string; UNITS_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string, MENU_INFO_RESPONSE: string } =  {
+        INVALID_MOVE: string; UNITS_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
 
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -21,6 +23,7 @@ export namespace ServerSocket {
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
+        ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
         INVALID_MOVE: "INVALID_MOVE"
 
@@ -55,7 +58,7 @@ export namespace ServerSocket {
     }
 
     export function send_data_to_all(socket: Socket, data: any, player_token: string, game_token: string): void{
-        socket.to(game_token).emit(player_token, data);
+        socket.broadcast.emit(player_token, data);
     }
 
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
@@ -117,7 +120,6 @@ export namespace ServerSocket {
     // acts as a setter - changes game_state according to clients request and game rules.
     export function add_request_listener(game_token: string): void{
         io.on("connection", (socket: Socket) => {
-            socket.join(game_token);
             // receive a message from the public
             socket.on("send-data", (...args: any[]) => {
                 const request_type: string = args[0].request_type;

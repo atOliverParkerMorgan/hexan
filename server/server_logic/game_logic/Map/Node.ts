@@ -232,8 +232,8 @@ export class Node{
 
         // hide hidden node and cites
         if(!this.is_shown.includes(player_token)){
-            type = Node.HIDDEN;
-            city = null;
+           type = Node.HIDDEN;
+           city = null;
         }
 
        return {

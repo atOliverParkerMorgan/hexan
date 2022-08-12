@@ -1,6 +1,8 @@
 import Player from "./Player";
 import {Socket} from "socket.io";
 import {ServerSocket} from "../ServerSocket";
+import Map from "./Map/Map";
+import {Node} from "./Map/Node";
 
 class City{
     public readonly owner: Player;
@@ -41,6 +43,15 @@ class City{
             this.owner.token);
 
         this.is_producing = false;
+    }
+
+    get_x_in_pixels(): number{
+        let row_bias = this.y % 2 === 0 ? Map.DISTANCE_BETWEEN_HEX/2 : 0;
+        return (this.x * Map.DISTANCE_BETWEEN_HEX + row_bias) - Map.WORLD_WIDTH / 2;
+    }
+
+    get_y_in_pixels(): number{
+        return  (this.y * 1.5 * Node.HEX_SIDE_SIZE) - Map.WORLD_HEIGHT / 2;
     }
 }
 

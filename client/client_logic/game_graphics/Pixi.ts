@@ -76,6 +76,11 @@ export function a_star(start_node: Node, goal_node: Node){
 
 export function init_canvas(map: any, cities: any){
 
+    if(viewport != null){
+        Node.all_nodes = [];
+        return;
+    }
+
     HEX_SIDE_SIZE = map.length ** .5;
 
     DISTANCE_BETWEEN_HEX = 2 * (HEX_SIDE_SIZE ** 2 - (HEX_SIDE_SIZE/2) ** 2) ** .5;
@@ -92,6 +97,16 @@ export function init_canvas(map: any, cities: any){
     const city_x = (starting_city.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
     const city_y = (starting_city.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
 
+    //TODO remove after testing
+    // save friendly and enemy city cords for testing
+    const my_div_city = document.querySelector("#my_city_cords");
+    const player_token = localStorage.getItem("player_token");
+    const game_token = localStorage.getItem("game_token")
+
+    if(my_div_city != null && player_token != null && game_token != null) {
+        my_div_city.textContent = city_x+" "+city_y;
+       // ClientSocket.get_data("enemy_city", game_token, player_token)
+    }
     // @ts-ignore
     viewport = app.stage.addChild(new pixi_viewport.Viewport());
 

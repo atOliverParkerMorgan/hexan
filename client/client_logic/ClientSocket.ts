@@ -1,4 +1,11 @@
-import {all_units, init_canvas, HEX_SIDE_SIZE, reset_units, all_enemy_visible_units} from "./game_graphics/Pixi.js";
+import {
+    all_units,
+    init_canvas,
+    HEX_SIDE_SIZE,
+    reset_units,
+    all_enemy_visible_units,
+    viewport
+} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {show_city_bottom_menu} from "./UI_logic.js";
@@ -7,14 +14,16 @@ import {show_city_bottom_menu} from "./UI_logic.js";
 export namespace ClientSocket {
     export const response_types: {readonly MAP_RESPONSE: string, readonly UNITS_RESPONSE: string,
                                 readonly ALL_RESPONSE: string, readonly UNIT_MOVED_RESPONSE: string,
-                                readonly ENEMY_UNIT_MOVED_RESPONSE: string, readonly MENU_INFO_RESPONSE: string,
-                                readonly FOUND_1v1_OPPONENT: string, readonly FOUND_2v2_OPPONENTS: string} = {
+                                readonly ENEMY_UNIT_MOVED_RESPONSE: string, readonly ENEMY_UNIT_DISAPPEARED: string,
+                                readonly MENU_INFO_RESPONSE: string, readonly FOUND_1v1_OPPONENT: string,
+                                readonly FOUND_2v2_OPPONENTS: string} = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
+        ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
 
         // match making
@@ -37,12 +46,21 @@ export namespace ClientSocket {
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
+
+    // local host setup
     // @ts-ignore
-    export let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
+    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io("ws://localhost:3000", {transports: ['websocket']});
+
+    let localhost = true;
+    let is_connected = false;
 
     export function connect(){
-        // @ts-ignore
-        socket = io("ws://127.0.0.1:3000", {transports: ['websocket']});
+        // if(!localhost || !is_connected) {
+        //     console.log("connected");
+        //     // @ts-ignore
+        //     socket
+        //     is_connected = true;
+        // }
     }
 
     export function send_data(data: any): void{
@@ -161,12 +179,23 @@ export namespace ClientSocket {
                             return;
                         }
 
-                        all_units.push(graphics_enemy_unit);
+                        all_enemy_visible_units.push(graphics_enemy_unit);
                         Node.all_nodes[response_data.unit.y][response_data.unit.x].unit = graphics_enemy_unit;
                     }
 
                     break;
 
+
+                case ClientSocket.response_types.ENEMY_UNIT_DISAPPEARED:
+                    let index = 0;
+                    for (; index < all_enemy_visible_units.length; index++) {
+                        if(all_enemy_visible_units[index].id === response_data.unit.id) break
+                    }
+                    const enemy_unit = all_enemy_visible_units[index];
+                    // remove unit
+                    enemy_unit.remove_sprite();
+                    Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
+                    all_enemy_visible_units.splice(index);
             }
         });
     }

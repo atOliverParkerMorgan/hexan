@@ -70,11 +70,22 @@ export class Unit implements UnitData{
         this.add_unit_to_stage();
     }
 
-    add_unit_to_stage(): void{
+    remove_sprite(){
         // remove the unit Graphics when unit moves
         if(this.sprite != null){
             viewport.removeChild(this.sprite);
         }
+        if(this.background_circle != null){
+            viewport.removeChild(this.background_circle);
+        }
+        if(this.health_circle != null && this.health_circle_background != null){
+            viewport.removeChild(this.health_circle);
+            viewport.removeChild(this.health_circle_background);
+        }
+    }
+
+    add_unit_to_stage(): void{
+        this.remove_sprite();
         this.show_health();
         this.show_background();
         this.set_sprite_position();
@@ -91,9 +102,6 @@ export class Unit implements UnitData{
     }
 
     show_background(): void{
-        if(this.background_circle != null){
-            viewport.removeChild(this.background_circle);
-        }
 
         this.background_circle = new Graphics();
         this.background_circle.beginFill(0xffffff);
@@ -104,10 +112,6 @@ export class Unit implements UnitData{
     }
 
     show_health(): void{
-        if(this.health_circle != null && this.health_circle_background != null){
-            viewport.removeChild(this.health_circle);
-            viewport.removeChild(this.health_circle_background);
-        }
 
         this.health_circle = new Graphics();
         this.health_circle_background = new Graphics();

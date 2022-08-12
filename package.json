@@ -9,7 +9,9 @@
     "webpack_development": "cross-env NODE_ENV=production webpack -d --progress --watch",
     "build_client": "tsc -p ./client",
     "build_server": "tsc -p ./server",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "test": "cypress run --spec ./cypress/e2e/create_game.cy.ts",
+    "test_gui": ".\\node_modules\\.bin\\cypress open"
   },
   "dependencies": {
     "@pixi/graphics-extras": "^6.3.0",
@@ -44,6 +46,7 @@
     "startup": "^1.1.1",
     "svelte": "^3.0.0",
     "svelte-view-engine": "^1.2.0-b",
+    "ts-node": "^5.0.1",
     "ws": "^8.5.0",
     "zip": "^1.2.0"
   },

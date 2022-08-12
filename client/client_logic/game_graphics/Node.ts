@@ -58,7 +58,7 @@ export class Node{
     hex: any | null;
 
 
-    constructor(x: number, y: number, id: number, type: number, line_borders: any, city: any) {
+    constructor(x: number, y: number, id: number, type: number, line_borders_cords: any, city: any) {
         this.x = x;
         this.y = y;
         this.id = id;
@@ -73,7 +73,7 @@ export class Node{
         this.unit = null;
 
         this.line_borders = [];
-        this.line_borders_cords = [];
+        this.line_borders_cords = line_borders_cords;
         this.add_node_to_stage()
         if(!this.is_hidden) this.set_border(Node.WATER, 5, 1 , this.line_borders_cords);
 

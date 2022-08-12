@@ -26,6 +26,7 @@ export class Unit implements UnitData{
     readonly id: string;
     type: string;
 
+    is_visible_to_enemy: boolean;
 
     attack: number;
     health: number;
@@ -38,6 +39,8 @@ export class Unit implements UnitData{
 
         this.id = id;
         this.type = unit_init_data.type;
+
+        this.is_visible_to_enemy = false;
 
         this.attack = unit_init_data.attack;
         this.health = unit_init_data.health;
@@ -87,30 +90,40 @@ export class Unit implements UnitData{
 
             // show unit to player if the unit steps on a discovered node
             game.all_players.map((in_game_player: Player)=>{
-                if(game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)){
+                if(game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
 
-                    if(in_game_player.token === player.token){
+                    if (in_game_player.token === player.token) {
                         ServerSocket.send_data(socket,
                             {
                                 response_type: ServerSocket.response_types.UNIT_MOVED_RESPONSE,
                                 data: {
                                     unit: this.get_data(),
-                                    nodes: all_discovered_nodes
+                                    nodes: all_discovered_nodes,
                                 }
                             }, in_game_player.token)
-                    }else{
+                    } else {
                         ServerSocket.send_data_to_all(socket,
                             {
                                 response_type: ServerSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE,
                                 data: {
                                     unit: this.get_data(),
-                                    nodes: all_discovered_nodes
                                 }
                             }, in_game_player.token, game.token)
                     }
+
                     console.log(`in_game_player: ${in_game_player.token}`);
                     console.log(`player: ${player.token}`);
 
+                }else {
+                    if (in_game_player.token !== player.token) {
+                        ServerSocket.send_data_to_all(socket,
+                            {
+                                response_type: ServerSocket.response_types.ENEMY_UNIT_DISAPPEARED,
+                                data: {
+                                    unit: this.get_data(),
+                                }
+                            }, in_game_player.token, game.token)
+                    }
                 }
             })
             console.log(`-----`);
