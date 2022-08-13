@@ -76,18 +76,17 @@ export namespace ClientSocket {
             switch (response_type) {
                 case ClientSocket.response_types.UNITS_RESPONSE:
                     for(let unit of response_data.units){
-
-                        unit = <UnitData>unit;
+                        unit = <UnitData> unit;
                         reset_units()
 
                         let graphics_unit: Unit | undefined;
 
                         // get the correct sprite for unit depending on it's type
                         if(unit.type === Unit.MELEE){
-                            graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75);
+                            graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
                         }
                         else if(unit.type === Unit.RANGE){
-                            graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75);
+                            graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
                         }
 
                         if(graphics_unit == null){
@@ -169,10 +168,10 @@ export namespace ClientSocket {
 
                         // get the correct sprite for unit depending on it's type
                         if(response_data.unit.type === Unit.MELEE){
-                            graphics_enemy_unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75);
+                            graphics_enemy_unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
                         }
                         else if(response_data.unit.type === Unit.RANGE){
-                            graphics_enemy_unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75);
+                            graphics_enemy_unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
                         }
 
                         if(graphics_enemy_unit == null){

@@ -7,7 +7,11 @@ export class Unit implements UnitData{
     public static readonly RANGE: string = "RANGE";
     public static readonly CAVALRY: string = "CAVALRY";
 
+    // graphics colors
     private static readonly HEALTH_BAR_COLOR: number = 0x7CFC00;
+    private static readonly FRIENDLY_BACKGROUND_COLOR: number = 0xFFFFFF ;
+    private static readonly ENEMY_BACKGROUND_COLOR: number = 0xF53E3E;
+
     x: number;
     y: number;
     id: string;
@@ -23,13 +27,14 @@ export class Unit implements UnitData{
     max_health: number;
 
     type: string;
+    is_friendly: boolean;
 
     health_circle: any;
     health_circle_background: any;
     background_circle: any;
     sprite: any;
 
-    constructor(unit: UnitData, width: number, height: number) {
+    constructor(unit: UnitData, width: number, height: number, is_friendly: boolean) {
         //this.player = player;
         this.width = width;
         this.height = height;
@@ -40,6 +45,7 @@ export class Unit implements UnitData{
         this.id = unit.id;
 
         this.type = unit.type;
+        this.is_friendly = is_friendly;
 
         this.attack = unit.attack;
         this.health = unit.health;
@@ -104,7 +110,13 @@ export class Unit implements UnitData{
     show_background(): void{
 
         this.background_circle = new Graphics();
-        this.background_circle.beginFill(0xffffff);
+
+        if(this.is_friendly) {
+            this.background_circle.beginFill(Unit.FRIENDLY_BACKGROUND_COLOR);
+        }else{
+            this.background_circle.beginFill(Unit.ENEMY_BACKGROUND_COLOR);
+        }
+
         this.background_circle.drawCircle(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2, HEX_SIDE_SIZE/1.8);
         this.background_circle.endFill();
         viewport.addChild(this.background_circle);
