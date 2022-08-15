@@ -126,7 +126,6 @@ function settings_logic_init(){
 
                     const main_div: any = document.getElementById("app");
 
-
                     // replace index.html with findingAnOpponent.html
                     main_div.innerHTML = loadFile("/views/findingAnOpponent.html");
 

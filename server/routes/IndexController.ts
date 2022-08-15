@@ -6,12 +6,9 @@ import ControllerInterface from "./ControllerInterface";
 import Game from "../server_logic/game_logic/Game";
 import Player from "../server_logic/game_logic/Player";
 import {MatchMaker} from "../server_logic/MatchMaker";
+import {Utils} from "../Utils";
 
 export default class IndexController implements ControllerInterface{
-  public readonly GAME_MODE_1v1: string = "1v1";
-  public readonly GAME_MODE_2v2: string = "2v2";
-  public readonly GAME_MODE_AI: string = "AI";
-  public readonly GAME_MODE_FRIEND: string = "FRIEND";
 
   public readonly REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
@@ -51,22 +48,44 @@ export default class IndexController implements ControllerInterface{
         res.status(422).send();
     }
     // handle game modes
-    else if(game_mode !== this.GAME_MODE_1v1 && game_mode !== this.GAME_MODE_2v2 && game_mode !== this.GAME_MODE_AI && game_mode !== this.GAME_MODE_FRIEND){
+    else if(game_mode !== Utils.GAME_MODE_1v1 && game_mode !== Utils.GAME_MODE_2v2 && game_mode !== Utils.GAME_MODE_AI && game_mode !== Utils.GAME_MODE_FRIEND){
         res.statusMessage = "Error, try a valid game mode";
         res.status(422).send();
     }
 
     else if(request_type === this.REQUEST_TYPES.GENERATE_PLAYER_TOKEN){
-      // TODO if game_mode 1v1
-        const player: Player = MatchMaker.add_player_1v1(nick_name);
-        res.status(200).send(JSON.stringify({player_token: player.token,}));
+        let player: Player;
+        switch(game_mode) {
+            case Utils.GAME_MODE_AI:
+                // generate ai player
+                player = new Player(Utils.generate_token(nick_name));
+                res.status(200).send(JSON.stringify({player_token: player.token}));
+                break;
+
+            case Utils.GAME_MODE_1v1:
+                player = MatchMaker.add_player_1v1(nick_name);
+                res.status(200).send(JSON.stringify({player_token: player.token}));
+                break;
+        }
     }
 
     else if(request_type === this.REQUEST_TYPES.FIND_MATCH){
       if(game_mode != null){
+        let game;
         switch (game_mode) {
-          case this.GAME_MODE_1v1:
-                const game: Game | undefined = MatchMaker.find_match_for_1v1(player_token, map_size);
+            case Utils.GAME_MODE_AI:
+                game = new Game(player_token, map_size, 4);
+                // connect ServerSocket
+                ServerSocket.init();
+                ServerSocket.add_request_listener(game.token);
+                ServerSocket.add_response_listener();
+                res.status(200).send(JSON.stringify({game_token: game.token}));
+
+
+                break;
+
+          case Utils.GAME_MODE_1v1:
+                game = MatchMaker.find_match_for_1v1(player_token, map_size);
 
                 if(game == undefined){
                     res.statusMessage = "No match found";
