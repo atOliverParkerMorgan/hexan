@@ -1,18 +1,16 @@
 // this class creates matches between players
 import Player from "./game_logic/Player";
-import {createHash} from "crypto";
 import Game from "./game_logic/Game";
-import {ServerSocket} from "./ServerSocket";
-import cons from "consolidate";
+import {Utils} from "../Utils";
 
 // Singleton
 export namespace MatchMaker {
     export let all_players_searching_1v1: Player[] = [];
-    export let all_games_1v1: Game[] = [];
+    export let all_games: Game[] = [];
     export let all_players_searching_2v2: Player[] = [];
 
     export function add_player_1v1(nick_name: string): Player{
-        const player_token = generate_token(nick_name);
+        const player_token = Utils.generate_token(nick_name);
         const player = new Player(player_token)
         all_players_searching_1v1.push(player);
         return player;
@@ -36,7 +34,7 @@ export namespace MatchMaker {
 
             if(match_player == undefined) return undefined;
 
-            const new_game = new Game(generate_token(player_token), map_size, 4);
+            const new_game = new Game(Utils.generate_token(player_token), map_size, 4);
 
             new_game.all_players.push(current_player);
             new_game.all_players.push(match_player);
@@ -45,8 +43,19 @@ export namespace MatchMaker {
         }
     }
 
-    export function get_1v1_game (game_token: string): Game | undefined{
-        for (const game of MatchMaker.all_games_1v1) {
+    export function get_ai_game(player_token: string, map_size: number){
+        const new_game = new Game(Utils.generate_token(player_token), map_size, 4);
+        new_game.all_players.push(new Player(player_token));
+        all_games.push(new_game);
+        const player: Player | undefined = new_game?.get_player(player_token);
+        if(player != null) {
+            new_game.place_start_city(player);
+            return new_game;
+        }
+    }
+
+    export function get_game (game_token: string): Game | undefined{
+        for (const game of MatchMaker.all_games) {
             if (game.token === game_token) {
                 return game;
             }
@@ -54,10 +63,10 @@ export namespace MatchMaker {
     }
 
     export function add_player_2v2(nick_name: string){
-        const player_token = generate_token(nick_name);
+        const player_token = Utils.generate_token(nick_name);
         all_players_searching_2v2.push(new Player(player_token));
         if(has_match_for_1v1()){
-            return [player_token, new Game(generate_token(player_token), 2500, 4)]
+            return [player_token, new Game(Utils.generate_token(player_token), 2500, 4)]
         }
         return player_token;
     }
@@ -80,7 +89,7 @@ export namespace MatchMaker {
             const game: Game | undefined = MatchMaker.get_game_1v1_with_player(player_token, map_size);
             if(game != null){
 
-                all_games_1v1.push(game);
+                all_games.push(game);
 
                 const player: Player | undefined = game?.get_player(player_token);
                 if(player != null) {
@@ -96,7 +105,7 @@ export namespace MatchMaker {
     }
 
     function found_match_1v1(player_token: string): Game | undefined{
-        for(const game of all_games_1v1){
+        for(const game of all_games){
             for(const player of game.all_players){
                 if(player.token === player_token){
                     return game;
@@ -113,9 +122,5 @@ export namespace MatchMaker {
         for(const player_token of all_players_searching_1v1){
             console.log(player_token);
         }
-    }
-
-    export function generate_token(nick_name: string){
-        return createHash('sha256').update(nick_name + String(Math.random() + performance.now())).digest('hex');
     }
 }

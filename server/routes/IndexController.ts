@@ -1,9 +1,7 @@
 import express, {Request, Response, NextFunction} from "express";
-import {createHash} from "crypto";
 import {Router} from "express/ts4.0";
 import {ServerSocket} from "../server_logic/ServerSocket";
 import ControllerInterface from "./ControllerInterface";
-import Game from "../server_logic/game_logic/Game";
 import Player from "../server_logic/game_logic/Player";
 import {MatchMaker} from "../server_logic/MatchMaker";
 import {Utils} from "../Utils";
@@ -16,7 +14,6 @@ export default class IndexController implements ControllerInterface{
   }
 
   private player_token: string = "";
-  private game_token: string = "";
 
   public router: Router = express.Router();
 
@@ -74,14 +71,18 @@ export default class IndexController implements ControllerInterface{
         let game;
         switch (game_mode) {
             case Utils.GAME_MODE_AI:
-                game = new Game(player_token, map_size, 4);
-                // connect ServerSocket
-                ServerSocket.init();
-                ServerSocket.add_request_listener(game.token);
-                ServerSocket.add_response_listener();
-                res.status(200).send(JSON.stringify({game_token: game.token}));
+                game = MatchMaker.get_ai_game(player_token, map_size);
+                if(game == undefined){
+                    res.statusMessage = "Couldn't load AI";
+                    res.status(500).send();
+                }else {
+                    // connect ServerSocket
+                    ServerSocket.init();
+                    ServerSocket.add_request_listener();
+                    ServerSocket.add_response_listener();
+                    res.status(200).send(JSON.stringify({game_token: game.token}));
 
-
+                }
                 break;
 
           case Utils.GAME_MODE_1v1:
@@ -94,7 +95,7 @@ export default class IndexController implements ControllerInterface{
 
                     // connect ServerSocket
                     ServerSocket.init();
-                    ServerSocket.add_request_listener(game.token);
+                    ServerSocket.add_request_listener();
                     ServerSocket.add_response_listener();
 
                     res.status(200).send(JSON.stringify({game_token: game.token}));

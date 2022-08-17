@@ -1,10 +1,7 @@
 import { createServer } from 'http';
 import { Server, Socket } from "socket.io";
-import Game from "./game_logic/Game";
 import Path from "./game_logic/Map/Path.js";
 import {MatchMaker} from "./MatchMaker";
-import Player from "./game_logic/Player";
-import City from "./game_logic/City";
 
 const httpServer = createServer();
 const io = new Server(httpServer);
@@ -57,7 +54,7 @@ export namespace ServerSocket {
         socket.emit(player_token, data);
     }
 
-    export function send_data_to_all(socket: Socket, data: any, player_token: string, game_token: string): void{
+    export function send_data_to_all(socket: Socket, data: any, player_token: string): void{
         socket.broadcast.emit(player_token, data);
     }
 
@@ -71,7 +68,8 @@ export namespace ServerSocket {
 
                 console.log(`got some data player_token: ${request_data.player_token}`)
 
-                const game = MatchMaker.get_1v1_game(request_data.game_token);
+                const game = MatchMaker.get_game(request_data.game_token);
+
                 if (game != null) {
                     const player = game.get_player(request_data.player_token);
                     if (player != null){
@@ -118,13 +116,15 @@ export namespace ServerSocket {
 }
 
     // acts as a setter - changes game_state according to clients request and game rules.
-    export function add_request_listener(game_token: string): void{
+    export function add_request_listener(): void{
         io.on("connection", (socket: Socket) => {
             // receive a message from the public
             socket.on("send-data", (...args: any[]) => {
                 const request_type: string = args[0].request_type;
                 const request_data = args[0].data;
-                const game = MatchMaker.get_1v1_game(request_data.game_token);
+
+                const game = MatchMaker.get_game(request_data.game_token);
+
                 if (game != null) {
                     const player = game.get_player(request_data.player_token);
                     if (player != null) {

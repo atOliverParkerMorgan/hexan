@@ -102,6 +102,7 @@ function settings_logic_init(){
     // play button logic
     const play_button: any = document.getElementById("play_button");
     play_button.onclick = ()=> {
+
         const nick_name = localStorage.getItem("nick_name");
         if(nick_name == null) return;
         //client_socket.send_data("create_game_with_ai", nick);
@@ -129,6 +130,13 @@ function settings_logic_init(){
                     // replace index.html with findingAnOpponent.html
                     main_div.innerHTML = loadFile("/views/findingAnOpponent.html");
 
+                    if(game_mode === GAME_MODE_AI){
+                        const title = document.querySelector("#title");
+                        if(title != null) {
+                            title.textContent = "LOADING AI";
+                        }
+                    }
+
                     // starting time
                     const start = Date.now();
                     update_timer(main_div, start);
@@ -136,7 +144,7 @@ function settings_logic_init(){
                     // update the timer about every second
                     interval_id_timer = setInterval(()=> update_timer(main_div, start), 1000);
 
-                    // send POST request if there is a available match
+                    // send POST request if there is available match
                     interval_id_match_request = setInterval(() => request_match_status_update(JSON_response.player_token, nick_name, map_size, game_mode), 5000);
 
                 }

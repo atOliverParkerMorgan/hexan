@@ -1,6 +1,4 @@
 export class City{
-
     constructor() {
-
     }
 }
