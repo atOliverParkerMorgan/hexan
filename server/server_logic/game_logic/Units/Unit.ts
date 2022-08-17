@@ -108,7 +108,7 @@ export class Unit implements UnitData{
                                 data: {
                                     unit: this.get_data(),
                                 }
-                            }, in_game_player.token, game.token)
+                            }, in_game_player.token)
                     }
 
                     console.log(`in_game_player: ${in_game_player.token}`);
@@ -122,7 +122,7 @@ export class Unit implements UnitData{
                                 data: {
                                     unit: this.get_data(),
                                 }
-                            }, in_game_player.token, game.token)
+                            }, in_game_player.token)
                     }
                 }
             })

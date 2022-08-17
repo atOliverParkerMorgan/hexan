@@ -16,7 +16,8 @@ export class Node{
     public static readonly HEX_SIDE_SIZE = 25000 ** .5;
     public static readonly MOUNTAIN_TRAVEL_BIAS = 10;
 
-    public static readonly WATER: number = 0x80C5DE;
+    public static readonly OCEAN: number = 0x80C5DE;
+    public static readonly LAKE: number = 0xADD8E6 ;
     public static readonly GRASS: number = 0x7FFF55;
     public static readonly BEACH: number = 0xFFFF00;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
@@ -37,7 +38,7 @@ export class Node{
         this.neighbors = [];
         this.x = x;
         this.y = y;
-        this.type = Node.WATER;
+        this.type = Node.OCEAN;
         this.borders = [];
         this.is_shown = [];
         this.city = null;
@@ -74,20 +75,6 @@ export class Node{
 
         return output_sides;
     }
-
-    // get_random_valid_border_neighbor(border_position){
-    //     if(border_position == null) return null;
-    //     let neighboring_borders = this.get_border_neighbor_borders(border_position);
-    //     let valid_borders = [];
-    //     for(const border of neighboring_borders){
-    //         if(!this.boarders.includes(border)){
-    //             valid_borders.push(border);
-    //         }
-    //     }
-    //     if(valid_borders.length === 0) return null;
-    //     return valid_borders[this.random_int(0, valid_borders.length - 1)];
-    //
-    // }
 
     get_neighbor_opposite_position(neighbor: Node): number | undefined{
         switch (this.neighbors.indexOf(neighbor)){
@@ -151,7 +138,7 @@ export class Node{
     is_coast(): boolean{
         for(const node_neighbour of this.neighbors){
             if(node_neighbour != null){
-                if(node_neighbour.type === Node.WATER){
+                if(node_neighbour.type === Node.OCEAN){
                     return true;
                 }
             }
@@ -163,12 +150,33 @@ export class Node{
         if(this.borders.length !== 0){
             return true;
         }
-        for(const neighbor of this.neighbors){
-            if(neighbor == null) continue;
-            if(neighbor.borders.includes(this.get_neighbor_opposite_position(neighbor))){
-                return true;
+        this.neighbors.map((neighbor:Node | undefined) =>{
+            if(neighbor != null) {
+                if (neighbor.borders.includes(this.get_neighbor_opposite_position(neighbor))) {
+                    return true;
+                }
+            }
+        });
+        return false;
+    }
+
+    // in order for a node to be a lake it must be surrounded by river boarders
+    is_lake(): boolean{
+        if(this.borders.length === 6){
+            return true
+        }
+        for (let riverside = Map.LEFT; riverside < Map.BOTTOM_RIGHT; riverside++) {
+            if(!this.borders.includes(riverside)){
+                const neighbor = this.neighbors[riverside];
+
+                if(neighbor == null) return false;
+
+                const neighbor_riverside = this.get_neighbor_position(neighbor);
+                return neighbor.borders.includes(neighbor_riverside);
+
             }
         }
+
         return false;
     }
 
@@ -210,7 +218,7 @@ export class Node{
         if(player != undefined){
              if (!this.is_shown.includes(player.token)) return value;
          }
-        if (this.type === Node.WATER) return value + 1000;
+        if (this.type === Node.OCEAN) return value + 1000;
         if(this.type === Node.MOUNTAIN) return value + Node.MOUNTAIN_TRAVEL_BIAS;
         return value;
     }
@@ -220,7 +228,7 @@ export class Node{
             case Node.GRASS: return "GRASS";
             case Node.BEACH: return "BEACH";
             case Node.MOUNTAIN: return "MOUNTAIN";
-            case Node.WATER: return "WATER";
+            case Node.OCEAN: return "WATER";
         }
         return "NOT FOUND";
     }
@@ -232,7 +240,7 @@ export class Node{
 
         // hide hidden node and cites
         if(!this.is_shown.includes(player_token)){
-           type = Node.HIDDEN;
+           //type = Node.HIDDEN;
            city = null;
         }
 

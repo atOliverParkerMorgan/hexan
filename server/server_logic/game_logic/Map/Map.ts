@@ -1,7 +1,6 @@
 import Continent from "./Continent";
 import {Node} from "./Node";
 import Player from "../Player";
-import cons from "consolidate";
 
 class Map{
 
@@ -113,7 +112,7 @@ class Map{
             do{
                 random_x = this.random_int(0, this.side_length - 1);
                 random_y = this.random_int(0, this.side_length - 1);
-            }while(this.all_nodes[random_y][random_x].type !== Node.WATER);
+            }while(this.all_nodes[random_y][random_x].type !== Node.OCEAN);
 
             this.generate_continent(random_x, random_y, this.continent_size, this.shuffleArray(Map.CONTINENT_NAMES).shift());
        }
@@ -137,7 +136,7 @@ class Map{
 
             let random_continent_node = current_continent.get_random_node_of_type(Node.BEACH);
             if(random_continent_node == null) continue;
-            let random_neighbour_node = random_continent_node.get_random_neighbour_of_type(Node.WATER);
+            let random_neighbour_node = random_continent_node.get_random_neighbour_of_type(Node.OCEAN);
 
             if(random_neighbour_node == null){
                 current_continent.change_node_to(random_continent_node, Node.GRASS);
@@ -170,12 +169,8 @@ class Map{
             this.generate_river(current_continent);
         }
 
-        // generating lakes
-        for (const node of current_continent.all_nodes) {
-            if(node.borders.length === 6){
-                current_continent.change_node_to(node, Node.WATER);
-            }
-        }
+        // generate lakes
+        this.generate_lakes(current_continent);
     }
 
     // TODO add one random seed
@@ -191,7 +186,7 @@ class Map{
 
         current_continent.add_mountain_node(current_node);
 
-        // ensures that the algorithm doesn't get stuck in a infinite loop
+        // ensures that the algorithm doesn't get stuck in an infinite loop
         const max_number_of_loops: number = 18;
         let current_number_of_loops = 0;
 
@@ -350,10 +345,18 @@ class Map{
             current_side = this.switch_position(neighbor);
             last_direction = direction;
            // if(i === river_path.length - 1) //node.type = 1534541;
-
         }
-
+        continent.add_all_river_nodes();
     }
+
+    generate_lakes(continent: Continent){
+        continent.river_nodes.map((node: Node)=>{
+            if(node.is_lake()){
+                continent.change_node_to(node, Node.LAKE);
+            }
+        })
+    }
+
     print_position(pos: number): string | undefined{
         switch (pos){
             case 0:
@@ -439,14 +442,6 @@ class Map{
             }
         }
         return null;
-    }
-
-    for_each_node(fun: (node: Node)=>void): void{
-        for(let node_rows of this.all_nodes){
-            for(let node of node_rows){
-                fun(node);
-            }
-        }
     }
 
     format(player_token: string): any{

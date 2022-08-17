@@ -12,6 +12,8 @@ class Continent{
     grass_nodes: Node[];
     beach_nodes: Node[];
     mountain_nodes: Node[];
+    river_nodes: Node[];
+    lake_nodes: Node[];
 
     constructor(name: string, map: Map) {
         this.name = name;
@@ -22,6 +24,8 @@ class Continent{
         this.grass_nodes = [];
         this.beach_nodes = [];
         this.mountain_nodes = [];
+        this.river_nodes = [];
+        this.lake_nodes = [];
 
         this.has_player = false;
 
@@ -60,13 +64,25 @@ class Continent{
         this.all_nodes.splice(this.mountain_nodes.indexOf(node), 1);
     }
 
-    get_random_river_node(): Node{
-        let all_river_nodes = [];
-        for(const node of this.all_nodes){
-            if(node.is_river()) all_river_nodes.push(node);
-        }
+    add_all_river_nodes(): void{
+        this.all_nodes.map((node: Node)=>{
+            if(node.is_river()) this.river_nodes.push(node);
+        })
+    }
 
-        return all_river_nodes[this.random_int(0, all_river_nodes.length - 1)];
+    add_lake_node(node: Node): void{
+        node.type = Node.LAKE;
+        this.lake_nodes.push(node);
+        this.all_nodes.push(node);
+    }
+
+    remove_lake_node(node: Node): void{
+        this.lake_nodes.splice(this.lake_nodes.indexOf(node), 1);
+        this.all_nodes.splice(this.lake_nodes.indexOf(node), 1);
+    }
+
+    get_random_river_node(): Node{
+        return this.river_nodes[this.random_int(0, this.river_nodes.length - 1)];
     }
 
     change_node_to(node: Node, new_type: number): void{
@@ -84,6 +100,9 @@ class Continent{
             case Node.MOUNTAIN:
                 this.add_mountain_node(node);
                 break;
+            case Node.LAKE:
+                this.add_lake_node(node);
+                break;
         }
 
         switch (old_type){
@@ -95,6 +114,9 @@ class Continent{
                 break;
             case Node.MOUNTAIN:
                 this.remove_mountain_node(node);
+                break;
+            case Node.LAKE:
+                this.remove_lake_node(node);
                 break;
         }
     }
