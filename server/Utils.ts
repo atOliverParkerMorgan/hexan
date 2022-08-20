@@ -1,4 +1,5 @@
 import {createHash} from "crypto";
+import Map from "./server_logic/game_logic/Map/Map";
 
 export namespace Utils{
     export const HOST = "http://localhost:8000";
@@ -11,5 +12,4 @@ export namespace Utils{
     export function generate_token(nick_name: string){
         return createHash('sha256').update(nick_name + String(Math.random() + performance.now())).digest('hex');
     }
-
 }

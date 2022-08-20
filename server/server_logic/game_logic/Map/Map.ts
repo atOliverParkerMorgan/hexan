@@ -153,7 +153,7 @@ class Map{
         }
 
         // generate mountains
-        let number_of_mountain_ranges = this.random_int(3, 5);
+        let number_of_mountain_ranges = this.random_int(1, 3);
         for (let i = 0; i <= number_of_mountain_ranges; i++) {
             if(i === 0) this.generate_mountains(seed_x, seed_y, number_of_mountain_ranges, current_continent);
             else{

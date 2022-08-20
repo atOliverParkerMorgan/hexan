@@ -6,8 +6,8 @@ import {Unit} from "./Unit/Unit.js";
 
 export class Node{
     // types of nodes displayed as colors
-    public static readonly OCEAN: number = 0x80C5DE;
-    public static readonly LAKE: number = 0xADD8E6 ;
+    public static readonly OCEAN: number = 0x0AA3CF;
+    public static readonly LAKE: number = 0x80C5DE ;
     public static readonly GRASS: number = 0x7FFF55;
     public static readonly BEACH: number = 0xFFFF00;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
@@ -76,7 +76,7 @@ export class Node{
         this.line_borders = [];
         this.line_borders_cords = line_borders_cords;
         this.add_node_to_stage()
-        if(!this.is_hidden) this.set_border(Node.OCEAN, 5, 1 , this.line_borders_cords);
+        if(!this.is_hidden) this.set_border(Node.LAKE, 5, 1 , this.line_borders_cords);
 
         // used for A* searching algorithm
         this.parent = null;
@@ -401,6 +401,6 @@ export class Node{
         }
         if(this === Node.selected_node) this.set_selected();
 
-        if(!this.is_hidden) this.set_border(Node.OCEAN, 5, 1 , this.line_borders_cords);
+        if(!this.is_hidden) this.set_border(Node.LAKE, 5, 1 , this.line_borders_cords);
     }
 }

@@ -1,6 +1,7 @@
 import City from "../City";
 import Map from "./Map";
 import Player from "../Player";
+import { Utils } from "../../../Utils";
 
 // used for node.get_data()
 export type NodeData = {
@@ -16,8 +17,8 @@ export class Node{
     public static readonly HEX_SIDE_SIZE = 25000 ** .5;
     public static readonly MOUNTAIN_TRAVEL_BIAS = 10;
 
-    public static readonly OCEAN: number = 0x80C5DE;
-    public static readonly LAKE: number = 0xADD8E6 ;
+    public static readonly OCEAN: number = 0x0AA3CF;
+    public static readonly LAKE: number = 0x80C5DE;
     public static readonly GRASS: number = 0x7FFF55;
     public static readonly BEACH: number = 0xFFFF00;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
@@ -162,22 +163,19 @@ export class Node{
 
     // in order for a node to be a lake it must be surrounded by river boarders
     is_lake(): boolean{
-        if(this.borders.length === 6){
-            return true
-        }
-        for (let riverside = Map.LEFT; riverside < Map.BOTTOM_RIGHT; riverside++) {
+        for (let riverside = Map.LEFT; riverside <= Map.BOTTOM_RIGHT; riverside++) {
             if(!this.borders.includes(riverside)){
-                const neighbor = this.neighbors[riverside];
 
+                const neighbor = this.neighbors[riverside];
                 if(neighbor == null) return false;
 
-                const neighbor_riverside = this.get_neighbor_position(neighbor);
-                return neighbor.borders.includes(neighbor_riverside);
-
+                if(!neighbor.borders.includes(this.get_neighbor_opposite_position(neighbor))){
+                    return false
+                }
             }
         }
 
-        return false;
+        return true;
     }
 
     could_be_mountain(): boolean {
