@@ -51,6 +51,7 @@ export class Node{
     sprite: any | null;
     city: any;
     unit: Unit | null;
+    sprite_name: string;
 
     line_borders: any[];
     line_borders_cords: number[];
@@ -59,7 +60,7 @@ export class Node{
     hex: any | null;
 
 
-    constructor(x: number, y: number, id: number, type: number, line_borders_cords: any, city: any) {
+    constructor(x: number, y: number, id: number, type: number, line_borders_cords: any, city: any, sprite_name: string) {
         this.x = x;
         this.y = y;
         this.id = id;
@@ -75,7 +76,10 @@ export class Node{
 
         this.line_borders = [];
         this.line_borders_cords = line_borders_cords;
+        this.sprite_name = sprite_name;
+
         this.add_node_to_stage()
+
         if(!this.is_hidden) this.set_border(Node.LAKE, 5, 1 , this.line_borders_cords);
 
         // used for A* searching algorithm
@@ -114,7 +118,7 @@ export class Node{
     }
 
     add_node_to_stage(){
-
+        // draw hex
         this.hex = new Graphics();
 
         if(this.city != null) this.hex.beginFill(Node.CITY, this.opacity);
@@ -130,26 +134,31 @@ export class Node{
         this.hex.on('click', () => { this.on_click() });
         this.hex.on('mouseover', () => { this.set_hovered() });
 
-        // changing color of city
-
         viewport.addChild(this.hex);
 
         this.show_city(this.city);
+        // draw sprite
+        this.show_sprite();
     }
 
     show_city(city: any){
         this.city = city;
-        if(this.city != null){
-            // @ts-ignore
-            this.sprite = PIXI.Sprite.from("/images/village.png");
+    }
 
-            this.sprite.width = DISTANCE_BETWEEN_HEX * .7;
-            this.sprite.height = DISTANCE_BETWEEN_HEX * .7;
-            this.sprite.x = this.get_x_in_pixels() - DISTANCE_BETWEEN_HEX/2.5;
-            this.sprite.y = this.get_y_in_pixels() - DISTANCE_BETWEEN_HEX/2.5;
-
-            viewport.addChild(this.sprite);
+    show_sprite(){
+        if(this.sprite_name === ""){
+            return
         }
+
+        // @ts-ignore
+        this.sprite = PIXI.Sprite.from("/images/"+this.sprite_name);
+
+        this.sprite.width = DISTANCE_BETWEEN_HEX * .7;
+        this.sprite.height = DISTANCE_BETWEEN_HEX * .7;
+        this.sprite.x = this.get_x_in_pixels() - DISTANCE_BETWEEN_HEX/2.5;
+        this.sprite.y = this.get_y_in_pixels() - DISTANCE_BETWEEN_HEX/2.5;
+
+        viewport.addChild(this.sprite);
     }
 
     get_distance_to_node(node: Node) {
@@ -277,8 +286,9 @@ export class Node{
     set_type(type: number, city: any){
         this.type = type;
         this.is_hidden = this.type === Node.HIDDEN;
-        this.show_city(city);
         this.update();
+        this.show_city(city);
+        this.show_sprite();
     }
 
     remove_selected(){

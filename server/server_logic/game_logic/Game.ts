@@ -55,6 +55,7 @@ class Game{
     add_city(player: Player, city_node: Node): void{
         // create a new city for a player
         city_node.city = new City(player, city_node.x, city_node.y, "Prague");
+        city_node.sprite_name = "village.png";
         this.all_cities.push(city_node.city);
         city_node.neighbors.forEach((node) => this.map.make_neighbour_nodes_shown(player, node));
     }

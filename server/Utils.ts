@@ -12,4 +12,13 @@ export namespace Utils{
     export function generate_token(nick_name: string){
         return createHash('sha256').update(nick_name + String(Math.random() + performance.now())).digest('hex');
     }
+
+    // range: <min; max>
+    // @ TODO add unit functions
+    export function random_int(min: number, max: number): number{
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
 }

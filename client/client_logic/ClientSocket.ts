@@ -115,7 +115,7 @@ export namespace ClientSocket {
                             y = node.y;
                         }
                         // init node => add nodes to PIXI stage
-                        row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city));
+                        row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city, node.sprite_name));
                     }
                     Node.all_nodes.push(row);
                     break;

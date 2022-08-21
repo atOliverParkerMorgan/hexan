@@ -1,7 +1,6 @@
 import City from "../City";
 import Map from "./Map";
 import Player from "../Player";
-import { Utils } from "../../../Utils";
 
 // used for node.get_data()
 export type NodeData = {
@@ -10,6 +9,7 @@ export type NodeData = {
     type: number,
     borders: any,
     city: City | null;
+    sprite_name: string;
 }
 
 export class Node{
@@ -35,6 +35,8 @@ export class Node{
     city: City | null;
     parent: Node | null;
 
+    sprite_name: string;
+
     constructor(x: number, y: number){
         this.neighbors = [];
         this.x = x;
@@ -43,6 +45,7 @@ export class Node{
         this.borders = [];
         this.is_shown = [];
         this.city = null;
+        this.sprite_name = "";
 
         // used for A* searching algorithm
         this.parent = null;
@@ -247,7 +250,8 @@ export class Node{
            y: this.y,
            type: type,
            borders: this.borders,
-           city: city
+           city: city,
+           sprite_name: this.sprite_name
        }
     }
 }

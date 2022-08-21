@@ -1,6 +1,7 @@
 import Continent from "./Continent";
 import {Node} from "./Node";
 import Player from "../Player";
+import {Utils} from "../../../Utils";
 
 class Map{
 
@@ -19,6 +20,9 @@ class Map{
     public static HORIZONTAL: number = 0;
     public static VERTICAL: number = 1;
 
+    public static NORMAL_MOUNTAIN: number = 0;
+    public static SNOWY_MOUNTAIN: number = 1;
+
     public static readonly CONTINENT_NAMES: string[] = ["Drolend", "Dritune", "Figith", "Esox", "Okea", "Owrai", "Aneoqeon", "Vliutufor", "Strineaces", "Uaqixesh"]
 
     // attributes
@@ -34,7 +38,7 @@ class Map{
         if(number_of_land_nodes ** .5 % 1 !== 0) console.log("Warning, the square root of number of nodes should be a whole number ");
         this.number_of_land_nodes = number_of_land_nodes;
         this.continent_size = (number_of_land_nodes / number_of_continents);
-        this.continent_size /= this.random_int(2, 4);
+        this.continent_size /= Utils.random_int(2, 4);
         this.side_length = Math.floor(number_of_land_nodes ** .5);
 
         // cannot be bigger than the number of nodes
@@ -110,8 +114,8 @@ class Map{
             let random_x, random_y;
             // pick a random water node
             do{
-                random_x = this.random_int(0, this.side_length - 1);
-                random_y = this.random_int(0, this.side_length - 1);
+                random_x = Utils.random_int(0, this.side_length - 1);
+                random_y = Utils.random_int(0, this.side_length - 1);
             }while(this.all_nodes[random_y][random_x].type !== Node.OCEAN);
 
             this.generate_continent(random_x, random_y, this.continent_size, this.shuffleArray(Map.CONTINENT_NAMES).shift());
@@ -151,20 +155,20 @@ class Map{
                 current_continent.change_node_to(node, Node.GRASS);
             }
         }
-
         // generate mountains
-        let number_of_mountain_ranges = this.random_int(1, 3);
+        let number_of_mountain_ranges = Utils.random_int(1, 3);
         for (let i = 0; i <= number_of_mountain_ranges; i++) {
-            if(i === 0) this.generate_mountains(seed_x, seed_y, number_of_mountain_ranges, current_continent);
+            const mountain_type = Utils.random_int(Map.NORMAL_MOUNTAIN, Map.SNOWY_MOUNTAIN);
+            if(i === 0) this.generate_mountains(seed_x, seed_y, number_of_mountain_ranges, current_continent, mountain_type);
             else{
                 let random_grass_node = current_continent.get_random_node_of_type(Node.GRASS);
-                this.generate_mountains(random_grass_node.x, random_grass_node.y, this.random_int(5, 15), current_continent);
+                this.generate_mountains(random_grass_node.x, random_grass_node.y, Utils.random_int(5, 15), current_continent, mountain_type);
             }
             // console.log("Generating mountains: "+ (i) + " of "+number_of_mountain_ranges)
         }
 
         // generate rivers
-        let number_of_rivers = this.random_int(2, 4);
+        let number_of_rivers = Utils.random_int(2, 4);
         for (let i = 0; i <= number_of_rivers; i++) {
             this.generate_river(current_continent);
         }
@@ -173,18 +177,18 @@ class Map{
         this.generate_lakes(current_continent);
     }
 
-    // TODO add one random seed
-    generate_mountains(seed_x: number, seed_y: number, size: number, current_continent: Continent): void{
+    // mountain types: 1. normal; 2. snowy
+    generate_mountains(seed_x: number, seed_y: number, size: number, current_continent: Continent, mountain_type: number): void{
 
         // 10 is straight; 1 is scattered
         const MOUNTAIN_RANGE_STRAIGHTNESS: number = 4;
 
-        let mountain_range_orientation: number =  this.random_int(Map.HORIZONTAL, Map.VERTICAL);
+        let mountain_range_orientation: number =  Utils.random_int(Map.HORIZONTAL, Map.VERTICAL);
         let current_node: Node | undefined = this.get_node(seed_x, seed_y);
 
         if(current_node == undefined) return;
 
-        current_continent.add_mountain_node(current_node);
+        current_continent.add_mountain_node(current_node, mountain_type);
 
         // ensures that the algorithm doesn't get stuck in an infinite loop
         const max_number_of_loops: number = 18;
@@ -192,14 +196,14 @@ class Map{
 
         for (let i = 0; i < size;) {
             // the chances of the next mountain being aligned with the mountain range are 50%
-            let mountain_noise: number = this.random_int(0, 10);
+            let mountain_noise: number = Utils.random_int(0, 10);
             if(mountain_noise <= MOUNTAIN_RANGE_STRAIGHTNESS) {
                 // generate a mountain that is aligned with the general direction of the mountain range
                 let previous_node: Node = current_node;
 
                 // logic for mountain ranges that have a horizontal direction
                 if (mountain_range_orientation === Map.HORIZONTAL) {
-                    let random_direction: number = this.random_int(0, 1);
+                    let random_direction: number = Utils.random_int(0, 1);
                     let opposite_direction: number = random_direction === 0 ? 1: 0;
 
                     let random_neighbour: Node | undefined = current_node.neighbors[random_direction];
@@ -273,7 +277,7 @@ class Map{
                 }
 
                 if (current_node.could_be_mountain()) {
-                    current_continent.add_mountain_node(current_node);
+                    current_continent.add_mountain_node(current_node, mountain_type);
 
                     i++
                     current_number_of_loops = 0;
@@ -289,7 +293,7 @@ class Map{
                     ?.get_random_neighbour_in_range(2, 5, Node.GRASS);
 
                 if (random_mountain_node != null) {
-                    current_continent.add_mountain_node(random_mountain_node);
+                    current_continent.add_mountain_node(random_mountain_node, mountain_type);
 
                     i++
                     current_number_of_loops = 0;
@@ -319,11 +323,11 @@ class Map{
         // @TODO create path interface
         let river_path: any = this.a_star(<Node> random_mountain_node, <Node> random_beach_node);
 
-        let current_side: number | undefined = this.random_int(Map.LEFT, Map.BOTTOM_RIGHT);
+        let current_side: number | undefined = Utils.random_int(Map.LEFT, Map.BOTTOM_RIGHT);
         for (let i = 0; i < river_path.length; i++) {
 
             // random direction of river see Node.create_river()
-            let direction = this.random_int(0, 1) === 1 ? 1: -1;
+            let direction = Utils.random_int(0, 1) === 1 ? 1: -1;
             let next_node = river_path[i + 1];
             let node = river_path[i];
 
@@ -452,14 +456,6 @@ class Map{
             }
         }
         return data;
-    }
-
-    // range: <min; max>
-    // @ TODO add unit functions
-    random_int(min: number, max: number): number{
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     // Randomize array in-place using Durstenfeld shuffle algorithm

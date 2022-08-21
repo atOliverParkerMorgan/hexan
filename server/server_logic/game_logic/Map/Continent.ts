@@ -1,8 +1,11 @@
+import { Utils } from "../../../Utils";
 import Map from "./Map";
 import {Node} from "./Node";
 
 class Continent{
-    // attributes
+
+    private static readonly NUMBER_OF_MOUNTAIN_SPRITES = 5;
+
     name: string;
     map: Map;
     has_player: boolean;
@@ -53,13 +56,19 @@ class Continent{
         this.all_nodes.splice(this.beach_nodes.indexOf(node), 1);
     }
 
-    add_mountain_node(node: Node): void{
+    add_mountain_node(node: Node, mountain_type: number): void{
         node.type = Node.MOUNTAIN;
 
+        if(mountain_type === Map.NORMAL_MOUNTAIN) {
+            node.sprite_name = "mountain_" + Utils.random_int(1, 3)  + ".png"
+        }else if(mountain_type === Map.SNOWY_MOUNTAIN){
+            node.sprite_name = "mountain_" + Utils.random_int(4, 5) + ".png"
+        }
         this.mountain_nodes.push(node);
         this.all_nodes.push(node);
     }
     remove_mountain_node(node: Node): void{
+        node.sprite_name = "";
         this.mountain_nodes.splice(this.mountain_nodes.indexOf(node), 1);
         this.all_nodes.splice(this.mountain_nodes.indexOf(node), 1);
     }
@@ -98,7 +107,7 @@ class Continent{
                 this.add_beach_node(node);
                 break;
             case Node.MOUNTAIN:
-                this.add_mountain_node(node);
+                this.add_mountain_node(node, Map.NORMAL_MOUNTAIN);
                 break;
             case Node.LAKE:
                 this.add_lake_node(node);
