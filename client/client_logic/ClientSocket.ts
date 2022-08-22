@@ -131,6 +131,12 @@ export namespace ClientSocket {
                     if(all_units == null){
                         return;
                     }
+
+                    // update nodes
+                    response_data.nodes.map( (node: any) => {
+                        Node.all_nodes[node.y][node.x].set_type(node.type, node.city);
+                    });
+
                     // find the unit in question
                     all_units.map((unit: Unit)=>{
                         if(unit?.id === response_data.unit.id){
@@ -139,10 +145,6 @@ export namespace ClientSocket {
                         }
                     })
 
-                    // update nodes
-                    response_data.nodes.map( (node: any) => {
-                        Node.all_nodes[node.y][node.x].set_type(node.type, node.city);
-                    });
 
                     // if not found something went wrong
                     if(!found_unit){
