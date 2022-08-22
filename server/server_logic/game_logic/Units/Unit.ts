@@ -16,10 +16,10 @@ export interface UnitInitData{
 
 export class Unit implements UnitData{
 
-    public static readonly WATER: number = 0x80C5DE;
-    public static readonly CAVALRY: string = "CAVALRY"
-    public static readonly MELEE: string = "MELEE";
-    public static readonly RANGE: string = "RANGE";
+    public static readonly CAVALRY: string = "Cavalry"
+    public static readonly MELEE: string = "Melee";
+    public static readonly RANGE: string = "Range";
+    public static readonly SETTLER: string = "Settler";
 
     x: number;
     y: number;
@@ -136,6 +136,14 @@ export class Unit implements UnitData{
     }
     get_id(): string{
         return this.id;
+    }
+
+    get_x(){
+        return this.x;
+    }
+
+    get_y(){
+        return this.y;
     }
 
     get_data(): UnitData{

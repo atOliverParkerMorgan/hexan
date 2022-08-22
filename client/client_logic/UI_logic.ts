@@ -57,11 +57,17 @@ function show_city_data(city: any){
        unit_item.className = "w3-bar";
        unit_item.innerHTML = loadFile("/views/unit_item.html")
 
-       if(unit_type === Unit.MELEE) {
-           unit_item = set_unit_data(unit_item, "Warrior", "/images/warrior.png", Unit.MELEE, 100, 100,1);
+       switch (unit_type) {
 
-       }else if(unit_type === Unit.RANGE){
-           unit_item = set_unit_data(unit_item, "Slinger", "/images/slinger.png", Unit.RANGE, 100, 100,1);
+           case Unit.MELEE:
+                unit_item = set_unit_data(unit_item, "Warrior", "/images/warrior.png", Unit.MELEE, 40, 100, 10);
+                break;
+           case Unit.RANGE:
+                unit_item = set_unit_data(unit_item, "Slinger", "/images/slinger.png", Unit.RANGE, 20, 80, 10);
+                break;
+            case Unit.SETTLER:
+                unit_item = set_unit_data(unit_item, "Settler", "images/settler.png", Unit.SETTLER, 0, 20, 10);
+                break;
        }
 
        ul_unit_menu.appendChild(unit_item);

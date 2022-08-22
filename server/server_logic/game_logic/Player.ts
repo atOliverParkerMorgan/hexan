@@ -16,7 +16,7 @@ class Player{
         this.token = token;
         this.units = [];
         // units that this player can produce
-        this.production_unit_types = [Unit.MELEE, Unit.RANGE];
+        this.production_unit_types = [Unit.MELEE, Unit.RANGE, Unit.SETTLER];
         this.current_unit_id = 0;
     }
 

@@ -12,11 +12,7 @@ import {show_city_bottom_menu} from "./UI_logic.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: {readonly MAP_RESPONSE: string, readonly UNITS_RESPONSE: string,
-                                readonly ALL_RESPONSE: string, readonly UNIT_MOVED_RESPONSE: string,
-                                readonly ENEMY_UNIT_MOVED_RESPONSE: string, readonly ENEMY_UNIT_DISAPPEARED: string,
-                                readonly MENU_INFO_RESPONSE: string, readonly FOUND_1v1_OPPONENT: string,
-                                readonly FOUND_2v2_OPPONENTS: string} = {
+    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -24,16 +20,14 @@ export namespace ClientSocket {
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
-        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
 
-        // match making
-        FOUND_1v1_OPPONENT: "FOUND_1v1_OPPONENT",
-        FOUND_2v2_OPPONENTS: "FOUND_2v2_OPPONENTS"
+        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+        INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE"
 
     };
     export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
                             readonly GET_MENU_INFO: string, readonly PRODUCE_UNIT: string, readonly MOVE_UNITS: string,
-                            readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string } = {
+                            readonly SETTLE: string,readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string } = {
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
@@ -41,7 +35,7 @@ export namespace ClientSocket {
         GET_MENU_INFO: "GET_MENU_INFO",
         PRODUCE_UNIT: "PRODUCE_UNIT",
         MOVE_UNITS: "MOVE_UNITS",
-
+        SETTLE: "SETTLE",
         // match making
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",

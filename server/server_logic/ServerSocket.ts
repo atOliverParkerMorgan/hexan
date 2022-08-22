@@ -12,7 +12,7 @@ export namespace ServerSocket {
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
-        INVALID_MOVE: string; UNITS_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
+        INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
 
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -21,22 +21,26 @@ export namespace ServerSocket {
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
+
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
-        INVALID_MOVE: "INVALID_MOVE"
+        INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE"
 
     };
     export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
                                           readonly GET_ALL: string, readonly GET_MENU_INFO: string,
                                           readonly PRODUCE_UNIT: string, readonly MOVE_UNITS: string,
-                                          readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string} = {
+                                          readonly SETTLE: string, readonly FIND_1v1_OPPONENT: string,
+                                          readonly FIND_2v2_OPPONENTS: string} = {
 
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         GET_MENU_INFO: "GET_MENU_INFO",
+
         PRODUCE_UNIT: "PRODUCE_UNIT",
         MOVE_UNITS: "MOVE_UNITS",
+        SETTLE: "SETTLE",
 
         // match making
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
@@ -145,7 +149,7 @@ export namespace ServerSocket {
 
                                 if(!path.is_valid() || unit == null){
                                     ServerSocket.send_data(socket, {
-                                        response_type: ServerSocket.response_types.INVALID_MOVE,
+                                        response_type: ServerSocket.response_types.INVALID_MOVE_RESPONSE,
                                         data: {
                                             unit: unit
                                         }

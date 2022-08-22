@@ -3,9 +3,10 @@ import {Node} from "../Node.js";
 
 // TODO implement webpack and migrate towards a framework better than plane html
 export class Unit implements UnitData{
-    public static readonly MELEE: string = "MELEE";
-    public static readonly RANGE: string = "RANGE";
-    public static readonly CAVALRY: string = "CAVALRY";
+    public static readonly CAVALRY: string = "Cavalry"
+    public static readonly MELEE: string = "Melee";
+    public static readonly RANGE: string = "Range";
+    public static readonly SETTLER: string = "Settler";
 
     // graphics colors
     private static readonly HEALTH_BAR_COLOR: number = 0x7CFC00;
