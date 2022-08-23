@@ -1,5 +1,22 @@
 import {ClientSocket} from "./ClientSocket.js";
 import Unit from "./game_graphics/Unit/Unit.js";
+import {viewport} from "./game_graphics/Pixi.js";
+
+let is_city_menu_visible = false;
+let is_mouse_on_city_menu = false;
+let are_listeners_added = false;
+
+
+// overwrite scroll
+document.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if(is_city_menu_visible && is_mouse_on_city_menu) {
+        viewport.plugins.pause('wheel')
+    }else{
+        viewport.plugins.resume('wheel')
+    }
+}, { passive: false });
 
 export function show_info(unit: Unit){
     (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "visible";
@@ -14,15 +31,28 @@ export  function hide_info(){
     (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "hidden";
 }
 
-export function show_city_bottom_menu(city: any){
+export function show_city_menu(city: any){
+    if(!are_listeners_added) {
+        (<HTMLInputElement>document.getElementById("city_side_menu")).addEventListener("mouseover", () => {
+            is_mouse_on_city_menu = true
+        }, false);
+
+
+        (<HTMLInputElement>document.getElementById("city_side_menu")).addEventListener("mouseleave", () => {
+            is_mouse_on_city_menu = false
+        }, false);
+        are_listeners_added = true;
+    }
+    is_city_menu_visible = true;
     show_city_data(city);
-    (<HTMLInputElement >document.getElementById("city_side_menu")).style.visibility = "visible";
+    (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "visible";
 }
-export function hide_city_bottom_menu(){
+export function hide_city_menu(){
+    is_city_menu_visible = false;
     // move info menu
     (<HTMLInputElement >document.getElementById("info_menu")).style.right = "0";
 
-    (<HTMLInputElement >document.getElementById("city_side_menu")).style.visibility = "hidden";
+    (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "hidden";
 }
 
 
@@ -41,7 +71,7 @@ function show_city_data(city: any){
    const div_side_menu: any = (<HTMLInputElement >document.getElementById("city_side_menu"));
    div_side_menu.removeChild((<HTMLInputElement >document.getElementById("unit_menu")));
 
-   div_side_menu.querySelector("#hide_button").onclick = hide_city_bottom_menu;
+   div_side_menu.querySelector("#hide_button").onclick = hide_city_menu;
 
 
    const ul_unit_menu = document.createElement("ul");

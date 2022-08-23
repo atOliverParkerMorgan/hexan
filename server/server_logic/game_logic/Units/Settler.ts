@@ -1,10 +1,19 @@
 import {Unit, UnitInitData} from "./Unit";
 import Player from "../Player";
 import Game from "../Game";
+import Range from "./Range";
 
 class Settler extends Unit{
-    constructor(x: number, y: number, id: string, unit_init_data: UnitInitData) {
-        super(x, y, id, unit_init_data);
+    public readonly PRODUCTION_TIME: number = 10_000;
+
+    constructor(x: number, y: number, id: string) {
+        super(x, y, id, {
+            attack: 20,
+            health: 100,
+            range: 1,
+            movement: 100,
+            type: Unit.SETTLER
+        });
     }
 
     settle(owner: Player, game: Game){
@@ -15,3 +24,5 @@ class Settler extends Unit{
     }
 
 }
+
+export default Settler;

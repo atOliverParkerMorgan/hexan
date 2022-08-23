@@ -110,8 +110,8 @@ export function init_canvas(map: any, cities: any){
     // @ts-ignore
     viewport = app.stage.addChild(new pixi_viewport.Viewport());
 
-    viewport.drag()
-    .pinch()
+    viewport
+    .drag()
     .decelerate()
     .moveCenter(0, 0)
     .snap(city_x, city_y, {removeOnComplete: true})

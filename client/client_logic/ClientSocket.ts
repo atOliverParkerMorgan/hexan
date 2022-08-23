@@ -8,7 +8,7 @@ import {
 } from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
-import {show_city_bottom_menu} from "./UI_logic.js";
+import {show_city_menu} from "./UI_logic.js";
 
 // singleton
 export namespace ClientSocket {
@@ -73,19 +73,7 @@ export namespace ClientSocket {
                         unit = <UnitData> unit;
                         reset_units()
 
-                        let graphics_unit: Unit | undefined;
-
-                        // get the correct sprite for unit depending on it's type
-                        if(unit.type === Unit.MELEE){
-                            graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
-                        }
-                        else if(unit.type === Unit.RANGE){
-                            graphics_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
-                        }
-
-                        if(graphics_unit == null){
-                            return;
-                        }
+                        let graphics_unit: Unit | undefined = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
 
                         all_units.push(graphics_unit);
                         Node.all_nodes[unit.y][unit.x].unit = graphics_unit;
@@ -115,7 +103,7 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.MENU_INFO_RESPONSE:
-                    show_city_bottom_menu(response_data.city);
+                    show_city_menu(response_data.city);
                     break;
 
                 // deal with sever UNIT_MOVED response

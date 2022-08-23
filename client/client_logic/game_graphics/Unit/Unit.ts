@@ -64,6 +64,9 @@ export class Unit implements UnitData{
             case Unit.RANGE:
                 this.texture_path = "/images/slinger.png";
                 break;
+            case Unit.SETTLER:
+                this.texture_path = "/images/settler.png";
+                break;
             default:
                 this.texture_path = "/images/horseman.png";
         }

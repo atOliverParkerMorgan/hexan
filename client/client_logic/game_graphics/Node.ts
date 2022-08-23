@@ -1,5 +1,5 @@
 import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, WORLD_HEIGHT, WORLD_WIDTH, viewport} from "./Pixi.js";
-import {hide_city_bottom_menu, show_city_bottom_menu, hide_info, show_info} from "../UI_logic.js";
+import {hide_city_menu, show_city_menu, hide_info, show_info} from "../UI_logic.js";
 import {ClientSocket} from "../ClientSocket.js";
 import {Unit} from "./Unit/Unit.js";
 
@@ -270,9 +270,9 @@ export class Node{
                 }
             })
 
-            show_city_bottom_menu(this.city);
+            show_city_menu(this.city);
         }else{
-            hide_city_bottom_menu();
+            hide_city_menu();
         }
 
         // unit info

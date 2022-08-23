@@ -4,7 +4,7 @@ import {Unit} from "./Units/Unit";
 import Melee from "./Units/Melee";
 import Range from "./Units/Range";
 import Cavalry from "./Units/Cavalry";
-
+import Settler from "./Units/Settler";
 
 class Player{
     token: string;
@@ -23,14 +23,20 @@ class Player{
     add_unit(x: number, y: number, type: string): void{
         switch (type){
             case Unit.MELEE:
-                this.units.push(new Unit(x, y,this.token+this.current_unit_id, Melee.WARRIOR));
+                this.units.push(new Melee(x, y,this.token+this.current_unit_id, Melee.WARRIOR));
                 break;
             case Unit.RANGE:
-                this.units.push(new Unit(x, y,this.token+this.current_unit_id, Range.SLINGER, ));
+                this.units.push(new Range(x, y,this.token+this.current_unit_id, Range.SLINGER, ));
                 break;
+
             case Unit.CAVALRY:
-                this.units.push(new Unit(x, y,this.token+this.current_unit_id, Cavalry.HORSEMAN));
+                this.units.push(new Cavalry(x, y,this.token+this.current_unit_id, Cavalry.HORSEMAN));
                 break;
+
+            case Unit.SETTLER:
+                this.units.push(new Settler(x, y,this.token+this.current_unit_id));
+                break;
+
         }
         this.current_unit_id ++;
     }

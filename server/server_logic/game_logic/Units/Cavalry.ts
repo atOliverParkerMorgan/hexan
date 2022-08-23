@@ -7,11 +7,10 @@ class Cavalry extends Unit{
         health: 100,
         range: 1,
         movement: 25,
-
-        type: "Cavalry"
+        type: Unit.CAVALRY
     }
-    constructor(...args: any[]) {
-        super(args[0], args[1], args[2], args[3]);
+    constructor(x: number, y: number, id: string, unit_init_data: UnitInitData) {
+        super(x, y, id, unit_init_data);
     }
 }
 

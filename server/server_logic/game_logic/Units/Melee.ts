@@ -7,11 +7,10 @@ class Melee extends Unit{
         health: 100,
         range: 1,
         movement: 100,
-        type: "MELEE"
+        type: Unit.MELEE
     }
-    constructor(...args: any[]) {
-        super(args[0], args[1], args[2], args[3]);
-
+    constructor(x: number, y: number, id: string, unit_init_data: UnitInitData) {
+        super(x, y, id, unit_init_data);
     }
 }
 
