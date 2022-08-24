@@ -8,6 +8,8 @@ class City{
     public readonly owner: Player;
     public readonly x: number;
     public readonly y: number;
+    public readonly cords_in_pixels_x: number;
+    public readonly cords_in_pixels_y: number;
     public readonly name: string;
     food_per_a_minute: number;
     production_per_a_minute: number;
@@ -15,8 +17,12 @@ class City{
 
     constructor(owner: Player, x:number, y:number, name:string){
         this.owner = owner;
+
         this.x = x;
         this.y = y;
+        this.cords_in_pixels_x = this.get_x_in_pixels();
+        this.cords_in_pixels_y = this.get_y_in_pixels();
+
         this.name = name;
         this.food_per_a_minute = 20;
         this.production_per_a_minute = 10;

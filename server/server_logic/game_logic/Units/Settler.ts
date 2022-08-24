@@ -8,9 +8,9 @@ class Settler extends Unit{
 
     constructor(x: number, y: number, id: string) {
         super(x, y, id, {
-            attack: 20,
+            attack: 0,
             health: 100,
-            range: 1,
+            range: 0,
             movement: 100,
             type: Unit.SETTLER
         });

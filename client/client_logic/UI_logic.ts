@@ -6,25 +6,30 @@ let is_city_menu_visible = false;
 let is_mouse_on_city_menu = false;
 let are_listeners_added = false;
 
+let mouse_x: number | undefined;
+let mouse_y: number | undefined;
 
 // overwrite scroll
-document.addEventListener("wheel", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
+document.addEventListener("wheel", () => {
     if(is_city_menu_visible && is_mouse_on_city_menu) {
-        viewport.plugins.pause('wheel')
+        viewport.plugins.pause('wheel');
+        if(mouse_x != null && mouse_y != null) {
+            //TODO fix scrolling canvas
+            //viewport.snap(mouse_x, mouse_y, {removeOnComplete: true});
+        }
     }else{
-        viewport.plugins.resume('wheel')
+        viewport.plugins.resume('wheel');
     }
 }, { passive: false });
 
 export function show_info(unit: Unit){
+    (<HTMLInputElement >document.getElementById("info_image")).src =  unit.texture_path;
     (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "visible";
     (<HTMLInputElement >document.getElementById("info_title")).innerText = unit.type;
     (<HTMLInputElement >document.getElementById("attack_data")).innerText = unit.attack.toString();
     (<HTMLInputElement >document.getElementById("health_data")).innerText = unit.health.toString();
     (<HTMLInputElement >document.getElementById("range_data")).innerText = unit.range.toString();
-    (<HTMLInputElement >document.getElementById("movement_data")).innerText = unit.movement + "/min";
+    (<HTMLInputElement >document.getElementById("movement_data")).innerText = unit.movement.toString();
 }
 
 export  function hide_info(){
@@ -43,6 +48,11 @@ export function show_city_menu(city: any){
         }, false);
         are_listeners_added = true;
     }
+
+    mouse_x = city.cords_in_pixels_x;
+    mouse_y = city.cords_in_pixels_y;
+
+
     is_city_menu_visible = true;
     show_city_data(city);
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "visible";
@@ -58,8 +68,7 @@ export function hide_city_menu(){
 
 function show_city_data(city: any){
     // move info menu
-    (<HTMLInputElement >document.getElementById("info_menu")).style.right = "420px";
-
+   (<HTMLInputElement >document.getElementById("info_menu")).style.right = "420px";
    (<HTMLInputElement >document.getElementById("city_name")).innerText = city.name;
    (<HTMLInputElement >document.getElementById("food")).innerText = city.food_per_a_minute + " / min";
    (<HTMLInputElement >document.getElementById("production")).innerText = city.production_per_a_minute + " / min";
@@ -96,7 +105,7 @@ function show_city_data(city: any){
                 unit_item = set_unit_data(unit_item, "Slinger", "/images/slinger.png", Unit.RANGE, 20, 80, 10);
                 break;
             case Unit.SETTLER:
-                unit_item = set_unit_data(unit_item, "Settler", "images/settler.png", Unit.SETTLER, 0, 20, 10);
+                unit_item = set_unit_data(unit_item, "Settler", "/images/settler.png", Unit.SETTLER, 0, 20, 10);
                 break;
        }
 

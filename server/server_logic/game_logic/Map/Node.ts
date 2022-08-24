@@ -238,10 +238,12 @@ export class Node{
     get_data(player_token: string): NodeData{
         let type = this.type;
         let city = this.city;
+        let sprite_name = this.sprite_name;
 
-        // hide hidden node and cites
+        // hide the hidden node and cites
         if(!this.is_shown.includes(player_token)){
-           //type = Node.HIDDEN;
+           type = Node.HIDDEN;
+           sprite_name = "";
            city = null;
         }
 
@@ -251,7 +253,7 @@ export class Node{
            type: type,
            borders: this.borders,
            city: city,
-           sprite_name: this.sprite_name
+           sprite_name: sprite_name
        }
     }
 }
