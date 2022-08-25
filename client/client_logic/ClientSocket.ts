@@ -12,7 +12,7 @@ import {show_city_menu} from "./UI_logic.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
+    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -20,6 +20,8 @@ export namespace ClientSocket {
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
+
+        NEW_CITY: "NEW_CITY",
 
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE"
@@ -116,7 +118,7 @@ export namespace ClientSocket {
 
                     // update nodes
                     response_data.nodes.map( (node: any) => {
-                        Node.all_nodes[node.y][node.x].set_type(node.type, node.city);
+                        Node.all_nodes[node.y][node.x].set_type(node.type, node.city, node.sprite_name);
                     });
 
                     // find the unit in question
@@ -179,6 +181,12 @@ export namespace ClientSocket {
                     enemy_unit.remove_sprite();
                     Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
                     all_enemy_visible_units.splice(index);
+
+                    break;
+
+                case ClientSocket.response_types.NEW_CITY:
+
+
             }
         });
     }

@@ -222,9 +222,12 @@ export class Node{
     }
 
     on_click(){
-       // unit movement
+        let is_moving_unit = false;
+        // unit movement
         if(Node.selected_node != null) {
             if(Node.selected_node !== this && Node.selected_node.unit != null) {
+                is_moving_unit = true;
+
                 let to_node: Node = <Node> Node.last_hovered_node;
                 let node_from: Node = <Node> Node.selected_node;
 
@@ -233,6 +236,9 @@ export class Node{
                 for (const node of <Node[]> Node.path) {
                     path_node_cords.push([node.x, node.y]);
                 }
+
+                // show unit info
+                show_info(Node.selected_node.unit);
 
                 // request movement from server
                 ClientSocket.send_data({
@@ -278,14 +284,15 @@ export class Node{
         // unit info
         if(this.unit != null && !Node.already_selected){
             show_info(this.unit);
-        }else {
+        }else if(!is_moving_unit){
             hide_info();
         }
     }
 
-    set_type(type: number, city: any){
+    set_type(type: number, city: any, sprite_name: string){
         this.type = type;
         this.is_hidden = this.type === Node.HIDDEN;
+        this.sprite_name = sprite_name;
         this.update();
         this.show_city(city);
         this.show_sprite();

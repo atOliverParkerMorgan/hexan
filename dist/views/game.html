@@ -5,7 +5,7 @@
 <!--<span id="enemy_city_cords" style="visibility: hidden"></span>-->
 
 <div id="city_side_menu" class="w3-sidebar w3-container" onclick="" style="width:400px; right:0; visibility: hidden">
-    <button id="hide_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
+    <button id="hide_city_menu_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
     <h1 id="city_name" class="w3-center w3-container w3-card w3-wide w3-padding-16"></h1>
     <div class="w3-container w3-card w3-center w3-padding-8">
         <div style="height: 8px"></div>
@@ -20,16 +20,24 @@
 </div>
 
 <div id="info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 200px; visibility: hidden">
+    <button id="hide_unit_info_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
     <div class="w3-row">
         <div class="w3-container w3-col s6 m6 l6">
-            <div class="w3-center" style="padding-top: 16px">
+            <div class="w3-center" style="padding-top: 8px">
                 <img id="info_image" class="w3-round-large" style="width: 90px; margin-bottom: 20px" alt="Unit image">
                 <div>
-                    <img id="info_attack_image" src="/images/attack.png" width="25px">: <span id="attack_data"></span>
-                    <img id="info_health_image" src="/images/health.png" style="padding-left: 8px" width="28px">: <span id="health_data"></span>
-                    <div></div>
-                    <img id="info_range_image" src="/images/range.png" width="25px">: <span id="range_data"></span>
-                    <img id="info_movement_image" src="/images/movement.png" style="padding-left: 4px" width="25px">: <span id="movement_data"></span>
+                    <div class="w3-button w3-white w3-border w3-border-black w3-round-large">
+                        <p style = 'line-height: 10px'>
+                            <img src='images/shield.png' style='vertical-align: middle; width: 30px' /> <span class="w3-text-black" id="action_button_text"> Fortify</span>
+                        </p>
+                    </div>
+
+                    <!--
+                        <img id="info_attack_image" src="/images/attack.png" width="25px">: <span id="attack_data"></span>-->
+<!--                    <img id="info_health_image" src="/images/health.png" style="padding-left: 8px" width="28px">: <span id="health_data"></span>-->
+<!--                    <div></div>-->
+<!--                    <img id="info_range_image" src="/images/range.png" width="25px">: <span id="range_data"></span>-->
+<!--                    <img id="info_movement_image" src="/images/movement.png" style="padding-left: 4px" width="25px">: <span id="movement_data"></span>-->
 
                 </div>
 

@@ -22,14 +22,26 @@ document.addEventListener("wheel", () => {
     }
 }, { passive: false });
 
+
+// hot keys
+document.addEventListener("keydown", (event)=>{
+    if(event.key === "Escape"){
+        hide_city_menu();
+        hide_info();
+    }
+})
+
 export function show_info(unit: Unit){
     (<HTMLInputElement >document.getElementById("info_image")).src =  unit.texture_path;
     (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "visible";
     (<HTMLInputElement >document.getElementById("info_title")).innerText = unit.type;
-    (<HTMLInputElement >document.getElementById("attack_data")).innerText = unit.attack.toString();
-    (<HTMLInputElement >document.getElementById("health_data")).innerText = unit.health.toString();
-    (<HTMLInputElement >document.getElementById("range_data")).innerText = unit.range.toString();
-    (<HTMLInputElement >document.getElementById("movement_data")).innerText = unit.movement.toString();
+    // (<HTMLInputElement >document.getElementById("attack_data")).innerText = unit.attack.toString();
+    // (<HTMLInputElement >document.getElementById("health_data")).innerText = unit.health.toString();
+    // (<HTMLInputElement >document.getElementById("range_data")).innerText = unit.range.toString();
+    // (<HTMLInputElement >document.getElementById("movement_data")).innerText = unit.movement.toString();
+
+    const div_info_menu: any = (<HTMLInputElement >document.getElementById("info_menu"));
+    div_info_menu.querySelector("#hide_unit_info_button").onclick = hide_info;
 }
 
 export  function hide_info(){
@@ -80,7 +92,7 @@ function show_city_data(city: any){
    const div_side_menu: any = (<HTMLInputElement >document.getElementById("city_side_menu"));
    div_side_menu.removeChild((<HTMLInputElement >document.getElementById("unit_menu")));
 
-   div_side_menu.querySelector("#hide_button").onclick = hide_city_menu;
+   div_side_menu.querySelector("#hide_city_menu_button").onclick = hide_city_menu;
 
 
    const ul_unit_menu = document.createElement("ul");
