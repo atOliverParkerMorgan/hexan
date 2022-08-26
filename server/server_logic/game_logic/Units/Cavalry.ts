@@ -7,6 +7,8 @@ class Cavalry extends Unit{
         health: 100,
         range: 1,
         movement: 25,
+
+        action: Unit.FORTIFY,
         type: Unit.CAVALRY
     }
     constructor(x: number, y: number, id: string, unit_init_data: UnitInitData) {

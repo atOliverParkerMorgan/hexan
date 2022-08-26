@@ -7,6 +7,8 @@ class Melee extends Unit{
         health: 100,
         range: 1,
         movement: 100,
+
+        action: Unit.FORTIFY,
         type: Unit.MELEE
     }
     constructor(x: number, y: number, id: string, unit_init_data: UnitInitData) {

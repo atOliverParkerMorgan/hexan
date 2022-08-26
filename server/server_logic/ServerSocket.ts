@@ -12,11 +12,12 @@ export namespace ServerSocket {
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
-        INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
+        INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
 
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
+        UNIT_RESPONSE: "UNIT_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
@@ -81,10 +82,14 @@ export namespace ServerSocket {
                         switch (request_type){
 
                             case ServerSocket.request_types.GET_UNITS:
+                                let all_units = [];
+                                for (const unit of player.units) {
+                                    all_units.push(unit.get_data());
+                                }
                                 socket.emit(player.token, {
                                     response_type: ServerSocket.response_types.UNITS_RESPONSE,
                                     data: {
-                                        units: player.units
+                                        units: all_units
                                     },
                                 });
                                 break;
@@ -105,6 +110,10 @@ export namespace ServerSocket {
                                         city: request_city,
                                     }
                                 })
+                                break;
+
+                            case ServerSocket.request_types.SETTLE:
+
                                 break;
 
                             default:

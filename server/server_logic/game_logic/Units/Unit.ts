@@ -11,20 +11,28 @@ export interface UnitInitData{
     range: number;
     movement: number;
 
+    action: string;
     type: string;
 }
 
 export class Unit implements UnitData{
 
+    // types of units
     public static readonly CAVALRY: string = "Cavalry"
     public static readonly MELEE: string = "Melee";
     public static readonly RANGE: string = "Range";
     public static readonly SETTLER: string = "Settler";
 
+    // action that designated units can take
+    public static readonly FORTIFY: string = "Fortify";
+    public static readonly SETTLE: string = "Settle";
+    public static readonly BUILD: string = "Build";
+
     x: number;
     y: number;
     readonly id: string;
     type: string;
+    action: string;
 
     is_visible_to_enemy: boolean;
 
@@ -39,6 +47,7 @@ export class Unit implements UnitData{
 
         this.id = id;
         this.type = unit_init_data.type;
+        this.action = unit_init_data.action;
 
         this.is_visible_to_enemy = false;
 
@@ -111,8 +120,8 @@ export class Unit implements UnitData{
                             }, in_game_player.token)
                     }
 
-                    console.log(`in_game_player: ${in_game_player.token}`);
-                    console.log(`player: ${player.token}`);
+                   // console.log(`in_game_player: ${in_game_player.token}`);
+                   // console.log(`player: ${player.token}`);
 
                 }else {
                     if (in_game_player.token !== player.token) {
@@ -126,7 +135,8 @@ export class Unit implements UnitData{
                     }
                 }
             })
-            console.log(`-----`);
+           // console.log(`-----`);
+            console.log(`in_game_player: ${player.units}`);
 
 
             path.shift();
@@ -153,7 +163,7 @@ export class Unit implements UnitData{
             y: this.y,
 
             type: this.type,
-
+            action: this.action,
 
             attack: this.attack,
             health: this.health,

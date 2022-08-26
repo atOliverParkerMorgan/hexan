@@ -3,6 +3,7 @@ import {Socket} from "socket.io";
 import {ServerSocket} from "../ServerSocket";
 import Map from "./Map/Map";
 import {Node} from "./Map/Node";
+import {Unit} from "./Units/Unit";
 
 class City{
     public readonly owner: Player;
@@ -15,7 +16,7 @@ class City{
     production_per_a_minute: number;
     is_producing: boolean;
 
-    constructor(owner: Player, x:number, y:number, name:string){
+    constructor(owner: Player, x: number, y: number, name:string){
         this.owner = owner;
 
         this.x = x;
@@ -38,12 +39,11 @@ class City{
     }
 
     produce_unit_and_send_response(socket: Socket, unit_type: string): void{
-        this.owner.add_unit(this.x, this.y, unit_type);
-
+        let unit: Unit = this.owner.add_unit(this.x, this.y, unit_type);
         ServerSocket.send_data(socket, {
-                response_type: ServerSocket.response_types.UNITS_RESPONSE,
+                response_type: ServerSocket.response_types.UNIT_RESPONSE,
                 data: {
-                    units: this.owner.units
+                    unit: unit.get_data()
                 }
             },
             this.owner.token);

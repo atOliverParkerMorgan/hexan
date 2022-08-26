@@ -12,15 +12,21 @@ class Settler extends Unit{
             health: 100,
             range: 0,
             movement: 100,
+
+            action: Unit.SETTLE,
             type: Unit.SETTLER
         });
     }
 
-    settle(owner: Player, game: Game){
+    settle(owner: Player, game: Game): void{
         const city_node = game.map.get_node(super.get_x(), super.get_y());
         if(city_node == null) return
 
         game.add_city(owner, city_node);
+    }
+
+    can_settle(): boolean{
+        return true;
     }
 
 }

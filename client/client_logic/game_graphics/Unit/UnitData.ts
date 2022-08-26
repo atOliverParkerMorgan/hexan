@@ -5,6 +5,7 @@ interface UnitData{
 
     id: string;
 
+    action: string,
     type: string;
 
     attack: number;

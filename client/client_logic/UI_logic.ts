@@ -32,19 +32,49 @@ document.addEventListener("keydown", (event)=>{
 })
 
 export function show_info(unit: Unit){
+    update_unit_action_button(unit);
+
     (<HTMLInputElement >document.getElementById("info_image")).src =  unit.texture_path;
     (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "visible";
     (<HTMLInputElement >document.getElementById("info_title")).innerText = unit.type;
-    // (<HTMLInputElement >document.getElementById("attack_data")).innerText = unit.attack.toString();
-    // (<HTMLInputElement >document.getElementById("health_data")).innerText = unit.health.toString();
-    // (<HTMLInputElement >document.getElementById("range_data")).innerText = unit.range.toString();
-    // (<HTMLInputElement >document.getElementById("movement_data")).innerText = unit.movement.toString();
+    (<HTMLInputElement >document.getElementById("attack_data")).innerText = unit.attack.toString();
+    (<HTMLInputElement >document.getElementById("health_data")).innerText = unit.health.toString();
+    (<HTMLInputElement >document.getElementById("range_data")).innerText = unit.range.toString();
+    (<HTMLInputElement >document.getElementById("movement_data")).innerText = unit.movement.toString();
 
     const div_info_menu: any = (<HTMLInputElement >document.getElementById("info_menu"));
     div_info_menu.querySelector("#hide_unit_info_button").onclick = hide_info;
+    div_info_menu.querySelector("#action_button").onclick = ()=>{ unit_action(unit)};
 }
 
-export  function hide_info(){
+function update_unit_action_button(unit: Unit){
+    (<HTMLInputElement>document.getElementById("action_button_text")).innerText = unit.action;
+    switch(unit.action){
+        case Unit.FORTIFY:
+            (<HTMLInputElement>document.getElementById("action_image")).src = "/images/shield.png";
+            break;
+        case Unit.SETTLE:
+            (<HTMLInputElement>document.getElementById("action_image")).src = "/images/settler.png";
+            break;
+        case Unit.BUILD:
+            break;
+    }
+}
+
+function unit_action(unit: Unit){
+    ClientSocket.send_data({
+        request_type: ClientSocket.request_types.SETTLE,
+        data: {
+            x: unit.x,
+            y: unit.y,
+            id: unit.id,
+            player_token: localStorage.player_token,
+            game_token: localStorage.game_token,
+        }
+    })
+}
+
+export function hide_info(){
     (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "hidden";
 }
 

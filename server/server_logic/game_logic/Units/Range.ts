@@ -7,6 +7,8 @@ class Range extends Unit{
         health: 100,
         range: 2,
         movement: 120,
+
+        action: Unit.FORTIFY,
         type: Unit.RANGE
     }
     constructor(x: number, y: number, id: string, unit_init_data: UnitInitData) {

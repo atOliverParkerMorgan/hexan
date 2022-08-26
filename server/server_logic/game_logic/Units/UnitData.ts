@@ -7,6 +7,7 @@ export interface UnitData{
     id: string;
 
     type: string;
+    action: string;
 
     attack: number;
     health: number;

@@ -3,10 +3,17 @@ import {Node} from "../Node.js";
 
 // TODO implement webpack and migrate towards a framework better than plane html
 export class Unit implements UnitData{
+    // unit types
     public static readonly CAVALRY: string = "Cavalry"
     public static readonly MELEE: string = "Melee";
     public static readonly RANGE: string = "Range";
     public static readonly SETTLER: string = "Settler";
+
+    // action that designated units can take
+    public static readonly FORTIFY: string = "Fortify";
+    public static readonly SETTLE: string = "Settle";
+    public static readonly BUILD: string = "Build";
+
 
     // graphics colors
     private static readonly HEALTH_BAR_COLOR: number = 0x7CFC00;
@@ -28,6 +35,7 @@ export class Unit implements UnitData{
     max_health: number;
 
     type: string;
+    action: string;
     is_friendly: boolean;
 
     health_circle: any;
@@ -46,6 +54,7 @@ export class Unit implements UnitData{
         this.id = unit.id;
 
         this.type = unit.type;
+        this.action = unit.action;
         this.is_friendly = is_friendly;
 
         this.attack = unit.attack;

@@ -12,10 +12,11 @@ import {show_city_menu} from "./UI_logic.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
+    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
+        UNIT_RESPONSE: "UNIT_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
@@ -75,11 +76,17 @@ export namespace ClientSocket {
                         unit = <UnitData> unit;
                         reset_units()
 
-                        let graphics_unit: Unit | undefined = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
-
+                        let graphics_unit: Unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
                         all_units.push(graphics_unit);
                         Node.all_nodes[unit.y][unit.x].unit = graphics_unit;
                     }
+                    break;
+
+                case ClientSocket.response_types.UNIT_RESPONSE:
+                    let graphics_unit: Unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
+                    all_units.push(graphics_unit);
+                    Node.all_nodes[response_data.unit.y][response_data.unit.x].unit = graphics_unit;
+
                     break;
 
                 case ClientSocket.response_types.ALL_RESPONSE:
@@ -92,7 +99,6 @@ export namespace ClientSocket {
                     let y = 0;
                     let row = [];
                     for (let node of map) {
-
                         if (node.y !== y) {
                             Node.all_nodes.push(row)
                             row = [];
@@ -121,11 +127,13 @@ export namespace ClientSocket {
                         Node.all_nodes[node.y][node.x].set_type(node.type, node.city, node.sprite_name);
                     });
 
+                    console.log(`Server unit moving id: ${response_data.unit.id}`);
                     // find the unit in question
-                    all_units.map((unit: Unit)=>{
-                        if(unit?.id === response_data.unit.id){
+                    all_units.map((unit: any)=>{
+                        console.log(`Client unit_id: ${unit.id}`);
+                        if(unit.id === response_data.unit.id){
                             found_unit = true;
-                            unit?.move_to(response_data.unit.x, response_data.unit.y);
+                            unit.move_to(response_data.unit.x, response_data.unit.y);
                         }
                     })
 

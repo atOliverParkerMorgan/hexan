@@ -20,25 +20,28 @@ class Player{
         this.current_unit_id = 0;
     }
 
-    add_unit(x: number, y: number, type: string): void{
+    add_unit(x: number, y: number, type: string): Unit{
+        let new_unit: any;
         switch (type){
             case Unit.MELEE:
-                this.units.push(new Melee(x, y,this.token+this.current_unit_id, Melee.WARRIOR));
+                new_unit = new Melee(x, y,this.current_unit_id.toString(), Melee.WARRIOR);
                 break;
             case Unit.RANGE:
-                this.units.push(new Range(x, y,this.token+this.current_unit_id, Range.SLINGER, ));
+                new_unit = new Range(x, y,this.current_unit_id.toString(), Range.SLINGER, );
                 break;
 
             case Unit.CAVALRY:
-                this.units.push(new Cavalry(x, y,this.token+this.current_unit_id, Cavalry.HORSEMAN));
+                new_unit = new Cavalry(x, y,this.current_unit_id.toString(), Cavalry.HORSEMAN);
                 break;
 
             case Unit.SETTLER:
-                this.units.push(new Settler(x, y,this.token+this.current_unit_id));
+                new_unit = new Settler(x, y,this.current_unit_id.toString());
                 break;
 
         }
+        this.units.push(new_unit);
         this.current_unit_id ++;
+        return new_unit;
     }
 
     get_unit(id: string): Unit | undefined {
