@@ -12,7 +12,7 @@ import {show_city_menu} from "./UI_logic.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
+    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; CANNOT_SETTLE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -23,6 +23,7 @@ export namespace ClientSocket {
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
 
         NEW_CITY: "NEW_CITY",
+        CANNOT_SETTLE: "CANNOT_SETTLE",
 
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE"
@@ -127,10 +128,8 @@ export namespace ClientSocket {
                         Node.all_nodes[node.y][node.x].set_type(node.type, node.city, node.sprite_name);
                     });
 
-                    console.log(`Server unit moving id: ${response_data.unit.id}`);
                     // find the unit in question
                     all_units.map((unit: any)=>{
-                        console.log(`Client unit_id: ${unit.id}`);
                         if(unit.id === response_data.unit.id){
                             found_unit = true;
                             unit.move_to(response_data.unit.x, response_data.unit.y);
@@ -193,8 +192,13 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.NEW_CITY:
+                    Node.all_nodes[response_data.city_y][response_data.city_x].set_type(Node.CITY, response_data.city_node.city, response_data.city_node.sprite_name);
+                    Node.all_nodes[response_data.city_y][response_data.city_x].remove_unit();
+                    break;
 
-
+                case ClientSocket.response_types.CANNOT_SETTLE:
+                    // TODO custom alarm
+                    console.log("Cannot settle");
             }
         });
     }

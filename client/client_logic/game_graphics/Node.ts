@@ -306,6 +306,12 @@ export class Node{
         this.update()
     }
 
+    remove_unit(){
+        this.unit?.remove_sprite();
+        this.unit = null;
+        this.update();
+    }
+
     set_selected(){
 
         // clear all hint lines

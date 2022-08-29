@@ -4,8 +4,27 @@ import {ServerSocket} from "../ServerSocket";
 import Map from "./Map/Map";
 import {Node} from "./Map/Node";
 import {Unit} from "./Units/Unit";
+import {Utils} from "../../Utils";
 
 class City{
+    private static city_names = [
+        "Ebalfast", "Utraapfield", "Chaitville", "Fusey", "Lipmore", "Shodon", "Doria", "Slaso", "Oriason", "Adadale",
+        "Naifcaster", "Duldo", "Paxfield", "Klostead", "Slomery", "Tranbu", "Modon", "Srane", "Asobridge", "Ouverdale",
+        "Graetol", "Qowell", "Bashire", "Dreport", "Vlausver", "Hanta", "Wragos", "Zrolk", "Itarora", "Oniling",
+        "Acluybridge", "Ylusmont", "Krophis", "Vustin", "Quevine", "Stroria", "Qraso", "Qale", "Arkfast", "Andbridge",
+        "Glemouth", "Wicbridge", "Okoumont", "Nefsas", "Gommore", "Kona", "Jirie", "Flario", "Egorora", "Eleyford",
+        "Tuimdence", "Ibadon", "Ipretgow", "Claalginia", "Keross", "Itranbu", "Shora", "Wrolis", "Antarith", "Ouverstead",
+        "Iplomwood", "Caver", "Nekta", "Vualfast", "Duapool", "Uqrares", "Nore", "Eklerton", "Ardcester", "Eimver",
+        "Pheving", "Ilerith", "Gauchester", "Xahull", "Staport", "Droni", "Creles", "Phock", "Odondale", "Ullens",
+        "Beuyding", "Rolland", "Qranridge", "Stephia", "Groyland", "Prin", "Nork", "Tock", "Olisving", "Asostead", "Nork",
+        "Ajuapgow", "Klewood", "Qrucburg", "Facmont", "Zurora", "Lock", "Qarc", "Isleles", "Egogow", "Eighling",
+        "Griphis", "Chosving", "Hokstin", "Fodset", "Khupling", "Erison", "Evlanbu", "Atrodon", "Okwell",
+        "Shentol", "Shegan", "Saemond", "Tousmery", "Flaarith", "Iglane", "Vrodon", "Vralo", "Edonard", "Oragend",
+        "Bucville", "Jeepving", "Higinia", "Bidiff", "Slosas", "Zlouver", "Frok", "Pita", "Arcridge", "Alepool",
+        "Yrausburgh", "Evota", "Cloyvine", "Tuta", "Kloygend", "Xinas", "Ovand", "Flane", "Idobury", "Uryburgh",
+        "Rohull", "Cudwood", "Vruhgow", "Trerough", "Muuburgh", "Nia", "Vlale", "Clery", "Ensmouth", "Agosmore"
+    ];
+
     public readonly owner: Player;
     public readonly x: number;
     public readonly y: number;
@@ -16,7 +35,7 @@ class City{
     production_per_a_minute: number;
     is_producing: boolean;
 
-    constructor(owner: Player, x: number, y: number, name:string){
+    constructor(owner: Player, x: number, y: number){
         this.owner = owner;
 
         this.x = x;
@@ -24,7 +43,9 @@ class City{
         this.cords_in_pixels_x = this.get_x_in_pixels();
         this.cords_in_pixels_y = this.get_y_in_pixels();
 
-        this.name = name;
+        this.name = City.city_names[Utils.random_int(0, City.city_names.length - 1)];
+        City.city_names.splice(City.city_names.indexOf(this.name));
+
         this.food_per_a_minute = 20;
         this.production_per_a_minute = 10;
         this.is_producing = false;
@@ -59,6 +80,7 @@ class City{
     get_y_in_pixels(): number{
         return  (this.y * 1.5 * Node.HEX_SIDE_SIZE) - Map.WORLD_HEIGHT / 2;
     }
+
 }
 
 export default City;

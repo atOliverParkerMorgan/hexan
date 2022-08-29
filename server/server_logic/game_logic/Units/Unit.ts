@@ -135,8 +135,6 @@ export class Unit implements UnitData{
                     }
                 }
             })
-           // console.log(`-----`);
-            console.log(`in_game_player: ${player.units}`);
 
 
             path.shift();

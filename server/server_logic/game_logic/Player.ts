@@ -49,6 +49,22 @@ class Player{
             if(unit.get_id() === id) return unit;
         }
     }
+
+    // returns true if the unit was successfully removed; false if not
+    remove_unit(id: string): boolean{
+        let remove_unit: Unit | undefined = this.get_unit(id);
+        if(remove_unit == null){
+            return false;
+        }
+        this.units.splice(this.units.indexOf(remove_unit));
+
+        return true;
+    }
+
+    get_unit_type(id: string): string | undefined{
+        return this.get_unit(id)?.type;
+    }
+
     // used to send simplified unit data structure threw socket.io
     get_unit_data(): Unit[]{
         let all_unit_data: Unit[] = [];

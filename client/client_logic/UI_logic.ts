@@ -12,13 +12,13 @@ let mouse_y: number | undefined;
 // overwrite scroll
 document.addEventListener("wheel", () => {
     if(is_city_menu_visible && is_mouse_on_city_menu) {
-        viewport.plugins.pause('wheel');
+        //viewport.plugins.pause('wheel');
         if(mouse_x != null && mouse_y != null) {
             //TODO fix scrolling canvas
             //viewport.snap(mouse_x, mouse_y, {removeOnComplete: true});
         }
     }else{
-        viewport.plugins.resume('wheel');
+        //viewport.plugins.resume('wheel');
     }
 }, { passive: false });
 
@@ -44,7 +44,7 @@ export function show_info(unit: Unit){
 
     const div_info_menu: any = (<HTMLInputElement >document.getElementById("info_menu"));
     div_info_menu.querySelector("#hide_unit_info_button").onclick = hide_info;
-    div_info_menu.querySelector("#action_button").onclick = ()=>{ unit_action(unit)};
+    div_info_menu.querySelector("#action_button").onclick = () => unit_action(unit);
 }
 
 function update_unit_action_button(unit: Unit){
@@ -62,6 +62,7 @@ function update_unit_action_button(unit: Unit){
 }
 
 function unit_action(unit: Unit){
+    console.log("here");
     ClientSocket.send_data({
         request_type: ClientSocket.request_types.SETTLE,
         data: {

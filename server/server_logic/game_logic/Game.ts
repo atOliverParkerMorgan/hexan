@@ -17,10 +17,12 @@ class Game{
         this.map = new Map(number_of_land_nodes, number_of_continents);
         this.map.generate_island_map();
     }
+
+
     place_start_city(player: Player): void{
         for (const continent of this.map.all_continents) {
             if(!continent.has_player){
-                this.add_city(player, continent.get_random_river_node());
+                this.add_city(player, continent.get_random_river_node(), );
                 continent.has_player = true;
                 break;
             }
@@ -52,10 +54,33 @@ class Game{
         }
     }
 
-    add_city(player: Player, city_node: Node): void{
+    can_settle(player: Player, city_node: Node | undefined, unit_id: string): boolean{
+        if(city_node == null){
+            return false;
+        }
+
+        // make sure the settler isn't on an invalid node type
+        if(city_node.type == Node.LAKE || city_node.type == Node.OCEAN || city_node.city != null){
+            return false;
+        }
+
+        if(player.get_unit_type(unit_id) != Unit.SETTLER){
+            return false
+        }
+
+        return player.remove_unit(unit_id);
+    }
+
+    // return boolean that indicates if the city placement was successful
+    add_city(player: Player, city_node: Node | undefined): void{
+        if(city_node == null){
+             return
+        }
+
         // create a new city for a player
-        city_node.city = new City(player, city_node.x, city_node.y, "Prague");
+        city_node.city = new City(player, city_node.x, city_node.y);
         city_node.sprite_name = "village.png";
+
         this.all_cities.push(city_node.city);
         city_node.neighbors.forEach((node) => this.map.make_neighbour_nodes_shown(player, node));
     }

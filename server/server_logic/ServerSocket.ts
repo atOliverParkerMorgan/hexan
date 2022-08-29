@@ -12,9 +12,8 @@ export namespace ServerSocket {
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
-        INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
+        INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string, NEW_CITY: string, CANNOT_SETTLE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
 
-        // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
         UNIT_RESPONSE: "UNIT_RESPONSE",
@@ -22,6 +21,9 @@ export namespace ServerSocket {
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
+
+        NEW_CITY: "NEW_CITY",
+        CANNOT_SETTLE: "CANNOT_SETTLE",
 
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE"
@@ -112,10 +114,6 @@ export namespace ServerSocket {
                                 })
                                 break;
 
-                            case ServerSocket.request_types.SETTLE:
-
-                                break;
-
                             default:
                                 socket.emit(player.token, {
                                     response_type: ServerSocket.response_types.ALL_RESPONSE,
@@ -169,6 +167,33 @@ export namespace ServerSocket {
                                 unit.move_and_send_response(path.path, game, player, socket);
 
                                 break;
+
+                            case ServerSocket.request_types.SETTLE:
+                                let city_node = game.map.get_node(request_data.x, request_data.y);
+                                let can_settle: boolean = game.can_settle(player, city_node, request_data.id)
+                                if(can_settle){
+                                    game.add_city(player, city_node);
+                                    ServerSocket.send_data(socket, {
+                                        response_type: ServerSocket.response_types.NEW_CITY,
+                                        data: {
+                                            city_x: request_data.x,
+                                            city_y: request_data.y,
+                                            city_node: game.map.get_node(request_data.x, request_data.y)?.get_data(player.token)
+                                        }
+
+                                    }, player.token);
+                                }else{
+                                    ServerSocket.send_data(socket, {
+                                        response_type: ServerSocket.response_types.CANNOT_SETTLE,
+                                        data: {
+                                            x: request_data.x,
+                                            y: request_data.y,
+                                        }
+
+                                    }, player.token);
+                                }
+                                break;
+
                         }
                     }
                 }
