@@ -30,6 +30,10 @@ export class Node{
     y: number;
     type: number;
     borders: any;
+
+    production: number;
+    food: number;
+
     // ids for player who seen this node
     is_shown: string[]
     city: City | null;
@@ -44,6 +48,10 @@ export class Node{
         this.type = Node.OCEAN;
         this.borders = [];
         this.is_shown = [];
+
+        this.production = 0;
+        this.food = 0;
+
         this.city = null;
         this.sprite_name = "";
 
@@ -232,6 +240,23 @@ export class Node{
             case Node.OCEAN: return "WATER";
         }
         return "NOT FOUND";
+    }
+
+    update_production(){
+        switch (this.type){
+            case Node.GRASS:
+                this.production++;
+                break;
+
+            case Node.BEACH:
+                this.production++;
+                break;
+        }
+
+    }
+
+    update_food(){
+
     }
 
     // simplify node for socket.emit()

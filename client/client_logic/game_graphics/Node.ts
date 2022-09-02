@@ -131,7 +131,21 @@ export class Node{
         this.hex.interactive = true;
         this.hex.button = true;
 
-        this.hex.on('click', () => { this.on_click() });
+       // this.hex.on('click', () => { this.on_click() });
+        this.hex.on('pointerdown', (event: any) => {
+
+            event = event || window.event;
+            console.log("which: "+event);
+            if(event.which == 1) {
+                console.log("left clicked");
+                Node.selected_node?.remove_selected(); // left click
+            }else if(event.which == 3){
+                console.log("right clicked");
+                this.on_click() // right click
+            }else{
+                this.on_click();
+            }
+            });
         this.hex.on('mouseover', () => { this.set_hovered() });
 
         viewport.addChild(this.hex);
