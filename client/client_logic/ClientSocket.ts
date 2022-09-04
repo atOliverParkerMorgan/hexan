@@ -1,18 +1,12 @@
-import {
-    all_units,
-    init_canvas,
-    HEX_SIDE_SIZE,
-    reset_units,
-    all_enemy_visible_units,
-    viewport
-} from "./game_graphics/Pixi.js";
+import {all_units, reset_units, all_enemy_visible_units, setup_star_production} from "./game_graphics/Player.js"
+import {init_canvas, HEX_SIDE_SIZE,} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {show_city_menu} from "./UI_logic.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; CANNOT_SETTLE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
+    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; CANNOT_SETTLE: string; STARS_DATA_RESPONSE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -25,18 +19,22 @@ export namespace ClientSocket {
         NEW_CITY: "NEW_CITY",
         CANNOT_SETTLE: "CANNOT_SETTLE",
 
+        STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
+
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE"
 
     };
     export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
-                            readonly GET_MENU_INFO: string, readonly PRODUCE_UNIT: string, readonly MOVE_UNITS: string,
+                            readonly GET_MENU_INFO: string, GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly MOVE_UNITS: string,
                             readonly SETTLE: string,readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string } = {
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         GET_MENU_INFO: "GET_MENU_INFO",
+        GET_STARS_DATA: "GET_STARS_DATA",
+
         PRODUCE_UNIT: "PRODUCE_UNIT",
         MOVE_UNITS: "MOVE_UNITS",
         SETTLE: "SETTLE",
@@ -106,9 +104,13 @@ export namespace ClientSocket {
                             y = node.y;
                         }
                         // init node => add nodes to PIXI stage
-                        row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city, node.sprite_name));
+                        row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city, node.sprite_name, node.node_stars));
                     }
                     Node.all_nodes.push(row);
+
+                    // get star data after game setup is initialized
+                    ClientSocket.get_data(ClientSocket.request_types.GET_STARS_DATA, <string>localStorage.getItem("game_token"), player_token)
+
                     break;
 
                 case ClientSocket.response_types.MENU_INFO_RESPONSE:
@@ -199,6 +201,11 @@ export namespace ClientSocket {
                 case ClientSocket.response_types.CANNOT_SETTLE:
                     // TODO custom alarm
                     console.log("Cannot settle");
+                    break;
+
+                case ClientSocket.response_types.STARS_DATA_RESPONSE:
+                    setup_star_production(response_data);
+                    break;
             }
         });
     }

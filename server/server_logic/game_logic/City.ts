@@ -31,8 +31,9 @@ class City{
     public readonly cords_in_pixels_x: number;
     public readonly cords_in_pixels_y: number;
     public readonly name: string;
-    food_per_a_minute: number;
-    production_per_a_minute: number;
+    stars_per_a_minute: number;
+    population: number;
+
     is_producing: boolean;
 
     constructor(owner: Player, x: number, y: number){
@@ -46,8 +47,8 @@ class City{
         this.name = City.city_names[Utils.random_int(0, City.city_names.length - 1)];
         City.city_names.splice(City.city_names.indexOf(this.name));
 
-        this.food_per_a_minute = 20;
-        this.production_per_a_minute = 10;
+        this.stars_per_a_minute = 20;
+        this.population = 3;
         this.is_producing = false;
     }
 

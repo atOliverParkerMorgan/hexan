@@ -13,10 +13,6 @@ export const app: any = new PIXI.Application({resizeTo: window, transparent: tru
 // @ts-ignore
 export const Graphics = PIXI.Graphics;
 
-
-export let all_units: Unit[] = [];
-export let all_enemy_visible_units: Unit[] = [];
-
 // @TODO public a_star doesn't always match sever a_star
 // get the shortest path between two nodes
 export function a_star(start_node: Node, goal_node: Node){
@@ -144,8 +140,4 @@ export function init_game() {
 
 function loop(){
 
-}
-
-export function reset_units(){
-    all_units = [];
 }

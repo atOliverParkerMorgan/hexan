@@ -1,5 +1,12 @@
 import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, WORLD_HEIGHT, WORLD_WIDTH, viewport} from "./Pixi.js";
-import {hide_city_menu, show_city_menu, hide_info, show_info} from "../UI_logic.js";
+import {
+    hide_city_menu,
+    show_city_menu,
+    hide_unit_info,
+    show_unit_info,
+    show_node_info,
+    hide_node_info
+} from "../UI_logic.js";
 import {ClientSocket} from "../ClientSocket.js";
 import {Unit} from "./Unit/Unit.js";
 
@@ -53,6 +60,9 @@ export class Node{
     unit: Unit | null;
     sprite_name: string;
 
+    node_stars: number;
+    stars_sprite: any;
+
     line_borders: any[];
     line_borders_cords: number[];
     parent: Node | null;
@@ -60,7 +70,7 @@ export class Node{
     hex: any | null;
 
 
-    constructor(x: number, y: number, id: number, type: number, line_borders_cords: any, city: any, sprite_name: string) {
+    constructor(x: number, y: number, id: number, type: number, line_borders_cords: any, city: any, sprite_name: string, stars: number) {
         this.x = x;
         this.y = y;
         this.id = id;
@@ -69,6 +79,9 @@ export class Node{
         this.is_hidden = this.type === Node.HIDDEN;
 
         this.sprite = null;
+
+        this.stars_sprite = null;
+        this.node_stars = stars;
 
         // -1 if this node doesn't have a city
         this.city = city;
@@ -131,27 +144,16 @@ export class Node{
         this.hex.interactive = true;
         this.hex.button = true;
 
-       // this.hex.on('click', () => { this.on_click() });
-        this.hex.on('pointerdown', (event: any) => {
-
-            event = event || window.event;
-            console.log("which: "+event);
-            if(event.which == 1) {
-                console.log("left clicked");
-                Node.selected_node?.remove_selected(); // left click
-            }else if(event.which == 3){
-                console.log("right clicked");
-                this.on_click() // right click
-            }else{
-                this.on_click();
-            }
-            });
+        this.hex.on('click', (event: any) => {
+            this.on_click();
+        });
         this.hex.on('mouseover', () => { this.set_hovered() });
 
         viewport.addChild(this.hex);
 
         this.show_city(this.city);
-        // draw sprite
+
+        // draw node sprite
         this.show_sprite();
     }
 
@@ -237,22 +239,23 @@ export class Node{
 
     on_click(){
         let is_moving_unit = false;
+
         // unit movement
         if(Node.selected_node != null) {
             if(Node.selected_node !== this && Node.selected_node.unit != null) {
                 is_moving_unit = true;
 
-                let to_node: Node = <Node> Node.last_hovered_node;
-                let node_from: Node = <Node> Node.selected_node;
+                let to_node: Node = <Node>Node.last_hovered_node;
+                let node_from: Node = <Node>Node.selected_node;
 
                 // get cords of path to send to typescript application
                 let path_node_cords = []
-                for (const node of <Node[]> Node.path) {
+                for (const node of <Node[]>Node.path) {
                     path_node_cords.push([node.x, node.y]);
                 }
 
                 // show unit info
-                show_info(Node.selected_node.unit);
+                show_unit_info(Node.selected_node.unit);
 
                 // request movement from server
                 ClientSocket.send_data({
@@ -297,9 +300,15 @@ export class Node{
 
         // unit info
         if(this.unit != null && !Node.already_selected){
-            show_info(this.unit);
+            show_unit_info(this.unit);
         }else if(!is_moving_unit){
-            hide_info();
+            hide_unit_info();
+        }
+        // show node data
+        if(this.unit == null && this.city == null){
+            show_node_info(this);
+        }else {
+            hide_node_info();
         }
     }
 
@@ -310,6 +319,23 @@ export class Node{
         this.update();
         this.show_city(city);
         this.show_sprite();
+    }
+
+    get_type_string(): string{
+        switch (this.type){
+            case Node.GRASS:
+                return "Planes"
+            case Node.MOUNTAIN:
+                return "Mountains";
+            case Node.BEACH:
+                return "Beach";
+            case Node.LAKE:
+                return "Lake";
+            case Node.OCEAN:
+                return "Ocean";
+        }
+
+        return "Unknown";
     }
 
     remove_selected(){

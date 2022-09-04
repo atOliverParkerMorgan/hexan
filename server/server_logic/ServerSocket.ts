@@ -12,7 +12,8 @@ export namespace ServerSocket {
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
-        INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string, NEW_CITY: string, CANNOT_SETTLE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
+        INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
+        NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -25,21 +26,23 @@ export namespace ServerSocket {
         NEW_CITY: "NEW_CITY",
         CANNOT_SETTLE: "CANNOT_SETTLE",
 
-        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
-        INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE"
+        STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
 
+        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+        INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
     };
     export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
                                           readonly GET_ALL: string, readonly GET_MENU_INFO: string,
-                                          readonly PRODUCE_UNIT: string, readonly MOVE_UNITS: string,
-                                          readonly SETTLE: string, readonly FIND_1v1_OPPONENT: string,
-                                          readonly FIND_2v2_OPPONENTS: string} = {
+                                          readonly GET_STARS_DATA: string, readonly PRODUCE_UNIT: string,
+                                          readonly MOVE_UNITS: string, readonly SETTLE: string,
+                                          readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string} = {
 
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
         GET_ALL: "GET_ALL",
         GET_MENU_INFO: "GET_MENU_INFO",
+        GET_STARS_DATA: "GET_STARS_DATA",
 
         PRODUCE_UNIT: "PRODUCE_UNIT",
         MOVE_UNITS: "MOVE_UNITS",
@@ -112,6 +115,17 @@ export namespace ServerSocket {
                                         city: request_city,
                                     }
                                 })
+                                break;
+
+                            case ServerSocket.request_types.GET_STARS_DATA:
+                                socket.emit(player.token, {
+                                    response_type: ServerSocket.response_types.STARS_DATA_RESPONSE,
+                                    data: {
+                                        time_of_next_star_production: player.time_of_next_star_production,
+                                        productivity_of_stars: player.star_production,
+                                        total_owned_stars: player.total_owned_stars,
+                                    }
+                                });
                                 break;
 
                             default:

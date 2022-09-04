@@ -8,23 +8,25 @@
     <button id="hide_city_menu_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
     <h1 id="city_name" class="w3-center w3-container w3-card w3-wide w3-padding-16"></h1>
     <div class="w3-container w3-card w3-center w3-padding-8">
-        <div style="height: 8px"></div>
-        <h5>
-            <img src="/images/production.png" style="width: 40px" alt="Production image"> : <span id="production" style="padding-right: 16px; padding-left: 6px">0 / min</span><img src="/images/food.jpg" style="width: 40px" alt="Food image"> : <span  id="food" style="padding-right: 16px; padding-left: 6px">0 / min</span><div style="height: 13px"></div>
-            <img src="/images/science.png" style="width: 40px" alt="Science image"> : <span  id="science" style="padding-right: 16px; padding-left: 6px">0 / min</span> <img src="/images/violin.png" style="width: 40px" alt="Violin image">  : <span  id="culture" style="padding-right: 16px; padding-left: 6px">0 / min</span>
-        </h5>
+        <div class="w3-center">
+            <br>
+            <img src="/images/city.png" width="300px" alt="City image">
+            <hr>
+            <h5>City productivity:</h5> <span><span  id="city_stars_per_min" style="padding-right: 16px; padding-left: 6px"></span><img src="/images/star.png" style="width: 20px" alt="Star/min image"> / min</span>
+            <div style="height: 8px"></div>
+        </div>
     </div>
     <br>
     <h3 id="unit_title" class="w3-center w3-container w3-card ">Units: </h3>
     <ul id="unit_menu"></ul>
 </div>
 
-<div id="info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 200px; visibility: hidden">
+<div id="unit_info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 200px; visibility: hidden">
     <button id="hide_unit_info_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
     <div class="w3-row">
         <div class="w3-container w3-col s6 m6 l6">
             <div class="w3-center" style="padding-top: 8px">
-                <img id="info_image" class="w3-round-large" style="width: 90px; margin-bottom: 20px" alt="Unit image">
+                <img id="unit_info_image" class="w3-round-large" style="width: 90px; margin-bottom: 20px" alt="Unit image">
                 <div>
                     <div class="w3-container" >
                         <div id="action_button" class="w3-button w3-ripple w3-white w3-border w3-border-black w3-round-large">
@@ -36,14 +38,37 @@
             </div>
         </div>
         <div class="w3-container w3-col s6 m6 l6" style="padding-top: 24px">
-            <div id="info_title" class="w3-wide" ><h2>Warrior</h2></div>
-            <div id="info_information" style="padding-top: 16px"><h4>info</h4></div>
-            <img id="info_attack_image" src="/images/attack.png" width="25px">: <span id="attack_data"></span>
-            <img id="info_health_image" src="/images/health.png" style="padding-left: 8px" width="28px">: <span id="health_data"></span>
+            <div id="unit_info_title" class="w3-wide" ><h2>Warrior</h2></div>
+            <div id="unit_info_information" style="padding-top: 16px"><h5>stats: </h5></div>
+            <img id="unit_info_attack_image" src="/images/attack.png" width="25px">: <span id="unit_info_attack_data"></span>
+            <img id="unit_info_health_image" src="/images/health.png" style="padding-left: 8px" width="28px">: <span id="unit_info_health_data"></span>
             <div></div>
-            <img id="info_range_image" src="/images/range.png" width="25px">: <span id="range_data"></span>
-            <img id="info_movement_image" src="/images/movement.png" style="padding-left: 4px" width="25px">: <span id="movement_data"></span>
+            <img id="unit_info_range_image" src="/images/range.png" width="25px">: <span id="unit_info_range_data"></span>
+            <img id="unit_info_movement_image" src="/images/movement.png" style="padding-left: 4px" width="25px">: <span id="unit_info_movement_data"></span>
 
+
+        </div>
+    </div>
+</div>
+
+<div id="node_info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 250px; visibility: hidden">
+    <button id="hide_node_info_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
+    <div class="w3-row">
+        <div class="w3-container w3-col s6 m6 l6">
+            <div class="w3-center" style="padding-top: 8px">
+                <img id="node_info_image" style="width: 150px; margin-bottom: 10px" alt="Unit image">
+                <div>
+                    <div class="w3-container" >
+                        <div id="harvest_button" class="w3-button w3-ripple w3-white w3-border w3-border-black w3-round-large">
+                            <div><span class="w3-text-black" id="harvest_button_text">Mine 5<img src="/images/star.png" style="width: 17px" alt="stars image"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w3-container w3-col s6 m6 l6" style="padding-top: 24px; padding-right: 10px">
+            <div id="node_info_title" class="w3-wide" ><h2></h2></div>
+            <div id="node_info_information" style="padding-top: 16px"><h4></h4></div>
 
         </div>
     </div>
@@ -51,6 +76,6 @@
 
 <div class="w3-display-topleft w3-bar-block" style="width: auto">
     <h3 class="w3-container">
-        <img src="/images/science.png" style="width: 40px" alt="Science image"> : <span style="padding-right: 16px; padding-left: 6px">0 / min</span>  <img src="/images/violin.png" style="width: 40px" alt="Violin image">  : <span style="padding-right: 16px; padding-left: 6px">0 / min</span><img src="/images/gold.png" style="width: 40px" alt="Gold image"> : <span style="padding-right: 16px; padding-left: 6px">0 / min</span>
+       Total stars: <span  id="total_owned_stars" style="padding-right: 16px; padding-left: 6px">100 <img src="/images/star.png" style="width: 25px" alt="total stars image"></span> <span style="padding-left: 8px"></span> Productivity: <span  id="star_production" style="padding-right: 16px; padding-left: 6px">0 <img src="/images/star.png" style="width: 25px" alt="Star/min image"> / min</span>
     </h3>
 </div>

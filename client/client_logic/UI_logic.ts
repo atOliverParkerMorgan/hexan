@@ -1,5 +1,6 @@
 import {ClientSocket} from "./ClientSocket.js";
 import Unit from "./game_graphics/Unit/Unit.js";
+import {Node} from "./game_graphics/Node.js";
 import {viewport} from "./game_graphics/Pixi.js";
 
 let is_city_menu_visible = false;
@@ -27,24 +28,56 @@ document.addEventListener("wheel", () => {
 document.addEventListener("keydown", (event)=>{
     if(event.key === "Escape"){
         hide_city_menu();
-        hide_info();
+        hide_unit_info();
     }
 })
 
-export function show_info(unit: Unit){
+export function show_node_info(node: Node){
+    if(node.type === Node.HIDDEN) return
+
+    update_node_action_button(node);
+
+    (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "visible";
+    (<HTMLInputElement >document.getElementById("node_info_title")).innerText = node.get_type_string();
+
+
+    const div_unit_info_menu: any = (<HTMLInputElement >document.getElementById("node_info_menu"));
+    div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hide_node_info;
+    // div_unit_info_menu.querySelector("#action_button").onclick = () => unit_action(unit);
+}
+
+function update_node_action_button(node: Node){
+    switch(node.type) {
+        case Node.GRASS:
+            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/grass_plane.png";
+            break;
+        case Node.MOUNTAIN:
+            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/mountains.png";
+            break;
+        case Node.BEACH:
+            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/beach.png";
+            break;
+    }
+}
+
+export function hide_node_info(){
+    (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "hidden";
+}
+
+export function show_unit_info(unit: Unit){
     update_unit_action_button(unit);
 
-    (<HTMLInputElement >document.getElementById("info_image")).src =  unit.texture_path;
-    (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "visible";
-    (<HTMLInputElement >document.getElementById("info_title")).innerText = unit.type;
-    (<HTMLInputElement >document.getElementById("attack_data")).innerText = unit.attack.toString();
-    (<HTMLInputElement >document.getElementById("health_data")).innerText = unit.health.toString();
-    (<HTMLInputElement >document.getElementById("range_data")).innerText = unit.range.toString();
-    (<HTMLInputElement >document.getElementById("movement_data")).innerText = unit.movement.toString();
+    (<HTMLInputElement >document.getElementById("unit_info_image")).src =  unit.texture_path;
+    (<HTMLInputElement >document.getElementById("unit_info_menu")).style.visibility = "visible";
+    (<HTMLInputElement >document.getElementById("unit_info_title")).innerText = unit.type;
+    (<HTMLInputElement >document.getElementById("unit_info_attack_data")).innerText = unit.attack.toString();
+    (<HTMLInputElement >document.getElementById("unit_info_health_data")).innerText = unit.health.toString();
+    (<HTMLInputElement >document.getElementById("unit_info_range_data")).innerText = unit.range.toString();
+    (<HTMLInputElement >document.getElementById("unit_info_movement_data")).innerText = unit.movement.toString();
 
-    const div_info_menu: any = (<HTMLInputElement >document.getElementById("info_menu"));
-    div_info_menu.querySelector("#hide_unit_info_button").onclick = hide_info;
-    div_info_menu.querySelector("#action_button").onclick = () => unit_action(unit);
+    const div_unit_info_menu: any = (<HTMLInputElement >document.getElementById("unit_info_menu"));
+    div_unit_info_menu.querySelector("#hide_unit_info_button").onclick = hide_unit_info;
+    div_unit_info_menu.querySelector("#action_button").onclick = () => unit_action(unit);
 }
 
 function update_unit_action_button(unit: Unit){
@@ -61,8 +94,8 @@ function update_unit_action_button(unit: Unit){
     }
 }
 
+// send a request for an unit action to the server
 function unit_action(unit: Unit){
-    console.log("here");
     ClientSocket.send_data({
         request_type: ClientSocket.request_types.SETTLE,
         data: {
@@ -75,8 +108,8 @@ function unit_action(unit: Unit){
     })
 }
 
-export function hide_info(){
-    (<HTMLInputElement >document.getElementById("info_menu")).style.visibility = "hidden";
+export function hide_unit_info(){
+    (<HTMLInputElement >document.getElementById("unit_info_menu")).style.visibility = "hidden";
 }
 
 export function show_city_menu(city: any){
@@ -103,20 +136,17 @@ export function show_city_menu(city: any){
 export function hide_city_menu(){
     is_city_menu_visible = false;
     // move info menu
-    (<HTMLInputElement >document.getElementById("info_menu")).style.right = "0";
-
+    (<HTMLInputElement >document.getElementById("unit_info_menu")).style.right = "0";
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "hidden";
 }
 
 
 function show_city_data(city: any){
     // move info menu
-   (<HTMLInputElement >document.getElementById("info_menu")).style.right = "420px";
+   (<HTMLInputElement >document.getElementById("unit_info_menu")).style.right = "420px";
    (<HTMLInputElement >document.getElementById("city_name")).innerText = city.name;
-   (<HTMLInputElement >document.getElementById("food")).innerText = city.food_per_a_minute + " / min";
-   (<HTMLInputElement >document.getElementById("production")).innerText = city.production_per_a_minute + " / min";
-   (<HTMLInputElement >document.getElementById("science")).innerText = city.food_per_a_minute + " / min";
-   (<HTMLInputElement >document.getElementById("culture")).innerText = city.production_per_a_minute + " / min";
+   (<HTMLInputElement >document.getElementById("city_stars_per_min")).innerText = city.stars_per_a_minute;
+   // (<HTMLInputElement >document.getElementById("city_population")).innerText = city.population;
 
    // show units that can be produced
    // create html menu with javascript
@@ -194,6 +224,15 @@ function request_production(unit_type: string){
             city_name: (<HTMLInputElement >document.getElementById("city_name")).textContent
         }
     })
+}
+
+export function update_star_info(total_owned_stars: number, star_production?: number){
+    (<HTMLInputElement>document.getElementById("total_owned_stars")).innerText = total_owned_stars.toString();
+
+    if(star_production != null) {
+        (<HTMLInputElement>document.getElementById("star_production")).innerText = star_production.toString();
+    }
+
 }
 
 function loadFile(filePath: string):string {

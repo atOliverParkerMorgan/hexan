@@ -16,6 +16,13 @@ class Game{
         this.all_cities = [];
         this.map = new Map(number_of_land_nodes, number_of_continents);
         this.map.generate_island_map();
+        this.start_star_production();
+    }
+
+    start_star_production(){
+        this.all_players.map((player: Player)=>{
+            player.produce_stars();
+        })
     }
 
 

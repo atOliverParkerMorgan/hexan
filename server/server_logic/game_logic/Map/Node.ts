@@ -10,6 +10,8 @@ export type NodeData = {
     borders: any,
     city: City | null;
     sprite_name: string;
+
+    node_stars: number;
 }
 
 export class Node{
@@ -31,8 +33,9 @@ export class Node{
     type: number;
     borders: any;
 
-    production: number;
-    food: number;
+    // stars that this node can produce per a minute
+    production_stars: number;
+    harvest_cost: number;
 
     // ids for player who seen this node
     is_shown: string[]
@@ -49,8 +52,8 @@ export class Node{
         this.borders = [];
         this.is_shown = [];
 
-        this.production = 0;
-        this.food = 0;
+        this.production_stars = 0;
+        this.harvest_cost = 0;
 
         this.city = null;
         this.sprite_name = "";
@@ -242,23 +245,6 @@ export class Node{
         return "NOT FOUND";
     }
 
-    update_production(){
-        switch (this.type){
-            case Node.GRASS:
-                this.production++;
-                break;
-
-            case Node.BEACH:
-                this.production++;
-                break;
-        }
-
-    }
-
-    update_food(){
-
-    }
-
     // simplify node for socket.emit()
     get_data(player_token: string): NodeData{
         let type = this.type;
@@ -267,7 +253,7 @@ export class Node{
 
         // hide the hidden node and cites
         if(!this.is_shown.includes(player_token)){
-           type = Node.HIDDEN;
+          // type = Node.HIDDEN;
            sprite_name = "";
            city = null;
         }
@@ -278,7 +264,9 @@ export class Node{
            type: type,
            borders: this.borders,
            city: city,
-           sprite_name: sprite_name
+           sprite_name: sprite_name,
+
+           node_stars: this.production_stars
        }
     }
 }

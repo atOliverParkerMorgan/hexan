@@ -12,12 +12,24 @@ class Player{
     production_unit_types: string[];
     current_unit_id: number;
 
+
+    total_owned_stars: number;
+    // stars per a minute
+    star_production: number;
+
+    time_of_next_star_production: number;
+
     constructor(token: string) {
         this.token = token;
         this.units = [];
         // units that this player can produce
         this.production_unit_types = [Unit.MELEE, Unit.RANGE, Unit.SETTLER];
         this.current_unit_id = 0;
+
+        this.total_owned_stars = 0;
+        this.star_production = 5;
+
+        this.time_of_next_star_production = -1;
     }
 
     add_unit(x: number, y: number, type: string): Unit{
@@ -75,6 +87,21 @@ class Player{
         }
         return all_unit_data;
 
+    }
+
+    // The client and server run two separate yet synchronized timers to produce stars
+    // the timers are synchronized by local time => by using the object Date
+    // this eliminates otherwise necessary server-client communication (the server would have to constantly update the client stars)
+    produce_stars(){
+        let now = new Date();
+        this.time_of_next_star_production = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds() + 60 / this.star_production, 0).getTime();
+        let time_to_next_star_production = this.time_of_next_star_production - Date.now();
+
+        setTimeout(()=>{
+            this.total_owned_stars++
+            this.produce_stars();
+
+        }, time_to_next_star_production);
     }
 }
 
