@@ -118,11 +118,13 @@ export namespace ServerSocket {
                                 break;
 
                             case ServerSocket.request_types.GET_STARS_DATA:
+                                if(!player.star_production_has_started) {
+                                    player.produce_stars();
+                                }
                                 socket.emit(player.token, {
                                     response_type: ServerSocket.response_types.STARS_DATA_RESPONSE,
                                     data: {
-                                        time_of_next_star_production: player.time_of_next_star_production,
-                                        productivity_of_stars: player.star_production,
+                                        star_production: player.star_production,
                                         total_owned_stars: player.total_owned_stars,
                                     }
                                 });

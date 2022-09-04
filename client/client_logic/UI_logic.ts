@@ -227,8 +227,9 @@ function request_production(unit_type: string){
 }
 
 export function update_star_info(total_owned_stars: number, star_production?: number){
-    (<HTMLInputElement>document.getElementById("total_owned_stars")).innerText = total_owned_stars.toString();
+    (<HTMLInputElement>document.getElementById("star_info")).style.visibility = "visible";
 
+    (<HTMLInputElement>document.getElementById("total_owned_stars")).innerText = total_owned_stars.toString();
     if(star_production != null) {
         (<HTMLInputElement>document.getElementById("star_production")).innerText = star_production.toString();
     }

@@ -17,7 +17,7 @@ class Player{
     // stars per a minute
     star_production: number;
 
-    time_of_next_star_production: number;
+    star_production_has_started: boolean;
 
     constructor(token: string) {
         this.token = token;
@@ -29,7 +29,7 @@ class Player{
         this.total_owned_stars = 0;
         this.star_production = 5;
 
-        this.time_of_next_star_production = -1;
+        this.star_production_has_started = false;
     }
 
     add_unit(x: number, y: number, type: string): Unit{
@@ -93,15 +93,16 @@ class Player{
     // the timers are synchronized by local time => by using the object Date
     // this eliminates otherwise necessary server-client communication (the server would have to constantly update the client stars)
     produce_stars(){
-        let now = new Date();
-        this.time_of_next_star_production = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds() + 60 / this.star_production, 0).getTime();
-        let time_to_next_star_production = this.time_of_next_star_production - Date.now();
+        // debug
+        console.log(this.total_owned_stars);
 
-        setTimeout(()=>{
+        setTimeout(() => {
             this.total_owned_stars++
             this.produce_stars();
 
-        }, time_to_next_star_production);
+        },  60_000 / this.star_production);
+
+        this.star_production_has_started = true;
     }
 }
 
