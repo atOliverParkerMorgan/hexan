@@ -4,16 +4,11 @@ import Player from "../Player";
 import {Socket} from "socket.io";
 import {ServerSocket} from "../../ServerSocket";
 import { UnitData } from "./UnitData";
-
-export interface UnitInitData{
-    attack: number;
-    health: number;
-    range: number;
-    movement: number;
-
-    action: string;
-    type: string;
-}
+import {UnitInitData} from "./UnitInitData";
+import Melee from "./Melee";
+import Range from "./Range";
+import Cavalry from "./Cavalry";
+import Settler from "./Settler";
 
 export class Unit implements UnitData{
 
@@ -40,6 +35,8 @@ export class Unit implements UnitData{
     health: number;
     movement: number;
     range :number;
+    name: string;
+    cost: number;
 
     constructor(x: number, y: number, id: string, unit_init_data: UnitInitData){
         this.x = x;
@@ -55,6 +52,8 @@ export class Unit implements UnitData{
         this.health = unit_init_data.health;
         this.movement = unit_init_data.movement;
         this.range = unit_init_data.range;
+        this.name = unit_init_data.name;
+        this.cost = unit_init_data.cost;
     }
 
     // send response to public if the unit has successfully moved
@@ -166,7 +165,9 @@ export class Unit implements UnitData{
             attack: this.attack,
             health: this.health,
             range: this.range,
-            movement: this.movement
+            movement: this.movement,
+            name: this.name,
+            cost: this.cost,
         }
     }
 }

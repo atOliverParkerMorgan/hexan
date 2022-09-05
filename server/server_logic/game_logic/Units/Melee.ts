@@ -1,12 +1,15 @@
-import {Unit, UnitInitData} from "./Unit";
+import {Unit} from "./Unit";
+import {UnitInitData} from "./UnitInitData";
 
 class Melee extends Unit{
-    public readonly PRODUCTION_TIME: number = 10_000;
     public static readonly WARRIOR: UnitInitData = {
+        name: "Warrior",
+
         attack: 25,
         health: 100,
         range: 1,
         movement: 100,
+        cost: 4,
 
         action: Unit.FORTIFY,
         type: Unit.MELEE

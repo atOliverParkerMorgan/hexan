@@ -34,8 +34,6 @@ class City{
     stars_per_a_minute: number;
     population: number;
 
-    is_producing: boolean;
-
     constructor(owner: Player, x: number, y: number){
         this.owner = owner;
 
@@ -49,28 +47,18 @@ class City{
 
         this.stars_per_a_minute = 20;
         this.population = 3;
-        this.is_producing = false;
     }
 
-    start_production(production_time: number, socket: Socket, unit_type: string): void{
-        if(!this.is_producing){
-            this.is_producing = true
-            
-            setTimeout(()=> this.produce_unit_and_send_response(socket, unit_type), production_time);
-        }
-    }
+    produce_unit_and_send_response(socket: Socket, unit_name: string): void{
+        const cost: number | undefined = Utils.get_unit_cost(unit_name);
+        if(cost == null) return;
 
-    produce_unit_and_send_response(socket: Socket, unit_type: string): void{
-        let unit: Unit = this.owner.add_unit(this.x, this.y, unit_type);
-        ServerSocket.send_data(socket, {
-                response_type: ServerSocket.response_types.UNIT_RESPONSE,
-                data: {
-                    unit: unit.get_data()
-                }
-            },
-            this.owner.token);
+        // check if payment is valid if not terminate
+        if(!this.owner.is_payment_valid(cost)) return;
+        this.owner.pay_stars(cost);
 
-        this.is_producing = false;
+        let unit: Unit = this.owner.add_unit(this.x, this.y, unit_name);
+        ServerSocket.send_unit_produced_response(socket, this, unit);
     }
 
     get_x_in_pixels(): number{

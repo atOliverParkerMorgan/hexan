@@ -32,17 +32,17 @@ class Player{
         this.star_production_has_started = false;
     }
 
-    add_unit(x: number, y: number, type: string): Unit{
+    add_unit(x: number, y: number, name: string): Unit{
         let new_unit: any;
-        switch (type){
-            case Unit.MELEE:
+        switch (name){
+            case Melee.WARRIOR.name:
                 new_unit = new Melee(x, y,this.current_unit_id.toString(), Melee.WARRIOR);
                 break;
-            case Unit.RANGE:
+            case Range.SLINGER.name:
                 new_unit = new Range(x, y,this.current_unit_id.toString(), Range.SLINGER, );
                 break;
 
-            case Unit.CAVALRY:
+            case Cavalry.HORSEMAN.name:
                 new_unit = new Cavalry(x, y,this.current_unit_id.toString(), Cavalry.HORSEMAN);
                 break;
 
@@ -103,6 +103,14 @@ class Player{
         },  60_000 / this.star_production);
 
         this.star_production_has_started = true;
+    }
+
+    is_payment_valid(payment: number): boolean{
+        return this.total_owned_stars - payment >= 0;
+    }
+
+    pay_stars(payment: number){
+        this.total_owned_stars -= payment;
     }
 }
 

@@ -1,21 +1,24 @@
-import {Unit, UnitInitData} from "./Unit";
+import {Unit} from "./Unit";
 import Player from "../Player";
 import Game from "../Game";
-import Range from "./Range";
+import {UnitInitData} from "./UnitInitData";
 
 class Settler extends Unit{
-    public readonly PRODUCTION_TIME: number = 10_000;
+    public static readonly SETTLER_UNIT: UnitInitData = {
+        name: "Settler",
+
+        attack: 0,
+        health: 100,
+        range: 0,
+        movement: 100,
+        cost: 20,
+
+        action: Unit.SETTLE,
+        type: Unit.SETTLER
+    }
 
     constructor(x: number, y: number, id: string) {
-        super(x, y, id, {
-            attack: 0,
-            health: 100,
-            range: 0,
-            movement: 100,
-
-            action: Unit.SETTLE,
-            type: Unit.SETTLER
-        });
+        super(x, y, id, Settler.SETTLER_UNIT);
     }
 
     settle(owner: Player, game: Game): void{

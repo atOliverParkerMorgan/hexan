@@ -37,6 +37,9 @@ export function setup_star_production(data: any){
     produce_stars();
 }
 
+export function set_total_owned_stars(new_total_owned_stars: number){
+    total_owned_stars = new_total_owned_stars;
+}
 
 export function reset_units(){
     all_units = [];

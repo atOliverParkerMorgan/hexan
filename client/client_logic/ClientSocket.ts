@@ -1,4 +1,10 @@
-import {all_units, reset_units, all_enemy_visible_units, setup_star_production} from "./game_graphics/Player.js"
+import {
+    all_units,
+    reset_units,
+    all_enemy_visible_units,
+    setup_star_production,
+    set_total_owned_stars
+} from "./game_graphics/Player.js"
 import {init_canvas, HEX_SIDE_SIZE,} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
@@ -85,6 +91,11 @@ export namespace ClientSocket {
                     let graphics_unit: Unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
                     all_units.push(graphics_unit);
                     Node.all_nodes[response_data.unit.y][response_data.unit.x].unit = graphics_unit;
+
+                    let total_owned_stars = response_data.total_owned_stars;
+                    if(total_owned_stars != null){
+                        set_total_owned_stars(total_owned_stars);
+                    }
 
                     break;
 
@@ -217,6 +228,31 @@ export namespace ClientSocket {
             data: {
                 game_token: game_token,
                 player_token: player_token
+            }
+        })
+    }
+
+    export function request_production(unit_name: string) {
+        ClientSocket.send_data({
+            request_type: ClientSocket.request_types.PRODUCE_UNIT,
+            data: {
+                unit_type: unit_name,
+                player_token: localStorage.player_token,
+                game_token: localStorage.game_token,
+                city_name: (<HTMLInputElement>document.getElementById("city_name")).textContent
+            }
+        })
+    }
+
+    export function request_unit_action(unit: Unit){
+        ClientSocket.send_data({
+            request_type: ClientSocket.request_types.SETTLE,
+            data: {
+                x: unit.x,
+                y: unit.y,
+                id: unit.id,
+                player_token: localStorage.player_token,
+                game_token: localStorage.game_token,
             }
         })
     }

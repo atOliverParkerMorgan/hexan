@@ -1,12 +1,15 @@
-import {Unit, UnitInitData} from "./Unit";
+import {Unit} from "./Unit";
+import {UnitInitData} from "./UnitInitData";
 
 class Range extends Unit{
-    public readonly PRODUCTION_TIME: number = 10_000;
     public static readonly SLINGER: UnitInitData = {
+        name: "Slinger",
+
         attack: 10,
         health: 100,
         range: 2,
         movement: 120,
+        cost: 6,
 
         action: Unit.FORTIFY,
         type: Unit.RANGE

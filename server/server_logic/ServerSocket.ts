@@ -2,6 +2,8 @@ import { createServer } from 'http';
 import { Server, Socket } from "socket.io";
 import Path from "./game_logic/Map/Path.js";
 import {MatchMaker} from "./MatchMaker";
+import City from "./game_logic/City";
+import {Unit} from "./game_logic/Units/Unit";
 
 const httpServer = createServer();
 const io = new Server(httpServer);
@@ -161,7 +163,7 @@ export namespace ServerSocket {
                                 const city = game.get_city(request_data.city_name, player);
                                 const unit_type = request_data.unit_type;
                                 if (city != null) {
-                                    city.start_production(1000, socket, unit_type);
+                                    city.produce_unit_and_send_response(socket, unit_type);
                                 }
                                 break;
 
@@ -215,5 +217,17 @@ export namespace ServerSocket {
                 }
             });
         });
+    }
+
+    export function send_unit_produced_response( socket: Socket, city: City, unit: Unit){
+        ServerSocket.send_data(socket, {
+                response_type: ServerSocket.response_types.UNIT_RESPONSE,
+                data: {
+                    unit: unit.get_data(),
+                    // update client stars
+                    total_owned_stars: city.owner.total_owned_stars
+                }
+            },
+            city.owner.token);
     }
 }

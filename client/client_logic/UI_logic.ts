@@ -96,16 +96,7 @@ function update_unit_action_button(unit: Unit){
 
 // send a request for an unit action to the server
 function unit_action(unit: Unit){
-    ClientSocket.send_data({
-        request_type: ClientSocket.request_types.SETTLE,
-        data: {
-            x: unit.x,
-            y: unit.y,
-            id: unit.id,
-            player_token: localStorage.player_token,
-            game_token: localStorage.game_token,
-        }
-    })
+    ClientSocket.request_unit_action(unit);
 }
 
 export function hide_unit_info(){
@@ -191,7 +182,7 @@ function set_unit_data(unit_type: any, name: string, src: string, type: string, 
     unit_type.querySelector("#image").src = src
     unit_type.querySelector("#produce").src = "/images/production.png"
     unit_type.querySelector("#produce").onclick = function () {
-        request_production(type);
+        request_production(name);
     };
     unit_type.querySelector("#name").innerText = name;
     unit_type.querySelector("#type").innerText = type;
@@ -214,16 +205,8 @@ function show_unit_data(units: any){
 }
 
 
-function request_production(unit_type: string){
-    ClientSocket.send_data({
-        request_type: ClientSocket.request_types.PRODUCE_UNIT,
-        data: {
-            unit_type: unit_type,
-            player_token: localStorage.player_token,
-            game_token: localStorage.game_token,
-            city_name: (<HTMLInputElement >document.getElementById("city_name")).textContent
-        }
-    })
+function request_production(unit_name: string){
+    ClientSocket.request_production(unit_name)
 }
 
 export function update_star_info(total_owned_stars: number, star_production?: number){

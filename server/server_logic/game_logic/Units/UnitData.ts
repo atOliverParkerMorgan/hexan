@@ -13,4 +13,6 @@ export interface UnitData{
     health: number;
     range: number;
     movement: number;
+    name: string;
+    cost: number;
 }

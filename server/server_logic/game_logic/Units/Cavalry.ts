@@ -1,12 +1,14 @@
-import {Unit, UnitInitData} from "./Unit";
+import {Unit} from "./Unit";
+import {UnitInitData} from "./UnitInitData";
 
 class Cavalry extends Unit{
-    public readonly PRODUCTION_TIME: number = 10_000;
     public static readonly HORSEMAN: UnitInitData = {
+        name: "Horseman",
         attack: 20,
         health: 100,
         range: 1,
         movement: 25,
+        cost: 8,
 
         action: Unit.FORTIFY,
         type: Unit.CAVALRY
