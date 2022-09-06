@@ -93,14 +93,10 @@ class Player{
     // the timers are synchronized by local time => by using the object Date
     // this eliminates otherwise necessary server-client communication (the server would have to constantly update the client stars)
     produce_stars(){
-        // debug
-        console.log(this.total_owned_stars);
-
-        setTimeout(() => {
-            this.total_owned_stars++
-            this.produce_stars();
-
-        },  60_000 / this.star_production);
+        setInterval(() => {
+            console.log(this.total_owned_stars);
+            this.total_owned_stars += this.star_production / 60;
+        },  1000);
 
         this.star_production_has_started = true;
     }

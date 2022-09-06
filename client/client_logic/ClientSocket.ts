@@ -8,11 +8,11 @@ import {
 import {init_canvas, HEX_SIDE_SIZE,} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
-import {show_city_menu} from "./UI_logic.js";
+import {show_city_menu, show_modal} from "./UI_logic.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; CANNOT_SETTLE: string; STARS_DATA_RESPONSE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string } = {
+    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; CANNOT_SETTLE: string; STARS_DATA_RESPONSE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string, INSUFFICIENT_FUNDS_RESPONSE: string } = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -28,7 +28,9 @@ export namespace ClientSocket {
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
 
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
-        INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE"
+
+        INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
+        INSUFFICIENT_FUNDS_RESPONSE: "INSUFFICIENT_FUNDS_RESPONSE"
 
     };
     export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
@@ -216,6 +218,11 @@ export namespace ClientSocket {
 
                 case ClientSocket.response_types.STARS_DATA_RESPONSE:
                     setup_star_production(response_data);
+                    break;
+
+                case ClientSocket.response_types.INSUFFICIENT_FUNDS_RESPONSE:
+                    console.log("here")
+                    show_modal(response_data.title, response_data.message, "w3-red");
                     break;
             }
         });

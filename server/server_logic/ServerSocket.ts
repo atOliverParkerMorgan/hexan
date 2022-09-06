@@ -15,7 +15,8 @@ export namespace ServerSocket {
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
-        NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, MENU_INFO_RESPONSE: string } =  {
+        NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
+        MENU_INFO_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string } =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -31,7 +32,9 @@ export namespace ServerSocket {
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
 
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
+        INSUFFICIENT_FUNDS_RESPONSE: "INSUFFICIENT_FUNDS_RESPONSE",
     };
     export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
                                           readonly GET_ALL: string, readonly GET_MENU_INFO: string,
@@ -226,6 +229,17 @@ export namespace ServerSocket {
                     unit: unit.get_data(),
                     // update client stars
                     total_owned_stars: city.owner.total_owned_stars
+                }
+            },
+            city.owner.token);
+    }
+
+    export function insufficient_funds_response(socket: Socket, city: City, title: string, message: string){
+        ServerSocket.send_data(socket, {
+                response_type: ServerSocket.response_types.INSUFFICIENT_FUNDS_RESPONSE,
+                data: {
+                    title: title,
+                    message: message
                 }
             },
             city.owner.token);

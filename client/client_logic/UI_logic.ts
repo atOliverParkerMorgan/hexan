@@ -219,6 +219,13 @@ export function update_star_info(total_owned_stars: number, star_production?: nu
 
 }
 
+export function show_modal(title: string, message: string, w3_color_classname: string){
+    (<HTMLInputElement>document.getElementById("modal")).style.display = "block";
+    (<HTMLInputElement>document.getElementById("modal_title")).innerText = title;
+    (<HTMLInputElement>document.getElementById("modal_message")).innerText = message;
+    (<HTMLInputElement>document.getElementById("modal_header")).classList.add(w3_color_classname);
+}
+
 function loadFile(filePath: string):string {
     let result: string | null = null;
     let xhr = new XMLHttpRequest();

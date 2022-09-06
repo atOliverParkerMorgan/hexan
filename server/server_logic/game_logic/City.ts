@@ -54,7 +54,10 @@ class City{
         if(cost == null) return;
 
         // check if payment is valid if not terminate
-        if(!this.owner.is_payment_valid(cost)) return;
+        if(!this.owner.is_payment_valid(cost)) {
+            ServerSocket.insufficient_funds_response(socket, this, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(this.owner.total_owned_stars - cost))} more stars to buy a ${unit_name}`)
+            return;
+        }
         this.owner.pay_stars(cost);
 
         let unit: Unit = this.owner.add_unit(this.x, this.y, unit_name);

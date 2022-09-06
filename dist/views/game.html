@@ -79,3 +79,21 @@
        Total stars: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-bottom: 5px;" alt="star image"><span  id="total_owned_stars" style="padding-right: 5px; padding-left: 5px"></span> <span style="padding-left: 6px; padding-right: 6px"></span> Productivity: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-bottom: 5px " alt="star image"><span id="star_production" style="padding-right: 5px"></span> / min
     </h3>
 </div>
+
+<!-- Modal -->
+<div class="w3-container">
+    <div id="modal" class="w3-modal w3-display-middle">
+        <div class="w3-modal-content w3-animate-top w3-card-4">
+            <header id="modal_header" class="w3-container">
+            <span onclick="document.getElementById('modal').style.display='none'"
+                  class="w3-button w3-display-topright">&times;</span>
+                <h2 id="modal_title" class="w3-wide"></h2>
+                <hr>
+            </header>
+            <br>
+            <div class="w3-container" id="modal_message">
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
