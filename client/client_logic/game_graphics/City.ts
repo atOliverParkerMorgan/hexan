@@ -9,5 +9,4 @@ export class City{
         this.health = health;
         this.friendly = friendly;
     }
-
 }

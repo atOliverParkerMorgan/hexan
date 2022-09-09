@@ -21,7 +21,6 @@ export class Node{
     public static readonly HIDDEN: number = 0xE0D257;
     public static readonly CITY: number = 0xF53E3E;
 
-
     public static readonly LEFT: number = 0;
     public static readonly RIGHT: number = 1;
     public static readonly TOP_LEFT: number = 2;
@@ -58,9 +57,13 @@ export class Node{
     sprite: any | null;
     city: any;
     unit: Unit | null;
+
+    production_stars: number;
+    harvest_cost: number;
+    is_harvested: boolean;
+
     sprite_name: string;
 
-    node_stars: number;
     stars_sprite: any;
 
     line_borders: any[];
@@ -70,7 +73,7 @@ export class Node{
     hex: any | null;
 
 
-    constructor(x: number, y: number, id: number, type: number, line_borders_cords: any, city: any, sprite_name: string, stars: number) {
+    constructor(x: number, y: number, id: number, type: number, line_borders_cords: any, city: any, sprite_name: string, harvest_cost: number, production_stars: number, is_harvested: boolean) {
         this.x = x;
         this.y = y;
         this.id = id;
@@ -81,7 +84,10 @@ export class Node{
         this.sprite = null;
 
         this.stars_sprite = null;
-        this.node_stars = stars;
+
+        this.harvest_cost = harvest_cost;
+        this.production_stars = production_stars;
+        this.is_harvested = is_harvested;
 
         // -1 if this node doesn't have a city
         this.city = city;

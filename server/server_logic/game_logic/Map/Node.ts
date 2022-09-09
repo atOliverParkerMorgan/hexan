@@ -1,18 +1,11 @@
 import City from "../City";
 import Map from "./Map";
 import Player from "../Player";
+import {NodeData} from "./NodeData";
+import {ServerSocket} from "../../ServerSocket";
+import {Socket} from "socket.io-client";
 
 // used for node.get_data()
-export type NodeData = {
-    x: number;
-    y: number;
-    type: number,
-    borders: any,
-    city: City | null;
-    sprite_name: string;
-
-    node_stars: number;
-}
 
 export class Node{
     // constants
@@ -36,6 +29,7 @@ export class Node{
     // stars that this node can produce per a minute
     production_stars: number;
     harvest_cost: number;
+    is_harvested: boolean;
 
     // ids for player who seen this node
     is_shown: string[]
@@ -52,8 +46,9 @@ export class Node{
         this.borders = [];
         this.is_shown = [];
 
-        this.production_stars = 0;
-        this.harvest_cost = 0;
+        this.production_stars = 1;
+        this.harvest_cost = 5;
+        this.is_harvested = false;
 
         this.city = null;
         this.sprite_name = "";
@@ -235,6 +230,19 @@ export class Node{
         return value;
     }
 
+    harvest(player: Player, socket: any){
+        if(this.is_harvested) return;
+
+        if(player.is_payment_valid(this.harvest_cost)){
+            player.pay_stars(this.harvest_cost);
+            player.increase_production(this.production_stars);
+            ServerSocket.send_node_harvested_response(socket, this, player);
+        }else {
+            ServerSocket.insufficient_funds_response(socket, player, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost))} to harvest this node`);
+
+        }
+    }
+
     get_type(){
         switch (this.type){
             case Node.GRASS: return "GRASS";
@@ -266,7 +274,9 @@ export class Node{
            city: city,
            sprite_name: sprite_name,
 
-           node_stars: this.production_stars
+           harvest_cost: this.harvest_cost,
+           production_stars: this.production_stars,
+           is_harvested: this.is_harvested
        }
     }
 }

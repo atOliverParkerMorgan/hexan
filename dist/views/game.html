@@ -52,7 +52,7 @@
 </div>
 
 <div id="node_info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 250px; visibility: hidden">
-    <button id="hide_node_info_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
+    <button id="hide_node_info_button" class="w3-xxlarge w3-button" style="position: absolute; right: 0; top: 0; padding: 5px">×</button>
     <div class="w3-row">
         <div class="w3-container w3-col s6 m6 l6">
             <div class="w3-center" style="padding-top: 8px">
@@ -60,7 +60,7 @@
                 <div>
                     <div class="w3-container" >
                         <div id="harvest_button" class="w3-button w3-ripple w3-white w3-border w3-border-black w3-round-large">
-                            <div><span class="w3-text-black" id="harvest_button_text">Mine 5<img src="/images/star.png" style="width: 17px" alt="stars image"></span></div>
+                            <div><span class="w3-text-black" id="harvest_button_text">Pay <img src="/images/star.png" style="width: 20px; padding-bottom: 5px; padding-left: 5px;: 5px;padding-right: 5px" alt="stars image"><span id="harvest_cost"></span></span></div>
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,9 @@
         </div>
         <div class="w3-container w3-col s6 m6 l6" style="padding-top: 24px; padding-right: 10px">
             <div id="node_info_title" class="w3-wide" ><h2></h2></div>
-            <div id="node_info_information" style="padding-top: 16px"><h4></h4></div>
+            <div id="node_info_information" style="padding-top: 16px">
+            Gain <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"> <span id="gain_stars"></span> / min by harvesting
+            </div>
 
         </div>
     </div>
@@ -76,7 +78,7 @@
 
 <div class="w3-display-topleft w3-bar-block" id="star_info" style="width: auto; visibility: hidden">
     <h3 class="w3-container">
-       Total stars: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-bottom: 5px;" alt="star image"><span  id="total_owned_stars" style="padding-right: 5px; padding-left: 5px"></span> <span style="padding-left: 6px; padding-right: 6px"></span> Productivity: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-bottom: 5px " alt="star image"><span id="star_production" style="padding-right: 5px"></span> / min
+       Total stars: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-right: 5px; padding-bottom: 5px;" alt="star image"><span  id="total_owned_stars" style="padding-right: 5px"></span> <span style="padding-left: 6px; padding-right: 6px"></span> Productivity: <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"><span id="star_production" style="padding-right: 5px"></span> / min
     </h3>
 </div>
 
@@ -84,10 +86,10 @@
 <div class="w3-container">
     <div id="modal" class="w3-modal w3-display-middle">
         <div class="w3-modal-content w3-animate-top w3-card-4">
-            <header id="modal_header" class="w3-container">
+            <header id="modal_header" class="w3-container w3-center">
             <span onclick="document.getElementById('modal').style.display='none'"
                   class="w3-button w3-display-topright">&times;</span>
-                <h2 id="modal_title" class="w3-wide"></h2>
+                <h2 id="modal_title" class="w3-wide w3-center"></h2>
                 <hr>
             </header>
             <br>

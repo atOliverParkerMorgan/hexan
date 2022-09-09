@@ -1,5 +1,5 @@
 import Game from "../Game";
-import {Node, NodeData} from "../Map/Node";
+import {Node} from "../Map/Node";
 import Player from "../Player";
 import {Socket} from "socket.io";
 import {ServerSocket} from "../../ServerSocket";
@@ -9,6 +9,7 @@ import Melee from "./Melee";
 import Range from "./Range";
 import Cavalry from "./Cavalry";
 import Settler from "./Settler";
+import {NodeData} from "../Map/NodeData";
 
 export class Unit implements UnitData{
 

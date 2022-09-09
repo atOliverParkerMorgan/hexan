@@ -4,6 +4,8 @@ import Path from "./game_logic/Map/Path.js";
 import {MatchMaker} from "./MatchMaker";
 import City from "./game_logic/City";
 import {Unit} from "./game_logic/Units/Unit";
+import Player from "./game_logic/Player";
+import {Node} from "./game_logic/Map/Node";
 
 const httpServer = createServer();
 const io = new Server(httpServer);
@@ -16,7 +18,7 @@ export namespace ServerSocket {
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
         NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
-        MENU_INFO_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string } =  {
+        MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, INSUFFICIENT_FUNDS_RESPONSE: string} =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -32,6 +34,8 @@ export namespace ServerSocket {
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
 
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+        HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
+        HARVEST_NODE: "HARVEST_NODE",
 
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         INSUFFICIENT_FUNDS_RESPONSE: "INSUFFICIENT_FUNDS_RESPONSE",
@@ -39,7 +43,7 @@ export namespace ServerSocket {
     export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
                                           readonly GET_ALL: string, readonly GET_MENU_INFO: string,
                                           readonly GET_STARS_DATA: string, readonly PRODUCE_UNIT: string,
-                                          readonly MOVE_UNITS: string, readonly SETTLE: string,
+                                          readonly MOVE_UNITS: string, readonly HARVEST_NODE: string, readonly SETTLE: string,
                                           readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string} = {
 
         // game play
@@ -51,6 +55,7 @@ export namespace ServerSocket {
 
         PRODUCE_UNIT: "PRODUCE_UNIT",
         MOVE_UNITS: "MOVE_UNITS",
+        HARVEST_NODE: "HARVEST_NODE",
         SETTLE: "SETTLE",
 
         // match making
@@ -152,71 +157,77 @@ export namespace ServerSocket {
         io.on("connection", (socket: Socket) => {
             // receive a message from the public
             socket.on("send-data", (...args: any[]) => {
-                const request_type: string = args[0].request_type;
-                const request_data = args[0].data;
+                try {
+                    const request_type: string = args[0].request_type;
+                    const request_data = args[0].data;
 
-                const game = MatchMaker.get_game(request_data.game_token);
+                    const game = MatchMaker.get_game(request_data.game_token);
 
-                if (game != null) {
-                    const player = game.get_player(request_data.player_token);
-                    if (player != null) {
-                        // switch for different request types
-                        switch (request_type){
-                            case ServerSocket.request_types.PRODUCE_UNIT:
-                                const city = game.get_city(request_data.city_name, player);
-                                const unit_type = request_data.unit_type;
-                                if (city != null) {
-                                    city.produce_unit_and_send_response(socket, unit_type);
-                                }
-                                break;
+                    if (game != null) {
+                        const player = game.get_player(request_data.player_token);
+                        if (player != null) {
+                            // switch for different request types
+                            switch (request_type) {
+                                case ServerSocket.request_types.PRODUCE_UNIT:
+                                    const city = game.get_city(request_data.city_name, player);
+                                    const unit_type = request_data.unit_type;
+                                    if (city != null) {
+                                        city.produce_unit_and_send_response(socket, unit_type);
+                                    }
+                                    break;
 
-                            case ServerSocket.request_types.MOVE_UNITS:
+                                case ServerSocket.request_types.MOVE_UNITS:
 
-                                const unit = player.get_unit(request_data.unit_id);
-                                const path = new Path(game, request_data.path);
+                                    const unit = player.get_unit(request_data.unit_id);
+                                    const path = new Path(game, request_data.path);
 
-                                if(!path.is_valid() || unit == null){
-                                    ServerSocket.send_data(socket, {
-                                        response_type: ServerSocket.response_types.INVALID_MOVE_RESPONSE,
-                                        data: {
-                                            unit: unit
-                                        }
-                                    }, player.token);
+                                    if (!path.is_valid() || unit == null) {
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.INVALID_MOVE_RESPONSE,
+                                            data: {
+                                                unit: unit
+                                            }
+                                        }, player.token);
+
+                                        break;
+                                    }
+                                    unit.move_and_send_response(path.path, game, player, socket);
 
                                     break;
-                                }
-                                unit.move_and_send_response(path.path, game, player, socket);
 
-                                break;
+                                case ServerSocket.request_types.SETTLE:
+                                    let city_node = game.map.get_node(request_data.x, request_data.y);
+                                    let can_settle: boolean = game.can_settle(player, city_node, request_data.id)
+                                    if (can_settle) {
+                                        game.add_city(player, city_node);
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.NEW_CITY,
+                                            data: {
+                                                city_x: request_data.x,
+                                                city_y: request_data.y,
+                                                city_node: game.map.get_node(request_data.x, request_data.y)?.get_data(player.token)
+                                            }
 
-                            case ServerSocket.request_types.SETTLE:
-                                let city_node = game.map.get_node(request_data.x, request_data.y);
-                                let can_settle: boolean = game.can_settle(player, city_node, request_data.id)
-                                if(can_settle){
-                                    game.add_city(player, city_node);
-                                    ServerSocket.send_data(socket, {
-                                        response_type: ServerSocket.response_types.NEW_CITY,
-                                        data: {
-                                            city_x: request_data.x,
-                                            city_y: request_data.y,
-                                            city_node: game.map.get_node(request_data.x, request_data.y)?.get_data(player.token)
-                                        }
+                                        }, player.token);
+                                    } else {
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.CANNOT_SETTLE,
+                                            data: {
+                                                x: request_data.x,
+                                                y: request_data.y,
+                                            }
 
-                                    }, player.token);
-                                }else{
-                                    ServerSocket.send_data(socket, {
-                                        response_type: ServerSocket.response_types.CANNOT_SETTLE,
-                                        data: {
-                                            x: request_data.x,
-                                            y: request_data.y,
-                                        }
-
-                                    }, player.token);
-                                }
-                                break;
-
+                                        }, player.token);
+                                    }
+                                    break;
+                                case ServerSocket.request_types.HARVEST_NODE:
+                                    game.map.get_node(request_data.node_x, request_data.node_y)?.harvest(player, socket);
+                                    break;
+                            }
                         }
                     }
+                }catch (e){
+                    console.log("error invalid input")
                 }
             });
         });
@@ -234,7 +245,20 @@ export namespace ServerSocket {
             city.owner.token);
     }
 
-    export function insufficient_funds_response(socket: Socket, city: City, title: string, message: string){
+    export function send_node_harvested_response( socket: Socket, node: Node, player: Player){
+        ServerSocket.send_data(socket, {
+                response_type: ServerSocket.response_types.HARVEST_NODE_RESPONSE,
+                data: {
+                    node: node.get_data(player.token),
+                    // update client stars
+                    total_owned_stars: player.total_owned_stars,
+                    star_production: player.star_production
+                }
+            },
+            player.token);
+    }
+
+    export function insufficient_funds_response(socket: Socket, player: Player, title: string, message: string){
         ServerSocket.send_data(socket, {
                 response_type: ServerSocket.response_types.INSUFFICIENT_FUNDS_RESPONSE,
                 data: {
@@ -242,6 +266,6 @@ export namespace ServerSocket {
                     message: message
                 }
             },
-            city.owner.token);
+            player.token);
     }
 }

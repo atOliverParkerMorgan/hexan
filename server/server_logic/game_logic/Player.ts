@@ -108,6 +108,10 @@ class Player{
     pay_stars(payment: number){
         this.total_owned_stars -= payment;
     }
+
+    increase_production(star_increment: number){
+        this.star_production += star_increment;
+    }
 }
 
 export default Player;

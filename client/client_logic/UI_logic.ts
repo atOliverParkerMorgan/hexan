@@ -35,18 +35,21 @@ document.addEventListener("keydown", (event)=>{
 export function show_node_info(node: Node){
     if(node.type === Node.HIDDEN) return
 
-    update_node_action_button(node);
+    update_node_action_button_and_information(node);
 
     (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "visible";
     (<HTMLInputElement >document.getElementById("node_info_title")).innerText = node.get_type_string();
 
 
+
     const div_unit_info_menu: any = (<HTMLInputElement >document.getElementById("node_info_menu"));
     div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hide_node_info;
-    // div_unit_info_menu.querySelector("#action_button").onclick = () => unit_action(unit);
+    div_unit_info_menu.querySelector("#harvest_button").onclick = () => ClientSocket.request_harvest(node.x, node.y);
 }
 
-function update_node_action_button(node: Node){
+function update_node_action_button_and_information(node: Node){
+    (<HTMLInputElement>document.getElementById("harvest_cost")).innerText = node.harvest_cost.toString();
+    (<HTMLInputElement>document.getElementById("gain_stars")).innerText = node.production_stars.toString();
     switch(node.type) {
         case Node.GRASS:
             (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/grass_plane.png";
@@ -163,13 +166,13 @@ function show_city_data(city: any){
        switch (unit_type) {
 
            case Unit.MELEE:
-                unit_item = set_unit_data(unit_item, "Warrior", "/images/warrior.png", Unit.MELEE, 40, 100, 10);
+                unit_item = set_unit_data(unit_item, "Warrior", "/images/warrior.png", Unit.MELEE, 40, 100, 10, 4);
                 break;
            case Unit.RANGE:
-                unit_item = set_unit_data(unit_item, "Slinger", "/images/slinger.png", Unit.RANGE, 20, 80, 10);
+                unit_item = set_unit_data(unit_item, "Slinger", "/images/slinger.png", Unit.RANGE, 20, 80, 10, 6);
                 break;
             case Unit.SETTLER:
-                unit_item = set_unit_data(unit_item, "Settler", "/images/settler.png", Unit.SETTLER, 0, 20, 10);
+                unit_item = set_unit_data(unit_item, "Settler", "/images/settler.png", Unit.SETTLER, 0, 20, 10, 20);
                 break;
        }
 
@@ -178,14 +181,15 @@ function show_city_data(city: any){
    }
 }
 
-function set_unit_data(unit_type: any, name: string, src: string, type: string, damage: number, health: number, movement: number){
+function set_unit_data(unit_type: any, unit_name: string, src: string, type: string, damage: number, health: number, movement: number, cost: number){
     unit_type.querySelector("#image").src = src
     unit_type.querySelector("#produce").src = "/images/production.png"
     unit_type.querySelector("#produce").onclick = function () {
-        request_production(name);
+        ClientSocket.request_production(unit_name);
     };
-    unit_type.querySelector("#name").innerText = name;
+    unit_type.querySelector("#name").innerText = unit_name;
     unit_type.querySelector("#type").innerText = type;
+    unit_type.querySelector("#cost").innerText = cost;
     unit_type.querySelector("#damage").innerText = damage;
     unit_type.querySelector("#health").innerText = health;
     unit_type.querySelector("#movement").innerText = movement;
@@ -193,21 +197,6 @@ function set_unit_data(unit_type: any, name: string, src: string, type: string, 
     return unit_type;
 }
 
-export function show_unit_info_bottom_menu(units: any){
-    show_city_data(units);
-    (<HTMLInputElement>document.getElementById("bottom_unit_menu")).style.visibility = "visible";
-}
-export function hide_unit_info_bottom_menu() {
-    (<HTMLInputElement>document.getElementById("bottom_unit_menu")).style.visibility = "hidden";
-}
-function show_unit_data(units: any){
-
-}
-
-
-function request_production(unit_name: string){
-    ClientSocket.request_production(unit_name)
-}
 
 export function update_star_info(total_owned_stars: number, star_production?: number){
     (<HTMLInputElement>document.getElementById("star_info")).style.visibility = "visible";

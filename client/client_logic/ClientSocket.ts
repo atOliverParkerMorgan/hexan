@@ -12,7 +12,7 @@ import {show_city_menu, show_modal} from "./UI_logic.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; CANNOT_SETTLE: string; STARS_DATA_RESPONSE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string, INSUFFICIENT_FUNDS_RESPONSE: string } = {
+    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; HARVEST_NODE_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; CANNOT_SETTLE: string; STARS_DATA_RESPONSE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string, INSUFFICIENT_FUNDS_RESPONSE: string } = {
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -29,13 +29,16 @@ export namespace ClientSocket {
 
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
 
+        HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
+
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         INSUFFICIENT_FUNDS_RESPONSE: "INSUFFICIENT_FUNDS_RESPONSE"
 
     };
     export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
-                            readonly GET_MENU_INFO: string, GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly MOVE_UNITS: string,
-                            readonly SETTLE: string,readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string } = {
+                            readonly GET_MENU_INFO: string, GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly HARVEST_NODE: string,
+                            readonly MOVE_UNITS: string, readonly SETTLE: string,readonly FIND_1v1_OPPONENT: string,
+                            readonly FIND_2v2_OPPONENTS: string } = {
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
@@ -44,6 +47,7 @@ export namespace ClientSocket {
         GET_STARS_DATA: "GET_STARS_DATA",
 
         PRODUCE_UNIT: "PRODUCE_UNIT",
+        HARVEST_NODE: "HARVEST_NODE",
         MOVE_UNITS: "MOVE_UNITS",
         SETTLE: "SETTLE",
         // match making
@@ -117,7 +121,7 @@ export namespace ClientSocket {
                             y = node.y;
                         }
                         // init node => add nodes to PIXI stage
-                        row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city, node.sprite_name, node.node_stars));
+                        row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city, node.sprite_name, node.harvest_cost, node.production_stars, node.is_harvested));
                     }
                     Node.all_nodes.push(row);
 
@@ -224,6 +228,11 @@ export namespace ClientSocket {
                     console.log("here")
                     show_modal(response_data.title, response_data.message, "w3-red");
                     break;
+
+                case ClientSocket.response_types.HARVEST_NODE_RESPONSE:
+                    setup_star_production(response_data);
+                    // update node to show that it is harvested
+                    break;
             }
         });
     }
@@ -260,6 +269,18 @@ export namespace ClientSocket {
                 id: unit.id,
                 player_token: localStorage.player_token,
                 game_token: localStorage.game_token,
+            }
+        })
+    }
+
+    export function request_harvest(node_x: number, node_y: number){
+        ClientSocket.send_data({
+            request_type: ClientSocket.request_types.HARVEST_NODE,
+            data: {
+                node_x: node_x,
+                node_y: node_y,
+                player_token: localStorage.player_token,
+                game_token: localStorage.game_token
             }
         })
     }
