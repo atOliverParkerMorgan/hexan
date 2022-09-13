@@ -17,7 +17,7 @@ export class Unit implements UnitData{
 
     // graphics colors
     private static readonly HEALTH_BAR_COLOR: number = 0x7CFC00;
-    private static readonly FRIENDLY_BACKGROUND_COLOR: number = 0xFFFFFF ;
+    private static readonly FRIENDLY_BACKGROUND_COLOR: number = 0xFF7800 ;
     private static readonly ENEMY_BACKGROUND_COLOR: number = 0xF53E3E;
 
     x: number;

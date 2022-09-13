@@ -1,6 +1,6 @@
 // format of unit_data received from ClientSocket
 
-export interface UnitData{
+export interface UnitInterface {
     x: number;
     y: number;
 

@@ -1,10 +1,11 @@
-import Player from "./Player";
+import Player from "../Player";
 import {Socket} from "socket.io";
-import {ServerSocket} from "../ServerSocket";
-import Map from "./Map/Map";
-import {Node} from "./Map/Node";
-import {Unit} from "./Units/Unit";
-import {Utils} from "../../Utils";
+import {ServerSocket} from "../../ServerSocket";
+import Map from "../Map/Map";
+import {Node} from "../Map/Node";
+import {Unit} from "../Units/Unit";
+import {Utils} from "../../../Utils";
+import {CityInterface} from "./CityInterface";
 
 class City{
     private static city_names = [
@@ -71,6 +72,19 @@ class City{
 
     get_y_in_pixels(): number{
         return  (this.y * 1.5 * Node.HEX_SIDE_SIZE) - Map.WORLD_HEIGHT / 2;
+    }
+
+    get_data(player_token: string): CityInterface{
+        return {
+            x: this.x,
+            y: this.y,
+            cords_in_pixels_x: this.cords_in_pixels_x,
+            cords_in_pixels_y: this.cords_in_pixels_y,
+            name: this.name,
+            stars_per_a_minute: this.stars_per_a_minute,
+            population: this.population,
+            is_friendly: this.owner.token === player_token
+        }
     }
 
 }

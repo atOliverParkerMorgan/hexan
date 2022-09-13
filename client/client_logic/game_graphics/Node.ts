@@ -9,6 +9,7 @@ import {
 } from "../UI_logic.js";
 import {ClientSocket} from "../ClientSocket.js";
 import {Unit} from "./Unit/Unit.js";
+import {CityInterface} from "./City/CityInterface.js";
 
 
 export class Node{
@@ -19,7 +20,7 @@ export class Node{
     public static readonly BEACH: number = 0xFFFF00;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
     public static readonly HIDDEN: number = 0xE0D257;
-    public static readonly CITY: number = 0xF53E3E;
+    // if type is null => the node is a city therefore it has not type
 
     public static readonly LEFT: number = 0;
     public static readonly RIGHT: number = 1;
@@ -51,7 +52,7 @@ export class Node{
     x: number;
     y: number;
     id: number;
-    type: number;
+    type: number | null;
     opacity: number;
     is_hidden: boolean;
     sprite: any | null;
@@ -77,7 +78,10 @@ export class Node{
         this.x = x;
         this.y = y;
         this.id = id;
+
+        // null if node is city
         this.type = type;
+
         this.opacity = 1;
         this.is_hidden = this.type === Node.HIDDEN;
 
@@ -89,8 +93,9 @@ export class Node{
         this.production_stars = production_stars;
         this.is_harvested = is_harvested;
 
-        // -1 if this node doesn't have a city
+        // null if this node doesn't have a city
         this.city = city;
+
         this.unit = null;
 
         this.line_borders = [];
@@ -140,7 +145,9 @@ export class Node{
         // draw hex
         this.hex = new Graphics();
 
-        if(this.city != null) this.hex.beginFill(Node.CITY, this.opacity);
+        if(this.city != null){
+            this.hex.beginFill(this.city.get_node_color(), this.opacity);
+        }
         else if(this.is_hidden) this.hex.beginFill(Node.HIDDEN, this.opacity);
         else this.hex.beginFill(this.type, this.opacity);
 
@@ -318,12 +325,19 @@ export class Node{
         }
     }
 
-    set_type(type: number, city: any, sprite_name: string){
+    set_node_to_city(city: CityInterface, sprite_name: any){
+        this.city = city;
+        this.is_hidden = this.type === Node.HIDDEN;
+        this.sprite_name = sprite_name;
+        this.update();
+        this.show_sprite();
+    }
+
+    set_type(type: number, sprite_name: string){
         this.type = type;
         this.is_hidden = this.type === Node.HIDDEN;
         this.sprite_name = sprite_name;
         this.update();
-        this.show_city(city);
         this.show_sprite();
     }
 

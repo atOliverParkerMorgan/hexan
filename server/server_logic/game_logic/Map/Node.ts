@@ -1,7 +1,7 @@
-import City from "../City";
+import City from "../City/City";
 import Map from "./Map";
 import Player from "../Player";
-import {NodeData} from "./NodeData";
+import {NodeInterface} from "./NodeInterface";
 import {ServerSocket} from "../../ServerSocket";
 import {Socket} from "socket.io-client";
 
@@ -23,7 +23,7 @@ export class Node{
     neighbors: (Node | undefined)[];
     x: number;
     y: number;
-    type: number;
+    type: number | null;
     borders: any;
 
     // stars that this node can produce per a minute
@@ -254,16 +254,16 @@ export class Node{
     }
 
     // simplify node for socket.emit()
-    get_data(player_token: string): NodeData{
+    get_data(player_token: string): NodeInterface{
         let type = this.type;
-        let city = this.city;
+        let city_data = this.city != null ? this.city.get_data(player_token): null;
         let sprite_name = this.sprite_name;
 
         // hide the hidden node and cites
         if(!this.is_shown.includes(player_token)){
           // type = Node.HIDDEN;
            sprite_name = "";
-           city = null;
+           city_data = null;
         }
 
        return {
@@ -271,7 +271,7 @@ export class Node{
            y: this.y,
            type: type,
            borders: this.borders,
-           city: city,
+           city_data: city_data,
            sprite_name: sprite_name,
 
            harvest_cost: this.harvest_cost,

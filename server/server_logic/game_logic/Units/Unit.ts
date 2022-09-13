@@ -3,15 +3,15 @@ import {Node} from "../Map/Node";
 import Player from "../Player";
 import {Socket} from "socket.io";
 import {ServerSocket} from "../../ServerSocket";
-import { UnitData } from "./UnitData";
+import { UnitInterface } from "./UnitInterface";
 import {UnitInitData} from "./UnitInitData";
 import Melee from "./Melee";
 import Range from "./Range";
 import Cavalry from "./Cavalry";
 import Settler from "./Settler";
-import {NodeData} from "../Map/NodeData";
+import {NodeInterface} from "../Map/NodeInterface";
 
-export class Unit implements UnitData{
+export class Unit implements UnitInterface{
 
     // types of units
     public static readonly CAVALRY: string = "Cavalry"
@@ -86,7 +86,7 @@ export class Unit implements UnitData{
             this.x = current_node.x;
             this.y = current_node.y;
 
-            let all_discovered_nodes: NodeData[] = [];
+            let all_discovered_nodes: NodeInterface[] = [];
 
             for(const node of current_node.neighbors){
                 if(node != null){
@@ -154,7 +154,7 @@ export class Unit implements UnitData{
         return this.y;
     }
 
-    get_data(): UnitData{
+    get_data(): UnitInterface{
         return{
             id: this.id,
             x: this.x,

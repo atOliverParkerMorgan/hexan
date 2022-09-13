@@ -1,8 +1,9 @@
 import Map from "./Map/Map";
-import City from "./City";
+import City from "./City/City";
 import Player from "./Player";
 import {Node} from "./Map/Node";
 import {Unit} from "./Units/Unit";
+import {CityInterface} from "./City/CityInterface";
 
 class Game{
     token: string;
@@ -43,11 +44,11 @@ class Game{
         }
     }
 
-    get_cities_that_player_owns(player: Player): City[]{
+    get_cities_that_player_owns(player: Player): CityInterface[]{
         let cities = []
         for(const city of this.all_cities){
             if(city.owner.token === player.token){
-                cities.push(city);
+                cities.push(city.get_data(player.token));
             }
         }
         return cities;
@@ -82,25 +83,14 @@ class Game{
         if(city_node == null){
              return
         }
-
         // create a new city for a player
         city_node.city = new City(player, city_node.x, city_node.y);
+        city_node.type = null;
         city_node.sprite_name = "village.png";
 
         this.all_cities.push(city_node.city);
         city_node.neighbors.forEach((node) => this.map.make_neighbour_nodes_shown(player, node));
     }
-
-    get_data(player: Player){
-
-        return {
-            map: this.map.format(player.token),
-            cities: this.get_cities_that_player_owns(player),
-            units: this.get_visible_units(player)
-        }
-    }
-
-
 
     get_visible_units(player: Player): Unit[]{
         const player_from_game_object: Player | undefined = this.get_player(player.token);
@@ -121,6 +111,18 @@ class Game{
         }
 
         return output;
+    }
+
+
+    get_data(player: Player){
+
+        return {
+            map: this.map.format(player.token),
+            // @TODO is necessary?
+            cities: this.get_cities_that_player_owns(player),
+
+            units: this.get_visible_units(player)
+        }
     }
 }
 

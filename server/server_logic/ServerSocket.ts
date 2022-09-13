@@ -2,7 +2,7 @@ import { createServer } from 'http';
 import { Server, Socket } from "socket.io";
 import Path from "./game_logic/Map/Path.js";
 import {MatchMaker} from "./MatchMaker";
-import City from "./game_logic/City";
+import City from "./game_logic/City/City";
 import {Unit} from "./game_logic/Units/Unit";
 import Player from "./game_logic/Player";
 import {Node} from "./game_logic/Map/Node";

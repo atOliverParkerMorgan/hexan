@@ -26,7 +26,7 @@ class Player{
         this.production_unit_types = [Unit.MELEE, Unit.RANGE, Unit.SETTLER];
         this.current_unit_id = 0;
 
-        this.total_owned_stars = 0;
+        this.total_owned_stars = 10;
         this.star_production = 5;
 
         this.star_production_has_started = false;
@@ -89,14 +89,12 @@ class Player{
 
     }
 
-    // The client and server run two separate yet synchronized timers to produce stars
-    // the timers are synchronized by local time => by using the object Date
+    // The client and server run two separate timers to produce stars
     // this eliminates otherwise necessary server-client communication (the server would have to constantly update the client stars)
     produce_stars(){
         setInterval(() => {
-            console.log(this.total_owned_stars);
-            this.total_owned_stars += this.star_production / 60;
-        },  1000);
+            this.total_owned_stars += this.star_production / 120;
+        },  500);
 
         this.star_production_has_started = true;
     }

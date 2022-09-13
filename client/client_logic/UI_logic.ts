@@ -197,7 +197,7 @@ function set_unit_data(unit_type: any, unit_name: string, src: string, type: str
     return unit_type;
 }
 
-
+// updates the total stars on screen
 export function update_star_info(total_owned_stars: number, star_production?: number){
     (<HTMLInputElement>document.getElementById("star_info")).style.visibility = "visible";
 
@@ -205,7 +205,16 @@ export function update_star_info(total_owned_stars: number, star_production?: nu
     if(star_production != null) {
         (<HTMLInputElement>document.getElementById("star_production")).innerText = star_production.toString();
     }
+}
 
+export function update_progress_bar(total_owned_stars: number){
+
+    let number_of_bars = (Number(total_owned_stars.toFixed(1)) - Math.floor(total_owned_stars));
+    let bars = "";
+    for (let i = 0; i < Math.round(number_of_bars * 10) ; i++) {
+        bars += "=";
+    }
+    (<HTMLInputElement>document.getElementById("star_loading_bar")).innerText = bars;
 }
 
 export function show_modal(title: string, message: string, w3_color_classname: string){

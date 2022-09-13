@@ -1,14 +1,9 @@
-import {
-    all_units,
-    reset_units,
-    all_enemy_visible_units,
-    setup_star_production,
-    set_total_owned_stars
-} from "./game_graphics/Player.js"
+import {Player} from "./game_graphics/Player.js"
 import {init_canvas, HEX_SIDE_SIZE,} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {show_city_menu, show_modal} from "./UI_logic.js";
+import {City} from "./game_graphics/City/City.js";
 
 // singleton
 export namespace ClientSocket {
@@ -85,22 +80,22 @@ export namespace ClientSocket {
                 case ClientSocket.response_types.UNITS_RESPONSE:
                     for(let unit of response_data.units){
                         unit = <UnitData> unit;
-                        reset_units()
+                        Player.reset_units()
 
                         let graphics_unit: Unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
-                        all_units.push(graphics_unit);
+                        Player.all_units.push(graphics_unit);
                         Node.all_nodes[unit.y][unit.x].unit = graphics_unit;
                     }
                     break;
 
                 case ClientSocket.response_types.UNIT_RESPONSE:
                     let graphics_unit: Unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
-                    all_units.push(graphics_unit);
+                    Player.all_units.push(graphics_unit);
                     Node.all_nodes[response_data.unit.y][response_data.unit.x].unit = graphics_unit;
 
                     let total_owned_stars = response_data.total_owned_stars;
                     if(total_owned_stars != null){
-                        set_total_owned_stars(total_owned_stars);
+                        Player.set_total_owned_stars(total_owned_stars);
                     }
 
                     break;
@@ -121,7 +116,9 @@ export namespace ClientSocket {
                             y = node.y;
                         }
                         // init node => add nodes to PIXI stage
-                        row.push(new Node(node.x, node.y, node.id, node.type, node.borders, node.city, node.sprite_name, node.harvest_cost, node.production_stars, node.is_harvested));
+                        let city = node.city_data != null ? new City(node.city_data): null;
+
+                        row.push(new Node(node.x, node.y, node.id, node.type, node.borders, city, node.sprite_name, node.harvest_cost, node.production_stars, node.is_harvested));
                     }
                     Node.all_nodes.push(row);
 
@@ -138,17 +135,21 @@ export namespace ClientSocket {
                 case ClientSocket.response_types.UNIT_MOVED_RESPONSE:
                     let found_unit = false;
 
-                    if(all_units == null){
+                    if(Player.all_units == null){
                         return;
                     }
 
                     // update nodes
                     response_data.nodes.map( (node: any) => {
-                        Node.all_nodes[node.y][node.x].set_type(node.type, node.city, node.sprite_name);
+                        if(node.city_data == null) {
+                            Node.all_nodes[node.y][node.x].set_type(node.type, node.sprite_name);
+                        }else {
+                            Node.all_nodes[node.y][node.x].set_node_to_city(node.city_data, node.sprite_name);
+                        }
                     });
 
                     // find the unit in question
-                    all_units.map((unit: any)=>{
+                    Player.all_units.map((unit: any)=>{
                         if(unit.id === response_data.unit.id){
                             found_unit = true;
                             unit.move_to(response_data.unit.x, response_data.unit.y);
@@ -167,7 +168,7 @@ export namespace ClientSocket {
                 case ClientSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE:
                     let found_enemy_unit = false;
 
-                    all_enemy_visible_units.map((enemy_visible_unit: Unit)=>{
+                    Player.all_enemy_visible_units.map((enemy_visible_unit: Unit)=>{
                         if(enemy_visible_unit.id === response_data.unit.id){
                             found_enemy_unit = true;
                             enemy_visible_unit.move_to(response_data.unit.x, response_data.unit.y);
@@ -190,7 +191,7 @@ export namespace ClientSocket {
                             return;
                         }
 
-                        all_enemy_visible_units.push(graphics_enemy_unit);
+                        Player.all_enemy_visible_units.push(graphics_enemy_unit);
                         Node.all_nodes[response_data.unit.y][response_data.unit.x].unit = graphics_enemy_unit;
                     }
 
@@ -199,19 +200,19 @@ export namespace ClientSocket {
 
                 case ClientSocket.response_types.ENEMY_UNIT_DISAPPEARED:
                     let index = 0;
-                    for (; index < all_enemy_visible_units.length; index++) {
-                        if(all_enemy_visible_units[index].id === response_data.unit.id) break
+                    for (; index < Player.all_enemy_visible_units.length; index++) {
+                        if(Player.all_enemy_visible_units[index].id === response_data.unit.id) break
                     }
-                    const enemy_unit = all_enemy_visible_units[index];
+                    const enemy_unit = Player.all_enemy_visible_units[index];
                     // remove unit
                     enemy_unit.remove_sprite();
                     Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
-                    all_enemy_visible_units.splice(index);
+                    Player.all_enemy_visible_units.splice(index);
 
                     break;
 
                 case ClientSocket.response_types.NEW_CITY:
-                    Node.all_nodes[response_data.city_y][response_data.city_x].set_type(Node.CITY, response_data.city_node.city, response_data.city_node.sprite_name);
+                    Node.all_nodes[response_data.city_y][response_data.city_x].set_type(response_data.city_node.city_data, response_data.city_node.sprite_name);
                     Node.all_nodes[response_data.city_y][response_data.city_x].remove_unit();
                     break;
 
@@ -221,7 +222,7 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.STARS_DATA_RESPONSE:
-                    setup_star_production(response_data);
+                    Player.setup_star_production(response_data);
                     break;
 
                 case ClientSocket.response_types.INSUFFICIENT_FUNDS_RESPONSE:
@@ -230,7 +231,7 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.HARVEST_NODE_RESPONSE:
-                    setup_star_production(response_data);
+                    Player.setup_star_production(response_data);
                     // update node to show that it is harvested
                     break;
             }

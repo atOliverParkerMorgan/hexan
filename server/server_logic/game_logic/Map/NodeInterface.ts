@@ -1,11 +1,11 @@
-import City from "../City";
+import {CityInterface} from "../City/CityInterface";
 
-export type NodeData = {
+export type NodeInterface = {
     x: number;
     y: number;
-    type: number,
+    type: number | null,
     borders: any,
-    city: City | null;
+    city_data: CityInterface | null;
     sprite_name: string;
     harvest_cost: number
     production_stars: number;
