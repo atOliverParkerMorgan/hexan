@@ -254,36 +254,37 @@ export class Node{
     on_click(){
         let is_moving_unit = false;
 
-        // unit movement
+        // unit movement on second click (after selecting unit)
         if(Node.selected_node != null) {
             if(Node.selected_node !== this && Node.selected_node.unit != null) {
-                is_moving_unit = true;
+                if(Node.selected_node.unit.is_friendly) {
+                    is_moving_unit = true;
 
-                let to_node: Node = <Node>Node.last_hovered_node;
-                let node_from: Node = <Node>Node.selected_node;
+                    let to_node: Node = <Node>Node.last_hovered_node;
+                    let node_from: Node = <Node>Node.selected_node;
 
-                // get cords of path to send to typescript application
-                let path_node_cords = []
-                for (const node of <Node[]>Node.path) {
-                    path_node_cords.push([node.x, node.y]);
-                }
-
-                // show unit info
-                show_unit_info(Node.selected_node.unit);
-
-                // request movement from server
-                ClientSocket.send_data({
-                    request_type: ClientSocket.request_types.MOVE_UNITS,
-                    data: {
-                        game_token: localStorage.game_token,
-                        player_token: localStorage.player_token,
-                        unit_id: Node.selected_node.get_unit_id(),
-                        path: path_node_cords
+                    // get cords of path to send to typescript application
+                    let path_node_cords = []
+                    for (const node of <Node[]>Node.path) {
+                        path_node_cords.push([node.x, node.y]);
                     }
-                })
 
-                to_node.update();
-                node_from.update();
+                    show_unit_info(Node.selected_node.unit);
+
+                    // request movement from server
+                    ClientSocket.send_data({
+                        request_type: ClientSocket.request_types.MOVE_UNITS,
+                        data: {
+                            game_token: localStorage.game_token,
+                            player_token: localStorage.player_token,
+                            unit_id: Node.selected_node.get_unit_id(),
+                            path: path_node_cords
+                        }
+                    })
+
+                    to_node.update();
+                    node_from.update();
+                }
             }
         }
 
@@ -314,7 +315,9 @@ export class Node{
 
         // unit info
         if(this.unit != null && !Node.already_selected){
-            show_unit_info(this.unit);
+            if(this.unit.is_friendly) {
+                show_unit_info(this.unit);
+            }
         }else if(!is_moving_unit){
             hide_unit_info();
         }
