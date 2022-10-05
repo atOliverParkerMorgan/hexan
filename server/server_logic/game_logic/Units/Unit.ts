@@ -102,26 +102,10 @@ export class Unit implements UnitInterface{
                 if(game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
 
                     if (in_game_player.token === player.token) {
-                        ServerSocket.send_data(socket,
-                            {
-                                response_type: ServerSocket.response_types.UNIT_MOVED_RESPONSE,
-                                data: {
-                                    unit: this.get_data(),
-                                    nodes: all_discovered_nodes,
-                                }
-                            }, in_game_player.token)
+                        ServerSocket.send_unit_movement_to_owner(socket, this, all_discovered_nodes, in_game_player);
                     } else {
-                        ServerSocket.send_data_to_all(socket,
-                            {
-                                response_type: ServerSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE,
-                                data: {
-                                    unit: this.get_data(),
-                                }
-                            }, in_game_player.token)
+                        ServerSocket.send_unit_movement_to_all(socket, this, in_game_player);
                     }
-
-                   // console.log(`in_game_player: ${in_game_player.token}`);
-                   // console.log(`player: ${player.token}`);
 
                 }else {
                     if (in_game_player.token !== player.token) {

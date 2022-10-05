@@ -2,8 +2,8 @@ import {CityInterface} from "./CityInterface.js";
 
 export class City{
 
-    public static readonly FRIENDLY_CITY_COLOR: number = 0xF53E3E;
-    public static readonly ENEMY_CITY_COLOR: number = 0xF53E3E;
+    public static readonly FRIENDLY_CITY_COLOR: number = 0xE08B3E;
+    public static readonly ENEMY_CITY_COLOR: number = 0x8F00FF ;
 
     public readonly x: number;
     public readonly y: number;

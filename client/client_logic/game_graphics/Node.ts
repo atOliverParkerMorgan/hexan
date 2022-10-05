@@ -10,6 +10,7 @@ import {
 import {ClientSocket} from "../ClientSocket.js";
 import {Unit} from "./Unit/Unit.js";
 import {CityInterface} from "./City/CityInterface.js";
+import {City} from "./City/City.js";
 
 
 export class Node{
@@ -325,8 +326,9 @@ export class Node{
         }
     }
 
-    set_node_to_city(city: CityInterface, sprite_name: any){
-        this.city = city;
+
+    set_city(city_data: CityInterface, sprite_name: any){
+        this.city = new City(city_data);
         this.is_hidden = this.type === Node.HIDDEN;
         this.sprite_name = sprite_name;
         this.update();

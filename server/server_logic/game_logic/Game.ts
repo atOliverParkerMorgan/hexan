@@ -120,7 +120,7 @@ class Game{
             map: this.map.format(player.token),
             // @TODO is necessary?
             cities: this.get_cities_that_player_owns(player),
-
+            player: player.get_data(),
             units: this.get_visible_units(player)
         }
     }

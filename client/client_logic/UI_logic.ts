@@ -2,6 +2,7 @@ import {ClientSocket} from "./ClientSocket.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {viewport} from "./game_graphics/Pixi.js";
+import {Player} from "./game_graphics/Player.js";
 
 let is_city_menu_visible = false;
 let is_mouse_on_city_menu = false;
@@ -39,8 +40,6 @@ export function show_node_info(node: Node){
 
     (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "visible";
     (<HTMLInputElement >document.getElementById("node_info_title")).innerText = node.get_type_string();
-
-
 
     const div_unit_info_menu: any = (<HTMLInputElement >document.getElementById("node_info_menu"));
     div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hide_node_info;
@@ -154,11 +153,11 @@ function show_city_data(city: any){
    ul_unit_menu.id = "unit_menu";
    ul_unit_menu.className = "w3-ul w3-card-4";
 
-   if(city.owner.production_unit_types.lenght === 0){
+   if(Player.production_unit_types.length === 0){
        div_side_menu.querySelector("#unit_title").visibility = "hidden";
    }
    // unit item
-   for(const unit_type of city.owner.production_unit_types){
+   for(const unit_type of Player.production_unit_types){
        let unit_item  = document.createElement("li");
        unit_item.className = "w3-bar";
        unit_item.innerHTML = loadFile("/views/unit_item.html")

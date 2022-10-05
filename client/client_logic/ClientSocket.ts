@@ -121,6 +121,7 @@ export namespace ClientSocket {
                         row.push(new Node(node.x, node.y, node.id, node.type, node.borders, city, node.sprite_name, node.harvest_cost, node.production_stars, node.is_harvested));
                     }
                     Node.all_nodes.push(row);
+                    Player.production_unit_types = response_data.player.production_unit_types;
 
                     // get star data after game setup is initialized
                     ClientSocket.get_data(ClientSocket.request_types.GET_STARS_DATA, <string>localStorage.getItem("game_token"), player_token)
@@ -128,7 +129,7 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.MENU_INFO_RESPONSE:
-                    show_city_menu(response_data.city);
+                    show_city_menu(response_data.city_data);
                     break;
 
                 // deal with sever UNIT_MOVED response
@@ -141,10 +142,10 @@ export namespace ClientSocket {
 
                     // update nodes
                     response_data.nodes.map( (node: any) => {
-                        if(node.city_data == null) {
+                        if(node.type != null) {
                             Node.all_nodes[node.y][node.x].set_type(node.type, node.sprite_name);
-                        }else {
-                            Node.all_nodes[node.y][node.x].set_node_to_city(node.city_data, node.sprite_name);
+                        }else if(node.city_data != null){
+                            Node.all_nodes[node.y][node.x].set_city(node.city_data, node.sprite_name);
                         }
                     });
 

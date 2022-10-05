@@ -110,6 +110,13 @@ class Player{
     increase_production(star_increment: number){
         this.star_production += star_increment;
     }
+
+    get_data(){
+        return {
+            // units that this player can produce
+            production_unit_types: this.production_unit_types,
+        }
+    }
 }
 
 export default Player;
