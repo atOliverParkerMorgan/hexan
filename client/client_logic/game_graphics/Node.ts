@@ -38,11 +38,13 @@ export class Node{
     private static selected_line: any;
     private static selected_color: number = 0xFFAC1C;
     private static selected_opacity: number = 1;
-    private static  selected_thickness: number = 4;
+    private static selected_thickness: number = 4;
 
     private static movement_hint_lines: any[] = [];
     private static movement_hint_color: number = 0xFFAC1C;
     private static movement_hint_thickness: number = 3;
+
+    private static attack_hint_color = 0xF53E3E;
 
     private static bottom_menu_shown: boolean = false;
     private static already_selected: boolean = false;
@@ -433,43 +435,46 @@ export class Node{
                 if (Node.selected_node != null) {
                     if (Node.selected_node.unit != null) {
 
-                        if (Node.movement_hint_lines.length > 0) {
-                            for (const movement_hint_line of Node.movement_hint_lines) {
-                                movement_hint_line.clear();
-                            }
-                            Node.movement_hint_lines = [];
-                        }
 
-                        Node.path = a_star(Node.selected_node, Node.last_hovered_node);
-                        if(Node.path == null) return;
-
-                        let last_node = Node.selected_node;
-
-                        for (let i = 1; i < Node.path.length; i++) {
-                            let movement_hint_line = new Graphics();
-                            viewport.addChild(movement_hint_line);
-
-                            const last_x = last_node.get_x_in_pixels();
-                            const last_y = last_node.get_y_in_pixels();
-                            const current_x = Node.path[i].get_x_in_pixels();
-                            const current_y = Node.path[i].get_y_in_pixels();
-
-                            if (i === 1) {
-                                movement_hint_line.position.set((last_x + current_x) / 2, (last_y + current_y) / 2);
-                                movement_hint_line.lineStyle(Node.movement_hint_thickness, Node.movement_hint_color)
-                                    .moveTo(0, 0)
-                                    .lineTo((current_x - last_x) / 2, (current_y - last_y) / 2);
-                            } else {
-                                movement_hint_line.position.set(last_x, last_y);
-                                movement_hint_line.lineStyle(Node.movement_hint_thickness, Node.movement_hint_color)
-                                    .moveTo(0, 0)
-                                    .lineTo(current_x - last_x, current_y - last_y);
+                            if (Node.movement_hint_lines.length > 0) {
+                                for (const movement_hint_line of Node.movement_hint_lines) {
+                                    movement_hint_line.clear();
+                                }
+                                Node.movement_hint_lines = [];
                             }
 
-                            Node.movement_hint_lines.push(movement_hint_line);
+                            Node.path = a_star(Node.selected_node, Node.last_hovered_node);
+                            if (Node.path == null) return;
+
+                            let last_node = Node.selected_node;
+
+                            for (let i = 1; i < Node.path.length; i++) {
+                                let movement_hint_line = new Graphics();
+                                viewport.addChild(movement_hint_line);
+
+                                const last_x = last_node.get_x_in_pixels();
+                                const last_y = last_node.get_y_in_pixels();
+                                const current_x = Node.path[i].get_x_in_pixels();
+                                const current_y = Node.path[i].get_y_in_pixels();
+
+                                let path_color = Node.selected_node.unit.is_friendly ? Node.movement_hint_color: Node.attack_hint_color;
+                                if (i === 1) {
+                                    movement_hint_line.position.set((last_x + current_x) / 2, (last_y + current_y) / 2);
+                                    movement_hint_line.lineStyle(Node.movement_hint_thickness, path_color)
+                                        .moveTo(0, 0)
+                                        .lineTo((current_x - last_x) / 2, (current_y - last_y) / 2);
+                                } else {
+                                    movement_hint_line.position.set(last_x, last_y);
+                                    movement_hint_line.lineStyle(Node.movement_hint_thickness, path_color)
+                                        .moveTo(0, 0)
+                                        .lineTo(current_x - last_x, current_y - last_y);
+                                }
+
+                                Node.movement_hint_lines.push(movement_hint_line);
 
 
-                            last_node = Node.path[i];
+                                last_node = Node.path[i];
+
                         }
                     }
                 }
