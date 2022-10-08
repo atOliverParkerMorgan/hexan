@@ -83,6 +83,32 @@ export class Unit implements UnitInterface{
         setTimeout(() => {
             const current_node: Node = path[0];
 
+            // check if movement is valid
+            let is_invalid = false
+            game.all_players.map((in_game_player: Player)=>{
+                if(in_game_player.token !== player.token){
+                    // check if path doesn't cross an enemy city
+                    if(current_node.city != null) {
+                        if (current_node.city.owner.token !== player.token) {
+                            is_invalid = true
+                            return
+                        }
+                    }
+
+                    in_game_player.units.map((unit)=>{
+                        if(unit.x === current_node.x && unit.y === current_node.y){
+                            is_invalid = true
+                            return
+                        }
+                    })
+                }
+            })
+            if(is_invalid){
+                ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
+                return
+            }
+
+            // movement
             this.x = current_node.x;
             this.y = current_node.y;
 

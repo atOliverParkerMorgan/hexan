@@ -18,6 +18,14 @@ export namespace Utils{
         return createHash('sha256').update(nick_name + String(Math.random() + performance.now())).digest('hex');
     }
 
+    export function get_distance(x1: number, y1: number, x2: number, y2: number): number{
+        return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+    }
+
+    export function get_range_value(range: number): number{
+        return Math.sqrt(range ** 2 + range ** 2);
+    }
+
     // range: <min; max>
     // @ TODO add unit functions
     export function random_int(min: number, max: number): number{

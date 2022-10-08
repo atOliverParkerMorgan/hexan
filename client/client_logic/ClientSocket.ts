@@ -7,7 +7,12 @@ import {City} from "./game_graphics/City/City.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string; MENU_INFO_RESPONSE: string; HARVEST_NODE_RESPONSE: string; ENEMY_UNIT_MOVED_RESPONSE: string; NEW_CITY: string; CANNOT_SETTLE: string; STARS_DATA_RESPONSE: string; INVALID_MOVE_RESPONSE: string; ENEMY_UNIT_DISAPPEARED: string, INSUFFICIENT_FUNDS_RESPONSE: string } = {
+    export const response_types: { ALL_RESPONSE: string, MAP_RESPONSE: string, UNIT_MOVED_RESPONSE: string,
+            UNITS_RESPONSE: string, UNIT_RESPONSE: string, MENU_INFO_RESPONSE: string,
+            HARVEST_NODE_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string, NEW_CITY: string, CANNOT_SETTLE: string,
+            STARS_DATA_RESPONSE: string, INVALID_MOVE_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
+        ATTACK_UNIT_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string } = {
+
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -16,6 +21,8 @@ export namespace ClientSocket {
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
+
+        ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
 
         NEW_CITY: "NEW_CITY",
         CANNOT_SETTLE: "CANNOT_SETTLE",
@@ -32,7 +39,7 @@ export namespace ClientSocket {
     };
     export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
                             readonly GET_MENU_INFO: string, GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly HARVEST_NODE: string,
-                            readonly MOVE_UNITS: string, readonly SETTLE: string,readonly FIND_1v1_OPPONENT: string,
+                            readonly MOVE_UNITS: string, readonly SETTLE: string, ATTACK_UNIT: string, readonly FIND_1v1_OPPONENT: string,
                             readonly FIND_2v2_OPPONENTS: string } = {
         // game play
         GET_MAP: "GET_MAP",
@@ -45,6 +52,9 @@ export namespace ClientSocket {
         HARVEST_NODE: "HARVEST_NODE",
         MOVE_UNITS: "MOVE_UNITS",
         SETTLE: "SETTLE",
+
+        ATTACK_UNIT: "ATTACK_UNIT",
+
         // match making
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
@@ -173,6 +183,7 @@ export namespace ClientSocket {
                         if(enemy_visible_unit.id === response_data.unit.id){
                             found_enemy_unit = true;
                             enemy_visible_unit.move_to(response_data.unit.x, response_data.unit.y);
+                            return
                         }
                     })
 
@@ -205,6 +216,7 @@ export namespace ClientSocket {
                         if(Player.all_enemy_visible_units[index].id === response_data.unit.id) break
                     }
                     const enemy_unit = Player.all_enemy_visible_units[index];
+                    if(enemy_unit == null) break
                     // remove unit
                     enemy_unit.remove_sprite();
                     Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
@@ -216,6 +228,32 @@ export namespace ClientSocket {
                     Node.all_nodes[response_data.city_y][response_data.city_x].set_type(response_data.city_node.city_data, response_data.city_node.sprite_name);
                     Node.all_nodes[response_data.city_y][response_data.city_x].remove_unit();
                     break;
+
+                case ClientSocket.response_types.ATTACK_UNIT_RESPONSE:
+
+                    // updates unit graphics after attack
+
+                    if(response_data.is_unit_1_dead) {
+                        if(Player.all_units.includes(response_data.unit_1)){
+                            Player.all_units.splice(Player.all_units.indexOf(response_data.unit_1))
+                        }else if(Player.all_enemy_visible_units.includes(response_data.unit_1)) {
+                            Player.all_units.splice(Player.all_units.indexOf(response_data.unit_1))
+                        }
+                    }else{
+                        Player.update_units_after_attack(response_data.unit_1)
+                    }
+
+                    if(response_data.is_unit_2_dead) {
+                        if(Player.all_units.includes(response_data.unit_2)){
+                            Player.all_units.splice(Player.all_units.indexOf(response_data.unit_2))
+                        }else if(Player.all_enemy_visible_units.includes(response_data.unit_2)) {
+                            Player.all_units.splice(Player.all_units.indexOf(response_data.unit_2))
+                        }
+                    }else{
+                        Player.update_units_after_attack(response_data.unit_2)
+                    }
+
+                    break
 
                 case ClientSocket.response_types.CANNOT_SETTLE:
                     // TODO custom alarm

@@ -89,6 +89,24 @@ class Player{
 
     }
 
+    attack_unit(unit_friendly: Unit, unit_enemy: Unit, enemy_player: Player): boolean[]{
+
+        unit_friendly.health -= unit_enemy.attack
+        unit_enemy.health -= unit_friendly.attack
+
+        const friendly_died = unit_friendly.health <= 0
+        const enemy_died = unit_friendly.health <= 0
+
+        if(friendly_died){
+            this.units.splice(this.units.indexOf(unit_friendly))
+        }
+        if(enemy_died){
+            enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy))
+        }
+
+        return [friendly_died, enemy_died]
+    }
+
     // The client and server run two separate timers to produce stars
     // this eliminates otherwise necessary server-client communication (the server would have to constantly update the client stars)
     produce_stars(){

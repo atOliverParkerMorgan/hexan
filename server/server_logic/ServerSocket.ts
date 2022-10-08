@@ -9,6 +9,7 @@ import {Node} from "./game_logic/Map/Node";
 import {NodeInterface} from "./game_logic/Map/NodeInterface";
 import {epilogue} from "concurrently/dist/bin/epilogue";
 import exp from "constants";
+import {Utils} from "../Utils";
 
 const httpServer = createServer();
 const io = new Server(httpServer);
@@ -20,8 +21,8 @@ export namespace ServerSocket {
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
-        NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
-        MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, INSUFFICIENT_FUNDS_RESPONSE: string} =  {
+        NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ATTACK_UNIT_RESPONSE: string,
+        MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, INVALID_ATTACK_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string} =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -30,6 +31,8 @@ export namespace ServerSocket {
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
+
+        ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
 
         NEW_CITY: "NEW_CITY",
         CANNOT_SETTLE: "CANNOT_SETTLE",
@@ -40,6 +43,7 @@ export namespace ServerSocket {
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
         HARVEST_NODE: "HARVEST_NODE",
 
+        INVALID_ATTACK_RESPONSE: "INVALID_ATTACK_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         INSUFFICIENT_FUNDS_RESPONSE: "INSUFFICIENT_FUNDS_RESPONSE",
     };
@@ -47,7 +51,7 @@ export namespace ServerSocket {
                                           readonly GET_ALL: string, readonly GET_MENU_INFO: string,
                                           readonly GET_STARS_DATA: string, readonly PRODUCE_UNIT: string,
                                           readonly MOVE_UNITS: string, readonly HARVEST_NODE: string, readonly SETTLE: string,
-                                          readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string} = {
+                                          readonly ATTACK_UNIT: string, readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string} = {
 
         // game play
         GET_MAP: "GET_MAP",
@@ -60,6 +64,8 @@ export namespace ServerSocket {
         MOVE_UNITS: "MOVE_UNITS",
         HARVEST_NODE: "HARVEST_NODE",
         SETTLE: "SETTLE",
+
+        ATTACK_UNIT: "ATTACK_UNIT",
 
         // match making
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
@@ -202,6 +208,56 @@ export namespace ServerSocket {
 
                                     break;
 
+                                case ServerSocket.request_types.ATTACK_UNIT:
+                                    let friendly_unit = player.get_unit(request_data.unit_id);
+                                    let enemy_unit = player.get_unit(request_data.attacked_unit_id)
+
+                                    if(friendly_unit == null || enemy_unit == null){
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
+                                            data: {
+                                                message: "invalid unit id"
+                                            }
+                                        }, player.token);
+
+                                    }
+
+                                    // attack logic
+                                    else if(Utils.get_distance(friendly_unit.x, friendly_unit.y, enemy_unit.x, enemy_unit.y) <= Utils.get_range_value(friendly_unit.range)){
+                                            let enemy_player;
+                                            game.all_players.map((in_game_player: Player)=>{
+                                                if(in_game_player.units.includes(<Unit> enemy_unit)){
+                                                    enemy_player = in_game_player;
+                                                }
+                                            })
+
+                                            if(enemy_player == null){
+                                                return
+                                            }
+
+                                            const did_units_die = player.attack_unit(friendly_unit, enemy_unit, enemy_player);
+
+                                            ServerSocket.send_data_to_all(socket, {
+                                                response_type: ServerSocket.response_types.ATTACK_UNIT_RESPONSE,
+                                                data: {
+                                                    unit_1: friendly_unit,
+                                                    is_unit_1_dead: did_units_die[0],
+                                                    unit_2: enemy_unit,
+                                                    is_unit_2_dead: did_units_die[1]
+                                                }
+                                            }, player.token);
+
+                                    }else{
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
+                                            data: {
+                                                message: "invalid range"
+                                            }
+                                        }, player.token);
+                                    }
+
+                                    break;
+
                                 case ServerSocket.request_types.SETTLE:
                                     let city_node = game.map.get_node(request_data.x, request_data.y);
                                     let can_settle: boolean = game.can_settle(player, city_node, request_data.id)
@@ -230,6 +286,7 @@ export namespace ServerSocket {
                                 case ServerSocket.request_types.HARVEST_NODE:
                                     game.map.get_node(request_data.node_x, request_data.node_y)?.harvest(player, socket);
                                     break;
+
                             }
                         }
                     }
@@ -268,6 +325,17 @@ export namespace ServerSocket {
     export function insufficient_funds_response(socket: Socket, player: Player, title: string, message: string){
         ServerSocket.send_data(socket, {
                 response_type: ServerSocket.response_types.INSUFFICIENT_FUNDS_RESPONSE,
+                data: {
+                    title: title,
+                    message: message
+                }
+            },
+            player.token);
+    }
+
+    export function invalid_move_response(socket: Socket, player: Player, title: string, message: string){
+        ServerSocket.send_data(socket, {
+                response_type: ServerSocket.response_types.INVALID_MOVE_RESPONSE,
                 data: {
                     title: title,
                     message: message

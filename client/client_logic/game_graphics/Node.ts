@@ -273,6 +273,21 @@ export class Node{
 
                     show_unit_info(Node.selected_node.unit);
 
+                    // attack
+                    if(!Node.last_hovered_node?.unit?.is_friendly){
+
+
+                        ClientSocket.send_data({
+                            request_type: ClientSocket.request_types.ATTACK_UNIT,
+                            data: {
+                                game_token: localStorage.game_token,
+                                player_token: localStorage.player_token,
+                                unit_id: Node.selected_node.get_unit_id(),
+                                attacked_unit_id: Node.last_hovered_node?.get_unit_id(),
+                                path: path_node_cords
+                            }
+                        })
+                    }
                     // request movement from server
                     ClientSocket.send_data({
                         request_type: ClientSocket.request_types.MOVE_UNITS,
@@ -433,8 +448,7 @@ export class Node{
                 // sets new node (this node) to hovered
                 set_last_node_hovered(this);
                 if (Node.selected_node != null) {
-                    if (Node.selected_node.unit != null) {
-
+                    if (Node.selected_node.unit != null && Node.selected_node.unit.is_friendly) {
 
                             if (Node.movement_hint_lines.length > 0) {
                                 for (const movement_hint_line of Node.movement_hint_lines) {
@@ -457,7 +471,13 @@ export class Node{
                                 const current_x = Node.path[i].get_x_in_pixels();
                                 const current_y = Node.path[i].get_y_in_pixels();
 
-                                let path_color = Node.selected_node.unit.is_friendly ? Node.movement_hint_color: Node.attack_hint_color;
+                                let path_color;
+                                if(Node.last_hovered_node.unit != null){
+                                    path_color =  Node.last_hovered_node.unit.is_friendly ? Node.movement_hint_color: Node.attack_hint_color;
+                                }else{
+                                    path_color =  Node.movement_hint_color;
+                                }
+
                                 if (i === 1) {
                                     movement_hint_line.position.set((last_x + current_x) / 2, (last_y + current_y) / 2);
                                     movement_hint_line.lineStyle(Node.movement_hint_thickness, path_color)

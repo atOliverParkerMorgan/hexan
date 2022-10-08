@@ -29,6 +29,22 @@ export namespace Player {
         }, 50);
     }
 
+
+    export function update_units_after_attack(unit_data: UnitData){
+
+        all_units.map((unit)=>{
+            if(unit.id === unit_data.id){
+                unit.health = unit_data.health
+            }
+        })
+        all_units.map((enemy_unit)=>{
+            if(enemy_unit.id === unit_data.id){
+                enemy_unit.health = unit_data.health
+            }
+        })
+
+    }
+
     export function setup_star_production(data: any) {
         total_owned_stars = data.total_owned_stars;
         star_production = data.star_production;
