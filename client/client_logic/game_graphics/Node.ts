@@ -258,37 +258,26 @@ export class Node{
 
         // unit movement on second click (after selecting unit)
         if(Node.selected_node != null) {
-            if(Node.selected_node !== this && Node.selected_node.unit != null) {
-                if(Node.selected_node.unit.is_friendly) {
-                    is_moving_unit = true;
+            if (Node.selected_node !== this && Node.selected_node.unit != null && Node.selected_node.unit.is_friendly) {
+                console.log(Node.last_hovered_node?.unit)
+                // cannot move without hovering on above a node
+                if(Node.last_hovered_node == null) return
 
-                    let to_node: Node = <Node>Node.last_hovered_node;
-                    let node_from: Node = <Node>Node.selected_node;
+                is_moving_unit = true;
 
-                    // get cords of path to send to typescript application
-                    let path_node_cords = []
-                    for (const node of <Node[]>Node.path) {
-                        path_node_cords.push([node.x, node.y]);
-                    }
+                let to_node: Node = <Node>Node.last_hovered_node;
+                let node_from: Node = <Node>Node.selected_node;
 
-                    show_unit_info(Node.selected_node.unit);
+                // get cords of path to send to typescript application
+                let path_node_cords = []
+                for (const node of <Node[]>Node.path) {
+                    path_node_cords.push([node.x, node.y]);
+                }
+                show_unit_info(Node.selected_node.unit);
 
-                    // attack
-                    if(!Node.last_hovered_node?.unit?.is_friendly){
-
-
-                        ClientSocket.send_data({
-                            request_type: ClientSocket.request_types.ATTACK_UNIT,
-                            data: {
-                                game_token: localStorage.game_token,
-                                player_token: localStorage.player_token,
-                                unit_id: Node.selected_node.get_unit_id(),
-                                attacked_unit_id: Node.last_hovered_node?.get_unit_id(),
-                                path: path_node_cords
-                            }
-                        })
-                    }
-                    // request movement from server
+                // send movement request to server
+                if(Node.last_hovered_node.unit == null){
+                    console.log("movement")
                     ClientSocket.send_data({
                         request_type: ClientSocket.request_types.MOVE_UNITS,
                         data: {
@@ -298,10 +287,25 @@ export class Node{
                             path: path_node_cords
                         }
                     })
-
-                    to_node.update();
-                    node_from.update();
                 }
+
+                // send attack request to server
+                else if (!Node.last_hovered_node.unit.is_friendly) {
+                    console.log("UI attacked unit")
+                    ClientSocket.send_data({
+                        request_type: ClientSocket.request_types.ATTACK_UNIT,
+                        data: {
+                            game_token: localStorage.game_token,
+                            player_token: localStorage.player_token,
+                            unit_id: Node.selected_node.get_unit_id(),
+                            attacked_unit_id: Node.last_hovered_node?.get_unit_id(),
+                            path: path_node_cords
+                        }
+                    })
+                }
+
+                to_node.update();
+                node_from.update();
             }
         }
 
@@ -474,6 +478,12 @@ export class Node{
                                 let path_color;
                                 if(Node.last_hovered_node.unit != null){
                                     path_color =  Node.last_hovered_node.unit.is_friendly ? Node.movement_hint_color: Node.attack_hint_color;
+
+                                    // if the unit is out of range don't show any attack or movement hint
+                                    if(Node.last_hovered_node.unit.range < Node.path.length - 1){
+                                        return;
+                                    }
+
                                 }else{
                                     path_color =  Node.movement_hint_color;
                                 }

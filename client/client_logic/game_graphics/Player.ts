@@ -35,11 +35,13 @@ export namespace Player {
         all_units.map((unit)=>{
             if(unit.id === unit_data.id){
                 unit.health = unit_data.health
+                unit.add_unit_to_stage();
             }
         })
         all_units.map((enemy_unit)=>{
             if(enemy_unit.id === unit_data.id){
                 enemy_unit.health = unit_data.health
+                enemy_unit.add_unit_to_stage();
             }
         })
 

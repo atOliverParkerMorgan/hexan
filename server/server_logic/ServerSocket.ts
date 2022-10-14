@@ -95,8 +95,8 @@ export namespace ServerSocket {
                     // get request data from public
                     const request_type = args[0].request_type;
                     const request_data = args[0].data;
-
-                    console.log(`got some data player_token: ${request_data.player_token}`)
+                    console.log(`REQUEST TYPE: ${request_type}`)
+                   // console.log(`got some data player_token: ${request_data.player_token}`)
 
                     const game = MatchMaker.get_game(request_data.game_token);
 
@@ -170,7 +170,7 @@ export namespace ServerSocket {
         io.on("connection", (socket: Socket) => {
             // receive a message from the public
             socket.on("send-data", (...args: any[]) => {
-                try {
+                // try {
                     const request_type: string = args[0].request_type;
                     const request_data = args[0].data;
 
@@ -209,32 +209,35 @@ export namespace ServerSocket {
                                     break;
 
                                 case ServerSocket.request_types.ATTACK_UNIT:
-                                    let friendly_unit = player.get_unit(request_data.unit_id);
-                                    let enemy_unit = player.get_unit(request_data.attacked_unit_id)
+                                    const friendly_unit = player.get_unit(request_data.unit_id);
+                                    const enemy_unit = player.get_unit(request_data.attacked_unit_id)
+                                    const attack_path = new Path(game, request_data.path);
+
+                                    if(friendly_unit != null)
+                                    console.log(`friendly unit range: ${friendly_unit.range}`)
+                                    if(enemy_unit != null)
+                                    console.log(`enemy unit range: ${enemy_unit.range}`)
+
+                                    console.log(`attack path: ${attack_path.path.length}`)
 
                                     if(friendly_unit == null || enemy_unit == null){
+
                                         ServerSocket.send_data(socket, {
                                             response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
-                                            data: {
-                                                message: "invalid unit id"
-                                            }
                                         }, player.token);
 
                                     }
-
-                                    // attack logic
-                                    else if(Utils.get_distance(friendly_unit.x, friendly_unit.y, enemy_unit.x, enemy_unit.y) <= Utils.get_range_value(friendly_unit.range)){
-                                            let enemy_player;
-                                            game.all_players.map((in_game_player: Player)=>{
-                                                if(in_game_player.units.includes(<Unit> enemy_unit)){
-                                                    enemy_player = in_game_player;
-                                                }
-                                            })
-
+                                    // attack path length is the request range of the attack
+                                    else if(friendly_unit.range >= attack_path.path.length - 1){
+                                            let enemy_player = game.get_enemy_player_by_unit(enemy_unit);
+                                            console.log("here1")
                                             if(enemy_player == null){
+                                                ServerSocket.send_data(socket, {
+                                                    response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
+                                                }, player.token);
                                                 return
                                             }
-
+                                                console.log("here2")
                                             const did_units_die = player.attack_unit(friendly_unit, enemy_unit, enemy_player);
 
                                             ServerSocket.send_data_to_all(socket, {
@@ -245,9 +248,21 @@ export namespace ServerSocket {
                                                     unit_2: enemy_unit,
                                                     is_unit_2_dead: did_units_die[1]
                                                 }
-                                            }, player.token);
+                                            }, enemy_player.token);
 
-                                    }else{
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.ATTACK_UNIT_RESPONSE,
+                                            data: {
+                                                unit_1: friendly_unit,
+                                                is_unit_1_dead: did_units_die[0],
+                                                unit_2: enemy_unit,
+                                                is_unit_2_dead: did_units_die[1]
+                                            }
+                                        }, player.token);
+
+                                    }
+                                    // unit out of range
+                                    else{
                                         ServerSocket.send_data(socket, {
                                             response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
                                             data: {
@@ -290,9 +305,9 @@ export namespace ServerSocket {
                             }
                         }
                     }
-                }catch (e){
-                    console.log("error invalid input")
-                }
+                // }catch (e){
+                //     console.log("error invalid input")
+                // }
             });
         });
     }

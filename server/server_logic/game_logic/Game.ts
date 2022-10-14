@@ -44,6 +44,16 @@ class Game{
         }
     }
 
+    get_enemy_player_by_unit(unit: Unit): Player | undefined{
+        for (const in_game_players of this.all_players) {
+            for (const unit of in_game_players.units) {
+                if(unit.id === unit.id){
+                    return in_game_players;
+                }
+            }
+        }
+    }
+
     get_cities_that_player_owns(player: Player): CityInterface[]{
         let cities = []
         for(const city of this.all_cities){

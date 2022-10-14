@@ -22,9 +22,9 @@ export namespace Utils{
         return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
     }
 
-    export function get_range_value(range: number): number{
-        return Math.sqrt(range ** 2 + range ** 2);
-    }
+    // export function get_range_value(range: number): number{
+    //     return Math.sqrt(range ** 2 + range ** 2);
+    // }
 
     // range: <min; max>
     // @ TODO add unit functions

@@ -80,7 +80,7 @@ export class Unit implements UnitInterface{
         // movement per a minute calculation
         const MOVEMENT_PER_A_MINUTE: number = 60_000 / this.movement
 
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
             const current_node: Node = path[0];
 
             // check if movement is valid
@@ -105,7 +105,7 @@ export class Unit implements UnitInterface{
             })
             if(is_invalid){
                 ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
-                return
+                clearInterval(timeout);
             }
 
             // movement

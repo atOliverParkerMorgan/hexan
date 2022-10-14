@@ -261,7 +261,7 @@ export class Node{
 
         // hide the hidden node and cites
         if(!this.is_shown.includes(player_token)){
-           type = Node.HIDDEN;
+          // type = Node.HIDDEN;
            sprite_name = "";
            city_data = null;
         }
