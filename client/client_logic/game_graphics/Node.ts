@@ -287,8 +287,9 @@ export class Node{
                             path: path_node_cords
                         }
                     })
+                }else if(Node.selected_node.unit == null){
+                    console.log("no unit selected")
                 }
-
                 // send attack request to server
                 else if (!Node.last_hovered_node.unit.is_friendly) {
                     console.log("UI attacked unit")
@@ -297,8 +298,8 @@ export class Node{
                         data: {
                             game_token: localStorage.game_token,
                             player_token: localStorage.player_token,
-                            unit_id: Node.selected_node.get_unit_id(),
-                            attacked_unit_id: Node.last_hovered_node?.get_unit_id(),
+                            unit_id: Node.selected_node.unit.id,
+                            attacked_unit_id: Node.last_hovered_node.unit.id,
                             path: path_node_cords
                         }
                     })
@@ -481,7 +482,7 @@ export class Node{
 
                                     // if the unit is out of range don't show any attack or movement hint
                                     if(Node.last_hovered_node.unit.range < Node.path.length - 1){
-                                        return;
+                                        path_color =  Node.movement_hint_color;
                                     }
 
                                 }else{

@@ -1,15 +1,12 @@
 import { createServer } from 'http';
 import { Server, Socket } from "socket.io";
-import Path from "./game_logic/Map/Path.js";
+import Path from "./game_logic/Map/Path";
 import {MatchMaker} from "./MatchMaker";
 import City from "./game_logic/City/City";
 import {Unit} from "./game_logic/Units/Unit";
 import Player from "./game_logic/Player";
 import {Node} from "./game_logic/Map/Node";
 import {NodeInterface} from "./game_logic/Map/NodeInterface";
-import {epilogue} from "concurrently/dist/bin/epilogue";
-import exp from "constants";
-import {Utils} from "../Utils";
 
 const httpServer = createServer();
 const io = new Server(httpServer);
@@ -21,7 +18,7 @@ export namespace ServerSocket {
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
-        NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ATTACK_UNIT_RESPONSE: string,
+        NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ENEMY_FOUND_RESPONSE: string, ATTACK_UNIT_RESPONSE: string,
         MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, INVALID_ATTACK_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string} =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -29,8 +26,10 @@ export namespace ServerSocket {
         UNIT_RESPONSE: "UNIT_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
+
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
+        ENEMY_FOUND_RESPONSE: "ENEMY_FOUND_RESPONSE",
 
         ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
 
@@ -209,16 +208,20 @@ export namespace ServerSocket {
                                     break;
 
                                 case ServerSocket.request_types.ATTACK_UNIT:
+
+                                    const enemy_player = game.get_enemy_player_by_unit(request_data.attacked_unit_id);
+
+                                    if(enemy_player == null){
+
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
+                                        }, player.token);
+                                        return;
+                                    }
+
                                     const friendly_unit = player.get_unit(request_data.unit_id);
-                                    const enemy_unit = player.get_unit(request_data.attacked_unit_id)
+                                    const enemy_unit = enemy_player.get_unit(request_data.attacked_unit_id)
                                     const attack_path = new Path(game, request_data.path);
-
-                                    if(friendly_unit != null)
-                                    console.log(`friendly unit range: ${friendly_unit.range}`)
-                                    if(enemy_unit != null)
-                                    console.log(`enemy unit range: ${enemy_unit.range}`)
-
-                                    console.log(`attack path: ${attack_path.path.length}`)
 
                                     if(friendly_unit == null || enemy_unit == null){
 
@@ -229,17 +232,10 @@ export namespace ServerSocket {
                                     }
                                     // attack path length is the request range of the attack
                                     else if(friendly_unit.range >= attack_path.path.length - 1){
-                                            let enemy_player = game.get_enemy_player_by_unit(enemy_unit);
-                                            console.log("here1")
-                                            if(enemy_player == null){
-                                                ServerSocket.send_data(socket, {
-                                                    response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
-                                                }, player.token);
-                                                return
-                                            }
-                                                console.log("here2")
+
                                             const did_units_die = player.attack_unit(friendly_unit, enemy_unit, enemy_player);
 
+                                            // send to enemy
                                             ServerSocket.send_data_to_all(socket, {
                                                 response_type: ServerSocket.response_types.ATTACK_UNIT_RESPONSE,
                                                 data: {
@@ -250,15 +246,16 @@ export namespace ServerSocket {
                                                 }
                                             }, enemy_player.token);
 
-                                        ServerSocket.send_data(socket, {
-                                            response_type: ServerSocket.response_types.ATTACK_UNIT_RESPONSE,
-                                            data: {
-                                                unit_1: friendly_unit,
-                                                is_unit_1_dead: did_units_die[0],
-                                                unit_2: enemy_unit,
-                                                is_unit_2_dead: did_units_die[1]
-                                            }
-                                        }, player.token);
+                                            // send to me
+                                            ServerSocket.send_data(socket, {
+                                                response_type: ServerSocket.response_types.ATTACK_UNIT_RESPONSE,
+                                                data: {
+                                                    unit_1: friendly_unit,
+                                                    is_unit_1_dead: did_units_die[0],
+                                                    unit_2: enemy_unit,
+                                                    is_unit_2_dead: did_units_die[1]
+                                                }
+                                            }, player.token);
 
                                     }
                                     // unit out of range

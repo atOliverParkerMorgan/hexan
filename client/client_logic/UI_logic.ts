@@ -1,7 +1,6 @@
 import {ClientSocket} from "./ClientSocket.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
-import {viewport} from "./game_graphics/Pixi.js";
 import {Player} from "./game_graphics/Player.js";
 
 let is_city_menu_visible = false;

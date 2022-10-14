@@ -9,7 +9,7 @@ import {City} from "./game_graphics/City/City.js";
 export namespace ClientSocket {
     export const response_types: { ALL_RESPONSE: string, MAP_RESPONSE: string, UNIT_MOVED_RESPONSE: string,
             UNITS_RESPONSE: string, UNIT_RESPONSE: string, MENU_INFO_RESPONSE: string,
-            HARVEST_NODE_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string, NEW_CITY: string, CANNOT_SETTLE: string,
+            HARVEST_NODE_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,  ENEMY_FOUND_RESPONSE:string, NEW_CITY: string, CANNOT_SETTLE: string,
             STARS_DATA_RESPONSE: string, INVALID_MOVE_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
         ATTACK_UNIT_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string } = {
 
@@ -19,8 +19,11 @@ export namespace ClientSocket {
         UNIT_RESPONSE: "UNIT_RESPONSE",
         ALL_RESPONSE: "ALL_RESPONSE",
         UNIT_MOVED_RESPONSE: "UNIT_MOVED_RESPONSE",
+
+
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
+        ENEMY_FOUND_RESPONSE: "ENEMY_FOUND_RESPONSE",
 
         ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
 
@@ -188,39 +191,19 @@ export namespace ClientSocket {
                     })
 
                     if(!found_enemy_unit){
-
-                        let graphics_enemy_unit: Unit | undefined;
-
-                        // get the correct sprite for unit depending on it's type
-                        if(response_data.unit.type === Unit.MELEE){
-                            graphics_enemy_unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
-                        }
-                        else if(response_data.unit.type === Unit.RANGE){
-                            graphics_enemy_unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
-                        }
-
-                        if(graphics_enemy_unit == null){
-                            return;
-                        }
-
-                        Player.all_enemy_visible_units.push(graphics_enemy_unit);
-                        Node.all_nodes[response_data.unit.y][response_data.unit.x].unit = graphics_enemy_unit;
+                        Player.add_enemy_unit(response_data.unit);
                     }
 
                     break;
 
 
+                case ClientSocket.response_types.ENEMY_FOUND_RESPONSE:
+                    Player.add_enemy_unit(response_data.unit);
+
+                    break;
+
                 case ClientSocket.response_types.ENEMY_UNIT_DISAPPEARED:
-                    let index = 0;
-                    for (; index < Player.all_enemy_visible_units.length; index++) {
-                        if(Player.all_enemy_visible_units[index].id === response_data.unit.id) break
-                    }
-                    const enemy_unit = Player.all_enemy_visible_units[index];
-                    if(enemy_unit == null) break
-                    // remove unit
-                    enemy_unit.remove_sprite();
-                    Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
-                    Player.all_enemy_visible_units.splice(index);
+                    Player.delete_enemy_visible_unit(response_data.unit)
 
                     break;
 
@@ -232,25 +215,21 @@ export namespace ClientSocket {
                 case ClientSocket.response_types.ATTACK_UNIT_RESPONSE:
 
                     // updates unit graphics after attack
-
+                    console.log(response_data)
                     if(response_data.is_unit_1_dead) {
-                        if(Player.all_units.includes(response_data.unit_1)){
-                            Player.all_units.splice(Player.all_units.indexOf(response_data.unit_1))
-                        }else if(Player.all_enemy_visible_units.includes(response_data.unit_1)) {
-                            Player.all_units.splice(Player.all_units.indexOf(response_data.unit_1))
-                        }
-                    }else{
-                        Player.update_units_after_attack(response_data.unit_1)
+                            Player.delete_friendly_unit(response_data.unit_1);
+                            Player.delete_enemy_visible_unit(response_data.unit_1);
+                    }
+                    else{
+                        Player.update_units_after_attack(response_data.unit_1);
                     }
 
                     if(response_data.is_unit_2_dead) {
-                        if(Player.all_units.includes(response_data.unit_2)){
-                            Player.all_units.splice(Player.all_units.indexOf(response_data.unit_2))
-                        }else if(Player.all_enemy_visible_units.includes(response_data.unit_2)) {
-                            Player.all_units.splice(Player.all_units.indexOf(response_data.unit_2))
-                        }
-                    }else{
-                        Player.update_units_after_attack(response_data.unit_2)
+                            Player.delete_friendly_unit(response_data.unit_2);
+                            Player.delete_enemy_visible_unit(response_data.unit_2);
+                    }
+                    else{
+                        Player.update_units_after_attack(response_data.unit_2);
                     }
 
                     break

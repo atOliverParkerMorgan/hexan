@@ -5,12 +5,13 @@ import Melee from "./Units/Melee";
 import Range from "./Units/Range";
 import Cavalry from "./Units/Cavalry";
 import Settler from "./Units/Settler";
+import {Utils} from "../../Utils";
+import {combine_sourcemaps} from "svelte/types/compiler/utils/mapped_code";
 
 class Player{
     token: string;
     units: Unit[];
     production_unit_types: string[];
-    current_unit_id: number;
 
 
     total_owned_stars: number;
@@ -24,7 +25,6 @@ class Player{
         this.units = [];
         // units that this player can produce
         this.production_unit_types = [Unit.MELEE, Unit.RANGE, Unit.SETTLER];
-        this.current_unit_id = 0;
 
         this.total_owned_stars = 10;
         this.star_production = 5;
@@ -36,23 +36,22 @@ class Player{
         let new_unit: any;
         switch (name){
             case Melee.WARRIOR.name:
-                new_unit = new Melee(x, y,this.current_unit_id.toString(), Melee.WARRIOR);
+                new_unit = new Melee(x, y, Math.random().toString(), Melee.WARRIOR);
                 break;
             case Range.SLINGER.name:
-                new_unit = new Range(x, y,this.current_unit_id.toString(), Range.SLINGER, );
+                new_unit = new Range(x, y, Math.random().toString(), Range.SLINGER, );
                 break;
 
             case Cavalry.HORSEMAN.name:
-                new_unit = new Cavalry(x, y,this.current_unit_id.toString(), Cavalry.HORSEMAN);
+                new_unit = new Cavalry(x, y, Math.random().toString(), Cavalry.HORSEMAN);
                 break;
 
             case Unit.SETTLER:
-                new_unit = new Settler(x, y,this.current_unit_id.toString());
+                new_unit = new Settler(x, y,Math.random().toString());
                 break;
 
         }
         this.units.push(new_unit);
-        this.current_unit_id ++;
         return new_unit;
     }
 
@@ -91,20 +90,25 @@ class Player{
 
     attack_unit(unit_friendly: Unit, unit_enemy: Unit, enemy_player: Player): boolean[]{
 
-        unit_friendly.health -= unit_enemy.attack
-        unit_enemy.health -= unit_friendly.attack
+        if(unit_friendly.type !== Unit.RANGE) {
+            unit_friendly.health -= unit_enemy.attack;
+        }
 
-        const friendly_died = unit_friendly.health <= 0
-        const enemy_died = unit_friendly.health <= 0
+        if(unit_enemy.type !== Unit.RANGE) {
+            unit_enemy.health -= unit_friendly.attack;
+        }
+
+        const friendly_died = unit_friendly.health <= 0;
+        const enemy_died = unit_enemy.health <= 0;
 
         if(friendly_died){
-            this.units.splice(this.units.indexOf(unit_friendly))
+            this.units.splice(this.units.indexOf(unit_friendly));
         }
         if(enemy_died){
-            enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy))
+            enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy));
         }
 
-        return [friendly_died, enemy_died]
+        return [friendly_died, enemy_died];
     }
 
     // The client and server run two separate timers to produce stars

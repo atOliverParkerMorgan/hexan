@@ -44,10 +44,16 @@ class Game{
         }
     }
 
-    get_enemy_player_by_unit(unit: Unit): Player | undefined{
+    get_enemy_players(token: string): Player[]{
+        return this.all_players.filter((player: Player) => {
+            return player.token != token;
+        })
+    }
+
+    get_enemy_player_by_unit(unit_id: string): Player | undefined{
         for (const in_game_players of this.all_players) {
             for (const unit of in_game_players.units) {
-                if(unit.id === unit.id){
+                if(unit.id === unit_id){
                     return in_game_players;
                 }
             }

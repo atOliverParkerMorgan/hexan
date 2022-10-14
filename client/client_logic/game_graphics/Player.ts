@@ -1,6 +1,8 @@
 import Unit from "./Unit/Unit.js";
 import {update_progress_bar, update_star_info} from "../UI_logic.js";
 import {Interval} from "./Interval.js";
+import {Node} from "./Node.js";
+import {HEX_SIDE_SIZE} from "./Pixi.js";
 
 //singleton client-player
 export namespace Player {
@@ -35,12 +37,14 @@ export namespace Player {
         all_units.map((unit)=>{
             if(unit.id === unit_data.id){
                 unit.health = unit_data.health
+                unit.remove_sprite();
                 unit.add_unit_to_stage();
             }
         })
-        all_units.map((enemy_unit)=>{
+        all_enemy_visible_units.map((enemy_unit)=>{
             if(enemy_unit.id === unit_data.id){
                 enemy_unit.health = unit_data.health
+                enemy_unit.remove_sprite();
                 enemy_unit.add_unit_to_stage();
             }
         })
@@ -64,5 +68,70 @@ export namespace Player {
 
     export function reset_units() {
         all_units = [];
+    }
+
+    export function has_friendly_unit(unit_id: string):boolean{
+        for (const unit of Player.all_units) {
+            if(unit_id === unit.id) return true
+        }
+        return false;
+    }
+
+    export function has_enemy_unit(unit_id: string):boolean{
+        for (const enemy_unit of Player.all_enemy_visible_units) {
+            if(unit_id === enemy_unit.id) return true
+        }
+        return false;
+    }
+
+    export function delete_enemy_visible_unit(unit: any){
+        if(!Player.has_enemy_unit(unit.id)) return;
+
+        let index = 0;
+        for (; index < Player.all_enemy_visible_units.length; index++) {
+            if(Player.all_enemy_visible_units[index].id === unit.id) break
+        }
+
+        const enemy_unit = Player.all_enemy_visible_units[index];
+        if(enemy_unit == null) return
+
+        enemy_unit.remove_sprite();
+        Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
+        Player.all_enemy_visible_units.splice(index);
+
+    }
+
+    export function delete_friendly_unit(unit: any){
+        if(!Player.has_friendly_unit(unit.id)) return;
+
+        let index = 0;
+        for (; index < Player.all_units.length; index++) {
+            if(Player.all_units[index].id === unit.id) break
+        }
+
+        const friendly_unit = Player.all_units[index];
+        if(friendly_unit == null) return
+
+        friendly_unit.remove_sprite();
+        Node.all_nodes[friendly_unit.y][friendly_unit.x].unit = null;
+        Player.all_units.splice(index);
+    }
+
+    export function add_enemy_unit(unit: any){
+        let graphics_enemy_unit: Unit | undefined;
+
+        // get the correct sprite for unit depending on it's type
+        if(unit.type === Unit.MELEE){
+            graphics_enemy_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
+        }
+        else if(unit.type === Unit.RANGE){
+            graphics_enemy_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
+        }
+
+        if(graphics_enemy_unit == null){
+            return;
+        }
+        Player.all_enemy_visible_units.push(graphics_enemy_unit);
+        Node.all_nodes[unit.y][unit.x].unit = graphics_enemy_unit;
     }
 }

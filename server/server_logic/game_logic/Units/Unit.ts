@@ -122,6 +122,22 @@ export class Unit implements UnitInterface{
             }
 
             all_discovered_nodes.push(current_node.get_data(player.token));
+            for(const enemy_player of game.get_enemy_players(player.token)){
+                for(const unit of enemy_player.units){
+                    for(const node of all_discovered_nodes){
+                        if(node.x === unit.x && node.y === unit.y){
+                            // found new enemy unit by moving
+                            ServerSocket.send_data(socket,
+                                {
+                                    response_type: ServerSocket.response_types.ENEMY_FOUND_RESPONSE,
+                                    data: {
+                                        unit: unit.get_data(),
+                                    }
+                                }, player.token)
+                        }
+                    }
+                }
+            }
 
             // show unit to player if the unit steps on a discovered node
             game.all_players.map((in_game_player: Player)=>{
