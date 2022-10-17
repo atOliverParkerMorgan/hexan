@@ -3,6 +3,7 @@ import {update_progress_bar, update_star_info} from "../UI_logic.js";
 import {Interval} from "./Interval.js";
 import {Node} from "./Node.js";
 import {HEX_SIDE_SIZE} from "./Pixi.js";
+import exp from "constants";
 
 //singleton client-player
 export namespace Player {
@@ -37,15 +38,13 @@ export namespace Player {
         all_units.map((unit)=>{
             if(unit.id === unit_data.id){
                 unit.health = unit_data.health
-                unit.remove_sprite();
-                unit.add_unit_to_stage();
+                unit.update_unit_on_stage();
             }
         })
         all_enemy_visible_units.map((enemy_unit)=>{
             if(enemy_unit.id === unit_data.id){
                 enemy_unit.health = unit_data.health
-                enemy_unit.remove_sprite();
-                enemy_unit.add_unit_to_stage();
+                enemy_unit.update_unit_on_stage();
             }
         })
 
@@ -118,20 +117,17 @@ export namespace Player {
     }
 
     export function add_enemy_unit(unit: any){
-        let graphics_enemy_unit: Unit | undefined;
+        let graphics_enemy_unit: Unit =  new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
 
-        // get the correct sprite for unit depending on it's type
-        if(unit.type === Unit.MELEE){
-            graphics_enemy_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
-        }
-        else if(unit.type === Unit.RANGE){
-            graphics_enemy_unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
-        }
-
-        if(graphics_enemy_unit == null){
-            return;
-        }
         Player.all_enemy_visible_units.push(graphics_enemy_unit);
         Node.all_nodes[unit.y][unit.x].unit = graphics_enemy_unit;
     }
+
+    export function add_unit(unit: any) {
+        let graphics_unit: Unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE * .75, true);
+
+        Player.all_units.push(graphics_unit);
+        Node.all_nodes[unit.y][unit.x].unit = graphics_unit;
+    }
+
 }

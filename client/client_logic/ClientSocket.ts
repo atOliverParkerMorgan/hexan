@@ -102,9 +102,7 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.UNIT_RESPONSE:
-                    let graphics_unit: Unit = new Unit(response_data.unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, true);
-                    Player.all_units.push(graphics_unit);
-                    Node.all_nodes[response_data.unit.y][response_data.unit.x].unit = graphics_unit;
+                    Player.add_unit(response_data.unit);
 
                     let total_owned_stars = response_data.total_owned_stars;
                     if(total_owned_stars != null){

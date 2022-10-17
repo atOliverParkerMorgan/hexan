@@ -2,6 +2,7 @@ import {Unit} from "./Unit";
 import Player from "../Player";
 import Game from "../Game";
 import {UnitInitData} from "./UnitInitData";
+import Map from "../Map/Map";
 
 class Settler extends Unit{
     public static readonly SETTLER_UNIT: UnitInitData = {
@@ -17,8 +18,8 @@ class Settler extends Unit{
         type: Unit.SETTLER
     }
 
-    constructor(x: number, y: number, id: string) {
-        super(x, y, id, Settler.SETTLER_UNIT);
+    constructor(x: number, y: number, id: string,  map: Map) {
+        super(x, y, id, map, Settler.SETTLER_UNIT);
     }
 
     settle(owner: Player, game: Game): void{

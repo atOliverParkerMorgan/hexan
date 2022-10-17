@@ -3,7 +3,7 @@ import Map from "./Map";
 import Player from "../Player";
 import {NodeInterface} from "./NodeInterface";
 import {ServerSocket} from "../../ServerSocket";
-import {Socket} from "socket.io-client";
+import {Unit} from "../Units/Unit";
 
 // used for node.get_data()
 
@@ -34,6 +34,7 @@ export class Node{
     // ids for player who seen this node
     is_shown: string[]
     city: City | null;
+    unit: Unit | null;
     parent: Node | null;
 
     sprite_name: string;
@@ -51,6 +52,7 @@ export class Node{
         this.is_harvested = false;
 
         this.city = null;
+        this.unit = null;
         this.sprite_name = "";
 
         // used for A* searching algorithm
@@ -261,7 +263,7 @@ export class Node{
 
         // hide the hidden node and cites
         if(!this.is_shown.includes(player_token)){
-          // type = Node.HIDDEN;
+           type = Node.HIDDEN;
            sprite_name = "";
            city_data = null;
         }
@@ -269,6 +271,7 @@ export class Node{
        return {
            x: this.x,
            y: this.y,
+           unit: this.unit,
            type: type,
            borders: this.borders,
            city_data: city_data,

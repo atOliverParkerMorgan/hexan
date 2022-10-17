@@ -10,6 +10,8 @@ import Range from "./Range";
 import Cavalry from "./Cavalry";
 import Settler from "./Settler";
 import {NodeInterface} from "../Map/NodeInterface";
+import Map from "../Map/Map";
+import Path from "../Map/Path";
 
 export class Unit implements UnitInterface{
 
@@ -39,7 +41,7 @@ export class Unit implements UnitInterface{
     name: string;
     cost: number;
 
-    constructor(x: number, y: number, id: string, unit_init_data: UnitInitData){
+    constructor(x: number, y: number, id: string, map: Map, unit_init_data: UnitInitData){
         this.x = x;
         this.y = y;
 
@@ -55,11 +57,14 @@ export class Unit implements UnitInterface{
         this.range = unit_init_data.range;
         this.name = unit_init_data.name;
         this.cost = unit_init_data.cost;
+
+        map.all_nodes[this.y][this.x].unit = this;
     }
 
     // send response to public if the unit has successfully moved
     move_and_send_response(path: Node[], game: Game, player: Player, socket: Socket){
-
+        // remove first element
+        path.shift()
         this.move_along_path(game, player, socket, path);
 
         // don't send invalid move
@@ -75,42 +80,70 @@ export class Unit implements UnitInterface{
 
     // move this Unit along a valid path provided by the public
     move_along_path(game: Game, player: Player, socket: Socket, path: Node[]){
-        if(path.length === 0) return;
 
         // movement per a minute calculation
         const MOVEMENT_PER_A_MINUTE: number = 60_000 / this.movement
 
         const timeout = setTimeout(() => {
+            if(path.length === 0){
+                clearInterval(timeout);
+                return;
+            }
+
             const current_node: Node = path[0];
 
-            // check if movement is valid
-            let is_invalid = false
-            game.all_players.map((in_game_player: Player)=>{
-                if(in_game_player.token !== player.token){
-                    // check if path doesn't cross an enemy city
-                    if(current_node.city != null) {
-                        if (current_node.city.owner.token !== player.token) {
-                            is_invalid = true
-                            return
-                        }
-                    }
+            // // check if movement is valid
+            // let is_invalid = false
+            // game.all_players.map((in_game_player: Player)=>{
+            //     if(in_game_player.token !== player.token){
+            //         // check if path doesn't cross an enemy city
+            //         if(current_node.city != null) {
+            //             if (current_node.city.owner.token !== player.token) {
+            //                 is_invalid = true
+            //                 return
+            //             }
+            //         }
+            //
+            //         in_game_player.units.map((unit)=>{
+            //             if(unit.x === current_node.x && unit.y === current_node.y){
+            //                // is_invalid = true
+            //                 return
+            //             }
+            //         })
+            //     }
+            // })
+            // if(is_invalid){
+            //     ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
+            //     clearInterval(timeout);
+            //     return;
+            // }
 
-                    in_game_player.units.map((unit)=>{
-                        if(unit.x === current_node.x && unit.y === current_node.y){
-                            is_invalid = true
-                            return
-                        }
+            // check if movement is valid
+            if(current_node.unit != null){
+                if(player.owns_this_unit(current_node.unit.id)){
+                    ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
+                    clearInterval(timeout);
+                    return
+                }else {
+                    let path_cords: any = [];
+                    path.map((node: Node)=>{
+                        path_cords.push([node.x, node.y]);
                     })
+
+                    ServerSocket.send_unit_attack(socket, game, player, current_node.unit.id, this.id, new Path(game, path_cords))
+                    return;
                 }
-            })
-            if(is_invalid){
-                ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
-                clearInterval(timeout);
+
             }
 
             // movement
+            game.map.all_nodes[this.y][this.x].unit = null;
+
+            current_node.unit = this;
+
             this.x = current_node.x;
             this.y = current_node.y;
+
 
             let all_discovered_nodes: NodeInterface[] = [];
 
@@ -121,10 +154,15 @@ export class Unit implements UnitInterface{
                 }
             }
 
+
             all_discovered_nodes.push(current_node.get_data(player.token));
+
+            // find previously unseen enemy units
             for(const enemy_player of game.get_enemy_players(player.token)){
-                for(const unit of enemy_player.units){
-                    for(const node of all_discovered_nodes){
+                for(const node of all_discovered_nodes){
+                    if(node.unit == null) continue
+
+                    for(const unit of enemy_player.units){
                         if(node.x === unit.x && node.y === unit.y){
                             // found new enemy unit by moving
                             ServerSocket.send_data(socket,
@@ -161,8 +199,6 @@ export class Unit implements UnitInterface{
                     }
                 }
             })
-
-
             path.shift();
             this.move_along_path(game, player, socket, path);
 

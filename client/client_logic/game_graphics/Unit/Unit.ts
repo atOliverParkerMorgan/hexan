@@ -86,7 +86,7 @@ export class Unit implements UnitData{
         // @ts-ignore
         this.sprite = PIXI.Sprite.from(this.texture_path);
 
-        this.add_unit_to_stage();
+        this.update_unit_on_stage();
     }
 
     remove_sprite(){
@@ -103,7 +103,7 @@ export class Unit implements UnitData{
         }
     }
 
-    add_unit_to_stage(): void{
+    update_unit_on_stage(): void{
         this.remove_sprite();
         this.show_health();
         this.show_background();
@@ -180,8 +180,7 @@ export class Unit implements UnitData{
         this.y = y;
 
         // redraw sprite
-        this.add_unit_to_stage();
-
+        this.update_unit_on_stage();
     }
 }
 

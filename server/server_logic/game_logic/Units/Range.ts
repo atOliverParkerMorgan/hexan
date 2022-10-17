@@ -1,5 +1,6 @@
 import {Unit} from "./Unit";
 import {UnitInitData} from "./UnitInitData";
+import Map from "../Map/Map";
 
 class Range extends Unit{
     public static readonly SLINGER: UnitInitData = {
@@ -14,8 +15,8 @@ class Range extends Unit{
         action: Unit.FORTIFY,
         type: Unit.RANGE
     }
-    constructor(x: number, y: number, id: string, unit_init_data: UnitInitData) {
-        super(x, y, id, unit_init_data);
+    constructor(x: number, y: number, id: string, map: Map, unit_init_data: UnitInitData) {
+        super(x, y, id, map, unit_init_data);
     }
 }
 

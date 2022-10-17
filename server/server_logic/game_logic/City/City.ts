@@ -50,7 +50,7 @@ class City{
         this.population = 3;
     }
 
-    produce_unit_and_send_response(socket: Socket, unit_name: string): void{
+    produce_unit_and_send_response(socket: Socket, unit_name: string, map: Map): void{
         const cost: number | undefined = Utils.get_unit_cost(unit_name);
         if(cost == null) return;
 
@@ -61,7 +61,7 @@ class City{
         }
         this.owner.pay_stars(cost);
 
-        let unit: Unit = this.owner.add_unit(this.x, this.y, unit_name);
+        let unit: Unit = this.owner.add_unit(this.x, this.y, unit_name, map);
         ServerSocket.send_unit_produced_response(socket, this, unit);
     }
 

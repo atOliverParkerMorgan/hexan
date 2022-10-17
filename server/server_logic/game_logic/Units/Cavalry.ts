@@ -1,5 +1,6 @@
 import {Unit} from "./Unit";
 import {UnitInitData} from "./UnitInitData";
+import Map from "../Map/Map";
 
 class Cavalry extends Unit{
     public static readonly HORSEMAN: UnitInitData = {
@@ -13,8 +14,8 @@ class Cavalry extends Unit{
         action: Unit.FORTIFY,
         type: Unit.CAVALRY
     }
-    constructor(x: number, y: number, id: string, unit_init_data: UnitInitData) {
-        super(x, y, id, unit_init_data);
+    constructor(x: number, y: number, id: string, map: Map, unit_init_data: UnitInitData) {
+        super(x, y, id, map, unit_init_data);
     }
 }
 

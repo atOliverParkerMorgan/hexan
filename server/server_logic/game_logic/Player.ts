@@ -5,8 +5,8 @@ import Melee from "./Units/Melee";
 import Range from "./Units/Range";
 import Cavalry from "./Units/Cavalry";
 import Settler from "./Units/Settler";
-import {Utils} from "../../Utils";
-import {combine_sourcemaps} from "svelte/types/compiler/utils/mapped_code";
+import Map from "./Map/Map";
+
 
 class Player{
     token: string;
@@ -32,22 +32,22 @@ class Player{
         this.star_production_has_started = false;
     }
 
-    add_unit(x: number, y: number, name: string): Unit{
+    add_unit(x: number, y: number, name: string, map: Map): Unit{
         let new_unit: any;
         switch (name){
             case Melee.WARRIOR.name:
-                new_unit = new Melee(x, y, Math.random().toString(), Melee.WARRIOR);
+                new_unit = new Melee(x, y, Math.random().toString(), map, Melee.WARRIOR);
                 break;
             case Range.SLINGER.name:
-                new_unit = new Range(x, y, Math.random().toString(), Range.SLINGER, );
+                new_unit = new Range(x, y, Math.random().toString(), map, Range.SLINGER, );
                 break;
 
             case Cavalry.HORSEMAN.name:
-                new_unit = new Cavalry(x, y, Math.random().toString(), Cavalry.HORSEMAN);
+                new_unit = new Cavalry(x, y, Math.random().toString(), map, Cavalry.HORSEMAN);
                 break;
 
             case Unit.SETTLER:
-                new_unit = new Settler(x, y,Math.random().toString());
+                new_unit = new Settler(x, y, Math.random().toString(), map);
                 break;
 
         }
@@ -59,6 +59,10 @@ class Player{
         for (const unit of this.units) {
             if(unit.get_id() === id) return unit;
         }
+    }
+
+    owns_this_unit(id: string):boolean{
+        return this.get_unit(id) != null;
     }
 
     // returns true if the unit was successfully removed; false if not
@@ -88,7 +92,7 @@ class Player{
 
     }
 
-    attack_unit(unit_friendly: Unit, unit_enemy: Unit, enemy_player: Player): boolean[]{
+    attack_unit(unit_friendly: Unit, unit_enemy: Unit, enemy_player: Player, map: Map): boolean[]{
 
         if(unit_friendly.type !== Unit.RANGE) {
             unit_friendly.health -= unit_enemy.attack;
@@ -102,9 +106,11 @@ class Player{
         const enemy_died = unit_enemy.health <= 0;
 
         if(friendly_died){
+            map.all_nodes[unit_friendly.y][unit_friendly.x].unit = null;
             this.units.splice(this.units.indexOf(unit_friendly));
         }
         if(enemy_died){
+            map.all_nodes[unit_enemy.y][unit_enemy.x].unit = null;
             enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy));
         }
 

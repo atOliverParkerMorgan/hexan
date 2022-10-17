@@ -276,7 +276,7 @@ export class Node{
                 show_unit_info(Node.selected_node.unit);
 
                 // send movement request to server
-                if(Node.last_hovered_node.unit == null){
+                if(Node.last_hovered_node.unit == null || Node.selected_node.unit.type === Unit.MELEE) {
                     console.log("movement")
                     ClientSocket.send_data({
                         request_type: ClientSocket.request_types.MOVE_UNITS,
@@ -287,8 +287,6 @@ export class Node{
                             path: path_node_cords
                         }
                     })
-                }else if(Node.selected_node.unit == null){
-                    console.log("no unit selected")
                 }
                 // send attack request to server
                 else if (!Node.last_hovered_node.unit.is_friendly) {
@@ -365,7 +363,6 @@ export class Node{
         this.is_hidden = this.type === Node.HIDDEN;
         this.sprite_name = sprite_name;
         this.update();
-        this.show_sprite();
     }
 
     get_type_string(): string{
@@ -478,13 +475,15 @@ export class Node{
 
                                 let path_color;
                                 if(Node.last_hovered_node.unit != null){
-                                    path_color =  Node.last_hovered_node.unit.is_friendly ? Node.movement_hint_color: Node.attack_hint_color;
+                                    // if unit is friendly
+                                    if(Node.last_hovered_node.unit.is_friendly) return;
 
                                     // if the unit is out of range don't show any attack or movement hint
-                                    if(Node.last_hovered_node.unit.range < Node.path.length - 1){
+                                    if(Node.selected_node.unit.range >= Node.path.length - i){
+                                        path_color =  Node.attack_hint_color;
+                                    }else{
                                         path_color =  Node.movement_hint_color;
                                     }
-
                                 }else{
                                     path_color =  Node.movement_hint_color;
                                 }
@@ -518,10 +517,11 @@ export class Node{
     }
 
     update(){
-        this.hex?.clear();
+        this.hex.clear();
         this.add_node_to_stage();
+        this.show_sprite();
         if(this.unit != null) {
-            this.unit.add_unit_to_stage();
+            this.unit.update_unit_on_stage();
         }
         if(this === Node.selected_node) this.set_selected();
 
