@@ -219,25 +219,77 @@ export function update_progress_bar(total_owned_stars: number){
 
 export function create_tech_tree(){
     //add canvas element
-    const TECH_TREE_CANVAS_WIDTH: number = document.getElementsByTagName("canvas")[0].width;
-    const TECH_TREE_CANVAS_HEIGHT: number = document.getElementsByTagName("canvas")[0].height;
+
+    const TECH_TREE_CANVAS_WIDTH: number = document.body.clientWidth - 256;
+    const TECH_TREE_CANVAS_HEIGHT: number = document.body.clientHeight - 512;
+    const SPACE_BETWEEN_NODES_X = 50;
+    const SPACE_BETWEEN_NODES_Y = 40;
+
+    let pan_x = 0;
+    let pan_y = 0;
+    let mouse_x = 0;
+    let mouse_y = 0;
+    let old_mouse_x = 0;
+    let old_mouse_y = 0;
+    let mouse_held = false;
 
     const tech_tree_canvas = document.createElement("canvas");
     tech_tree_canvas.id = "tech_tree";
 
     tech_tree_canvas.width =  TECH_TREE_CANVAS_WIDTH;
     tech_tree_canvas.height = TECH_TREE_CANVAS_HEIGHT;
+    tech_tree_canvas.style.border = "solid 1px black";
+    tech_tree_canvas.style.borderRadius = "border-radius: 10px";
+    tech_tree_canvas.onmousedown = (event: any)=>{
+        mouse_held = true;
+        console.log("onmousedown")
+    }
+
+    tech_tree_canvas.onmousemove = (event: any)=>{
+        mouse_x = event.clientX;
+        mouse_y = event.clientY;
+        console.log("onmousemove")
+
+        if (mouse_held) {
+            pan_x += old_mouse_x - mouse_x;
+            pan_y += old_mouse_y - mouse_y;
+        }
+
+        old_mouse_x = mouse_x;
+        old_mouse_y = mouse_y;
+
+        renderer.start();
+    }
+
+    tech_tree_canvas.onmouseup = (event: any)=>{
+        mouse_held = false;
+        console.log("onmouseup")
+    }
     document.getElementById("tech_tree_container")?.appendChild(tech_tree_canvas);
     // make a new graph
     // @ts-ignore
     let graph = new Springy.Graph();
 
-    let nodes = [[tech_tree_root, graph.newNode({label: tech_tree_root.name})]]
+    let nodes = [[tech_tree_root, graph.newNode({
+        name: tech_tree_root.name,
+        image: tech_tree_root.image,
+        description: tech_tree_root.description,
+        cost: tech_tree_root.cost,
+        is_owned: tech_tree_root.is_owned
+    })]]
+
     while (nodes.length !== 0){
         let node_data: any = nodes.shift()
         node_data[0].children?.forEach((child: Technology)=>{
             if(child != null){
-                let graph_node_child = graph.newNode({label: child.name})
+                let graph_node_child = graph.newNode({
+                    name: child.name,
+                    image: child.image,
+                    description: child.description,
+                    cost: child.cost,
+                    is_owned: child.is_owned
+                })
+
                 graph.newEdge(node_data[1], graph_node_child);
                 nodes.push([child, graph_node_child]);
             }
@@ -249,12 +301,13 @@ export function create_tech_tree(){
     let layout = new Springy.Layout.ForceDirected(
         graph,
         300.0, // Spring stiffness
-        400.0, // Node repulsion
+        800.0, // Node repulsion
         0.5 // Damping
     );
 
     let canvas: any = document.getElementById('tech_tree');
     let ctx = canvas?.getContext('2d');
+
     // @ts-ignore
     let renderer = new Springy.Renderer(layout,
         function clear() {
@@ -268,32 +321,31 @@ export function create_tech_tree(){
             ctx.lineWidth = 3.0;
 
             ctx.beginPath();
-            ctx.moveTo(p1.x * 50, p1.y * 40);
-            ctx.lineTo(p2.x * 50, p2.y * 40);
+            ctx.moveTo(p1.x * SPACE_BETWEEN_NODES_X - pan_x, p1.y * SPACE_BETWEEN_NODES_Y - pan_y);
+            ctx.lineTo(p2.x * SPACE_BETWEEN_NODES_X - pan_x, p2.y * SPACE_BETWEEN_NODES_Y - pan_y);
             ctx.stroke();
 
             ctx.restore();
         },
         function drawNode(node: any, p: any) {
+            console.log(pan_x, pan_y);
             ctx.save();
             ctx.translate(TECH_TREE_CANVAS_WIDTH/2, TECH_TREE_CANVAS_HEIGHT/2);
 
-            ctx.font = "18px 'IM Fell English', 'Times New Roman', serif";
-
-            let width = ctx.measureText(node.data.label).width;
-            let x = p.x * 50;
-            let y = p.y * 40;
+            let width = ctx.measureText(node.data.name).width;
+            let x = p.x * SPACE_BETWEEN_NODES_X - pan_x;
+            let y = p.y * SPACE_BETWEEN_NODES_Y - pan_y;
             ctx.clearRect(x - width / 2.0 - 2, y - 10, width + 4, 20);
+            ctx.font = "18px 'IM Fell English', 'Times New Roman', serif";
+            ctx.fillText(node.data.description, x - width / 2.0, y + 25)
             ctx.fillStyle = '#000000';
-            ctx.fillText(node.data.label, x - width / 2.0, y + 5);
-
+            ctx.font = "28px 'IM Fell English', 'Times New Roman', serif";
+            ctx.fillText(node.data.name, x - width / 2.0 , y + 5);
             ctx.restore();
         }
     );
 
     renderer.start();
-
-
 }
 
 let is_tech_tree_hidden: boolean = true;
