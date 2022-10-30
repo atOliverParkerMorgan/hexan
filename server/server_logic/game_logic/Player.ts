@@ -6,6 +6,7 @@ import Range from "./Units/Range";
 import Cavalry from "./Units/Cavalry";
 import Settler from "./Units/Settler";
 import Map from "./Map/Map";
+import {Technology} from "./Technology/Technology";
 
 
 class Player{
@@ -13,7 +14,7 @@ class Player{
     units: Unit[];
     production_unit_types: string[];
 
-
+    root_tech_tree_node: Technology;
     total_owned_stars: number;
     // stars per a minute
     star_production: number;
@@ -30,6 +31,8 @@ class Player{
         this.star_production = 5;
 
         this.star_production_has_started = false;
+
+        this.root_tech_tree_node = Technology.init_tech_tree();
     }
 
     add_unit(x: number, y: number, name: string, map: Map): Unit{
@@ -98,9 +101,9 @@ class Player{
             unit_friendly.health -= unit_enemy.attack;
         }
 
-        if(unit_enemy.type !== Unit.RANGE) {
-            unit_enemy.health -= unit_friendly.attack;
-        }
+
+        unit_enemy.health -= unit_friendly.attack;
+
 
         const friendly_died = unit_friendly.health <= 0;
         const enemy_died = unit_enemy.health <= 0;

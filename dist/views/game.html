@@ -1,3 +1,5 @@
+<!-- technology tree -->
+
 <link rel="stylesheet" href="/stylesheets/game.css">
 
 <!-- debug -->
@@ -69,7 +71,7 @@
         <div class="w3-container w3-col s6 m6 l6" style="padding-top: 24px; padding-right: 10px">
             <div id="node_info_title" class="w3-wide" ><h2></h2></div>
             <div id="node_info_information" style="padding-top: 16px">
-            Gain <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"> <span id="gain_stars"></span> / min by harvesting
+                Gain <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"> <span id="gain_stars"></span> / min by harvesting
             </div>
 
         </div>
@@ -78,12 +80,19 @@
 
 <div class="w3-display-topleft w3-bar-block" id="star_info" style="width: auto; visibility: hidden">
     <h3 class="w3-container">
-       Total stars: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-right: 5px; padding-bottom: 5px;" alt="star image"><span  id="total_owned_stars" style="padding-right: 5px"></span> <span style="padding-left: 6px; padding-right: 6px"></span> Productivity: <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"><span id="star_production" style="padding-right: 5px"></span> / min <br>
+        Total stars: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-right: 5px; padding-bottom: 5px;" alt="star image"><span  id="total_owned_stars" style="padding-right: 5px"></span> <span style="padding-left: 6px; padding-right: 6px"></span> Productivity: <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"><span id="star_production" style="padding-right: 5px"></span> / min <br>
         <span id="star_loading_bar"></span> <span style="position: absolute; top: 34px; left: 180px ">|</span>
     </h3>
 
 </div>
 
+<!-- Tech tree image -->
+<div class="w3-display-bottomleft w3-bar-block" id="tech_button" style="width: auto">
+    <span><span class="w3-button w3-round w3-padding-8 w3-blue"><img src="/images/tech_tree.png"></span></span>
+</div>
+<div id="tech_tree_container">
+
+</div>
 <!-- Modal -->
 <div class="w3-container">
     <div id="modal" class="w3-modal w3-display-middle">

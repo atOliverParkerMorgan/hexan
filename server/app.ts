@@ -56,6 +56,7 @@ class App {
     this.app.use('/pixi_extras', express.static(__dirname + '/../node_modules/@pixi/graphics-extras/dist/browser/'));
     this.app.use('/pixi_viewport', express.static(__dirname + '/../node_modules/pixi-viewport/dist/'));
     this.app.use('/socket.io-client', express.static(__dirname + '/../node_modules/socket.io-client/dist/'));
+    this.app.use('/springy', express.static(__dirname + '/../node_modules/springy/'));
   }
 
   handle_error() {

@@ -1,5 +1,5 @@
 import {Player} from "./game_graphics/Player.js"
-import {init_canvas, HEX_SIDE_SIZE,} from "./game_graphics/Pixi.js";
+import {init_canvas, HEX_SIDE_SIZE, tech_tree_root, setup_tech_tree,} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {show_city_menu, show_modal} from "./UI_logic.js";
@@ -133,6 +133,8 @@ export namespace ClientSocket {
                     }
                     Node.all_nodes.push(row);
                     Player.production_unit_types = response_data.player.production_unit_types;
+
+                    setup_tech_tree(response_data.root_tech_tree_node);
 
                     // get star data after game setup is initialized
                     ClientSocket.get_data(ClientSocket.request_types.GET_STARS_DATA, <string>localStorage.getItem("game_token"), player_token)

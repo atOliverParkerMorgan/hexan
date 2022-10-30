@@ -276,32 +276,16 @@ export class Node{
                 show_unit_info(Node.selected_node.unit);
 
                 // send movement request to server
-                if(Node.last_hovered_node.unit == null || Node.selected_node.unit.type === Unit.MELEE) {
-                    console.log("movement")
-                    ClientSocket.send_data({
-                        request_type: ClientSocket.request_types.MOVE_UNITS,
-                        data: {
-                            game_token: localStorage.game_token,
-                            player_token: localStorage.player_token,
-                            unit_id: Node.selected_node.get_unit_id(),
-                            path: path_node_cords
-                        }
-                    })
-                }
-                // send attack request to server
-                else if (!Node.last_hovered_node.unit.is_friendly) {
-                    console.log("UI attacked unit")
-                    ClientSocket.send_data({
-                        request_type: ClientSocket.request_types.ATTACK_UNIT,
-                        data: {
-                            game_token: localStorage.game_token,
-                            player_token: localStorage.player_token,
-                            unit_id: Node.selected_node.unit.id,
-                            attacked_unit_id: Node.last_hovered_node.unit.id,
-                            path: path_node_cords
-                        }
-                    })
-                }
+
+                ClientSocket.send_data({
+                    request_type: ClientSocket.request_types.MOVE_UNITS,
+                    data: {
+                        game_token: localStorage.game_token,
+                        player_token: localStorage.player_token,
+                        unit_id: Node.selected_node.get_unit_id(),
+                        path: path_node_cords
+                    }
+                })
 
                 to_node.update();
                 node_from.update();

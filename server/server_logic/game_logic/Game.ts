@@ -4,6 +4,7 @@ import Player from "./Player";
 import {Node} from "./Map/Node";
 import {Unit} from "./Units/Unit";
 import {CityInterface} from "./City/CityInterface";
+import {Technology} from "./Technology/Technology";
 
 class Game{
     token: string;
@@ -19,12 +20,12 @@ class Game{
         this.map.generate_island_map();
     }
 
+
     start_star_production(){
         this.all_players.map((player: Player)=>{
             player.produce_stars();
         })
     }
-
 
     place_start_city(player: Player): void{
         for (const continent of this.map.all_continents) {
@@ -137,7 +138,8 @@ class Game{
             // @TODO is necessary?
             cities: this.get_cities_that_player_owns(player),
             player: player.get_data(),
-            units: this.get_visible_units(player)
+            units: this.get_visible_units(player),
+            root_tech_tree_node: player.root_tech_tree_node,
         }
     }
 }

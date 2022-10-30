@@ -66,16 +66,6 @@ export class Unit implements UnitInterface{
         // remove first element
         path.shift()
         this.move_along_path(game, player, socket, path);
-
-        // don't send invalid move
-        // }else{
-        //     ServerSocket.send_data(socket,
-        //         {
-        //         response_type: ServerSocket.response_types.INVALID_MOVE,
-        //         data: {unit: this}
-        //         },
-        //         player.token)
-        // }
     }
 
     // move this Unit along a valid path provided by the public
@@ -118,22 +108,28 @@ export class Unit implements UnitInterface{
             //     return;
             // }
 
-            // check if movement is valid
+            // check if movement is valid or if move can be translated as attack
             if(current_node.unit != null){
                 if(player.owns_this_unit(current_node.unit.id)){
                     ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
                     clearInterval(timeout);
                     return
-                }else {
+                }
+            }
+
+            // for range attack units
+            const destination = path[path.length - 1];
+            if(destination.unit != null){
+                if(!player.owns_this_unit(destination.unit.id) && this.range >= path.length) {
                     let path_cords: any = [];
                     path.map((node: Node)=>{
                         path_cords.push([node.x, node.y]);
                     })
 
-                    ServerSocket.send_unit_attack(socket, game, player, current_node.unit.id, this.id, new Path(game, path_cords))
+                    ServerSocket.send_unit_attack(socket, game, player, destination.unit.id, this.id, new Path(game, path_cords))
+                    clearInterval(timeout);
                     return;
                 }
-
             }
 
             // movement

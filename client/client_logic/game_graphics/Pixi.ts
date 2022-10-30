@@ -1,12 +1,33 @@
 import {Node} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
-import Unit from "./Unit/Unit.js";
+import {create_tech_tree, setup_tech_tree_button} from "../UI_logic.js";
+import {Technology} from "./Technology/Technology.js";
 
 export let HEX_SIDE_SIZE: number;
 export let DISTANCE_BETWEEN_HEX: number;
 export let WORLD_WIDTH: number;
 export let WORLD_HEIGHT: number;
 export let viewport: any;
+
+export let tech_tree_root: Technology;
+
+export function setup_tech_tree_node(node: any): Technology{
+     let children_node: Technology[] | null = []
+     if(node.children != null) {
+        for (const child of node.children) {
+            children_node.push(setup_tech_tree_node(child))
+        }
+     }else {
+         children_node = null;
+     }
+
+     return new Technology(children_node, node.name, node.image, node.description, node.cost, node.is_owned)
+}
+
+export function setup_tech_tree(tech_tree: any){
+    tech_tree_root = setup_tech_tree_node(tech_tree);
+    console.log(tech_tree_root)
+}
 
 // @ts-ignore
 export const app: any = new PIXI.Application({resizeTo: window, transparent: true,  autoresize: true })
@@ -71,6 +92,7 @@ export function a_star(start_node: Node, goal_node: Node){
 }
 
 export function init_canvas(map: any, cities: any){
+    setup_tech_tree_button();
 
     if(viewport != null){
         Node.all_nodes = [];

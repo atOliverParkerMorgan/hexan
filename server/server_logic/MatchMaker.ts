@@ -47,9 +47,11 @@ export namespace MatchMaker {
         const new_game = new Game(Utils.generate_token(player_token), map_size, 4);
         new_game.all_players.push(new Player(player_token));
         all_games.push(new_game);
+
         const player: Player | undefined = new_game?.get_player(player_token);
         if(player != null) {
             new_game.place_start_city(player);
+
             return new_game;
         }
     }

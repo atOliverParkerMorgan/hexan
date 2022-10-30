@@ -2,6 +2,8 @@ import {ClientSocket} from "./ClientSocket.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {Player} from "./game_graphics/Player.js";
+import {tech_tree_root} from "./game_graphics/Pixi.js";
+import {Technology} from "./game_graphics/Technology/Technology";
 
 let is_city_menu_visible = false;
 let is_mouse_on_city_menu = false;
@@ -214,6 +216,110 @@ export function update_progress_bar(total_owned_stars: number){
     }
     (<HTMLInputElement>document.getElementById("star_loading_bar")).innerText = bars;
 }
+
+export function create_tech_tree(){
+    //add canvas element
+    const TECH_TREE_CANVAS_WIDTH: number = document.getElementsByTagName("canvas")[0].width;
+    const TECH_TREE_CANVAS_HEIGHT: number = document.getElementsByTagName("canvas")[0].height;
+
+    const tech_tree_canvas = document.createElement("canvas");
+    tech_tree_canvas.id = "tech_tree";
+
+    tech_tree_canvas.width =  TECH_TREE_CANVAS_WIDTH;
+    tech_tree_canvas.height = TECH_TREE_CANVAS_HEIGHT;
+    document.getElementById("tech_tree_container")?.appendChild(tech_tree_canvas);
+    // make a new graph
+    // @ts-ignore
+    let graph = new Springy.Graph();
+
+    let nodes = [[tech_tree_root, graph.newNode({label: tech_tree_root.name})]]
+    while (nodes.length !== 0){
+        let node_data: any = nodes.shift()
+        node_data[0].children?.forEach((child: Technology)=>{
+            if(child != null){
+                let graph_node_child = graph.newNode({label: child.name})
+                graph.newEdge(node_data[1], graph_node_child);
+                nodes.push([child, graph_node_child]);
+            }
+        })
+
+    }
+
+    // @ts-ignore
+    let layout = new Springy.Layout.ForceDirected(
+        graph,
+        300.0, // Spring stiffness
+        400.0, // Node repulsion
+        0.5 // Damping
+    );
+
+    let canvas: any = document.getElementById('tech_tree');
+    let ctx = canvas?.getContext('2d');
+    // @ts-ignore
+    let renderer = new Springy.Renderer(layout,
+        function clear() {
+            ctx.clearRect(0, 0, TECH_TREE_CANVAS_WIDTH, TECH_TREE_CANVAS_HEIGHT);
+        },
+        function drawEdge(edge: any, p1: any, p2:any) {
+            ctx.save();
+            ctx.translate(TECH_TREE_CANVAS_WIDTH/2, TECH_TREE_CANVAS_HEIGHT/2);
+
+            ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+            ctx.lineWidth = 3.0;
+
+            ctx.beginPath();
+            ctx.moveTo(p1.x * 50, p1.y * 40);
+            ctx.lineTo(p2.x * 50, p2.y * 40);
+            ctx.stroke();
+
+            ctx.restore();
+        },
+        function drawNode(node: any, p: any) {
+            ctx.save();
+            ctx.translate(TECH_TREE_CANVAS_WIDTH/2, TECH_TREE_CANVAS_HEIGHT/2);
+
+            ctx.font = "18px 'IM Fell English', 'Times New Roman', serif";
+
+            let width = ctx.measureText(node.data.label).width;
+            let x = p.x * 50;
+            let y = p.y * 40;
+            ctx.clearRect(x - width / 2.0 - 2, y - 10, width + 4, 20);
+            ctx.fillStyle = '#000000';
+            ctx.fillText(node.data.label, x - width / 2.0, y + 5);
+
+            ctx.restore();
+        }
+    );
+
+    renderer.start();
+
+
+}
+
+let is_tech_tree_hidden: boolean = true;
+export function setup_tech_tree_button(){
+    (<HTMLInputElement>document.getElementById("tech_button")).onclick = ()=>{
+        if(is_tech_tree_hidden){
+            show_tech_tree();
+        }else{
+            hide_tech_tree();
+        }
+        is_tech_tree_hidden = !is_tech_tree_hidden;
+    }
+}
+
+export function show_tech_tree(){
+    document.getElementsByTagName("canvas")[0].style.visibility = "hidden";
+    (<HTMLInputElement>document.getElementById("tech_tree_container")).style.padding = "128px"
+    create_tech_tree();
+}
+
+export function hide_tech_tree(){
+    document.getElementsByTagName("canvas")[1].style.visibility = "visible";
+    (<HTMLInputElement>document.getElementById("tech_tree_container")).style.padding = "0px"
+    document.getElementById("tech_tree_container")?.removeChild(<HTMLInputElement>document.getElementById("tech_tree"))
+}
+
 
 export function show_modal(title: string, message: string, w3_color_classname: string){
     (<HTMLInputElement>document.getElementById("modal")).style.display = "block";
