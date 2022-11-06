@@ -20,7 +20,8 @@ export namespace ServerSocket {
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
         NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ENEMY_FOUND_RESPONSE: string, ATTACK_UNIT_RESPONSE: string,
-        MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, INVALID_ATTACK_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string} =  {
+        MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, PURCHASED_TECHNOLOGY_RESPONSE:string,
+        INVALID_ATTACK_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string} =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -43,13 +44,15 @@ export namespace ServerSocket {
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
         HARVEST_NODE: "HARVEST_NODE",
 
+        PURCHASED_TECHNOLOGY_RESPONSE: "PURCHASED_TECHNOLOGY_RESPONSE",
+
         INVALID_ATTACK_RESPONSE: "INVALID_ATTACK_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         INSUFFICIENT_FUNDS_RESPONSE: "INSUFFICIENT_FUNDS_RESPONSE",
     };
     export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
                                           readonly GET_ALL: string, readonly GET_MENU_INFO: string,
-                                          readonly GET_STARS_DATA: string, readonly PRODUCE_UNIT: string,
+                                          readonly GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly PURCHASE_TECHNOLOGY: string,
                                           readonly MOVE_UNITS: string, readonly HARVEST_NODE: string, readonly SETTLE: string,
                                           readonly ATTACK_UNIT: string, readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string} = {
 
@@ -61,6 +64,7 @@ export namespace ServerSocket {
         GET_STARS_DATA: "GET_STARS_DATA",
 
         PRODUCE_UNIT: "PRODUCE_UNIT",
+        PURCHASE_TECHNOLOGY: "PURCHASE_TECHNOLOGY",
         MOVE_UNITS: "MOVE_UNITS",
         HARVEST_NODE: "HARVEST_NODE",
         SETTLE: "SETTLE",
@@ -241,6 +245,24 @@ export namespace ServerSocket {
                                     game.map.get_node(request_data.node_x, request_data.node_y)?.harvest(player, socket);
                                     break;
 
+                                case ServerSocket.request_types.PURCHASE_TECHNOLOGY:
+                                    if(game.purchase_technology(request_data.player_token, request_data.tech_name)){
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.PURCHASED_TECHNOLOGY_RESPONSE,
+                                            data: {
+                                                root_tech_tree_node: player.root_tech_tree_node,
+                                                total_owned_stars: player.total_owned_stars
+                                            }
+                                        }, player.token);
+                                    }else{
+                                        ServerSocket.send_data(socket, {
+                                            response_type: ServerSocket.response_types.INSUFFICIENT_FUNDS_RESPONSE,
+                                            data: {
+                                                title: "Cannot purchase "+ request_data.tech_name,
+                                                message: "You don't have enough stars to purchase this technology"
+                                            }
+                                        }, player.token);
+                                    }
                             }
                         }
                     }

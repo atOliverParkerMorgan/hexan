@@ -3,7 +3,9 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {Player} from "./game_graphics/Player.js";
 import {tech_tree_root} from "./game_graphics/Pixi.js";
-import {Technology} from "./game_graphics/Technology/Technology";
+import {Technology, graph, nodes, interaction_nodes_values} from "./game_graphics/Technology/Technology.js";
+
+export let renderer: any;
 
 let is_city_menu_visible = false;
 let is_mouse_on_city_menu = false;
@@ -220,10 +222,12 @@ export function update_progress_bar(total_owned_stars: number){
 export function create_tech_tree(){
     //add canvas element
 
-    const TECH_TREE_CANVAS_WIDTH: number = document.body.clientWidth - 256;
-    const TECH_TREE_CANVAS_HEIGHT: number = document.body.clientHeight - 512;
-    const SPACE_BETWEEN_NODES_X = 50;
-    const SPACE_BETWEEN_NODES_Y = 40;
+    const TECH_TREE_CANVAS_WIDTH: number = document.body.clientWidth;
+    const TECH_TREE_CANVAS_HEIGHT: number = document.body.clientHeight;
+    const SPACE_BETWEEN_NODES_X = 160;
+    const SPACE_BETWEEN_NODES_Y = 100;
+
+    // is used for selecting tech tree nodes
 
     let pan_x = 0;
     let pan_y = 0;
@@ -240,20 +244,39 @@ export function create_tech_tree(){
     tech_tree_canvas.height = TECH_TREE_CANVAS_HEIGHT;
     tech_tree_canvas.style.border = "solid 1px black";
     tech_tree_canvas.style.borderRadius = "border-radius: 10px";
+
+
     tech_tree_canvas.onmousedown = (event: any)=>{
         mouse_held = true;
-        console.log("onmousedown")
+        interaction_nodes_values.map((node_cords: (string | number | boolean)[])=>{
+            if(node_cords[5]){
+                ClientSocket.request_buy_technology(<string> node_cords[0])
+                mouse_held = false;
+                return
+            }
+        });
     }
 
     tech_tree_canvas.onmousemove = (event: any)=>{
         mouse_x = event.clientX;
         mouse_y = event.clientY;
-        console.log("onmousemove")
 
         if (mouse_held) {
             pan_x += old_mouse_x - mouse_x;
             pan_y += old_mouse_y - mouse_y;
         }
+        const x = mouse_x - TECH_TREE_CANVAS_WIDTH/2;
+        const y = mouse_y - TECH_TREE_CANVAS_HEIGHT/2;
+
+
+        interaction_nodes_values.map((node_cords: (string | number | boolean)[])=>{
+            if(node_cords[1] < x && node_cords[2] < y && node_cords[3] > x && node_cords[4] > y){
+                node_cords[5] = true;
+                return
+            }else{
+                node_cords[5] = false;
+            }
+        })
 
         old_mouse_x = mouse_x;
         old_mouse_y = mouse_y;
@@ -263,39 +286,11 @@ export function create_tech_tree(){
 
     tech_tree_canvas.onmouseup = (event: any)=>{
         mouse_held = false;
-        console.log("onmouseup")
     }
     document.getElementById("tech_tree_container")?.appendChild(tech_tree_canvas);
+
     // make a new graph
-    // @ts-ignore
-    let graph = new Springy.Graph();
-
-    let nodes = [[tech_tree_root, graph.newNode({
-        name: tech_tree_root.name,
-        image: tech_tree_root.image,
-        description: tech_tree_root.description,
-        cost: tech_tree_root.cost,
-        is_owned: tech_tree_root.is_owned
-    })]]
-
-    while (nodes.length !== 0){
-        let node_data: any = nodes.shift()
-        node_data[0].children?.forEach((child: Technology)=>{
-            if(child != null){
-                let graph_node_child = graph.newNode({
-                    name: child.name,
-                    image: child.image,
-                    description: child.description,
-                    cost: child.cost,
-                    is_owned: child.is_owned
-                })
-
-                graph.newEdge(node_data[1], graph_node_child);
-                nodes.push([child, graph_node_child]);
-            }
-        })
-
-    }
+    Technology.init_graph_arrays();
 
     // @ts-ignore
     let layout = new Springy.Layout.ForceDirected(
@@ -307,40 +302,113 @@ export function create_tech_tree(){
 
     let canvas: any = document.getElementById('tech_tree');
     let ctx = canvas?.getContext('2d');
+    let background_gradient=ctx.createLinearGradient(0, 0, TECH_TREE_CANVAS_WIDTH, TECH_TREE_CANVAS_HEIGHT);
+    background_gradient.addColorStop(0, "#2c5364");
+    background_gradient.addColorStop(0.5, "#203a43");
+    background_gradient.addColorStop(1, "#0f2027");
 
     // @ts-ignore
-    let renderer = new Springy.Renderer(layout,
+   renderer = new Springy.Renderer(layout,
         function clear() {
-            ctx.clearRect(0, 0, TECH_TREE_CANVAS_WIDTH, TECH_TREE_CANVAS_HEIGHT);
+            ctx.fillStyle = background_gradient;
+            ctx.fillRect(0, 0, TECH_TREE_CANVAS_WIDTH, TECH_TREE_CANVAS_HEIGHT);
         },
         function drawEdge(edge: any, p1: any, p2:any) {
             ctx.save();
             ctx.translate(TECH_TREE_CANVAS_WIDTH/2, TECH_TREE_CANVAS_HEIGHT/2);
 
-            ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+            ctx.strokeStyle = 'rgba(255,255,255)';
             ctx.lineWidth = 3.0;
 
             ctx.beginPath();
-            ctx.moveTo(p1.x * SPACE_BETWEEN_NODES_X - pan_x, p1.y * SPACE_BETWEEN_NODES_Y - pan_y);
-            ctx.lineTo(p2.x * SPACE_BETWEEN_NODES_X - pan_x, p2.y * SPACE_BETWEEN_NODES_Y - pan_y);
+            let x1 = p1.x * SPACE_BETWEEN_NODES_X - pan_x;
+            let y1 = p1.y * SPACE_BETWEEN_NODES_Y - pan_y;
+            let x2 = p2.x * SPACE_BETWEEN_NODES_X - pan_x;
+            let y2 = p2.y * SPACE_BETWEEN_NODES_Y - pan_y;
+
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
             ctx.stroke();
 
             ctx.restore();
         },
         function drawNode(node: any, p: any) {
-            console.log(pan_x, pan_y);
             ctx.save();
             ctx.translate(TECH_TREE_CANVAS_WIDTH/2, TECH_TREE_CANVAS_HEIGHT/2);
 
-            let width = ctx.measureText(node.data.name).width;
+            let name_measurement = ctx.measureText(node.data.name);
+            let lines = node.data.description.split("\n");
+
+            let longest_line = -1;
+            for (const line of lines) {
+                if(longest_line < ctx.measureText(line).width){
+                    longest_line = ctx.measureText(line).width;
+                }
+            }
+
             let x = p.x * SPACE_BETWEEN_NODES_X - pan_x;
             let y = p.y * SPACE_BETWEEN_NODES_Y - pan_y;
-            ctx.clearRect(x - width / 2.0 - 2, y - 10, width + 4, 20);
+
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.beginPath();
+
+            let image = new Image();
+            image.src = node.data.image;
+
+            // is used for root node
+            if(node.data.name !== "") {
+                const rect_x = x - name_measurement.width / 2.0 - longest_line;
+                const rect_y = y - 70 - 10 * lines.length;
+                const rect_width = (longest_line) * 2;
+                const rect_height = 100 + 20 * lines.length;
+
+                interaction_nodes_values.map((node_cords: (string | number | boolean)[])=>{
+                    if(node_cords[0] === node.data.name){
+                        // console.log("update")
+                        node_cords[1] = rect_x;
+                        node_cords[2] = rect_y;
+                        node_cords[3] = rect_x + rect_width;
+                        node_cords[4] = rect_y + rect_height;
+
+                        // color nodes depending on if the are owned by the player
+
+                        if(!node_cords[6]) {
+                            ctx.fillStyle = "#880808"
+                        }
+                        // is selected
+                        if(node_cords[5]){
+                            ctx.fillStyle = "#808080"
+                        }
+
+                        if(node_cords[6]) {
+                            ctx.fillStyle = "#15783D"
+                        }
+                        return;
+                    }
+                })
+
+                ctx.roundRect(rect_x, rect_y, rect_width, rect_height, [0, 50, 0, 25]);
+                ctx.drawImage(image, x + (longest_line) - 90 , y - 60 - 10 * lines.length , 50 , 50);
+            }else{
+                const width = 130;
+                const height = 210;
+                ctx.drawImage(image, x - width / 2, y - height / 2, width, height);
+
+            }
+            ctx.fill();
+            ctx.stroke();
+
+
+            ctx.beginPath();
             ctx.font = "18px 'IM Fell English', 'Times New Roman', serif";
-            ctx.fillText(node.data.description, x - width / 2.0, y + 25)
-            ctx.fillStyle = '#000000';
-            ctx.font = "28px 'IM Fell English', 'Times New Roman', serif";
-            ctx.fillText(node.data.name, x - width / 2.0 , y + 5);
+            ctx.fillStyle = '#FFFFFF';
+            let y_bias = 1;
+            for (const line of lines) {
+                ctx.fillText(line, x - name_measurement.width / 2.0 + 10 - longest_line, y - 15 + 20 * y_bias);
+                y_bias ++;
+            }
+            ctx.font = "32px 'IM Fell English', 'Times New Roman', serif";
+            ctx.fillText(node.data.name, x -name_measurement.width / 2.0 + 10 - longest_line , y - 40 - 10 * lines.length);
             ctx.restore();
         }
     );
@@ -362,13 +430,13 @@ export function setup_tech_tree_button(){
 
 export function show_tech_tree(){
     document.getElementsByTagName("canvas")[0].style.visibility = "hidden";
-    (<HTMLInputElement>document.getElementById("tech_tree_container")).style.padding = "128px"
+    (<HTMLInputElement>document.getElementById("star_info")).style.color = "white"
     create_tech_tree();
 }
 
 export function hide_tech_tree(){
     document.getElementsByTagName("canvas")[1].style.visibility = "visible";
-    (<HTMLInputElement>document.getElementById("tech_tree_container")).style.padding = "0px"
+    (<HTMLInputElement>document.getElementById("star_info")).style.color = "black"
     document.getElementById("tech_tree_container")?.removeChild(<HTMLInputElement>document.getElementById("tech_tree"))
 }
 

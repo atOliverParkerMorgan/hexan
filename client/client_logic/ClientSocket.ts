@@ -10,7 +10,7 @@ export namespace ClientSocket {
     export const response_types: { ALL_RESPONSE: string, MAP_RESPONSE: string, UNIT_MOVED_RESPONSE: string,
             UNITS_RESPONSE: string, UNIT_RESPONSE: string, MENU_INFO_RESPONSE: string,
             HARVEST_NODE_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,  ENEMY_FOUND_RESPONSE:string, NEW_CITY: string, CANNOT_SETTLE: string,
-            STARS_DATA_RESPONSE: string, INVALID_MOVE_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
+            STARS_DATA_RESPONSE: string, PURCHASED_TECHNOLOGY_RESPONSE: string, INVALID_MOVE_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
         ATTACK_UNIT_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string } = {
 
         // game play
@@ -32,6 +32,8 @@ export namespace ClientSocket {
 
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
 
+        PURCHASED_TECHNOLOGY_RESPONSE: "PURCHASED_TECHNOLOGY_RESPONSE",
+
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
 
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
@@ -42,8 +44,8 @@ export namespace ClientSocket {
     };
     export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
                             readonly GET_MENU_INFO: string, GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly HARVEST_NODE: string,
-                            readonly MOVE_UNITS: string, readonly SETTLE: string, ATTACK_UNIT: string, readonly FIND_1v1_OPPONENT: string,
-                            readonly FIND_2v2_OPPONENTS: string } = {
+                            readonly PURCHASE_TECHNOLOGY: string, readonly MOVE_UNITS: string, readonly SETTLE: string, ATTACK_UNIT: string,
+                            readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string } = {
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
@@ -53,6 +55,7 @@ export namespace ClientSocket {
 
         PRODUCE_UNIT: "PRODUCE_UNIT",
         HARVEST_NODE: "HARVEST_NODE",
+        PURCHASE_TECHNOLOGY: "PURCHASE_TECHNOLOGY",
         MOVE_UNITS: "MOVE_UNITS",
         SETTLE: "SETTLE",
 
@@ -103,11 +106,7 @@ export namespace ClientSocket {
 
                 case ClientSocket.response_types.UNIT_RESPONSE:
                     Player.add_unit(response_data.unit);
-
-                    let total_owned_stars = response_data.total_owned_stars;
-                    if(total_owned_stars != null){
-                        Player.set_total_owned_stars(total_owned_stars);
-                    }
+                    Player.update_total_number_of_stars(response_data);
 
                     break;
 
@@ -248,6 +247,11 @@ export namespace ClientSocket {
                     show_modal(response_data.title, response_data.message, "w3-red");
                     break;
 
+                case ClientSocket.response_types.PURCHASED_TECHNOLOGY_RESPONSE:
+                    setup_tech_tree(response_data.root_tech_tree_node);
+                    Player.update_total_number_of_stars(response_data);
+                    break;
+
                 case ClientSocket.response_types.HARVEST_NODE_RESPONSE:
                     Player.setup_star_production(response_data);
                     // update node to show that it is harvested
@@ -298,6 +302,17 @@ export namespace ClientSocket {
             data: {
                 node_x: node_x,
                 node_y: node_y,
+                player_token: localStorage.player_token,
+                game_token: localStorage.game_token
+            }
+        })
+    }
+
+    export function request_buy_technology(tech_name: string){
+        ClientSocket.send_data({
+            request_type: ClientSocket.request_types.PURCHASE_TECHNOLOGY,
+            data: {
+                tech_name: tech_name,
                 player_token: localStorage.player_token,
                 game_token: localStorage.game_token
             }

@@ -1,6 +1,6 @@
 import {Node} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
-import {create_tech_tree, setup_tech_tree_button} from "../UI_logic.js";
+import {setup_tech_tree_button} from "../UI_logic.js";
 import {Technology} from "./Technology/Technology.js";
 
 export let HEX_SIDE_SIZE: number;
@@ -26,7 +26,7 @@ export function setup_tech_tree_node(node: any): Technology{
 
 export function setup_tech_tree(tech_tree: any){
     tech_tree_root = setup_tech_tree_node(tech_tree);
-    console.log(tech_tree_root)
+    Technology.init_graph_arrays();
 }
 
 // @ts-ignore

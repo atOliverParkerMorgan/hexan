@@ -130,6 +130,13 @@ class Game{
         return output;
     }
 
+    purchase_technology(player_token: string, tech_name: string): boolean {
+        const player = this.get_player(player_token);
+        if (player == null) return false
+
+        return Technology.purchase(player.root_tech_tree_node, tech_name, player);
+    }
+
 
     get_data(player: Player){
 

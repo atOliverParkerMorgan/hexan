@@ -130,4 +130,11 @@ export namespace Player {
         Node.all_nodes[unit.y][unit.x].unit = graphics_unit;
     }
 
+    export function update_total_number_of_stars(response_data: any){
+        let total_owned_stars = response_data.total_owned_stars;
+        if(total_owned_stars != null){
+            set_total_owned_stars(total_owned_stars);
+        }
+    }
+
 }
