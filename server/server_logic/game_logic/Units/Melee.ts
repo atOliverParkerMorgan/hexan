@@ -15,6 +15,19 @@ class Melee extends Unit{
         action: Unit.FORTIFY,
         type: Unit.MELEE
     }
+
+    public static readonly SPEARMAN: UnitInitData = {
+        name: "Spearman",
+
+        attack: 40,
+        health: 100,
+        range: 1,
+        movement: 100,
+        cost: 4,
+
+        action: Unit.FORTIFY,
+        type: Unit.MELEE
+    }
     constructor(x: number, y: number, id: string, map: Map, unit_init_data: UnitInitData) {
         super(x, y, id, map, unit_init_data);
     }

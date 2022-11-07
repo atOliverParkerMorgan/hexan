@@ -240,7 +240,7 @@ export class Node{
             player.increase_production(this.production_stars);
             ServerSocket.send_node_harvested_response(socket, this, player);
         }else {
-            ServerSocket.insufficient_funds_response(socket, player, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost))} to harvest this node`);
+            ServerSocket.error_notification_response(socket, player, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost))} to harvest this node`);
 
         }
     }

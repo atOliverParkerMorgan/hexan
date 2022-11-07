@@ -21,7 +21,7 @@ export namespace ServerSocket {
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
         NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ENEMY_FOUND_RESPONSE: string, ATTACK_UNIT_RESPONSE: string,
         MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, PURCHASED_TECHNOLOGY_RESPONSE:string,
-        INVALID_ATTACK_RESPONSE: string, INSUFFICIENT_FUNDS_RESPONSE: string} =  {
+        INVALID_ATTACK_RESPONSE: string, ERROR_RESPONSE: string} =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -48,7 +48,7 @@ export namespace ServerSocket {
 
         INVALID_ATTACK_RESPONSE: "INVALID_ATTACK_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
-        INSUFFICIENT_FUNDS_RESPONSE: "INSUFFICIENT_FUNDS_RESPONSE",
+        ERROR_RESPONSE: "ERROR_RESPONSE",
     };
     export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
                                           readonly GET_ALL: string, readonly GET_MENU_INFO: string,
@@ -188,7 +188,13 @@ export namespace ServerSocket {
                                 case ServerSocket.request_types.PRODUCE_UNIT:
                                     const city = game.get_city(request_data.city_name, player);
                                     const unit_type = request_data.unit_type;
-                                    if (city != null) {
+                                    if (city == null) {
+                                        ServerSocket.error_notification_response(socket, player, "Select as city", "You must select a city.")
+                                    }
+                                    else if(game.map.get_node(city.x, city.y)?.unit != null){
+                                        ServerSocket.error_notification_response(socket, player, "Cannot produce", "You cannot produce a unit when the city is already occupied by one")
+                                    }
+                                    else{
                                         city.produce_unit_and_send_response(socket, unit_type, game.map);
                                     }
                                     break;
@@ -256,7 +262,7 @@ export namespace ServerSocket {
                                         }, player.token);
                                     }else{
                                         ServerSocket.send_data(socket, {
-                                            response_type: ServerSocket.response_types.INSUFFICIENT_FUNDS_RESPONSE,
+                                            response_type: ServerSocket.response_types.ERROR_RESPONSE,
                                             data: {
                                                 title: "Cannot purchase "+ request_data.tech_name,
                                                 message: "You don't have enough stars to purchase this technology"
@@ -298,9 +304,9 @@ export namespace ServerSocket {
             player.token);
     }
 
-    export function insufficient_funds_response(socket: Socket, player: Player, title: string, message: string){
+    export function error_notification_response(socket: Socket, player: Player, title: string, message: string){
         ServerSocket.send_data(socket, {
-                response_type: ServerSocket.response_types.INSUFFICIENT_FUNDS_RESPONSE,
+                response_type: ServerSocket.response_types.ERROR_RESPONSE,
                 data: {
                     title: title,
                     message: message

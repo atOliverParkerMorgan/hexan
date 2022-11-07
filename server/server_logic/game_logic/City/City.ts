@@ -56,7 +56,7 @@ class City{
 
         // check if payment is valid if not terminate
         if(!this.owner.is_payment_valid(cost)) {
-            ServerSocket.insufficient_funds_response(socket, this.owner, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(this.owner.total_owned_stars - cost))} more stars to buy a ${unit_name}`)
+            ServerSocket.error_notification_response(socket, this.owner, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(this.owner.total_owned_stars - cost))} more stars to buy a ${unit_name}`)
             return;
         }
         this.owner.pay_stars(cost);
