@@ -46,7 +46,12 @@ export function show_node_info(node: Node){
 
     const div_unit_info_menu: any = (<HTMLInputElement >document.getElementById("node_info_menu"));
     div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hide_node_info;
-    div_unit_info_menu.querySelector("#harvest_button").onclick = () => ClientSocket.request_harvest(node.x, node.y);
+    if(node.can_be_harvested()){
+        div_unit_info_menu.querySelector("#harvest_button").style.visibility = "visible";
+        div_unit_info_menu.querySelector("#harvest_button").onclick = () => ClientSocket.request_harvest(node.x, node.y);
+    }else{
+        div_unit_info_menu.querySelector("#harvest_button").style.visibility = "hidden";
+    }
 }
 
 function update_node_action_button_and_information(node: Node){
@@ -66,6 +71,7 @@ function update_node_action_button_and_information(node: Node){
 }
 
 export function hide_node_info(){
+    (<HTMLInputElement>document.getElementById("harvest_button")).style.visibility = "hidden";
     (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "hidden";
 }
 
@@ -249,7 +255,8 @@ export function create_tech_tree(){
     tech_tree_canvas.onmousedown = (event: any)=>{
         mouse_held = true;
         interaction_nodes_values.map((node_cords: (string | number | boolean)[])=>{
-            if(node_cords[5]){
+            // make sure that user is hovering over this node and that it isn't already purchased
+            if(node_cords[5] && !node_cords[6]){
                 ClientSocket.request_buy_technology(<string> node_cords[0])
                 mouse_held = false;
                 return
@@ -408,7 +415,15 @@ export function create_tech_tree(){
                 y_bias ++;
             }
             ctx.font = "32px 'IM Fell English', 'Times New Roman', serif";
-            ctx.fillText(node.data.name, x -name_measurement.width / 2.0 + 10 - longest_line , y - 40 - 10 * lines.length);
+            ctx.fillText(node.data.name, x - name_measurement.width / 2.0 + 10 - longest_line , y - 40 - 10 * lines.length);
+
+            if(node.data.name != "") {
+                let star_image = new Image();
+                star_image.src = "/images/star.png";
+                const star_width = 30;
+                ctx.drawImage(star_image, x + (longest_line) - 125 , y -35 - 10 * lines.length - star_width, star_width, star_width);
+                ctx.fillText(node.data.cost, x + longest_line - 85, y - 40 - 10 * lines.length)
+            }
             ctx.restore();
         }
     );

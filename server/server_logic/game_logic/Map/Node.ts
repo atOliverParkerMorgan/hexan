@@ -233,14 +233,15 @@ export class Node{
     }
 
     harvest(player: Player, socket: any){
-        if(this.is_harvested) return;
+        if(this.is_harvested) ServerSocket.something_wrong_response(socket, player, 'CANNOT HARVEST', `You cannot harvest a already harvested node`);
 
         if(player.is_payment_valid(this.harvest_cost)){
             player.pay_stars(this.harvest_cost);
             player.increase_production(this.production_stars);
+            this.is_harvested = true;
             ServerSocket.send_node_harvested_response(socket, this, player);
         }else {
-            ServerSocket.insufficient_funds_response(socket, player, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost))} to harvest this node`);
+            ServerSocket.something_wrong_response(socket, player, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost))} to harvest this node`);
 
         }
     }
@@ -263,7 +264,7 @@ export class Node{
 
         // hide the hidden node and cites
         if(!this.is_shown.includes(player_token)){
-           type = Node.HIDDEN;
+           // type = Node.HIDDEN;
            sprite_name = "";
            city_data = null;
         }

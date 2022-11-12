@@ -21,8 +21,10 @@ export class Node{
     public static readonly BEACH: number = 0xFFFF00;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
     public static readonly HIDDEN: number = 0xE0D257;
-    // if type is null => the node is a city therefore it has not type
+    public static readonly CAN_BE_HARVESTED = 0xFFBF00;
+    public static readonly HARVESTED = 0xFF7800;
 
+    // if type is null => the node is a city therefore it has not type
     public static readonly LEFT: number = 0;
     public static readonly RIGHT: number = 1;
     public static readonly TOP_LEFT: number = 2;
@@ -105,8 +107,6 @@ export class Node{
         this.line_borders_cords = line_borders_cords;
         this.sprite_name = sprite_name;
 
-        this.add_node_to_stage()
-
         if(!this.is_hidden) this.set_border(Node.LAKE, 5, 1 , this.line_borders_cords);
 
         // used for A* searching algorithm
@@ -147,12 +147,13 @@ export class Node{
     add_node_to_stage(){
         // draw hex
         this.hex = new Graphics();
-
-        if(this.city != null){
-            this.hex.beginFill(this.city.get_node_color(), this.opacity);
-        }
+        if(this.city != null)this.hex.beginFill(this.city.get_node_color(), this.opacity);
         else if(this.is_hidden) this.hex.beginFill(Node.HIDDEN, this.opacity);
-        else this.hex.beginFill(this.type, this.opacity);
+        else{
+            if(this.can_be_harvested()) this.hex.beginFill(Node.CAN_BE_HARVESTED, this.opacity);
+            else if(this.is_harvested) this.hex.beginFill(Node.HARVESTED, this.opacity);
+            else this.hex.beginFill(this.type, this.opacity);
+        }
 
         this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
         this.hex.endFill();
@@ -160,7 +161,7 @@ export class Node{
         this.hex.interactive = true;
         this.hex.button = true;
 
-        this.hex.on('click', (event: any) => {
+        this.hex.on('click', () => {
             this.on_click();
         });
         this.hex.on('mouseover', () => { this.set_hovered() });
@@ -500,10 +501,19 @@ export class Node{
         }
     }
 
+    can_be_harvested(){
+        if(this.is_harvested || this.city != null) return false;
+        for (const neighbour of this.get_neighbours()) {
+            if(neighbour?.is_harvested || neighbour?.city != null){
+                return true;
+            }
+        }
+        return false;
+    }
+
     update(){
-        this.hex.clear();
+        this?.hex?.clear();
         this.add_node_to_stage();
-        this.show_sprite();
         if(this.unit != null) {
             this.unit.update_unit_on_stage();
         }
