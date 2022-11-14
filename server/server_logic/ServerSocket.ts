@@ -100,7 +100,6 @@ export namespace ServerSocket {
                     const request_type = args[0].request_type;
                     const request_data = args[0].data;
                     console.log(`REQUEST TYPE: ${request_type}`)
-                   // console.log(`got some data player_token: ${request_data.player_token}`)
 
                     const game = MatchMaker.get_game(request_data.game_token);
 

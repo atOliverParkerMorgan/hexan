@@ -1,4 +1,7 @@
 import Player from "../Player";
+import Range from "../Units/Range";
+import Cavalry from "../Units/Cavalry";
+import Melee from "../Units/Melee";
 
 export class Technology{
     children: Technology[] | null;
@@ -39,6 +42,17 @@ export class Technology{
             if (node.cost <= player.total_owned_stars) {
                 player.total_owned_stars -= node.cost;
                 node.is_owned = true;
+
+                // technology logic
+                if(tech_name === "Archery"){
+                    player.production_unit.push(Range.ARCHER);
+                }else if(tech_name === "Horseman"){
+                    player.production_unit.push(Cavalry.HORSEMAN);
+                }else if(tech_name === "Spearman"){
+                    player.production_unit.push(Melee.SPEARMAN);
+                }
+
+
                 return true;
             }
 

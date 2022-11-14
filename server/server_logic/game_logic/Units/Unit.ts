@@ -82,7 +82,7 @@ export class Unit implements UnitInterface{
 
             const current_node: Node = path[0];
 
-            // // check if movement is valid
+            // check if movement is valid
             // let is_invalid = false
             // game.all_players.map((in_game_player: Player)=>{
             //     if(in_game_player.token !== player.token){

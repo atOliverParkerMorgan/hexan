@@ -166,47 +166,36 @@ function show_city_data(city: any){
    ul_unit_menu.id = "unit_menu";
    ul_unit_menu.className = "w3-ul w3-card-4";
 
-   if(Player.production_unit_types.length === 0){
+   if(Player.production_units.length === 0){
        div_side_menu.querySelector("#unit_title").visibility = "hidden";
    }
    // unit item
-   for(const unit_type of Player.production_unit_types){
-       let unit_item  = document.createElement("li");
-       unit_item.className = "w3-bar";
-       unit_item.innerHTML = loadFile("/views/unit_item.html")
+   for(const unit of Player.production_units){
+       let unit_html  = document.createElement("li");
+       unit_html.className = "w3-bar";
+       unit_html.innerHTML = loadFile("/views/unit_item.html")
 
-       switch (unit_type) {
+       unit_html = set_unit_data(unit_html, unit.name, "/images/"+unit.name+".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
 
-           case Unit.MELEE:
-                unit_item = set_unit_data(unit_item, "Warrior", "/images/warrior.png", Unit.MELEE, 40, 100, 10, 4);
-                break;
-           case Unit.RANGE:
-                unit_item = set_unit_data(unit_item, "Slinger", "/images/slinger.png", Unit.RANGE, 20, 80, 10, 6);
-                break;
-            case Unit.SETTLER:
-                unit_item = set_unit_data(unit_item, "Settler", "/images/settler.png", Unit.SETTLER, 0, 20, 10, 20);
-                break;
-       }
-
-       ul_unit_menu.appendChild(unit_item);
+       ul_unit_menu.appendChild(unit_html);
        div_side_menu.appendChild(ul_unit_menu)
    }
 }
 
-function set_unit_data(unit_type: any, unit_name: string, src: string, type: string, damage: number, health: number, movement: number, cost: number){
-    unit_type.querySelector("#image").src = src
-    unit_type.querySelector("#produce").src = "/images/production.png"
-    unit_type.querySelector("#produce").onclick = function () {
+function set_unit_data(unit_html: any, unit_name: string, src: string, type: string, damage: number, health: number, movement: number, cost: number){
+    unit_html.querySelector("#image").src = src
+    unit_html.querySelector("#produce").src = "/images/production.png"
+    unit_html.querySelector("#produce").onclick = function () {
         ClientSocket.request_production(unit_name);
     };
-    unit_type.querySelector("#name").innerText = unit_name;
-    unit_type.querySelector("#type").innerText = type;
-    unit_type.querySelector("#cost").innerText = cost;
-    unit_type.querySelector("#damage").innerText = damage;
-    unit_type.querySelector("#health").innerText = health;
-    unit_type.querySelector("#movement").innerText = movement;
+    unit_html.querySelector("#name").innerText = unit_name;
+    unit_html.querySelector("#type").innerText = type;
+    unit_html.querySelector("#cost").innerText = cost;
+    unit_html.querySelector("#damage").innerText = damage;
+    unit_html.querySelector("#health").innerText = health;
+    unit_html.querySelector("#movement").innerText = movement;
 
-    return unit_type;
+    return unit_html;
 }
 
 // updates the total stars on screen

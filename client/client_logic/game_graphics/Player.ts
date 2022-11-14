@@ -15,7 +15,7 @@ export namespace Player {
     let total_owned_stars: number = 0;
     let star_production: number = 0;
 
-    export let production_unit_types: string[] = [];
+    export let production_units: any[] = [];
 
     // player star logic
     export function produce_stars() {

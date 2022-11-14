@@ -8,11 +8,10 @@ import Settler from "./Units/Settler";
 import Map from "./Map/Map";
 import {Technology} from "./Technology/Technology";
 
-
 class Player{
     token: string;
     units: Unit[];
-    production_unit_types: string[];
+    production_unit: any[];
 
     root_tech_tree_node: Technology;
     total_owned_stars: number;
@@ -25,7 +24,7 @@ class Player{
         this.token = token;
         this.units = [];
         // units that this player can produce
-        this.production_unit_types = [Unit.MELEE, Unit.RANGE, Unit.SETTLER];
+        this.production_unit = [Melee.WARRIOR, Range.SLINGER, Settler.SETTLER_UNIT];
 
         this.total_owned_stars = 10;
         this.star_production = 5;
@@ -41,8 +40,17 @@ class Player{
             case Melee.WARRIOR.name:
                 new_unit = new Melee(x, y, Math.random().toString(), map, Melee.WARRIOR);
                 break;
+
+            case Melee.SPEARMAN.name:
+                new_unit = new Melee(x, y, Math.random().toString(), map, Melee.SPEARMAN);
+                break;
+
             case Range.SLINGER.name:
-                new_unit = new Range(x, y, Math.random().toString(), map, Range.SLINGER, );
+                new_unit = new Range(x, y, Math.random().toString(), map, Range.SLINGER);
+                break;
+
+            case Range.ARCHER.name:
+                new_unit = new Range(x, y, Math.random().toString(), map, Range.ARCHER);
                 break;
 
             case Cavalry.HORSEMAN.name:
@@ -145,7 +153,7 @@ class Player{
     get_data(){
         return {
             // units that this player can produce
-            production_unit_types: this.production_unit_types,
+            production_unit_types: this.production_unit,
         }
     }
 }
