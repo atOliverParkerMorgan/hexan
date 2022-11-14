@@ -262,6 +262,9 @@ export namespace ClientSocket {
                 case ClientSocket.response_types.HARVEST_NODE_RESPONSE:
                     // update node to show that it is harvested
                     Player.setup_star_production(response_data);
+
+                    (<HTMLInputElement>document.getElementById("harvest_button")).style.visibility = "hidden";
+
                     const node = Node.all_nodes[response_data.node.y][response_data.node.x];
                     node.is_harvested = response_data.node.is_harvested;
                     node.update();

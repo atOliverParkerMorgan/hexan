@@ -137,4 +137,8 @@ export namespace Player {
         }
     }
 
+    export function get_total_number_of_stars(){
+        return total_owned_stars;
+    }
+
 }

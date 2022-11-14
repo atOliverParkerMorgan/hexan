@@ -2,7 +2,6 @@ import {ClientSocket} from "./ClientSocket.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {Player} from "./game_graphics/Player.js";
-import {tech_tree_root} from "./game_graphics/Pixi.js";
 import {Technology, graph, nodes, interaction_nodes_values} from "./game_graphics/Technology/Technology.js";
 
 export let renderer: any;
@@ -48,6 +47,11 @@ export function show_node_info(node: Node){
     div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hide_node_info;
     if(node.can_be_harvested()){
         div_unit_info_menu.querySelector("#harvest_button").style.visibility = "visible";
+        if(Player.get_total_number_of_stars() < node.harvest_cost){
+            document.getElementById("harvest_button")?.classList.add("w3-red");
+        }else{
+            document.getElementById("harvest_button")?.classList.add("w3-green");
+        }
         div_unit_info_menu.querySelector("#harvest_button").onclick = () => ClientSocket.request_harvest(node.x, node.y);
     }else{
         div_unit_info_menu.querySelector("#harvest_button").style.visibility = "hidden";
@@ -209,7 +213,7 @@ function set_unit_data(unit_type: any, unit_name: string, src: string, type: str
 export function update_star_info(total_owned_stars: number, star_production?: number){
     (<HTMLInputElement>document.getElementById("star_info")).style.visibility = "visible";
 
-    (<HTMLInputElement>document.getElementById("total_owned_stars")).innerText = total_owned_stars.toString();
+    (<HTMLInputElement>document.getElementById("total_owned_stars")).innerText = Math.floor(total_owned_stars).toString();
     if(star_production != null) {
         (<HTMLInputElement>document.getElementById("star_production")).innerText = star_production.toString();
     }

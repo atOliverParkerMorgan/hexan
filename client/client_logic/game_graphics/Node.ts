@@ -503,8 +503,16 @@ export class Node{
 
     can_be_harvested(){
         if(this.is_harvested || this.city != null) return false;
+
+        let harvested_neighbours = 0;
         for (const neighbour of this.get_neighbours()) {
-            if(neighbour?.is_harvested || neighbour?.city != null){
+            if(neighbour?.city != null){
+                return true;
+            }
+            if(neighbour?.is_harvested){
+                harvested_neighbours ++;
+            }
+            if(harvested_neighbours === 2){
                 return true;
             }
         }

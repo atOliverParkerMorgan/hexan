@@ -36,6 +36,7 @@ class Continent{
 
     add_grass_node(node: Node): void{
         node.type = Node.GRASS;
+        node.sprite_name = "";
 
         this.grass_nodes.push(node);
         this.all_nodes.push(node);
@@ -47,6 +48,7 @@ class Continent{
 
     add_beach_node(node: Node): void{
         node.type = Node.BEACH;
+        node.sprite_name = "sandbeach_3.png";
 
         this.beach_nodes.push(node);
         this.all_nodes.push(node);
@@ -58,12 +60,7 @@ class Continent{
 
     add_mountain_node(node: Node, mountain_type: number): void{
         node.type = Node.MOUNTAIN;
-
-        // if(mountain_type === Map.NORMAL_MOUNTAIN) {
-        //     node.sprite_name = "mountain_" + Utils.random_int(1, 3)  + ".png"
-        // }else if(mountain_type === Map.SNOWY_MOUNTAIN){
         node.sprite_name = "mountain_" + Utils.random_int(4, 6) + ".png"
-        //}
         this.mountain_nodes.push(node);
         this.all_nodes.push(node);
     }
