@@ -138,7 +138,7 @@ export namespace ClientSocket {
                         }
                     }
 
-                    Player.production_unit_types = response_data.player.production_unit_types;
+                    Player.production_units = response_data.player.production_unit_types;
 
                     setup_tech_tree(response_data.root_tech_tree_node);
 

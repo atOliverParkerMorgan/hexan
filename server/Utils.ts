@@ -1,5 +1,4 @@
 import {createHash} from "crypto";
-import Map from "./server_logic/game_logic/Map/Map";
 import Melee from "./server_logic/game_logic/Units/Melee";
 import Range from "./server_logic/game_logic/Units/Range";
 import Cavalry from "./server_logic/game_logic/Units/Cavalry";
@@ -39,13 +38,16 @@ export namespace Utils{
         switch (name){
             case Melee.WARRIOR.name:
                 return Melee.WARRIOR.cost;
+            case Melee.SPEARMAN.name:
+                return Melee.SPEARMAN.cost;
             case Range.SLINGER.name:
                 return  Range.SLINGER.cost;
+            case Range.ARCHER.name:
+                return  Range.ARCHER.cost;
             case Cavalry.HORSEMAN.name:
                 return Cavalry.HORSEMAN.cost;
             case Unit.SETTLER:
                 return Settler.SETTLER_UNIT.cost;
         }
     }
-
 }
