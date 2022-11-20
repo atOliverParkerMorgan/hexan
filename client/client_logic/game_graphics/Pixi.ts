@@ -30,9 +30,15 @@ export function setup_tech_tree(tech_tree: any){
 }
 
 // @ts-ignore
-export const app: any = new PIXI.Application({resizeTo: window, transparent: true,  autoresize: true })
+export const app: any = new PIXI.Application({resizeTo: window, transparent: true,  autoresize: true, antialias: true  })
 // @ts-ignore
 export const Graphics = PIXI.Graphics;
+// @ts-ignore
+export const Sprite = PIXI.Sprite;
+// @ts-ignore
+export const Texture = PIXI.Texture;
+// @ts-ignore
+export const TilingSprite = PIXI.TilingSprite;
 
 // @TODO public a_star doesn't always match sever a_star
 // get the shortest path between two nodes
@@ -92,6 +98,7 @@ export function a_star(start_node: Node, goal_node: Node){
 }
 
 export function init_canvas(map: any, cities: any){
+
     setup_tech_tree_button();
 
     if(viewport != null){
@@ -106,7 +113,6 @@ export function init_canvas(map: any, cities: any){
     WORLD_HEIGHT = HEX_SIDE_SIZE * 1.5 * HEX_SIDE_SIZE;
 
     document.body.appendChild(app.view);
-
 
     let starting_city = cities[0];
 

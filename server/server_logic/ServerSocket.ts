@@ -135,7 +135,8 @@ export namespace ServerSocket {
                                     socket.emit(player.token, {
                                         response_type: ServerSocket.response_types.MENU_INFO_RESPONSE,
                                         data: {
-                                            city: request_city,
+                                            city_data: request_city,
+                                            production_units: player.production_units
                                         }
                                     })
                                     break;

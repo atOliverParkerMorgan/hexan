@@ -34,33 +34,33 @@ class Continent{
 
     }
 
-    add_grass_node(node: Node): void{
-        node.type = Node.GRASS;
-        node.sprite_name = "";
+    add_forest_node(node: Node): void{
+        node.type = Node.FOREST;
+        node.sprite_name = "trees_" + Utils.random_int(1, 2) + ".png";
 
         this.grass_nodes.push(node);
         this.all_nodes.push(node);
     }
-    remove_grass_node(node: Node): void{
+    remove_forest_node(node: Node): void{
         this.grass_nodes.splice(this.grass_nodes.indexOf(node), 1);
         this.all_nodes.splice(this.grass_nodes.indexOf(node), 1);
     }
 
-    add_beach_node(node: Node): void{
-        node.type = Node.BEACH;
-        node.sprite_name = "sandbeach_3.png";
+    add_grass_node(node: Node): void{
+        node.type = Node.GRASS;
 
         this.beach_nodes.push(node);
         this.all_nodes.push(node);
     }
-    remove_beach_node(node: Node): void{
+
+    remove_grass_node(node: Node): void{
         this.beach_nodes.splice(this.beach_nodes.indexOf(node), 1);
         this.all_nodes.splice(this.beach_nodes.indexOf(node), 1);
     }
 
     add_mountain_node(node: Node, mountain_type: number): void{
         node.type = Node.MOUNTAIN;
-        node.sprite_name = "mountain_" + Utils.random_int(4, 6) + ".png"
+        node.sprite_name = "mountain_" + Utils.random_int(1, 3) + ".png"
         this.mountain_nodes.push(node);
         this.all_nodes.push(node);
     }
@@ -97,11 +97,16 @@ class Continent{
         const old_type = node.type;
 
         switch (new_type){
+            case Node.FOREST:
+                // make forest more random and clustered together
+                if(Math.random() <= (.1 + node.number_of_forest_neighbour() * .05)){
+                    this.add_forest_node(node);
+                }else{
+                    this.add_grass_node(node);
+                }
+                break;
             case Node.GRASS:
                 this.add_grass_node(node);
-                break;
-            case Node.BEACH:
-                this.add_beach_node(node);
                 break;
             case Node.MOUNTAIN:
                 this.add_mountain_node(node, Map.NORMAL_MOUNTAIN);
@@ -112,11 +117,11 @@ class Continent{
         }
 
         switch (old_type){
+            case Node.FOREST:
+                this.remove_forest_node(node);
+                break;
             case Node.GRASS:
                 this.remove_grass_node(node);
-                break;
-            case Node.BEACH:
-                this.remove_beach_node(node);
                 break;
             case Node.MOUNTAIN:
                 this.remove_mountain_node(node);
@@ -134,10 +139,10 @@ class Continent{
 
     get_random_node_of_type(type: number): Node | undefined{
         switch (type){
-            case Node.GRASS:
+            case Node.FOREST:
                 if(this.grass_nodes.length === 0) return undefined;
                 return this.grass_nodes[this.random_int(0, this.grass_nodes.length-1)];
-            case Node.BEACH:
+            case Node.GRASS:
                 if(this.beach_nodes.length === 0) return undefined;
                 return this.beach_nodes[this.random_int(0, this.beach_nodes.length-1)];
             case Node.MOUNTAIN:

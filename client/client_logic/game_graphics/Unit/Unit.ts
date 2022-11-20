@@ -1,4 +1,4 @@
-import {DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.js"
+import {DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, Graphics, Sprite, viewport, WORLD_HEIGHT, WORLD_WIDTH} from "../Pixi.js"
 import {Node} from "../Node.js";
 
 // TODO implement webpack and migrate towards a framework better than plane html
@@ -84,7 +84,7 @@ export class Unit implements UnitData{
         this.health_circle_background = null;
         this.background_circle = null;
         // @ts-ignore
-        this.sprite = PIXI.Sprite.from(this.texture_path);
+        this.sprite = Sprite.from(this.texture_path);
 
         this.update_unit_on_stage();
     }

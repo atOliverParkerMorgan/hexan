@@ -144,7 +144,7 @@ class Game{
             map: this.map.format(player.token),
             // @TODO is necessary?
             cities: this.get_cities_that_player_owns(player),
-            player: player.get_data(),
+            production_units: player.production_units,
             units: this.get_visible_units(player),
             root_tech_tree_node: player.root_tech_tree_node,
         }

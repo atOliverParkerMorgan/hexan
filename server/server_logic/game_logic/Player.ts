@@ -11,7 +11,7 @@ import {Technology} from "./Technology/Technology";
 class Player{
     token: string;
     units: Unit[];
-    production_unit: any[];
+    production_units: any[];
 
     root_tech_tree_node: Technology;
     total_owned_stars: number;
@@ -24,7 +24,7 @@ class Player{
         this.token = token;
         this.units = [];
         // units that this player can produce
-        this.production_unit = [Melee.WARRIOR, Range.SLINGER, Settler.SETTLER_UNIT];
+        this.production_units = [Melee.WARRIOR, Range.SLINGER, Settler.SETTLER_UNIT];
 
         this.total_owned_stars = 10;
         this.star_production = 5;
@@ -153,7 +153,7 @@ class Player{
     get_data(){
         return {
             // units that this player can produce
-            production_unit_types: this.production_unit,
+            production_unit_types: this.production_units,
         }
     }
 }

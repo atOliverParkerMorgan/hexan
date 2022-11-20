@@ -137,8 +137,8 @@ export namespace ClientSocket {
                             node.update();
                         }
                     }
-
-                    Player.production_units = response_data.player.production_unit_types;
+                    console.log(response_data.production_units)
+                    Player.production_units = response_data.production_units;
 
                     setup_tech_tree(response_data.root_tech_tree_node);
 
@@ -148,6 +148,10 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.MENU_INFO_RESPONSE:
+                    // update production info
+                    console.log("response_data.player.production_units")
+                    console.log(response_data.production_units)
+                    Player.production_units = response_data.production_units;
                     show_city_menu(response_data.city_data);
                     break;
 

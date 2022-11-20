@@ -1,7 +1,6 @@
-import {a_star, DISTANCE_BETWEEN_HEX, Graphics, HEX_SIDE_SIZE, WORLD_HEIGHT, WORLD_WIDTH, viewport} from "./Pixi.js";
+import {a_star, DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, Graphics, Sprite, TilingSprite, Texture, WORLD_HEIGHT, WORLD_WIDTH, viewport} from "./Pixi.js";
 import {
     hide_city_menu,
-    show_city_menu,
     hide_unit_info,
     show_unit_info,
     show_node_info,
@@ -144,14 +143,42 @@ export class Node{
         return value;
     }
 
+    create_grad_texture() {
+        // adjust it if somehow you need better quality for very very big images
+        const quality = 256;
+        const canvas = document.createElement('canvas');
+        canvas.width = quality;
+        canvas.height = 1;
+
+        let ctx: any;
+        ctx = canvas.getContext('2d');
+
+        // use canvas2d API to create gradient
+        const grd = ctx.createLinearGradient(0, 0, quality, 0);
+        grd.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
+        grd.addColorStop(0.3, 'cyan');
+        grd.addColorStop(0.7, 'red');
+        grd.addColorStop(1, 'green');
+
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, quality, 1);
+        console.log(Texture.from(canvas));
+
+        return Texture.from(canvas);
+    }
+
     add_node_to_stage(){
         // draw hex
         this.hex = new Graphics();
+
+
         if(this.city != null)this.hex.beginFill(this.city.get_node_color(), this.opacity);
         else if(this.is_hidden) this.hex.beginFill(Node.HIDDEN, this.opacity);
         else{
             if(this.can_be_harvested()) this.hex.beginFill(Node.CAN_BE_HARVESTED, this.opacity);
+
             else if(this.is_harvested) this.hex.beginFill(Node.HARVESTED, this.opacity);
+
             else this.hex.beginFill(this.type, this.opacity);
         }
 
@@ -304,7 +331,7 @@ export class Node{
         if(this.city != null && !Node.already_selected) {
             Node.bottom_menu_shown = !Node.bottom_menu_shown;
             // get bottom menu information
-            ClientSocket.socket.emit("get-data", {
+            ClientSocket.socket.emit("get_data", {
                 request_type: ClientSocket.request_types.GET_MENU_INFO,
                 data: {
                     game_token: localStorage.game_token,
@@ -313,7 +340,6 @@ export class Node{
                 }
             })
 
-            show_city_menu(this.city);
         }else{
             hide_city_menu();
         }

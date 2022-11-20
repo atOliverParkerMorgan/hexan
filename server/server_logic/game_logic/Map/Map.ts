@@ -38,7 +38,7 @@ class Map{
         if(number_of_land_nodes ** .5 % 1 !== 0) console.log("Warning, the square root of number of nodes should be a whole number ");
         this.number_of_land_nodes = number_of_land_nodes;
         this.continent_size = (number_of_land_nodes / number_of_continents);
-        this.continent_size /= Utils.random_int(2, 4);
+        this.continent_size /= 3;
         this.side_length = Math.floor(number_of_land_nodes ** .5);
 
         // cannot be bigger than the number of nodes
@@ -122,8 +122,8 @@ class Map{
        }
         for(const continent of this.all_continents) {
             for (const node of continent.all_nodes) {
-                if (!node.is_coast() && node.type === Node.BEACH) {
-                    continent.change_node_to(node, Node.GRASS);
+                if (!node.is_coast() && node.type === Node.GRASS) {
+                    continent.change_node_to(node, Node.FOREST);
                 }
             }
         }
@@ -134,41 +134,67 @@ class Map{
         // @TODO fix any type
         let current_continent: any  = this.get_continent(continent_name);
 
-        current_continent.add_beach_node(this.all_nodes[seed_y][seed_x]);
+        current_continent.add_grass_node(this.all_nodes[seed_y][seed_x]);
 
         for (let i = 0; i < continent_size;) {
 
-            let random_continent_node = current_continent.get_random_node_of_type(Node.BEACH);
+            let random_continent_node = current_continent.get_random_node_of_type(Node.GRASS);
             if(random_continent_node == null) continue;
             let random_neighbour_node = random_continent_node.get_random_neighbour_of_type(Node.OCEAN);
 
             if(random_neighbour_node == null){
-                current_continent.change_node_to(random_continent_node, Node.GRASS);
+                current_continent.change_node_to(random_continent_node, Node.FOREST);
             }else{
-                current_continent.add_beach_node(random_neighbour_node);
+                current_continent.add_grass_node(random_neighbour_node);
                 i++;
             }
         }
         // cleaning up scattered beach nodes
         for (const node of current_continent.beach_nodes) {
             if(!node.is_coast()){
-                current_continent.change_node_to(node, Node.GRASS);
+                current_continent.change_node_to(node, Node.FOREST);
             }
         }
+
+
         // generate mountains
-        let number_of_mountain_ranges = Utils.random_int(1, 3);
+
+        // scale number in mountain ranges for map sizes
+        let max_mountains = 15;
+        let max_mountains_ranges = 4;
+        switch (this.side_length){
+            case 400:
+                max_mountains = 5;
+                max_mountains_ranges = 2;
+                break;
+            case 900:
+                max_mountains = 10;
+                max_mountains_ranges = 3;
+                break;
+            case 2025:
+                max_mountains = 24;
+                max_mountains_ranges = 5;
+                break;
+            case 2500:
+                max_mountains = 30;
+                max_mountains_ranges = 7;
+                break;
+        }
+        let max_rivers = max_mountains_ranges;
+
+
+        let number_of_mountain_ranges = Utils.random_int(1, max_mountains_ranges);
         for (let i = 0; i <= number_of_mountain_ranges; i++) {
             const mountain_type = Utils.random_int(Map.NORMAL_MOUNTAIN, Map.SNOWY_MOUNTAIN);
             if(i === 0) this.generate_mountains(seed_x, seed_y, number_of_mountain_ranges, current_continent, mountain_type);
             else{
                 let random_grass_node = current_continent.get_random_node_of_type(Node.GRASS);
-                this.generate_mountains(random_grass_node.x, random_grass_node.y, Utils.random_int(5, 15), current_continent, mountain_type);
+                this.generate_mountains(random_grass_node.x, random_grass_node.y, Utils.random_int(5, max_mountains), current_continent, mountain_type);
             }
-            // console.log("Generating mountains: "+ (i) + " of "+number_of_mountain_ranges)
         }
 
         // generate rivers
-        let number_of_rivers = Utils.random_int(2, 4);
+        let number_of_rivers = Utils.random_int(1, max_rivers);
         for (let i = 0; i <= number_of_rivers; i++) {
             this.generate_river(current_continent);
         }
@@ -290,7 +316,7 @@ class Map{
                 // get a node that isn't aligned with the mountain range
                 // checkout @ this.add_neighbours_to_nodes() to understand grid arrangement
                 let random_mountain_node = current_continent.get_random_node_of_type(Node.MOUNTAIN)
-                    ?.get_random_neighbour_in_range(2, 5, Node.GRASS);
+                    ?.get_random_neighbour_in_range(2, 5, Node.FOREST);
 
                 if (random_mountain_node != null) {
                     current_continent.add_mountain_node(random_mountain_node, mountain_type);
@@ -310,7 +336,7 @@ class Map{
     // to generate river a continent must have mountains and beaches
     generate_river(continent: Continent): void{
         let random_mountain_node: Node | undefined = continent.get_random_node_of_type(Node.MOUNTAIN);
-        let random_beach_node: Node | undefined = continent.get_random_node_of_type(Node.BEACH);
+        let random_beach_node: Node | undefined = continent.get_random_node_of_type(Node.GRASS);
 
         if(random_mountain_node == undefined || random_beach_node == undefined) {
            // there are no mountains or beaches on this continent therefore a river cannot be generated
@@ -323,13 +349,16 @@ class Map{
         // @TODO create path interface
         let river_path: any = this.a_star(<Node> random_mountain_node, <Node> random_beach_node);
 
-        let current_side: number | undefined = Utils.random_int(Map.LEFT, Map.BOTTOM_RIGHT);
+        let current_side: any = Utils.random_int(Map.LEFT, Map.BOTTOM_RIGHT);
         for (let i = 0; i < river_path.length; i++) {
 
             // random direction of river see Node.create_river()
             let direction = Utils.random_int(0, 1) === 1 ? 1: -1;
             let next_node = river_path[i + 1];
             let node = river_path[i];
+
+            // make sure river threw ocean
+            if(node.type === Node.OCEAN) return;
 
             if(next_node == null){
                 next_node = node.get_random_neighbour();
@@ -343,8 +372,8 @@ class Map{
                 node.borders.push(b);
             }
 
-            // if node is beach break
-            if(node.type === Node.BEACH) break;
+            // if node is grass break
+            if(node.type === Node.GRASS) break;
 
             current_side = this.switch_position(neighbor);
             last_direction = direction;

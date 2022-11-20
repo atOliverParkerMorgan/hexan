@@ -5,6 +5,7 @@ import {Player} from "./game_graphics/Player.js";
 import {Technology, graph, nodes, interaction_nodes_values} from "./game_graphics/Technology/Technology.js";
 
 export let renderer: any;
+export let current_node: Node | undefined;
 
 let is_city_menu_visible = false;
 let is_mouse_on_city_menu = false;
@@ -38,6 +39,8 @@ document.addEventListener("keydown", (event)=>{
 export function show_node_info(node: Node){
     if(node.type === Node.HIDDEN) return
 
+    current_node = node;
+
     update_node_action_button_and_information(node);
 
     (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "visible";
@@ -47,9 +50,12 @@ export function show_node_info(node: Node){
     div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hide_node_info;
     if(node.can_be_harvested()){
         div_unit_info_menu.querySelector("#harvest_button").style.visibility = "visible";
+
         if(Player.get_total_number_of_stars() < node.harvest_cost){
+            document.getElementById("harvest_button")?.classList.remove("w3-green");
             document.getElementById("harvest_button")?.classList.add("w3-red");
         }else{
+            document.getElementById("harvest_button")?.classList.remove("w3-red");
             document.getElementById("harvest_button")?.classList.add("w3-green");
         }
         div_unit_info_menu.querySelector("#harvest_button").onclick = () => ClientSocket.request_harvest(node.x, node.y);
@@ -134,7 +140,6 @@ export function show_city_menu(city: any){
     mouse_x = city.cords_in_pixels_x;
     mouse_y = city.cords_in_pixels_y;
 
-
     is_city_menu_visible = true;
     show_city_data(city);
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "visible";
@@ -201,6 +206,9 @@ function set_unit_data(unit_html: any, unit_name: string, src: string, type: str
 // updates the total stars on screen
 export function update_star_info(total_owned_stars: number, star_production?: number){
     (<HTMLInputElement>document.getElementById("star_info")).style.visibility = "visible";
+    if(current_node != null && (Number(total_owned_stars.toFixed(1)) - Math.floor(total_owned_stars)) === 0 && (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility === "visible") {
+        show_node_info(current_node);
+    }
 
     (<HTMLInputElement>document.getElementById("total_owned_stars")).innerText = Math.floor(total_owned_stars).toString();
     if(star_production != null) {

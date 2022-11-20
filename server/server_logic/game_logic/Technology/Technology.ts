@@ -45,13 +45,12 @@ export class Technology{
 
                 // technology logic
                 if(tech_name === "Archery"){
-                    player.production_unit.push(Range.ARCHER);
+                    player.production_units.push(Range.ARCHER);
                 }else if(tech_name === "Horseman"){
-                    player.production_unit.push(Cavalry.HORSEMAN);
+                    player.production_units.push(Cavalry.HORSEMAN);
                 }else if(tech_name === "Spearman"){
-                    player.production_unit.push(Melee.SPEARMAN);
+                    player.production_units.push(Melee.SPEARMAN);
                 }
-
 
                 return true;
             }

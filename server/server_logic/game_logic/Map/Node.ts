@@ -14,8 +14,8 @@ export class Node{
 
     public static readonly OCEAN: number = 0x0AA3CF;
     public static readonly LAKE: number = 0x80C5DE;
+    public static readonly FOREST: number = 0x228b22;
     public static readonly GRASS: number = 0x7FFF55;
-    public static readonly BEACH: number = 0xFFFF00;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
     public static readonly HIDDEN: number = 0xE0D257;
 
@@ -147,6 +147,18 @@ export class Node{
         return water_neighbour_nodes[Math.floor(Math.random() * water_neighbour_nodes.length)];
     }
 
+    number_of_forest_neighbour(): number{
+        let count = 0;
+        for(const node_neighbour of this.neighbors){
+            if(node_neighbour != null){
+                if(node_neighbour.type === Node.FOREST){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     is_coast(): boolean{
         for(const node_neighbour of this.neighbors){
             if(node_neighbour != null){
@@ -190,7 +202,7 @@ export class Node{
     }
 
     could_be_mountain(): boolean {
-        return this.type === Node.GRASS || this.type === Node.BEACH;
+        return this.type === Node.FOREST || this.type === Node.GRASS;
     }
 
     // @TODO get rid of duplicate
@@ -248,8 +260,8 @@ export class Node{
 
     get_type(){
         switch (this.type){
-            case Node.GRASS: return "GRASS";
-            case Node.BEACH: return "BEACH";
+            case Node.FOREST: return "GRASS";
+            case Node.GRASS: return "BEACH";
             case Node.MOUNTAIN: return "MOUNTAIN";
             case Node.OCEAN: return "WATER";
         }
