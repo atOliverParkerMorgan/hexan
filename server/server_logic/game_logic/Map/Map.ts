@@ -2,6 +2,7 @@ import Continent from "./Continent";
 import {Node} from "./Node";
 import Player from "../Player";
 import {Utils} from "../../../Utils";
+import Game from "../Game";
 
 class Map{
 

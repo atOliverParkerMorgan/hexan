@@ -3,13 +3,14 @@ import {update_progress_bar, update_star_info} from "../UI_logic.js";
 import {Interval} from "./Interval.js";
 import {Node} from "./Node.js";
 import {HEX_SIDE_SIZE} from "./Pixi.js";
-import exp from "constants";
+import {City} from "./City/City.js";
 
 //singleton client-player
 export namespace Player {
     // units
     export let all_units: Unit[] = [];
     export let all_enemy_visible_units: Unit[] = [];
+    export let all_cities: City[] = [];
 
     // player star production
     let total_owned_stars: number = 0;
@@ -94,7 +95,7 @@ export namespace Player {
         const enemy_unit = Player.all_enemy_visible_units[index];
         if(enemy_unit == null) return
 
-        enemy_unit.remove_sprite();
+        enemy_unit.remove_children();
         Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
         Player.all_enemy_visible_units.splice(index);
 
@@ -111,7 +112,7 @@ export namespace Player {
         const friendly_unit = Player.all_units[index];
         if(friendly_unit == null) return
 
-        friendly_unit.remove_sprite();
+        friendly_unit.remove_children();
         Node.all_nodes[friendly_unit.y][friendly_unit.x].unit = null;
         Player.all_units.splice(index);
     }

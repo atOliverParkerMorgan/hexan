@@ -127,6 +127,9 @@ export namespace ClientSocket {
                         }
                         // init node => add nodes to PIXI stage
                         let city = node.city_data != null ? new City(node.city_data): null;
+                        if(city != null){
+                            Player.all_cities.push(city);
+                        }
 
                         row.push(new Node(node.x, node.y, node.id, node.type, node.borders, city, node.sprite_name, node.harvest_cost, node.production_stars, node.is_harvested));
                     }
@@ -218,8 +221,16 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.NEW_CITY:
-                    Node.all_nodes[response_data.city_y][response_data.city_x].set_type(response_data.city_node.city_data, response_data.city_node.sprite_name);
-                    Node.all_nodes[response_data.city_y][response_data.city_x].remove_unit();
+                    const current_node: Node = Node.all_nodes[response_data.city_y][response_data.city_x];
+                    current_node.set_city(response_data.city_node.city_data, response_data.city_node.sprite_name);
+
+                    for(const neighbour of current_node.get_neighbours()){
+                        if(neighbour != null){
+                            neighbour.update();
+                        }
+                    }
+
+                    current_node.remove_unit();
                     break;
 
                 case ClientSocket.response_types.ATTACK_UNIT_RESPONSE:
@@ -338,5 +349,19 @@ export namespace ClientSocket {
                 game_token: localStorage.game_token
             }
         })
+    }
+
+    export function request_move_unit(unit: Unit | undefined, path: number[][]) {
+
+        ClientSocket.send_data({
+            request_type: ClientSocket.request_types.MOVE_UNITS,
+            data: {
+                game_token: localStorage.game_token,
+                player_token: localStorage.player_token,
+                unit_id: unit?.id,
+                path: path
+            }
+        })
+        unit?.set_current_path(path);
     }
 }

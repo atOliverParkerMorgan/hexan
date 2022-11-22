@@ -137,6 +137,29 @@ class Game{
         return Technology.purchase(player.root_tech_tree_node, tech_name, player);
     }
 
+    get_closest_city_distance(node: Node): number{
+        let min = Math.sqrt((this.all_cities[0].x - node.x)**2 + (this.all_cities[0].y - node.y)**2);
+        for (let i = 1; i < this.all_cities.length ; i++) {
+            const dist = Math.sqrt((this.all_cities[i].x - node.x)**2 + (this.all_cities[i].y - node.y)**2)
+            if(min > dist){
+                min = dist;
+            }
+        }
+
+        return min;
+    }
+
+    update_harvest_cost(){
+        for(let y = 0; y < this.map.side_length; y++) {
+            for (let x = 0; x < this.map.side_length; x++) {
+
+                let node: Node | undefined = this.map.get_node(x, y);
+                if(node == null) continue;
+
+                node.harvest_cost = this.get_closest_city_distance(node);
+            }
+        }
+    }
 
     get_data(player: Player){
 

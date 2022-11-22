@@ -68,13 +68,13 @@ function update_node_action_button_and_information(node: Node){
     (<HTMLInputElement>document.getElementById("harvest_cost")).innerText = node.harvest_cost.toString();
     (<HTMLInputElement>document.getElementById("gain_stars")).innerText = node.production_stars.toString();
     switch(node.type) {
-        case Node.GRASS:
+        case Node.FOREST:
             (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/grass_plane.png";
             break;
         case Node.MOUNTAIN:
             (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/mountains.png";
             break;
-        case Node.BEACH:
+        case Node.GRASS:
             (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/beach.png";
             break;
     }

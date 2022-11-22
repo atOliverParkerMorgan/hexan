@@ -26,8 +26,8 @@ class Player{
         // units that this player can produce
         this.production_units = [Melee.WARRIOR, Range.SLINGER, Settler.SETTLER_UNIT];
 
-        this.total_owned_stars = 10;
-        this.star_production = 5;
+        this.total_owned_stars = 1000;
+        this.star_production = 10;
 
         this.star_production_has_started = false;
 

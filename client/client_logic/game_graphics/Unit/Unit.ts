@@ -19,6 +19,10 @@ export class Unit implements UnitData{
     private static readonly HEALTH_BAR_COLOR: number = 0x7CFC00;
     private static readonly FRIENDLY_BACKGROUND_COLOR: number = 0xFF7800 ;
     private static readonly ENEMY_BACKGROUND_COLOR: number = 0xF53E3E;
+    private static readonly MOVEMENT_COLOR: number = 0xADD8E6;
+
+    private current_path: number[][];
+    private background_unit_movement_percentage: number = 0;
 
     x: number;
     y: number;
@@ -41,6 +45,7 @@ export class Unit implements UnitData{
     health_circle: any;
     health_circle_background: any;
     background_circle: any;
+    movement_circle: any;
     sprite: any;
 
     constructor(unit: UnitData, width: number, height: number, is_friendly: boolean) {
@@ -63,6 +68,8 @@ export class Unit implements UnitData{
         this.movement = unit.movement;
 
         this.max_health = 100;
+
+        this.current_path = [];
 
         // TODO create player class with current MELEE RANGE ... units
 
@@ -89,7 +96,7 @@ export class Unit implements UnitData{
         this.update_unit_on_stage();
     }
 
-    remove_sprite(){
+    remove_children(){
         // remove the unit Graphics when unit moves
         if(this.sprite != null){
             viewport.removeChild(this.sprite);
@@ -101,10 +108,15 @@ export class Unit implements UnitData{
             viewport.removeChild(this.health_circle);
             viewport.removeChild(this.health_circle_background);
         }
+        if(this.movement_circle != null){
+            viewport.removeChild(this.movement_circle);
+        }
     }
 
     update_unit_on_stage(): void{
-        this.remove_sprite();
+        this.remove_children();
+        this.show_movement(this.background_unit_movement_percentage);
+
         this.show_health();
         this.show_background();
         this.set_sprite_position();
@@ -144,7 +156,7 @@ export class Unit implements UnitData{
         this.health_circle.beginFill(Unit.HEALTH_BAR_COLOR);
         this.health_circle.lineStyle(2, 0xffffff)
         this.health_circle.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
-            HEX_SIDE_SIZE/1.5, 0,2 * Math.PI / (this.max_health / this.     health));
+            HEX_SIDE_SIZE/1.5, 0,2 * Math.PI / (this.max_health / this.health));
         this.health_circle.endFill();
 
         this.health_circle_background.beginFill(0xffffff);
@@ -154,6 +166,19 @@ export class Unit implements UnitData{
         this.health_circle_background.endFill();
         viewport.addChild(this.health_circle_background);
         viewport.addChild(this.health_circle);
+    }
+
+    show_movement(percentage_of_movement: number): void{
+        if(percentage_of_movement === 0) return;
+
+        this.movement_circle = new Graphics;
+        this.movement_circle.beginFill(Unit.MOVEMENT_COLOR);
+        this.movement_circle.lineStyle(2, Unit.MOVEMENT_COLOR)
+        this.movement_circle.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
+            HEX_SIDE_SIZE/1.2, 0,2 * Math.PI / (100 / percentage_of_movement));
+        this.movement_circle.endFill();
+
+        viewport.addChild(this.movement_circle);
     }
 
     set_sprite_size(): void{
@@ -179,8 +204,39 @@ export class Unit implements UnitData{
         this.x = x;
         this.y = y;
 
-        // redraw sprite
-        this.update_unit_on_stage();
+        // redraw graphics children
+        this.update_unit_movement_background();
+    }
+
+    set_current_path(current_path: number[][]){
+        this.current_path = current_path;
+        this.update_unit_movement_background()
+    }
+
+    update_movement_background(current_node: Node, depth: number){
+        if(depth === 0){
+            this.background_unit_movement_percentage = 0;
+            return;
+        }
+        setTimeout(()=>{
+            this.background_unit_movement_percentage += 5;
+            this.update_unit_on_stage();
+            this.update_movement_background(current_node, depth - 1);
+
+        }, current_node.get_movement_time() / 30);
+    }
+
+    update_unit_movement_background(){
+        this.current_path.shift();
+        console.log(this.current_path.length)
+
+        if(this.current_path.length !== 0){
+            const current_node: Node = Node.all_nodes[this.current_path[0][1]][this.current_path[0][0]];
+            this.update_movement_background(current_node, 30)
+        }else{
+            this.background_unit_movement_percentage = 0;
+            this.update_unit_on_stage()
+        }
     }
 }
 

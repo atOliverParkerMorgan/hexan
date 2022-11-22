@@ -4,6 +4,7 @@ import Player from "../Player";
 import {NodeInterface} from "./NodeInterface";
 import {ServerSocket} from "../../ServerSocket";
 import {Unit} from "../Units/Unit";
+import Game from "../Game";
 
 // used for node.get_data()
 
@@ -14,10 +15,12 @@ export class Node{
 
     public static readonly OCEAN: number = 0x0AA3CF;
     public static readonly LAKE: number = 0x80C5DE;
-    public static readonly FOREST: number = 0x228b22;
+    public static readonly FOREST: number = 0x228B22;
     public static readonly GRASS: number = 0x7FFF55;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
     public static readonly HIDDEN: number = 0xE0D257;
+
+    static all_cities: City[] = [];
 
     // attributes
     neighbors: (Node | undefined)[];
@@ -47,7 +50,7 @@ export class Node{
         this.borders = [];
         this.is_shown = [];
 
-        this.production_stars = 1;
+        this.production_stars = 1 ;
         this.harvest_cost = 5;
         this.is_harvested = false;
 
@@ -268,6 +271,22 @@ export class Node{
         return "NOT FOUND";
     }
 
+    get_movement_time(): number {
+        switch (this.type) {
+            case Node.MOUNTAIN:
+                return 4000;
+            case Node.FOREST:
+                return 2000;
+            case Node.OCEAN:
+                return 1000;
+            case Node.LAKE:
+                return 1000;
+        }
+
+        // GRASS
+        return 1000;
+    }
+
     // simplify node for socket.emit()
     get_data(player_token: string): NodeInterface{
         let type = this.type;
@@ -296,4 +315,3 @@ export class Node{
        }
     }
 }
-// module.exports = Node;

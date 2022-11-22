@@ -71,48 +71,23 @@ export class Unit implements UnitInterface{
     // move this Unit along a valid path provided by the public
     move_along_path(game: Game, player: Player, socket: Socket, path: Node[]){
 
-        // movement per a minute calculation
-        const MOVEMENT_PER_A_MINUTE: number = 60_000 / this.movement
+        // used at the end of the path
+        let MOVEMENT_PER_A_MINUTE: number = 1;
 
-        const timeout = setTimeout(() => {
+        // movement per a minute calculation
+        if(path.length !== 0) MOVEMENT_PER_A_MINUTE = path[0].get_movement_time() / (this.movement / 100)
+
+        setTimeout(() => {
             if(path.length === 0){
-                clearInterval(timeout);
                 return;
             }
 
             const current_node: Node = path[0];
 
-            // check if movement is valid
-            // let is_invalid = false
-            // game.all_players.map((in_game_player: Player)=>{
-            //     if(in_game_player.token !== player.token){
-            //         // check if path doesn't cross an enemy city
-            //         if(current_node.city != null) {
-            //             if (current_node.city.owner.token !== player.token) {
-            //                 is_invalid = true
-            //                 return
-            //             }
-            //         }
-            //
-            //         in_game_player.units.map((unit)=>{
-            //             if(unit.x === current_node.x && unit.y === current_node.y){
-            //                // is_invalid = true
-            //                 return
-            //             }
-            //         })
-            //     }
-            // })
-            // if(is_invalid){
-            //     ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
-            //     clearInterval(timeout);
-            //     return;
-            // }
-
             // check if movement is valid or if move can be translated as attack
             if(current_node.unit != null){
                 if(player.owns_this_unit(current_node.unit.id)){
                     ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
-                    clearInterval(timeout);
                     return
                 }
             }
@@ -127,7 +102,6 @@ export class Unit implements UnitInterface{
                     })
 
                     ServerSocket.send_unit_attack(socket, game, player, destination.unit.id, this.id, new Path(game, path_cords))
-                    clearInterval(timeout);
                     return;
                 }
             }

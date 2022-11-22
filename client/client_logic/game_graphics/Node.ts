@@ -6,10 +6,11 @@ import {
     show_node_info,
     hide_node_info
 } from "../UI_logic.js";
-import {ClientSocket} from "../ClientSocket.js";
 import {Unit} from "./Unit/Unit.js";
 import {CityInterface} from "./City/CityInterface.js";
 import {City} from "./City/City.js";
+import {ClientSocket} from "../ClientSocket.js";
+import {Player} from "./Player.js";
 
 
 export class Node{
@@ -17,7 +18,7 @@ export class Node{
     public static readonly OCEAN: number = 0x0AA3CF;
     public static readonly LAKE: number = 0x80C5DE ;
     public static readonly GRASS: number = 0x7FFF55;
-    public static readonly BEACH: number = 0xFFFF00;
+    public static readonly FOREST: number = 0x228B22;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
     public static readonly HIDDEN: number = 0xE0D257;
     public static readonly CAN_BE_HARVESTED = 0xFFBF00;
@@ -137,34 +138,7 @@ export class Node{
 
     get_heuristic_value(start_node: Node, goal_node: Node): number{
         const value = this.get_distance_to_node(start_node) + this.get_distance_to_node(goal_node);
-        if (this.is_hidden) return value;
-        if (this.type === Node.OCEAN) return value + 1000;
-        if (this.type === Node.MOUNTAIN) return value + Node.MOUNTAIN_TRAVEL_BIAS;
-        return value;
-    }
-
-    create_grad_texture() {
-        // adjust it if somehow you need better quality for very very big images
-        const quality = 256;
-        const canvas = document.createElement('canvas');
-        canvas.width = quality;
-        canvas.height = 1;
-
-        let ctx: any;
-        ctx = canvas.getContext('2d');
-
-        // use canvas2d API to create gradient
-        const grd = ctx.createLinearGradient(0, 0, quality, 0);
-        grd.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
-        grd.addColorStop(0.3, 'cyan');
-        grd.addColorStop(0.7, 'red');
-        grd.addColorStop(1, 'green');
-
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, quality, 1);
-        console.log(Texture.from(canvas));
-
-        return Texture.from(canvas);
+        return value + this.get_movement_time();
     }
 
     add_node_to_stage(){
@@ -219,6 +193,22 @@ export class Node{
         this.sprite.y = this.get_y_in_pixels() - DISTANCE_BETWEEN_HEX/2.5;
 
         viewport.addChild(this.sprite);
+    }
+
+    get_movement_time(): number{
+        switch (this.type) {
+            case Node.MOUNTAIN:
+                return 4000;
+            case Node.FOREST:
+                return 2000;
+            case Node.OCEAN:
+                return 1000;
+            case Node.LAKE:
+                return 1000;
+        }
+
+        // GRASS
+        return 1000;
     }
 
     get_distance_to_node(node: Node) {
@@ -304,16 +294,7 @@ export class Node{
                 show_unit_info(Node.selected_node.unit);
 
                 // send movement request to server
-
-                ClientSocket.send_data({
-                    request_type: ClientSocket.request_types.MOVE_UNITS,
-                    data: {
-                        game_token: localStorage.game_token,
-                        player_token: localStorage.player_token,
-                        unit_id: Node.selected_node.get_unit_id(),
-                        path: path_node_cords
-                    }
-                })
+                ClientSocket.request_move_unit(Node.selected_node.unit, path_node_cords);
 
                 to_node.update();
                 node_from.update();
@@ -365,6 +346,8 @@ export class Node{
         this.city = new City(city_data);
         this.is_hidden = this.type === Node.HIDDEN;
         this.sprite_name = sprite_name;
+        Player.all_cities.push(this.city);
+
         this.update();
         this.show_sprite();
     }
@@ -378,11 +361,11 @@ export class Node{
 
     get_type_string(): string{
         switch (this.type){
-            case Node.GRASS:
+            case Node.FOREST:
                 return "Planes"
             case Node.MOUNTAIN:
                 return "Mountains";
-            case Node.BEACH:
+            case Node.GRASS:
                 return "Beach";
             case Node.LAKE:
                 return "Lake";
@@ -402,7 +385,7 @@ export class Node{
     }
 
     remove_unit(){
-        this.unit?.remove_sprite();
+        this.unit?.remove_children();
         this.unit = null;
         this.update();
     }
@@ -532,13 +515,13 @@ export class Node{
 
         let harvested_neighbours = 0;
         for (const neighbour of this.get_neighbours()) {
-            if(neighbour?.city != null){
+            if(neighbour?.city != null && this?.type !== Node.OCEAN && this?.type !== Node.LAKE){
                 return true;
             }
             if(neighbour?.is_harvested){
                 harvested_neighbours ++;
             }
-            if(harvested_neighbours === 2){
+            if(harvested_neighbours === 2 && this?.type !== Node.OCEAN && this?.type !== Node.LAKE){
                 return true;
             }
         }
