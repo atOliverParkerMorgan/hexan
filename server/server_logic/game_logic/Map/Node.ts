@@ -247,8 +247,29 @@ export class Node{
         return value;
     }
 
-    harvest(player: Player, socket: any){
+    harvest(player: Player, game: Game, socket: any){
         if(this.is_harvested) ServerSocket.something_wrong_response(socket, player, 'CANNOT HARVEST', `You cannot harvest a already harvested node`);
+
+        // check if node can be harvested
+        let current_city;
+        let cities = game.get_player_cities(player.token)
+
+        main_loop:
+        for (const city of cities) {
+            for (const can_be_harvested_node of city.can_be_harvested_nodes) {
+                if(can_be_harvested_node === this){
+                    current_city = city
+                    break main_loop;
+                }
+            }
+        }
+
+        if(current_city == null){
+            ServerSocket.something_wrong_response(socket, player, 'THIS NODE CANNOT BE HARVESTED', `A node must be next to a city or adjacent to two harvested node inorder to be harvested`);
+            return;
+        }
+
+
 
         if(player.is_payment_valid(this.harvest_cost)){
             player.pay_stars(this.harvest_cost);

@@ -32,16 +32,23 @@ class City{
     public readonly cords_in_pixels_x: number;
     public readonly cords_in_pixels_y: number;
     public readonly name: string;
+
+    can_be_harvested_nodes: Node[];
     stars_per_a_minute: number;
     population: number;
 
-    constructor(owner: Player, x: number, y: number){
+    constructor(owner: Player, node: Node){
         this.owner = owner;
 
-        this.x = x;
-        this.y = y;
+        this.x = node.x;
+        this.y = node.y;
         this.cords_in_pixels_x = this.get_x_in_pixels();
         this.cords_in_pixels_y = this.get_y_in_pixels();
+
+        this.can_be_harvested_nodes = [];
+        node.neighbors.map((neighbor: Node | undefined)=>{
+            if(neighbor != null) this.can_be_harvested_nodes.push(neighbor);
+        })
 
         this.name = City.city_names[Utils.random_int(0, City.city_names.length - 1)];
         City.city_names.splice(City.city_names.indexOf(this.name));
@@ -72,6 +79,30 @@ class City{
 
     get_y_in_pixels(): number{
         return  (this.y * 1.5 * Node.HEX_SIDE_SIZE) - Map.WORLD_HEIGHT / 2;
+    }
+
+    update_harvested_nodes(){
+        for (const node of this.can_be_harvested_nodes) {
+            for (const neighbor of node.neighbors) {
+                if(neighbor == null) continue;
+
+                if(neighbor.is_harvested || neighbor.city != null) return false;
+
+                let harvested_neighbours = 0;
+                for (const neighbour of neighbor.neighbors) {
+                    if(neighbour?.city != null && neighbor?.type !== Node.OCEAN && neighbor?.type !== Node.LAKE){
+                        this.can_be_harvested_nodes.push(neighbor);
+                    }
+                    if(neighbour?.is_harvested){
+                        harvested_neighbours ++;
+                    }
+                    if(harvested_neighbours === 2 && neighbor?.type !== Node.OCEAN && neighbor?.type !== Node.LAKE){
+                        this.can_be_harvested_nodes.push(neighbor);
+                    }
+                }
+                return false;
+            }
+        }
     }
 
     get_data(player_token: string): CityInterface{

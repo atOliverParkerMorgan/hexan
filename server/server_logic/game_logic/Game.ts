@@ -149,6 +149,15 @@ class Game{
         return min;
     }
 
+    get_player_cities(player_token: string): City[]{
+        let output_cities: City[] = [];
+        this.all_cities.map((city: City)=>{
+            if(city.owner.token === player_token) output_cities.push(city);
+        })
+
+        return output_cities;
+    }
+
     update_harvest_cost(){
         for(let y = 0; y < this.map.side_length; y++) {
             for (let x = 0; x < this.map.side_length; x++) {

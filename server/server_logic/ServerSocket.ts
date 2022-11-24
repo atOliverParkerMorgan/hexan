@@ -242,7 +242,7 @@ export namespace ServerSocket {
                                     }
                                     break;
                                 case ServerSocket.request_types.HARVEST_NODE:
-                                    game.map.get_node(request_data.node_x, request_data.node_y)?.harvest(player, socket);
+                                    game.map.get_node(request_data.node_x, request_data.node_y)?.harvest(player, game, socket);
                                     break;
 
                                 case ServerSocket.request_types.PURCHASE_TECHNOLOGY:
