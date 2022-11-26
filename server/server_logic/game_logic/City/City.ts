@@ -6,6 +6,7 @@ import {Node} from "../Map/Node";
 import {Unit} from "../Units/Unit";
 import {Utils} from "../../../Utils";
 import {CityInterface} from "./CityInterface";
+import Game from "../Game";
 
 class City{
     private static city_names = [
@@ -26,6 +27,8 @@ class City{
         "Rohull", "Cudwood", "Vruhgow", "Trerough", "Muuburgh", "Nia", "Vlale", "Clery", "Ensmouth", "Agosmore"
     ];
 
+    public static readonly BASE_HARVEST_COST = 5;
+
     public readonly owner: Player;
     public readonly x: number;
     public readonly y: number;
@@ -34,21 +37,32 @@ class City{
     public readonly name: string;
 
     can_be_harvested_nodes: Node[];
+    harvested_nodes: Node[];
     stars_per_a_minute: number;
     population: number;
+    number_of_harvested_nodes: number;
 
-    constructor(owner: Player, node: Node){
+
+    constructor(owner: Player, city_node: Node){
         this.owner = owner;
 
-        this.x = node.x;
-        this.y = node.y;
+        this.x = city_node.x;
+        this.y = city_node.y;
         this.cords_in_pixels_x = this.get_x_in_pixels();
         this.cords_in_pixels_y = this.get_y_in_pixels();
 
+        this.number_of_harvested_nodes = 0;
+
+        this.harvested_nodes = [city_node];
         this.can_be_harvested_nodes = [];
-        node.neighbors.map((neighbor: Node | undefined)=>{
-            if(neighbor != null) this.can_be_harvested_nodes.push(neighbor);
+
+        city_node.neighbors.map((node: Node| undefined)=>{
+            if(node != null && !node.is_harvested && node.city == null){
+            this.can_be_harvested_nodes.push(node);
+            }
         })
+
+        console.log(this.can_be_harvested_nodes)
 
         this.name = City.city_names[Utils.random_int(0, City.city_names.length - 1)];
         City.city_names.splice(City.city_names.indexOf(this.name));
@@ -82,27 +96,38 @@ class City{
     }
 
     update_harvested_nodes(){
-        for (const node of this.can_be_harvested_nodes) {
-            for (const neighbor of node.neighbors) {
-                if(neighbor == null) continue;
+        for (const node of this.harvested_nodes) {
+            for (const neighbour_1 of node.neighbors) {
 
-                if(neighbor.is_harvested || neighbor.city != null) return false;
+                if(neighbour_1 == null) continue;
+
+                if(neighbour_1.is_harvested || neighbour_1.city != null) continue;
 
                 let harvested_neighbours = 0;
-                for (const neighbour of neighbor.neighbors) {
-                    if(neighbour?.city != null && neighbor?.type !== Node.OCEAN && neighbor?.type !== Node.LAKE){
-                        this.can_be_harvested_nodes.push(neighbor);
-                    }
-                    if(neighbour?.is_harvested){
+                for (const neighbour_2 of neighbour_1.neighbors) {
+                    if(neighbour_2 == null) continue;
+
+                    if(neighbour_2?.is_harvested){
                         harvested_neighbours ++;
                     }
-                    if(harvested_neighbours === 2 && neighbor?.type !== Node.OCEAN && neighbor?.type !== Node.LAKE){
-                        this.can_be_harvested_nodes.push(neighbor);
+                    if (harvested_neighbours === 2 && neighbour_2?.type !== Node.OCEAN && neighbour_2?.type !== Node.LAKE && !(this.can_be_harvested_nodes.includes(neighbour_1))) {
+                        neighbour_1.harvest_cost = this.get_harvest_cost();
+                        this.can_be_harvested_nodes.push(neighbour_1);
                     }
                 }
-                return false;
             }
         }
+    }
+
+    get_harvest_cost(){
+        return Math.round(City.BASE_HARVEST_COST * (this.number_of_harvested_nodes + 1))
+
+    }
+
+    add_harvested_node(node: Node){
+        this.harvested_nodes.push(node);
+        this.can_be_harvested_nodes.splice(this.can_be_harvested_nodes.indexOf(node), 1);
+        this.number_of_harvested_nodes ++;
     }
 
     get_data(player_token: string): CityInterface{

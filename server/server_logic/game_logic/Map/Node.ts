@@ -20,8 +20,6 @@ export class Node{
     public static readonly MOUNTAIN: number = 0xF2F2F2;
     public static readonly HIDDEN: number = 0xE0D257;
 
-    static all_cities: City[] = [];
-
     // attributes
     neighbors: (Node | undefined)[];
     x: number;
@@ -51,7 +49,7 @@ export class Node{
         this.is_shown = [];
 
         this.production_stars = 1 ;
-        this.harvest_cost = 5;
+        this.harvest_cost = City.BASE_HARVEST_COST;
         this.is_harvested = false;
 
         this.city = null;
@@ -257,7 +255,7 @@ export class Node{
         main_loop:
         for (const city of cities) {
             for (const can_be_harvested_node of city.can_be_harvested_nodes) {
-                if(can_be_harvested_node === this){
+                if(can_be_harvested_node.x === this.x && can_be_harvested_node.y === this.y){
                     current_city = city
                     break main_loop;
                 }
@@ -269,13 +267,18 @@ export class Node{
             return;
         }
 
-
-
         if(player.is_payment_valid(this.harvest_cost)){
             player.pay_stars(this.harvest_cost);
             player.increase_production(this.production_stars);
+
             this.is_harvested = true;
+
+            current_city.add_harvested_node(this)
+            current_city.update_harvested_nodes();
+            ServerSocket.send_update_harvest_cost(socket, current_city.can_be_harvested_nodes, current_city.get_harvest_cost(), player);
+
             ServerSocket.send_node_harvested_response(socket, this, player);
+
         }else {
             ServerSocket.something_wrong_response(socket, player, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost))} to harvest this node`);
 

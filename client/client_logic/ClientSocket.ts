@@ -9,9 +9,10 @@ import {City} from "./game_graphics/City/City.js";
 export namespace ClientSocket {
     export const response_types: { ALL_RESPONSE: string, MAP_RESPONSE: string, UNIT_MOVED_RESPONSE: string,
             UNITS_RESPONSE: string, UNIT_RESPONSE: string, MENU_INFO_RESPONSE: string,
-            HARVEST_NODE_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,  ENEMY_FOUND_RESPONSE:string, NEW_CITY: string, CANNOT_SETTLE: string,
+            HARVEST_NODE_RESPONSE: string, HARVEST_COST_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
+            ENEMY_FOUND_RESPONSE:string, NEW_CITY: string, CANNOT_SETTLE: string,
             STARS_DATA_RESPONSE: string, PURCHASED_TECHNOLOGY_RESPONSE: string, INVALID_MOVE_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
-        ATTACK_UNIT_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string } = {
+            ATTACK_UNIT_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string } = {
 
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -24,7 +25,6 @@ export namespace ClientSocket {
         ENEMY_UNIT_MOVED_RESPONSE: "ENEMY_UNIT_MOVED_RESPONSE",
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
         ENEMY_FOUND_RESPONSE: "ENEMY_FOUND_RESPONSE",
-
         ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
 
         NEW_CITY: "NEW_CITY",
@@ -37,6 +37,7 @@ export namespace ClientSocket {
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
 
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
+        HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
 
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE"
@@ -44,7 +45,8 @@ export namespace ClientSocket {
     };
     export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
                             readonly GET_MENU_INFO: string, GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly HARVEST_NODE: string,
-                            readonly PURCHASE_TECHNOLOGY: string, readonly MOVE_UNITS: string, readonly SETTLE: string, ATTACK_UNIT: string,
+                            readonly HARVEST_COST:string, readonly PURCHASE_TECHNOLOGY: string, readonly MOVE_UNITS: string, readonly SETTLE: string,
+                            ATTACK_UNIT: string,
                             readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string } = {
         // game play
         GET_MAP: "GET_MAP",
@@ -55,6 +57,7 @@ export namespace ClientSocket {
 
         PRODUCE_UNIT: "PRODUCE_UNIT",
         HARVEST_NODE: "HARVEST_NODE",
+        HARVEST_COST: "HARVEST_COST",
         PURCHASE_TECHNOLOGY: "PURCHASE_TECHNOLOGY",
         MOVE_UNITS: "MOVE_UNITS",
         SETTLE: "SETTLE",
@@ -220,6 +223,12 @@ export namespace ClientSocket {
 
                     break;
 
+                case ClientSocket.response_types.HARVEST_COST_RESPONSE:
+                    for (const cords of response_data.node_cords) {
+                        Node.all_nodes[cords[1]][cords[0]].harvest_cost = response_data.harvest_cost;
+                    }
+                    break;
+
                 case ClientSocket.response_types.NEW_CITY:
                     const current_node: Node = Node.all_nodes[response_data.city_y][response_data.city_x];
                     current_node.set_city(response_data.city_node.city_data, response_data.city_node.sprite_name);
@@ -363,5 +372,15 @@ export namespace ClientSocket {
             }
         })
         unit?.set_current_path(path);
+    }
+
+    export function get_node_harvest_cost(node_x: number, node_y:number){
+        ClientSocket.send_data({
+            request_type: ClientSocket.request_types.HARVEST_COST,
+            data: {
+                node_x: node_x,
+                node_y: node_y,
+            }
+        })
     }
 }

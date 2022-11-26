@@ -101,7 +101,9 @@ class Game{
              return
         }
         // create a new city for a player
-        city_node.city = new City(player, city_node.x, city_node.y);
+        city_node.city = new City(player, city_node);
+        city_node.is_harvested = true;
+
         city_node.type = null;
         city_node.sprite_name = "village.png";
 
@@ -156,18 +158,6 @@ class Game{
         })
 
         return output_cities;
-    }
-
-    update_harvest_cost(){
-        for(let y = 0; y < this.map.side_length; y++) {
-            for (let x = 0; x < this.map.side_length; x++) {
-
-                let node: Node | undefined = this.map.get_node(x, y);
-                if(node == null) continue;
-
-                node.harvest_cost = this.get_closest_city_distance(node);
-            }
-        }
     }
 
     get_data(player: Player){

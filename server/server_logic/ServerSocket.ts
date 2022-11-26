@@ -20,7 +20,7 @@ export namespace ServerSocket {
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
         NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ENEMY_FOUND_RESPONSE: string, ATTACK_UNIT_RESPONSE: string,
-        MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, PURCHASED_TECHNOLOGY_RESPONSE:string,
+        HARVEST_COST_RESPONSE: string, MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, PURCHASED_TECHNOLOGY_RESPONSE:string,
         INVALID_ATTACK_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string} =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -34,6 +34,8 @@ export namespace ServerSocket {
         ENEMY_FOUND_RESPONSE: "ENEMY_FOUND_RESPONSE",
 
         ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
+        HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
+
 
         NEW_CITY: "NEW_CITY",
         CANNOT_SETTLE: "CANNOT_SETTLE",
@@ -49,12 +51,14 @@ export namespace ServerSocket {
         INVALID_ATTACK_RESPONSE: "INVALID_ATTACK_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE"
+
     };
-    export const request_types: {readonly GET_MAP: string, readonly GET_UNITS: string,
-                                          readonly GET_ALL: string, readonly GET_MENU_INFO: string,
-                                          readonly GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly PURCHASE_TECHNOLOGY: string,
-                                          readonly MOVE_UNITS: string, readonly HARVEST_NODE: string, readonly SETTLE: string,
-                                          readonly ATTACK_UNIT: string, readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string} = {
+    export const request_types: {
+        readonly GET_MAP: string, readonly GET_UNITS: string,
+        readonly GET_ALL: string, readonly GET_MENU_INFO: string,
+        readonly GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly PURCHASE_TECHNOLOGY: string,
+        readonly MOVE_UNITS: string, readonly HARVEST_NODE: string, readonly SETTLE: string,
+        readonly ATTACK_UNIT: string, readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string, HARVEST_COST: string} = {
 
         // game play
         GET_MAP: "GET_MAP",
@@ -67,6 +71,7 @@ export namespace ServerSocket {
         PURCHASE_TECHNOLOGY: "PURCHASE_TECHNOLOGY",
         MOVE_UNITS: "MOVE_UNITS",
         HARVEST_NODE: "HARVEST_NODE",
+        HARVEST_COST: "HARVEST_COST",
         SETTLE: "SETTLE",
 
         ATTACK_UNIT: "ATTACK_UNIT",
@@ -338,6 +343,21 @@ export namespace ServerSocket {
                     unit: unit.get_data(),
                 }
             }, in_game_player.token)
+    }
+
+    export function send_update_harvest_cost(socket:Socket, nodes: Node[], harvest_cost: number, player: Player){
+        let node_cords: number[][] = []
+        nodes.map((node)=>{
+            node_cords.push([node.x, node.y])
+        })
+
+        ServerSocket.send_data(socket, {
+            response_type: response_types.HARVEST_COST_RESPONSE,
+            data:{
+                node_cords: node_cords,
+                harvest_cost: harvest_cost,
+            }
+        }, player.token)
     }
 
     export function send_unit_attack(socket: Socket, game: Game, player: Player, attacked_unit_id: string, unit_id: string, path: Path){
