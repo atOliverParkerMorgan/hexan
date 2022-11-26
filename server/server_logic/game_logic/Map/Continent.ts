@@ -42,6 +42,7 @@ class Continent{
         this.all_nodes.push(node);
     }
     remove_forest_node(node: Node): void{
+        node.sprite_name = "";
         this.grass_nodes.splice(this.grass_nodes.indexOf(node), 1);
         this.all_nodes.splice(this.grass_nodes.indexOf(node), 1);
     }
@@ -83,6 +84,7 @@ class Continent{
     }
 
     remove_lake_node(node: Node): void{
+        node.sprite_name = "";
         this.lake_nodes.splice(this.lake_nodes.indexOf(node), 1);
         this.all_nodes.splice(this.lake_nodes.indexOf(node), 1);
     }
