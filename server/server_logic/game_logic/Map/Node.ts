@@ -161,9 +161,11 @@ export class Node{
     }
 
     is_coast(): boolean{
+        if(this.type === Node.OCEAN || this.type === Node.LAKE) return false;
+
         for(const node_neighbour of this.neighbors){
             if(node_neighbour != null){
-                if(node_neighbour.type === Node.OCEAN){
+                if(node_neighbour.type === Node.OCEAN || node_neighbour.type === Node.LAKE){
                     return true;
                 }
             }

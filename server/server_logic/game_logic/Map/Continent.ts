@@ -12,8 +12,9 @@ class Continent{
 
     all_nodes: Node[];
 
-    grass_nodes: Node[];
     beach_nodes: Node[];
+    forest_nodes: Node[];
+    grass_nodes: Node[];
     mountain_nodes: Node[];
     river_nodes: Node[];
     lake_nodes: Node[];
@@ -24,8 +25,9 @@ class Continent{
 
         this.all_nodes = [];
 
-        this.grass_nodes = [];
         this.beach_nodes = [];
+        this.forest_nodes = [];
+        this.grass_nodes = [];
         this.mountain_nodes = [];
         this.river_nodes = [];
         this.lake_nodes = [];
@@ -38,25 +40,25 @@ class Continent{
         node.type = Node.FOREST;
         node.sprite_name = "trees_" + Utils.random_int(1, 2) + ".png";
 
-        this.grass_nodes.push(node);
+        this.forest_nodes.push(node);
         this.all_nodes.push(node);
     }
     remove_forest_node(node: Node): void{
         node.sprite_name = "";
-        this.grass_nodes.splice(this.grass_nodes.indexOf(node), 1);
-        this.all_nodes.splice(this.grass_nodes.indexOf(node), 1);
+        this.forest_nodes.splice(this.forest_nodes.indexOf(node), 1);
+        this.all_nodes.splice(this.forest_nodes.indexOf(node), 1);
     }
 
     add_grass_node(node: Node): void{
         node.type = Node.GRASS;
 
-        this.beach_nodes.push(node);
+        this.grass_nodes.push(node);
         this.all_nodes.push(node);
     }
 
     remove_grass_node(node: Node): void{
-        this.beach_nodes.splice(this.beach_nodes.indexOf(node), 1);
-        this.all_nodes.splice(this.beach_nodes.indexOf(node), 1);
+        this.grass_nodes.splice(this.grass_nodes.indexOf(node), 1);
+        this.all_nodes.splice(this.grass_nodes.indexOf(node), 1);
     }
 
     add_mountain_node(node: Node, mountain_type: number): void{
@@ -122,9 +124,6 @@ class Continent{
             case Node.FOREST:
                 this.remove_forest_node(node);
                 break;
-            case Node.GRASS:
-                this.remove_grass_node(node);
-                break;
             case Node.MOUNTAIN:
                 this.remove_mountain_node(node);
                 break;
@@ -139,14 +138,19 @@ class Continent{
         return this.all_nodes[this.random_int(0, this.all_nodes.length-1)];
     }
 
+    get_random_beach_node(): Node | undefined{
+        if(this.beach_nodes.length === 0) return undefined;
+        return this.beach_nodes[this.random_int(0, this.beach_nodes.length-1)];
+    }
+
     get_random_node_of_type(type: number): Node | undefined{
         switch (type){
             case Node.FOREST:
+                if(this.forest_nodes.length === 0) return undefined;
+                return this.forest_nodes[this.random_int(0, this.forest_nodes.length-1)];
+            case Node.GRASS:
                 if(this.grass_nodes.length === 0) return undefined;
                 return this.grass_nodes[this.random_int(0, this.grass_nodes.length-1)];
-            case Node.GRASS:
-                if(this.beach_nodes.length === 0) return undefined;
-                return this.beach_nodes[this.random_int(0, this.beach_nodes.length-1)];
             case Node.MOUNTAIN:
                 if(this.mountain_nodes.length === 0) return undefined;
                 return this.mountain_nodes[this.random_int(0, this.mountain_nodes.length-1)];

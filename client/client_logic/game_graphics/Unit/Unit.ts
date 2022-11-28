@@ -153,18 +153,19 @@ export class Unit implements UnitData{
         this.health_circle = new Graphics();
         this.health_circle_background = new Graphics();
 
-        this.health_circle.beginFill(Unit.HEALTH_BAR_COLOR);
-        this.health_circle.lineStyle(2, 0xffffff)
-        this.health_circle.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
-            HEX_SIDE_SIZE/1.5, 0,2 * Math.PI / (this.max_health / this.health));
-        this.health_circle.endFill();
-
         this.health_circle_background.beginFill(0xffffff);
         this.health_circle_background.lineStyle(2, 0xffffff)
         this.health_circle_background.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
-            HEX_SIDE_SIZE/1.5, 0, 2*Math.PI);
+            HEX_SIDE_SIZE/1.38, 0, 2*Math.PI);
         this.health_circle_background.endFill();
         viewport.addChild(this.health_circle_background);
+
+        this.health_circle.beginFill(Unit.HEALTH_BAR_COLOR);
+        this.health_circle.lineStyle(2, 0xffffff)
+        this.health_circle.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
+            HEX_SIDE_SIZE/1.38, 0,2 * Math.PI / (this.max_health / this.health));
+        this.health_circle.endFill();
+
         viewport.addChild(this.health_circle);
     }
 

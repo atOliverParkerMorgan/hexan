@@ -122,13 +122,17 @@ class Map{
 
             this.generate_continent(random_x, random_y, this.continent_size, this.shuffleArray(Map.CONTINENT_NAMES).shift());
        }
+
        for(const continent of this.all_continents) {
-           let current_beach_nodes =[]
             for (const node of continent.all_nodes) {
+                checks.push(node);
+
+                if(node == null) continue;
                 if (!node.is_coast() && node.type === Node.GRASS) {
                     continent.change_node_to(node, Node.FOREST);
-                }else{
-                    this.all_beach_nodes.push(node);
+                }
+                if(node.is_coast()){
+                    continent.beach_nodes.push(node);
                 }
             }
            // generate rivers
@@ -164,7 +168,7 @@ class Map{
             }
         }
         // cleaning up scattered beach nodes
-        for (const node of current_continent.beach_nodes) {
+        for (const node of current_continent.grass_nodes) {
             if(!node.is_coast()){
                 current_continent.change_node_to(node, Node.FOREST);
             }
@@ -341,7 +345,7 @@ class Map{
     // to generate river a continent must have mountains and beaches
     generate_river(continent: Continent): void{
         let random_mountain_node: Node | undefined = continent.get_random_node_of_type(Node.MOUNTAIN);
-        let random_beach_node: Node | undefined = continent.get_random_node_of_type(Node.GRASS);
+        let random_beach_node: Node | undefined = continent.get_random_beach_node();
 
         if(random_mountain_node == undefined || random_beach_node == undefined) {
            // there are no mountains or beaches on this continent therefore a river cannot be generated
