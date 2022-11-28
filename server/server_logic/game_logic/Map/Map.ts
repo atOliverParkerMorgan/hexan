@@ -33,6 +33,7 @@ class Map{
     number_of_continents: number;
     all_nodes: Node[][] = [];
     all_continents: Continent[] = [];
+    all_beach_nodes: Node[] = [];
 
     constructor(number_of_land_nodes: number, number_of_continents: number){
         // number must be even for a symmetrical grid
@@ -121,13 +122,25 @@ class Map{
 
             this.generate_continent(random_x, random_y, this.continent_size, this.shuffleArray(Map.CONTINENT_NAMES).shift());
        }
-        for(const continent of this.all_continents) {
+       for(const continent of this.all_continents) {
+           let current_beach_nodes =[]
             for (const node of continent.all_nodes) {
                 if (!node.is_coast() && node.type === Node.GRASS) {
                     continent.change_node_to(node, Node.FOREST);
+                }else{
+                    this.all_beach_nodes.push(node);
                 }
             }
+           // generate rivers
+           let number_of_rivers = Utils.random_int(2, 4);
+           for (let i = 0; i <= number_of_rivers; i++) {
+               this.generate_river(continent);
+           }
+
+           // generate lakes
+           this.generate_lakes(continent);
         }
+
     }
 
     generate_continent(seed_x: number, seed_y: number, continent_size: number, continent_name: string): void {
@@ -193,15 +206,6 @@ class Map{
                 this.generate_mountains(random_grass_node.x, random_grass_node.y, Utils.random_int(5, max_mountains), current_continent, mountain_type);
             }
         }
-
-        // generate rivers
-        let number_of_rivers = Utils.random_int(1, max_rivers);
-        for (let i = 0; i <= number_of_rivers; i++) {
-            this.generate_river(current_continent);
-        }
-
-        // generate lakes
-        this.generate_lakes(current_continent);
     }
 
     // mountain types: 1. normal; 2. snowy
@@ -505,6 +509,8 @@ class Map{
         }
         return null;
     }
+
+
 
     make_neighbour_nodes_shown(player: Player, node: Node | undefined){
 
