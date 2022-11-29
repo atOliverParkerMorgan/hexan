@@ -9,6 +9,8 @@ export interface UnitInterface {
     type: string;
     action: string;
 
+    is_on_water: boolean;
+
     attack: number;
     health: number;
     range: number;

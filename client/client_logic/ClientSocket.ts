@@ -182,7 +182,10 @@ export namespace ClientSocket {
                     Player.all_units.map((unit: any)=>{
                         if(unit.id === response_data.unit.id){
                             found_unit = true;
+                            // transform unit into ship if on a water node
+                            unit.is_on_water = response_data.unit.is_on_water;
                             unit.move_to(response_data.unit.x, response_data.unit.y);
+                            return;
                         }
                     })
 

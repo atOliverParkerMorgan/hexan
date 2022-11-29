@@ -2,6 +2,7 @@ import {Node} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
 import {setup_tech_tree_button} from "../UI_logic.js";
 import {Technology} from "./Technology/Technology.js";
+import {Player} from "./Player.js";
 
 export let HEX_SIDE_SIZE: number;
 export let DISTANCE_BETWEEN_HEX: number;
@@ -21,11 +22,18 @@ export function setup_tech_tree_node(node: any): Technology{
          children_node = null;
      }
 
+     if(node.is_owned && node.name !== ""){
+         Player.owned_technologies.push(node.name);
+     }
+
      return new Technology(children_node, node.name, node.image, node.description, node.cost, node.is_owned)
 }
 
 export function setup_tech_tree(tech_tree: any){
+    // get player owned technologies into array
+    Player.owned_technologies = []
     tech_tree_root = setup_tech_tree_node(tech_tree);
+
     Technology.init_graph_arrays();
 }
 
@@ -68,7 +76,7 @@ export function a_star(start_node: Node, goal_node: Node){
             return solution_path.reverse();
         }
 
-        for(const node of current_node.get_neighbours()) {
+        for(const node of current_node.get_valid_movement_neighbours()) {
 
             if(node == null){
                 continue;

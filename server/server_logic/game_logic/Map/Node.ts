@@ -287,6 +287,10 @@ export class Node{
         }
     }
 
+    is_water(): boolean{
+        return this.type === Node.LAKE || this.type === Node.OCEAN;
+    }
+
     get_type(){
         switch (this.type){
             case Node.FOREST: return "GRASS";

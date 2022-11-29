@@ -42,11 +42,14 @@ export class Unit implements UnitData{
     action: string;
     is_friendly: boolean;
 
+    is_on_water: boolean;
+
     health_circle: any;
     health_circle_background: any;
     background_circle: any;
     movement_circle: any;
     sprite: any;
+    boat_sprite: any;
 
     constructor(unit: UnitData, width: number, height: number, is_friendly: boolean) {
         //this.player = player;
@@ -61,6 +64,8 @@ export class Unit implements UnitData{
         this.type = unit.type;
         this.action = unit.action;
         this.is_friendly = is_friendly;
+
+        this.is_on_water = false;
 
         this.attack = unit.attack;
         this.health = unit.health;
@@ -92,6 +97,7 @@ export class Unit implements UnitData{
         this.background_circle = null;
         // @ts-ignore
         this.sprite = Sprite.from(this.texture_path);
+        this.boat_sprite = Sprite.from("/images/boat.png");
 
         this.update_unit_on_stage();
     }
@@ -100,6 +106,8 @@ export class Unit implements UnitData{
         // remove the unit Graphics when unit moves
         if(this.sprite != null){
             viewport.removeChild(this.sprite);
+        }if(this.is_on_water && this.boat_sprite != null){
+            viewport.removeChild(this.boat_sprite);
         }
         if(this.background_circle != null){
             viewport.removeChild(this.background_circle);
@@ -122,9 +130,15 @@ export class Unit implements UnitData{
         this.set_sprite_position();
         this.set_sprite_size();
 
-        this.sprite.interactive = false;
-        this.sprite.buttonMode = false;
-        viewport.addChild(this.sprite);
+        if(this.is_on_water){
+            this.boat_sprite.interactive = false;
+            this.boat_sprite.buttonMode = false;
+            viewport.addChild(this.boat_sprite);
+        }else{
+            this.sprite.interactive = false;
+            this.sprite.buttonMode = false;
+            viewport.addChild(this.sprite);
+        }
     }
 
     set_sprite_position(): void{

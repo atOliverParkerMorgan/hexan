@@ -18,6 +18,8 @@ class Player{
     // stars per a minute
     star_production: number;
 
+    owned_technology: String[];
+
     star_production_has_started: boolean;
 
     constructor(token: string) {
@@ -31,6 +33,7 @@ class Player{
 
         this.star_production_has_started = false;
 
+        this.owned_technology = [];
         this.root_tech_tree_node = Technology.init_tech_tree();
     }
 
@@ -141,6 +144,7 @@ class Player{
     is_payment_valid(payment: number): boolean{
         return this.total_owned_stars - payment >= 0;
     }
+
 
     pay_stars(payment: number){
         this.total_owned_stars -= payment;

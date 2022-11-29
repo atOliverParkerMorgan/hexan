@@ -51,6 +51,8 @@ export class Technology{
                 }else if(tech_name === "Spearman"){
                     player.production_units.push(Melee.SPEARMAN);
                 }
+                player.owned_technology.push(tech_name);
+
 
                 return true;
             }

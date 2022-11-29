@@ -33,6 +33,7 @@ export class Unit implements UnitInterface{
     action: string;
 
     is_visible_to_enemy: boolean;
+    is_on_water: boolean;
 
     attack: number;
     health: number;
@@ -50,6 +51,7 @@ export class Unit implements UnitInterface{
         this.action = unit_init_data.action;
 
         this.is_visible_to_enemy = false;
+        this.is_on_water = false;
 
         this.attack = unit_init_data.attack;
         this.health = unit_init_data.health;
@@ -84,13 +86,23 @@ export class Unit implements UnitInterface{
 
             const current_node: Node = path[0];
 
+
+            if(current_node.is_water() && !player.owned_technology.includes("Ship Building")){
+                ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over water tiles without owning the Ship Building technology");
+                return
+            }
+
+
             // check if movement is valid or if move can be translated as attack
             if(current_node.unit != null){
                 if(player.owns_this_unit(current_node.unit.id)){
-                    ServerSocket.invalid_move_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
+                    ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
                     return
                 }
+
+                current_node.unit.is_on_water = current_node.is_water()
             }
+
 
             // for range attack units
             const destination = path[path.length - 1];
@@ -194,6 +206,8 @@ export class Unit implements UnitInterface{
 
             type: this.type,
             action: this.action,
+
+            is_on_water: this.is_on_water,
 
             attack: this.attack,
             health: this.health,

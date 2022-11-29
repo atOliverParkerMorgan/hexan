@@ -40,8 +40,8 @@ class Continent{
         node.type = Node.FOREST;
         node.sprite_name = "trees_" + Utils.random_int(1, 2) + ".png";
 
-        this.forest_nodes.push(node);
-        this.all_nodes.push(node);
+        if(!this.forest_nodes.includes(node)) this.forest_nodes.push(node);
+        if(!this.all_nodes.includes(node)) this.all_nodes.push(node);
     }
     remove_forest_node(node: Node): void{
         node.sprite_name = "";
@@ -51,9 +51,10 @@ class Continent{
 
     add_grass_node(node: Node): void{
         node.type = Node.GRASS;
+        node.sprite_name = "";
 
-        this.grass_nodes.push(node);
-        this.all_nodes.push(node);
+        if(!this.grass_nodes.includes(node))this.grass_nodes.push(node);
+        if(!this.grass_nodes.includes(node))this.all_nodes.push(node);
     }
 
     remove_grass_node(node: Node): void{
@@ -64,8 +65,8 @@ class Continent{
     add_mountain_node(node: Node, mountain_type: number): void{
         node.type = Node.MOUNTAIN;
         node.sprite_name = "mountain_" + Utils.random_int(1, 3) + ".png"
-        this.mountain_nodes.push(node);
-        this.all_nodes.push(node);
+        if(!this.mountain_nodes.includes(node)) this.mountain_nodes.push(node);
+        if(!this.all_nodes.includes(node)) this.all_nodes.push(node);
     }
     remove_mountain_node(node: Node): void{
         node.sprite_name = "";
@@ -81,6 +82,7 @@ class Continent{
 
     add_lake_node(node: Node): void{
         node.type = Node.LAKE;
+        node.sprite_name = "";
         this.lake_nodes.push(node);
         this.all_nodes.push(node);
     }
@@ -91,19 +93,17 @@ class Continent{
         this.all_nodes.splice(this.lake_nodes.indexOf(node), 1);
     }
 
-    get_random_river_node(): Node{
+    get_random_river_node(): Node | undefined{
         return this.river_nodes[this.random_int(0, this.river_nodes.length - 1)];
     }
 
     change_node_to(node: Node, new_type: number): void{
         if(node.type === new_type) return;
 
-        const old_type = node.type;
-
         switch (new_type){
             case Node.FOREST:
                 // make forest more random and clustered together
-                if(Math.random() <= (.1 + node.number_of_forest_neighbour() * .05)){
+                if(Math.random() <= (.2 + node.number_of_forest_neighbour() * .05)){
                     this.add_forest_node(node);
                 }else{
                     this.add_grass_node(node);
@@ -117,18 +117,6 @@ class Continent{
                 break;
             case Node.LAKE:
                 this.add_lake_node(node);
-                break;
-        }
-
-        switch (old_type){
-            case Node.FOREST:
-                this.remove_forest_node(node);
-                break;
-            case Node.MOUNTAIN:
-                this.remove_mountain_node(node);
-                break;
-            case Node.LAKE:
-                this.remove_lake_node(node);
                 break;
         }
     }

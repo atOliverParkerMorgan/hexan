@@ -125,12 +125,8 @@ class Map{
 
        for(const continent of this.all_continents) {
             for (const node of continent.all_nodes) {
-                checks.push(node);
 
                 if(node == null) continue;
-                if (!node.is_coast() && node.type === Node.GRASS) {
-                    continent.change_node_to(node, Node.FOREST);
-                }
                 if(node.is_coast()){
                     continent.beach_nodes.push(node);
                 }

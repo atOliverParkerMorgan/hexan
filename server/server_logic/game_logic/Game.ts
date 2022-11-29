@@ -5,6 +5,7 @@ import {Node} from "./Map/Node";
 import {Unit} from "./Units/Unit";
 import {CityInterface} from "./City/CityInterface";
 import {Technology} from "./Technology/Technology";
+import cons from "consolidate";
 
 class Game{
     token: string;
@@ -30,7 +31,9 @@ class Game{
     place_start_city(player: Player): void{
         for (const continent of this.map.all_continents) {
             if(!continent.has_player){
-                this.add_city(player, continent.get_random_river_node(), );
+                let starting_node: Node | undefined = continent.get_random_river_node();
+                if(starting_node == null) starting_node = continent.get_random_node_of_type(Node.GRASS);
+                this.add_city(player, starting_node);
                 continent.has_player = true;
                 break;
             }
@@ -98,6 +101,7 @@ class Game{
     // return boolean that indicates if the city placement was successful
     add_city(player: Player, city_node: Node | undefined): void{
         if(city_node == null){
+             console.error("Error, city node was null");
              return
         }
         // create a new city for a player

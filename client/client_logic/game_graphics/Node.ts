@@ -136,6 +136,19 @@ export class Node{
         return neighbours;
     }
 
+    get_valid_movement_neighbours(): Node[]{
+        let valid_movement_neighbours: Node[] = []
+        let neighbours = this.get_neighbours();
+        neighbours.map((neighbour)=> {
+            if (neighbour == null) return;
+            if ((neighbour.type === Node.OCEAN || neighbour.type === Node.LAKE) && !Player.owned_technologies.includes("Ship Building")) return;
+
+            valid_movement_neighbours.push(neighbour);
+        });
+
+        return valid_movement_neighbours;
+    }
+
     get_heuristic_value(start_node: Node, goal_node: Node): number{
         const value = this.get_distance_to_node(start_node) + this.get_distance_to_node(goal_node);
         return value + this.get_movement_time();
@@ -454,7 +467,7 @@ export class Node{
                             }
 
                             Node.path = a_star(Node.selected_node, Node.last_hovered_node);
-                            if (Node.path == null) return;
+                            if (Node.path == null || Node.path.length === 0) return;
 
                             let last_node = Node.selected_node;
 
