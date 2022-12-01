@@ -1,6 +1,5 @@
 # Project exclude paths
 /node_modules/
-/.github/
 /cypress/
 /heroku/
 /pixi_viewport/

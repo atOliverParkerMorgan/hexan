@@ -5,6 +5,13 @@
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/cypress/downloads" />
+      <excludeFolder url="file://$MODULE_DIR$/cypress/fixtures" />
+      <excludeFolder url="file://$MODULE_DIR$/cypress/screenshots" />
+      <excludeFolder url="file://$MODULE_DIR$/cypress/support" />
+      <excludeFolder url="file://$MODULE_DIR$/cypress/videos" />
+      <excludeFolder url="file://$MODULE_DIR$/heroku" />
+      <excludeFolder url="file://$MODULE_DIR$/pixi_viewport" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
