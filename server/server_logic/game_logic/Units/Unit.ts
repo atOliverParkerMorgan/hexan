@@ -96,11 +96,9 @@ export class Unit implements UnitInterface{
             // check if movement is valid or if move can be translated as attack
             if(current_node.unit != null){
                 if(player.owns_this_unit(current_node.unit.id)){
-                    ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a enemy unit or city you can only attack")
+                    ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a friendly unit or city you can only attack")
                     return
                 }
-
-                current_node.unit.is_on_water = current_node.is_water()
             }
 
 
@@ -122,6 +120,8 @@ export class Unit implements UnitInterface{
             game.map.all_nodes[this.y][this.x].unit = null;
 
             current_node.unit = this;
+
+            this.is_on_water = current_node.is_water()
 
             this.x = current_node.x;
             this.y = current_node.y;

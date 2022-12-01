@@ -95,7 +95,7 @@ export class Unit implements UnitData{
         this.health_circle = null;
         this.health_circle_background = null;
         this.background_circle = null;
-        // @ts-ignore
+
         this.sprite = Sprite.from(this.texture_path);
         this.boat_sprite = Sprite.from("/images/boat.png");
 
@@ -106,7 +106,7 @@ export class Unit implements UnitData{
         // remove the unit Graphics when unit moves
         if(this.sprite != null){
             viewport.removeChild(this.sprite);
-        }if(this.is_on_water && this.boat_sprite != null){
+        }if(this.boat_sprite != null){
             viewport.removeChild(this.boat_sprite);
         }
         if(this.background_circle != null){
@@ -129,7 +129,7 @@ export class Unit implements UnitData{
         this.show_background();
         this.set_sprite_position();
         this.set_sprite_size();
-
+        
         if(this.is_on_water){
             this.boat_sprite.interactive = false;
             this.boat_sprite.buttonMode = false;
@@ -142,8 +142,14 @@ export class Unit implements UnitData{
     }
 
     set_sprite_position(): void{
-        this.sprite.x = this.get_x_in_pixels();
-        this.sprite.y = this.get_y_in_pixels();
+        if(this.is_on_water) {
+            this.boat_sprite.x = this.get_x_in_pixels();
+            this.boat_sprite.y = this.get_y_in_pixels();
+
+        }else{
+            this.sprite.x = this.get_x_in_pixels();
+            this.sprite.y = this.get_y_in_pixels();
+        }
     }
 
     show_background(): void{
@@ -184,7 +190,12 @@ export class Unit implements UnitData{
     }
 
     show_movement(percentage_of_movement: number): void{
-        if(percentage_of_movement === 0) return;
+        if(this.current_path.length === 0){
+            if(this.movement_circle != null){
+                viewport.removeChild(this.movement_circle);
+            }
+            return;
+        }
 
         this.movement_circle = new Graphics;
         this.movement_circle.beginFill(Unit.MOVEMENT_COLOR);
@@ -197,8 +208,13 @@ export class Unit implements UnitData{
     }
 
     set_sprite_size(): void{
-        this.sprite.width = this.width;
-        this.sprite.height = this.height;
+        if(this.is_on_water) {
+            this.boat_sprite.width = this.width;
+            this.boat_sprite.height = this.height;
+        }else{
+            this.sprite.width = this.width;
+            this.sprite.height = this.height;
+        }
     }
 
     get_x_in_pixels(): number{
@@ -243,7 +259,6 @@ export class Unit implements UnitData{
 
     update_unit_movement_background(){
         this.current_path.shift();
-        console.log(this.current_path.length)
 
         if(this.current_path.length !== 0){
             const current_node: Node = Node.all_nodes[this.current_path[0][1]][this.current_path[0][0]];

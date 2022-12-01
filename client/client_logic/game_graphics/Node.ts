@@ -300,8 +300,11 @@ export class Node{
                 let node_from: Node = <Node>Node.selected_node;
 
                 // get cords of path to send to typescript application
+                if(Node.path == null) return;
+
                 let path_node_cords = []
-                for (const node of <Node[]>Node.path) {
+
+                for (const node of Node.path) {
                     path_node_cords.push([node.x, node.y]);
                 }
                 show_unit_info(Node.selected_node.unit);
