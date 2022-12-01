@@ -3,7 +3,7 @@ var REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
     FIND_MATCH: "FIND_MATCH"
 };
-export var HOST_NAME = "mysterious-sea-69962.herokuapp.com";
+export var HOST_NAME = "hexan0.herokuapp.com";
 var interval_id_timer;
 var interval_id_match_request;
 function settings_logic_init() {

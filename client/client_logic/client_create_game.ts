@@ -5,7 +5,7 @@ const REQUEST_TYPES = {
     FIND_MATCH: "FIND_MATCH"
 }
 
-export const HOST_NAME = "mysterious-sea-69962.herokuapp.com"
+export const HOST_NAME = "hexan0.herokuapp.com"
 
 let interval_id_timer: any;
 let interval_id_match_request: any;
