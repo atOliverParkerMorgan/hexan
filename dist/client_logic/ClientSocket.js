@@ -4,7 +4,7 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import { Node } from "./game_graphics/Node.js";
 import { show_city_menu, show_modal } from "./UI_logic.js";
 import { City } from "./game_graphics/City/City.js";
-import { URL } from "./client_create_game";
+import { URL } from "./client_create_game.js";
 // singleton
 export var ClientSocket;
 (function (ClientSocket) {
