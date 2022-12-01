@@ -1,9 +1,10 @@
 import {Player} from "./game_graphics/Player.js"
-import {init_canvas, HEX_SIDE_SIZE, tech_tree_root, setup_tech_tree,} from "./game_graphics/Pixi.js";
+import {init_canvas, HEX_SIDE_SIZE, setup_tech_tree,} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {show_city_menu, show_modal} from "./UI_logic.js";
 import {City} from "./game_graphics/City/City.js";
+import {URL} from "./client_create_game"
 
 // singleton
 export namespace ClientSocket {
@@ -71,19 +72,7 @@ export namespace ClientSocket {
 
     // local host setup
     // @ts-ignore
-    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io("ws://localhost:3000", {transports: ['websocket']});
-
-    let localhost = true;
-    let is_connected = false;
-
-    export function connect(){
-        // if(!localhost || !is_connected) {
-        //     console.log("connected");
-        //     // @ts-ignore
-        //     socket
-        //     is_connected = true;
-        // }
-    }
+    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`ws://${URL}:3000`, {transports: ['websocket']});
 
     export function send_data(data: any): void{
         ClientSocket.socket.emit("send-data", data);
@@ -377,13 +366,4 @@ export namespace ClientSocket {
         unit?.set_current_path(path);
     }
 
-    export function get_node_harvest_cost(node_x: number, node_y:number){
-        ClientSocket.send_data({
-            request_type: ClientSocket.request_types.HARVEST_COST,
-            data: {
-                node_x: node_x,
-                node_y: node_y,
-            }
-        })
-    }
 }

@@ -4,6 +4,7 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import { Node } from "./game_graphics/Node.js";
 import { show_city_menu, show_modal } from "./UI_logic.js";
 import { City } from "./game_graphics/City/City.js";
+import { URL } from "./client_create_game";
 // singleton
 export var ClientSocket;
 (function (ClientSocket) {
@@ -48,18 +49,7 @@ export var ClientSocket;
     };
     // local host setup
     // @ts-ignore
-    ClientSocket.socket = io("ws://localhost:3000", { transports: ['websocket'] });
-    var localhost = true;
-    var is_connected = false;
-    function connect() {
-        // if(!localhost || !is_connected) {
-        //     console.log("connected");
-        //     // @ts-ignore
-        //     socket
-        //     is_connected = true;
-        // }
-    }
-    ClientSocket.connect = connect;
+    ClientSocket.socket = io("ws://".concat(URL, ":3000"), { transports: ['websocket'] });
     function send_data(data) {
         ClientSocket.socket.emit("send-data", data);
     }
@@ -318,14 +308,4 @@ export var ClientSocket;
         unit === null || unit === void 0 ? void 0 : unit.set_current_path(path);
     }
     ClientSocket.request_move_unit = request_move_unit;
-    function get_node_harvest_cost(node_x, node_y) {
-        ClientSocket.send_data({
-            request_type: ClientSocket.request_types.HARVEST_COST,
-            data: {
-                node_x: node_x,
-                node_y: node_y,
-            }
-        });
-    }
-    ClientSocket.get_node_harvest_cost = get_node_harvest_cost;
 })(ClientSocket || (ClientSocket = {}));

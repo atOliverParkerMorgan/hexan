@@ -169,7 +169,6 @@ export function init_game() {
         return;
     }
 
-    ClientSocket.connect();
     ClientSocket.add_data_listener(player_token)
     ClientSocket.get_data(ClientSocket.request_types.GET_ALL, game_token, player_token)
 }
