@@ -1,7 +1,5 @@
 # Project exclude paths
 /node_modules/
-/server/
-/client/
 /.github/
 /cypress/
 /heroku/
