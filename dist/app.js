@@ -99,8 +99,8 @@ var App = /** @class */ (function () {
         // ServerSocket.add_request_listener();
     };
     App.prototype.listen = function () {
-        this.app.listen((this.port));
-        console.log("--- hexan is running on port: ".concat(this.port, " ---"));
+        this.app.listen((process.env.PORT || this.port));
+        console.log("--- hexan is running on port: ".concat(process.env.PORT || this.port, " ---"));
     };
     return App;
 }());

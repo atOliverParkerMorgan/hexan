@@ -6,7 +6,6 @@ import * as path from "path";
 import express, {Application, NextFunction, Response, Request} from "express";
 import {renderFile} from "ejs";
 import cookieParser from "cookie-parser";
-import {ServerSocket} from "./server_logic/ServerSocket";
 
 class App {
   public app: Application = express();
@@ -86,8 +85,8 @@ class App {
 
 
   listen() {
-    this.app.listen((this.port));
-    console.log(`--- hexan is running on port: ${this.port} ---`);
+    this.app.listen((process.env.PORT || this.port));
+    console.log(`--- hexan is running on port: ${process.env.PORT || this.port} ---`);
   }
 }
 
