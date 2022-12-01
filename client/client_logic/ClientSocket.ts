@@ -1,9 +1,10 @@
 import {Player} from "./game_graphics/Player.js"
-import {init_canvas, HEX_SIDE_SIZE, tech_tree_root, setup_tech_tree,} from "./game_graphics/Pixi.js";
+import {init_canvas, HEX_SIDE_SIZE, setup_tech_tree,} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {show_city_menu, show_modal} from "./UI_logic.js";
 import {City} from "./game_graphics/City/City.js";
+import {HOST_NAME} from "./client_create_game";
 
 // singleton
 export namespace ClientSocket {
@@ -71,7 +72,7 @@ export namespace ClientSocket {
 
     // local host setup
     // @ts-ignore
-    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io("ws://localhost:3000", {transports: ['websocket']});
+    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io("ws://"+HOST_NAME+":3000", {transports: ['websocket']});
 
     let localhost = true;
     let is_connected = false;

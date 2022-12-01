@@ -6,7 +6,7 @@ import Settler from "./server_logic/game_logic/Units/Settler";
 import {Unit} from "./server_logic/game_logic/Units/Unit";
 
 export namespace Utils{
-    export const HOST = "http://localhost:8000";
+    export const HOSTNAME = "mysterious-sea-69962.herokuapp.com";
 
     export const GAME_MODE_1v1: string = "1v1";
     export const GAME_MODE_2v2: string = "2v2";

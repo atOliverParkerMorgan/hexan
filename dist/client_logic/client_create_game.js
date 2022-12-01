@@ -3,6 +3,7 @@ var REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
     FIND_MATCH: "FIND_MATCH"
 };
+export var HOST_NAME = "mysterious-sea-69962.herokuapp.com";
 var interval_id_timer;
 var interval_id_match_request;
 function settings_logic_init() {
@@ -87,7 +88,7 @@ function settings_logic_init() {
             return;
         //client_socket.send_data("create_game_with_ai", nick);
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8000", true);
+        xhr.open("POST", "https://" + HOST_NAME, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         console.log("nick_name: ".concat(nick_name, " map_size: ").concat(map_size, " game_mode: ").concat(game_mode, " request_type: ").concat(REQUEST_TYPES.GENERATE_PLAYER_TOKEN));
         xhr.send(JSON.stringify({
@@ -126,7 +127,7 @@ function settings_logic_init() {
 // ask if there server has a match
 function request_match_status_update(player_token, nick_name, map_size, game_mode) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:8000", true);
+    xhr.open("POST", "https://" + HOST_NAME, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({
         nick_name: nick_name,

@@ -12,7 +12,7 @@ var Settler_1 = __importDefault(require("./server_logic/game_logic/Units/Settler
 var Unit_1 = require("./server_logic/game_logic/Units/Unit");
 var Utils;
 (function (Utils) {
-    Utils.HOST = "http://localhost:8000";
+    Utils.HOSTNAME = "mysterious-sea-69962.herokuapp.com";
     Utils.GAME_MODE_1v1 = "1v1";
     Utils.GAME_MODE_2v2 = "2v2";
     Utils.GAME_MODE_AI = "AI";
