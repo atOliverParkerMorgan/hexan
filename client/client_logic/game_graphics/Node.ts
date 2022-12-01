@@ -531,7 +531,7 @@ export class Node{
 
         let harvested_neighbours = 0;
         for (const neighbour of this.get_neighbours()) {
-            if(neighbour?.city != null && this?.type !== Node.OCEAN && this?.type !== Node.LAKE){
+            if(neighbour?.city != null && neighbour?.city.is_friendly && this?.type !== Node.OCEAN && this?.type !== Node.LAKE){
                 return true;
             }
             if(neighbour?.is_harvested){
