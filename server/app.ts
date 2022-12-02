@@ -1,69 +1,66 @@
 import createError from "http-errors";
 import IndexController from "./routes/IndexController";
 import Controller from "./routes/IndexController";
-import ControllerInterface from "./routes/ControllerInterface";
 import * as path from "path";
 import express, {Application, NextFunction, Response, Request} from "express";
 import {renderFile} from "ejs";
 import cookieParser from "cookie-parser";
+import {createServer} from "http";
+import {Server} from "socket.io";
 
-class App {
-  public app: Application = express();
-  public port: number;
-  public controllers: [ControllerInterface]
+export namespace App {
+  export const app: Application = express();
+  const port: number = 8000;
+  const controller: Controller =  new IndexController()
+  export const httpServer = createServer(App.app);
+  export const io = new Server(httpServer);
 
-  constructor(port: number, ...controllers: [ControllerInterface]) {
-    this.controllers = controllers
-    this.port = port
+
+  export function init() {
+    init_view_engine();
+    init_static_routes();
+    init_controllers();
   }
 
-  init() {
-    this.init_view_engine();
-    this.init_static_routes();
-    this.init_controllers();
-    this.server_socket_connection();
+  function init_view_engine() {
+    app.engine('html', renderFile);
+    app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'html');
+
+    app.use(cookieParser());
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
   }
 
-  private init_view_engine() {
-    this.app.engine('html', renderFile);
-    this.app.set('views', path.join(__dirname, 'views'));
-    this.app.set('view engine', 'html');
-
-    this.app.use(cookieParser());
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: false }));
-  }
-
-  private init_controllers() {
+  function init_controllers() {
     // use all controller routers
-    this.controllers.forEach(controller => {
-      this.app.use('/', controller.router);
-    })
+    app.use('/', controller.router);
+
   }
 
-  private init_static_routes() {
+  function init_static_routes() {
     // html files
-    this.app.use('/views', express.static(__dirname + '/views/'));
+    app.use('/views', express.static(__dirname + '/views/'));
 
     // static public files
-    this.app.use('/javascript', express.static(__dirname + '/client_logic/'));
-    this.app.use('/stylesheets', express.static(__dirname + '/stylesheets/'));
-    this.app.use('/images', express.static(__dirname + '/images/'));
+    app.use('/javascript', express.static(__dirname + '/client_logic/'));
+    app.use('/stylesheets', express.static(__dirname + '/stylesheets/'));
+    app.use('/images', express.static(__dirname + '/images/'));
 
     // modules
-    this.app.use('/pixi', express.static(__dirname + '/../node_modules/pixi.js/dist/browser/'));
-    this.app.use('/pixi_extras', express.static(__dirname + '/../node_modules/@pixi/graphics-extras/dist/browser/'));
-    this.app.use('/pixi_viewport', express.static(__dirname + '/../node_modules/pixi-viewport/dist/'));
-    this.app.use('/socket.io-client', express.static(__dirname + '/../node_modules/socket.io-client/dist/'));
-    this.app.use('/springy', express.static(__dirname + '/../node_modules/springy/'));
+    app.use('/pixi', express.static(__dirname + '/../node_modules/pixi.js/dist/browser/'));
+    app.use('/pixi_extras', express.static(__dirname + '/../node_modules/@pixi/graphics-extras/dist/browser/'));
+    app.use('/pixi_viewport', express.static(__dirname + '/../node_modules/pixi-viewport/dist/'));
+    app.use('/socket.io-client', express.static(__dirname + '/../node_modules/socket.io-client/dist/'));
+    app.use('/springy', express.static(__dirname + '/../node_modules/springy/'));
   }
 
-  handle_error() {
-    this.app.use(function (req: Request, res: Response, next: NextFunction) {
+  export function handle_error() {
+    app.use(function (req: Request, res: Response, next: NextFunction) {
       next(createError(404));
     });
 
-    this.app.use((err: any, req: Request, res: Response) => {
+    app.use((err: any, req: Request, res: Response) => {
       // set locals, only providing error in development
       res.locals.message = err.message;
       res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -78,21 +75,13 @@ class App {
     });
   }
 
-  server_socket_connection(){
-    // ServerSocket.add_response_listener();
-    // ServerSocket.add_request_listener();
-  }
 
-
-  listen() {
-    this.app.listen((process.env.PORT || this.port));
-    console.log(`--- hexan is running on port: ${process.env.PORT || this.port} ---`);
+  export function listen() {
+    app.listen((process.env.PORT || port));
+    console.log(`--- hexan is running on port: ${process.env.PORT || port} ---`);
   }
 }
 
-const index_controller: Controller = new IndexController()
-const app = new App(8000, index_controller);
-
-app.init();
-app.handle_error();
-app.listen();
+App.init();
+App.handle_error();
+App.listen();

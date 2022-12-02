@@ -4,16 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerSocket = void 0;
-var http_1 = require("http");
-var socket_io_1 = require("socket.io");
 var Path_1 = __importDefault(require("./game_logic/Map/Path"));
 var MatchMaker_1 = require("./MatchMaker");
-var httpServer = (0, http_1.createServer)();
-var io = new socket_io_1.Server(httpServer);
+var app_1 = require("../app");
 // singleton
 var ServerSocket;
 (function (ServerSocket) {
-    ServerSocket.PORT_SOCKET = 9000;
+    ServerSocket.PORT_SOCKET = 3000;
     ServerSocket.is_listening = false;
     ServerSocket.response_types = {
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -57,7 +54,7 @@ var ServerSocket;
     };
     function init() {
         if (!ServerSocket.is_listening) {
-            httpServer.listen(ServerSocket.PORT_SOCKET);
+            app_1.App.httpServer.listen(ServerSocket.PORT_SOCKET);
             ServerSocket.is_listening = true;
         }
     }
@@ -72,7 +69,7 @@ var ServerSocket;
     ServerSocket.send_data_to_all = send_data_to_all;
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
     function add_response_listener() {
-        io.on("connection", function (socket) {
+        app_1.App.io.on("connection", function (socket) {
             socket.on("get_data", function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
@@ -150,7 +147,7 @@ var ServerSocket;
     ServerSocket.add_response_listener = add_response_listener;
     // acts as a setter - changes game_state according to clients request and game rules.
     function add_request_listener() {
-        io.on("connection", function (socket) {
+        app_1.App.io.on("connection", function (socket) {
             // receive a message from the public
             socket.on("send-data", function () {
                 var _a, _b;

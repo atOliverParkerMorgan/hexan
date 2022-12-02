@@ -5,7 +5,7 @@ var REQUEST_TYPES = {
 };
 var interval_id_timer;
 var interval_id_match_request;
-export var HOST_NAME = "hexan0.herokuapp.com";
+export var HOST_NAME = "localhost";
 function settings_logic_init() {
     // slider logic
     var args = [400, 900, 1225, 1600, 2025, 2500];

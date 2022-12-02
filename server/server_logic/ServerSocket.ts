@@ -8,13 +8,12 @@ import Player from "./game_logic/Player";
 import {Node} from "./game_logic/Map/Node";
 import {NodeInterface} from "./game_logic/Map/NodeInterface";
 import Game from "./game_logic/Game";
+import {App} from "../app";
 
-const httpServer = createServer();
-const io = new Server(httpServer);
 
 // singleton
 export namespace ServerSocket {
-    export const PORT_SOCKET: number = 9000;
+    export const PORT_SOCKET: number = 3000;
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
@@ -83,7 +82,7 @@ export namespace ServerSocket {
 
     export function init(): void {
             if (!ServerSocket.is_listening) {
-                httpServer.listen(PORT_SOCKET);
+                App.httpServer.listen(PORT_SOCKET);
                 ServerSocket.is_listening = true;
             }
     }
@@ -98,7 +97,7 @@ export namespace ServerSocket {
 
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
     export function add_response_listener(): void{
-        io.on("connection", (socket: Socket) => {
+        App.io.on("connection", (socket: Socket) => {
             socket.on("get_data", (...args: any[]) => {
                 try {
                     // get request data from public
@@ -176,7 +175,7 @@ export namespace ServerSocket {
 
     // acts as a setter - changes game_state according to clients request and game rules.
     export function add_request_listener(): void{
-        io.on("connection", (socket: Socket) => {
+        App.io.on("connection", (socket: Socket) => {
             // receive a message from the public
             socket.on("send-data", (...args: any[]) => {
                 // try {

@@ -49,7 +49,7 @@ export var ClientSocket;
     };
     // local host setup
     // @ts-ignore
-    ClientSocket.socket = io("ws://".concat(HOST_NAME, ":9000"), { transports: ['websocket'] });
+    ClientSocket.socket = io("ws://".concat(HOST_NAME, ":3000"), { transports: ['websocket', 'polling'] });
     function send_data(data) {
         ClientSocket.socket.emit("send-data", data);
     }

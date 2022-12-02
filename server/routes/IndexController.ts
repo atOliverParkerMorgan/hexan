@@ -1,12 +1,11 @@
 import express, {Request, Response, NextFunction} from "express";
 import {Router} from "express/ts4.0";
 import {ServerSocket} from "../server_logic/ServerSocket";
-import ControllerInterface from "./ControllerInterface";
 import Player from "../server_logic/game_logic/Player";
 import {MatchMaker} from "../server_logic/MatchMaker";
 import {Utils} from "../Utils";
 
-export default class IndexController implements ControllerInterface{
+export default class IndexController{
 
   public readonly REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
