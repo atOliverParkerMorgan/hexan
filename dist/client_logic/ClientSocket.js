@@ -4,7 +4,7 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import { Node } from "./game_graphics/Node.js";
 import { show_city_menu, show_modal } from "./UI_logic.js";
 import { City } from "./game_graphics/City/City.js";
-import { HOST_NAME } from "./client_create_game";
+import { HOST_NAME } from "./client_create_game.js";
 // singleton
 export var ClientSocket;
 (function (ClientSocket) {
@@ -49,7 +49,7 @@ export var ClientSocket;
     };
     // local host setup
     // @ts-ignore
-    ClientSocket.socket = io("ws://" + HOST_NAME + ":3000", { transports: ['websocket'] });
+    ClientSocket.socket = io("ws://" + HOST_NAME + ":9000", { transports: ['websocket'] });
     var localhost = true;
     var is_connected = false;
     function connect() {

@@ -14,7 +14,7 @@ const io = new Server(httpServer);
 
 // singleton
 export namespace ServerSocket {
-    export const PORT_SOCKET: number = 3000;
+    export const PORT_SOCKET: number = 9000;
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
