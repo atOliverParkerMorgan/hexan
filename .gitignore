@@ -1,7 +1,13 @@
 # Project exclude paths
 /node_modules/
+<<<<<<< HEAD
 cypress/fixtures/
 cypress/support/
 cypress/videos/
 heroku/
 pixi_viewport/
+=======
+/cypress/
+/heroku/
+/pixi_viewport/
+>>>>>>> testing

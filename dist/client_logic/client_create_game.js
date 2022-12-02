@@ -88,7 +88,7 @@ function settings_logic_init() {
             return;
         //client_socket.send_data("create_game_with_ai", nick);
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://".concat(HOST_NAME, ":8000"), true);
+        xhr.open("POST", window.location.href, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         console.log("nick_name: ".concat(nick_name, " map_size: ").concat(map_size, " game_mode: ").concat(game_mode, " request_type: ").concat(REQUEST_TYPES.GENERATE_PLAYER_TOKEN));
         xhr.send(JSON.stringify({
@@ -127,7 +127,7 @@ function settings_logic_init() {
 // ask if there server has a match
 function request_match_status_update(player_token, nick_name, map_size, game_mode) {
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://".concat(HOST_NAME, ":8000"), true);
+    xhr.open("POST", window.location.href, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({
         nick_name: nick_name,
