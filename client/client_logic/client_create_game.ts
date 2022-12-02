@@ -1,5 +1,4 @@
 import {init_game} from "./game_graphics/Pixi.js";
-import {Interval} from "./game_graphics/Interval.js";
 
 const REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
