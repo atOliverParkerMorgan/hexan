@@ -72,7 +72,7 @@ export namespace ClientSocket {
 
     // local host setup
     // @ts-ignore
-    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`wss://${HOST_NAME}:9000`, {transports: ['websocket']});
+    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`ws://${HOST_NAME}:9000`, {transports: ['websocket']});
 
     export function send_data(data: any): void{
         ClientSocket.socket.emit("send-data", data);
