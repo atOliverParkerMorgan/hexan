@@ -49,7 +49,7 @@ export var ClientSocket;
     };
     // local host setup
     // @ts-ignore
-    ClientSocket.socket = io("wss://".concat(HOST_NAME, ":9000"), { transports: ['websocket'] });
+    ClientSocket.socket = io("ws://".concat(HOST_NAME, ":9000"), { transports: ['websocket'] });
     function send_data(data) {
         ClientSocket.socket.emit("send-data", data);
     }
