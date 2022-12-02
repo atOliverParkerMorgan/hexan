@@ -49,7 +49,7 @@ export var ClientSocket;
     };
     // local host setup
     // @ts-ignore
-    ClientSocket.socket = io("ws://".concat(URL, ":3000"), { transports: ['websocket'] });
+    ClientSocket.socket = io("wss://".concat(URL, ":3000"), { transports: ['websocket'] });
     function send_data(data) {
         ClientSocket.socket.emit("send-data", data);
     }
