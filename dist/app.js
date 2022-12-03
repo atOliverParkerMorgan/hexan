@@ -39,7 +39,7 @@ var ServerSocket_1 = require("./server_logic/ServerSocket");
 var App;
 (function (App) {
     App.app = (0, express_1.default)();
-    var port = 8000;
+    var port = process.env.PORT || 8000;
     var controller = new IndexController_1.default();
     function init() {
         App.httpServer = (0, http_1.createServer)(App.app);
@@ -99,7 +99,7 @@ var App;
     function server_info() {
         var host = App.httpServer.address().address;
         var port = App.httpServer.address().port;
-        console.log("hexan is running at http://".concat(host, ":").concat(port));
+        console.log("hexan is running at http://".concat(host).concat(port));
     }
     App.server_info = server_info;
 })(App = exports.App || (exports.App = {}));
