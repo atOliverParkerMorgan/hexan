@@ -73,7 +73,7 @@ export namespace ClientSocket {
     const protocol = window.location.protocol === "https" ? "wss": "ws";
     // @ts-ignore
     export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`${protocol}://${window.location.hostname}:3000`, {transports: ['websocket', 'polling']});
-
+    console.log(`${protocol}://${window.location.hostname}:3000`)
     export function send_data(data: any): void{
         ClientSocket.socket.emit("send-data", data);
     }

@@ -50,6 +50,7 @@ export var ClientSocket;
     var protocol = window.location.protocol === "https" ? "wss" : "ws";
     // @ts-ignore
     ClientSocket.socket = io("".concat(protocol, "://").concat(window.location.hostname, ":3000"), { transports: ['websocket', 'polling'] });
+    console.log("".concat(protocol, "://").concat(window.location.hostname, ":3000"));
     function send_data(data) {
         ClientSocket.socket.emit("send-data", data);
     }
