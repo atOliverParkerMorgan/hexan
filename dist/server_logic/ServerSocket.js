@@ -10,7 +10,6 @@ var app_1 = require("../app");
 // singleton
 var ServerSocket;
 (function (ServerSocket) {
-    ServerSocket.PORT_SOCKET = 10000;
     ServerSocket.is_listening = false;
     ServerSocket.response_types = {
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -52,13 +51,6 @@ var ServerSocket;
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
-    function init() {
-        if (!ServerSocket.is_listening) {
-            app_1.App.httpServer.listen(ServerSocket.PORT_SOCKET);
-            ServerSocket.is_listening = true;
-        }
-    }
-    ServerSocket.init = init;
     function send_data(socket, data, player_token) {
         socket.emit(player_token, data);
     }

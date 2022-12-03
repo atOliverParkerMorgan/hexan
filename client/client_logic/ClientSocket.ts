@@ -71,8 +71,8 @@ export namespace ClientSocket {
 
 
     // @ts-ignore
-    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`${window.location.protocol}//${window.location.hostname}:10000`, {transports: ['websocket', 'polling']});
-    console.log(`${window.location.protocol}//${window.location.hostname}:10000`)
+    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`${window.location.protocol}//${window.location.hostname}:8000`, {transports: ['websocket', 'polling']});
+    console.log(`${window.location.protocol}//${window.location.hostname}:8000`)
     export function send_data(data: any): void{
         ClientSocket.socket.emit("send-data", data);
     }

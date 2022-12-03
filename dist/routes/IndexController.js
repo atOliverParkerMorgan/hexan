@@ -18,11 +18,11 @@ var IndexController = /** @class */ (function () {
         this.player_token = "";
         this.router = express_1.default.Router();
         // return rendered index view
-        this.handle_get_request = function (req, res, next) {
+        this.handle_get_request = function (req, res) {
             res.render('index');
         };
         // creates a new Game object and send the appropriate response
-        this.handle_post_request = function (req, res, next) {
+        this.handle_post_request = function (req, res) {
             var nick_name = req.body.nick_name;
             var player_token = req.body.player_token; // null if the request is GENERATE_PLAYER_TOKEN
             var map_size = req.body.map_size;
@@ -64,10 +64,6 @@ var IndexController = /** @class */ (function () {
                                 res.status(500).send();
                             }
                             else {
-                                // connect ServerSocket
-                                ServerSocket_1.ServerSocket.init();
-                                ServerSocket_1.ServerSocket.add_request_listener();
-                                ServerSocket_1.ServerSocket.add_response_listener();
                                 res.status(200).send(JSON.stringify({ game_token: game.token }));
                             }
                             break;
@@ -78,8 +74,6 @@ var IndexController = /** @class */ (function () {
                                 res.status(204).send();
                             }
                             else {
-                                // connect ServerSocket
-                                ServerSocket_1.ServerSocket.init();
                                 ServerSocket_1.ServerSocket.add_request_listener();
                                 ServerSocket_1.ServerSocket.add_response_listener();
                                 res.status(200).send(JSON.stringify({ game_token: game.token }));

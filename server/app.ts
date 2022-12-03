@@ -7,19 +7,29 @@ import {renderFile} from "ejs";
 import cookieParser from "cookie-parser";
 import {createServer} from "http";
 import {Server} from "socket.io";
+import {ServerSocket} from "./server_logic/ServerSocket";
 
 export namespace App {
   export const app: Application = express();
   const port: number = 8000;
   const controller: Controller =  new IndexController()
-  export const httpServer = createServer(App.app);
-  export const io = new Server(httpServer);
+  export let httpServer: any;
+  export let io: any;
+
 
 
   export function init() {
+    httpServer = createServer(app);
+    io = new Server(httpServer);
     init_view_engine();
     init_static_routes();
     init_controllers();
+
+    httpServer.listen(port);
+
+    ServerSocket.add_request_listener();
+    ServerSocket.add_response_listener();
+
   }
 
   function init_view_engine() {
@@ -76,12 +86,14 @@ export namespace App {
   }
 
 
-  export function listen() {
-    app.listen((process.env.PORT || port));
-    console.log(`--- hexan is running on port: ${process.env.PORT || port} ---`);
+  export function server_info() {
+    const host = httpServer.address().address;
+    const port = httpServer.address().port;
+
+    console.log(`hexan is running at http://${host}${port}`);
   }
 }
 
 App.init();
 App.handle_error();
-App.listen();
+App.server_info();

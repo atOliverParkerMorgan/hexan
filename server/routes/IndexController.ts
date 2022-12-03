@@ -25,12 +25,12 @@ export default class IndexController{
 
   }
   // return rendered index view
-  handle_get_request = (req: Request, res: Response, next: NextFunction) => {
+  handle_get_request = (req: Request, res: Response) => {
       res.render('index');
   };
 
   // creates a new Game object and send the appropriate response
-  handle_post_request = (req: Request,res: Response, next: NextFunction) => {
+  handle_post_request = (req: Request, res: Response) => {
     const nick_name = req.body.nick_name
     const player_token = req.body.player_token; // null if the request is GENERATE_PLAYER_TOKEN
     const map_size = req.body.map_size;
@@ -75,10 +75,6 @@ export default class IndexController{
                     res.statusMessage = "Couldn't load AI";
                     res.status(500).send();
                 }else {
-                    // connect ServerSocket
-                    ServerSocket.init();
-                    ServerSocket.add_request_listener();
-                    ServerSocket.add_response_listener();
                     res.status(200).send(JSON.stringify({game_token: game.token}));
 
                 }
@@ -92,8 +88,6 @@ export default class IndexController{
                     res.status(204).send();
                 }else{
 
-                    // connect ServerSocket
-                    ServerSocket.init();
                     ServerSocket.add_request_listener();
                     ServerSocket.add_response_listener();
 

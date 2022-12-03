@@ -35,17 +35,21 @@ var ejs_1 = require("ejs");
 var cookie_parser_1 = __importDefault(require("cookie-parser"));
 var http_1 = require("http");
 var socket_io_1 = require("socket.io");
+var ServerSocket_1 = require("./server_logic/ServerSocket");
 var App;
 (function (App) {
     App.app = (0, express_1.default)();
     var port = 8000;
     var controller = new IndexController_1.default();
-    App.httpServer = (0, http_1.createServer)(App.app);
-    App.io = new socket_io_1.Server(App.httpServer);
     function init() {
+        App.httpServer = (0, http_1.createServer)(App.app);
+        App.io = new socket_io_1.Server(App.httpServer);
         init_view_engine();
         init_static_routes();
         init_controllers();
+        App.httpServer.listen(port);
+        ServerSocket_1.ServerSocket.add_request_listener();
+        ServerSocket_1.ServerSocket.add_response_listener();
     }
     App.init = init;
     function init_view_engine() {
@@ -92,12 +96,13 @@ var App;
         });
     }
     App.handle_error = handle_error;
-    function listen() {
-        App.app.listen((process.env.PORT || port));
-        console.log("--- hexan is running on port: ".concat(process.env.PORT || port, " ---"));
+    function server_info() {
+        var host = App.httpServer.address().address;
+        var port = App.httpServer.address().port;
+        console.log("hexan is running at http://".concat(host, ":").concat(port));
     }
-    App.listen = listen;
+    App.server_info = server_info;
 })(App = exports.App || (exports.App = {}));
 App.init();
 App.handle_error();
-App.listen();
+App.server_info();

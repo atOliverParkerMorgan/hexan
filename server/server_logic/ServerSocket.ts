@@ -12,7 +12,6 @@ import {App} from "../app";
 
 // singleton
 export namespace ServerSocket {
-    export const PORT_SOCKET: number = 10000;
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
@@ -79,13 +78,6 @@ export namespace ServerSocket {
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
 
-    export function init(): void {
-            if (!ServerSocket.is_listening) {
-                App.httpServer.listen(PORT_SOCKET);
-                ServerSocket.is_listening = true;
-            }
-    }
-
     export function send_data(socket: Socket, data: any, player_token: string): void{
         socket.emit(player_token, data);
     }
@@ -97,7 +89,7 @@ export namespace ServerSocket {
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
     export function add_response_listener(): void{
 
-        App.io.on("connect_error", (err) => {
+        App.io.on("connect_error", (err: any) => {
             console.log(`connect_error due to ${err.message}`);
         });
 
