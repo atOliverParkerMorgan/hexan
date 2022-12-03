@@ -4,7 +4,6 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import { Node } from "./game_graphics/Node.js";
 import { show_city_menu, show_modal } from "./UI_logic.js";
 import { City } from "./game_graphics/City/City.js";
-import { HOST_NAME } from "./client_create_game.js";
 // singleton
 export var ClientSocket;
 (function (ClientSocket) {
@@ -48,8 +47,9 @@ export var ClientSocket;
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
     // local host setup
+    var protocol = window.location.protocol === "https" ? "wss" : "ws";
     // @ts-ignore
-    ClientSocket.socket = io("ws://".concat(HOST_NAME, ":3000"), { transports: ['websocket', 'polling'] });
+    ClientSocket.socket = io("".concat(protocol, "://").concat(window.location.hostname, ":3000"), { transports: ['websocket', 'polling'] });
     function send_data(data) {
         ClientSocket.socket.emit("send-data", data);
     }

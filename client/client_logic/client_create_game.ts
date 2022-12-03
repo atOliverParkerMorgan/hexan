@@ -8,8 +8,6 @@ const REQUEST_TYPES = {
 let interval_id_timer: any;
 let interval_id_match_request: any;
 
-export const HOST_NAME = "hexan0.herokuapp.com";
-
 function settings_logic_init(){
 
     // slider logic
