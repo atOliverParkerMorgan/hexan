@@ -10,7 +10,7 @@ var app_1 = require("../app");
 // singleton
 var ServerSocket;
 (function (ServerSocket) {
-    ServerSocket.PORT_SOCKET = 3000;
+    ServerSocket.PORT_SOCKET = 10000;
     ServerSocket.is_listening = false;
     ServerSocket.response_types = {
         MAP_RESPONSE: "MAP_RESPONSE",

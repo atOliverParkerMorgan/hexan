@@ -69,11 +69,10 @@ export namespace ClientSocket {
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
 
-    // local host setup
-    const protocol = window.location.protocol === "https" ? "https": "http";
+
     // @ts-ignore
-    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`${protocol}://${window.location.hostname}:3000`, {transports: ['websocket', 'polling']});
-    console.log(`${protocol}://${window.location.hostname}:3000`)
+    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`${window.location.protocol}//${window.location.hostname}:10000`, {transports: ['websocket', 'polling']});
+    console.log(`${window.location.protocol}//${window.location.hostname}:10000`)
     export function send_data(data: any): void{
         ClientSocket.socket.emit("send-data", data);
     }

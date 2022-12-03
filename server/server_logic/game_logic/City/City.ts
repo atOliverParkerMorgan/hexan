@@ -62,8 +62,6 @@ class City{
             }
         })
 
-        console.log(this.can_be_harvested_nodes)
-
         this.name = City.city_names[Utils.random_int(0, City.city_names.length - 1)];
         City.city_names.splice(City.city_names.indexOf(this.name));
 

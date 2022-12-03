@@ -1,4 +1,3 @@
-import {createServer} from 'http';
 import {Server, Socket} from "socket.io";
 import Path from "./game_logic/Map/Path";
 import {MatchMaker} from "./MatchMaker";
@@ -13,7 +12,7 @@ import {App} from "../app";
 
 // singleton
 export namespace ServerSocket {
-    export const PORT_SOCKET: number = 3000;
+    export const PORT_SOCKET: number = 10000;
     export let is_listening: boolean =  false;
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;

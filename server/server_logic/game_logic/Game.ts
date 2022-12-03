@@ -5,7 +5,6 @@ import {Node} from "./Map/Node";
 import {Unit} from "./Units/Unit";
 import {CityInterface} from "./City/CityInterface";
 import {Technology} from "./Technology/Technology";
-import cons from "consolidate";
 
 class Game{
     token: string;

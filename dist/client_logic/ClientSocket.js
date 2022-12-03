@@ -46,11 +46,9 @@ export var ClientSocket;
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
-    // local host setup
-    var protocol = window.location.protocol === "https" ? "https" : "http";
     // @ts-ignore
-    ClientSocket.socket = io("".concat(protocol, "://").concat(window.location.hostname, ":3000"), { transports: ['websocket', 'polling'] });
-    console.log("".concat(protocol, "://").concat(window.location.hostname, ":3000"));
+    ClientSocket.socket = io("".concat(window.location.protocol, "//").concat(window.location.hostname, ":10000"), { transports: ['websocket', 'polling'] });
+    console.log("".concat(window.location.protocol, "//").concat(window.location.hostname, ":10000"));
     function send_data(data) {
         ClientSocket.socket.emit("send-data", data);
     }
