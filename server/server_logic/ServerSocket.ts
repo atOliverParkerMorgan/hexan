@@ -97,6 +97,11 @@ export namespace ServerSocket {
 
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
     export function add_response_listener(): void{
+
+        App.io.on("connect_error", (err) => {
+            console.log(`connect_error due to ${err.message}`);
+        });
+
         App.io.on("connection", (socket: Socket) => {
             socket.on("get_data", (...args: any[]) => {
                 try {

@@ -69,6 +69,9 @@ var ServerSocket;
     ServerSocket.send_data_to_all = send_data_to_all;
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
     function add_response_listener() {
+        app_1.App.io.on("connect_error", function (err) {
+            console.log("connect_error due to ".concat(err.message));
+        });
         app_1.App.io.on("connection", function (socket) {
             socket.on("get_data", function () {
                 var args = [];

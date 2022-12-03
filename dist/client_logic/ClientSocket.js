@@ -47,7 +47,7 @@ export var ClientSocket;
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
     // local host setup
-    var protocol = window.location.protocol === "https" ? "wss" : "ws";
+    var protocol = window.location.protocol === "https" ? "https" : "http";
     // @ts-ignore
     ClientSocket.socket = io("".concat(protocol, "://").concat(window.location.hostname, ":3000"), { transports: ['websocket', 'polling'] });
     console.log("".concat(protocol, "://").concat(window.location.hostname, ":3000"));
