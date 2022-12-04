@@ -16,7 +16,7 @@ export namespace ServerSocket {
 
     export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
-        NEW_CITY: string, CANNOT_SETTLE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ENEMY_FOUND_RESPONSE: string, ATTACK_UNIT_RESPONSE: string,
+        NEW_CITY: string, CANNOT_SETTLE: string, CONQUERED_CITY_RESPONSE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ENEMY_FOUND_RESPONSE: string, ATTACK_UNIT_RESPONSE: string,
         HARVEST_COST_RESPONSE: string, MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, PURCHASED_TECHNOLOGY_RESPONSE:string,
         INVALID_ATTACK_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string} =  {
 
@@ -36,6 +36,7 @@ export namespace ServerSocket {
 
         NEW_CITY: "NEW_CITY",
         CANNOT_SETTLE: "CANNOT_SETTLE",
+        CONQUERED_CITY_RESPONSE: "CONQUERED_CITY",
 
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
 
@@ -355,6 +356,17 @@ export namespace ServerSocket {
         }, player.token)
     }
 
+    export function send_conquered_city(socket: Socket, game: Game, player: Player, city: City){
+        ServerSocket.send_data(socket, {
+            response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
+            date:{
+                city: city?.get_data(player.token)
+            }
+        }, player.token);
+        return;
+    }
+
+
     export function send_unit_attack(socket: Socket, game: Game, player: Player, attacked_unit_id: string, unit_id: string, path: Path){
         const enemy_player = game.get_enemy_player_by_unit(attacked_unit_id);
 
@@ -415,7 +427,7 @@ export namespace ServerSocket {
             ServerSocket.send_data(socket, {
                 response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
                 data: {
-                    message: "invalid range"
+                    message: "Invalid range"
                 }
             }, player.token);
         }

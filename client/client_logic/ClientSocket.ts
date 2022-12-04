@@ -10,7 +10,7 @@ export namespace ClientSocket {
     export const response_types: { ALL_RESPONSE: string, MAP_RESPONSE: string, UNIT_MOVED_RESPONSE: string,
             UNITS_RESPONSE: string, UNIT_RESPONSE: string, MENU_INFO_RESPONSE: string,
             HARVEST_NODE_RESPONSE: string, HARVEST_COST_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
-            ENEMY_FOUND_RESPONSE:string, NEW_CITY: string, CANNOT_SETTLE: string,
+            ENEMY_FOUND_RESPONSE:string, NEW_CITY: string, CANNOT_SETTLE: string, CONQUERED_CITY_RESPONSE: string,
             STARS_DATA_RESPONSE: string, PURCHASED_TECHNOLOGY_RESPONSE: string, INVALID_MOVE_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
             ATTACK_UNIT_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string } = {
 
@@ -35,6 +35,7 @@ export namespace ClientSocket {
         PURCHASED_TECHNOLOGY_RESPONSE: "PURCHASED_TECHNOLOGY_RESPONSE",
 
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+        CONQUERED_CITY_RESPONSE: "CONQUERED_CITY",
 
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
         HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
@@ -286,6 +287,25 @@ export namespace ClientSocket {
 
                     for (const neighbor of node.get_neighbours()) {
                         neighbor?.update();
+                    }
+                    break;
+
+                case ClientSocket.response_types.CONQUERED_CITY_RESPONSE:
+                    // if player conquered a city
+                    const city_node: Node = Node.all_nodes[response_data.city.y][response_data.city.x];
+
+                    if(Player.owns_city(response_data.city.name)) {
+                        city_node.set_city(response_data.city_node.city_data, response_data.city_node.sprite_name);
+
+                        for (const neighbour of city_node.get_neighbours()) {
+                            if (neighbour != null) {
+                                neighbour.update();
+                            }
+                        }
+                    }else{
+                        Player.remove_city(response_data.city.name);
+                        city_node.city.is_friendly = false;
+                        city_node.update();
                     }
                     break;
             }

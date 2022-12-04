@@ -254,7 +254,7 @@ export class Unit implements UnitData{
             this.update_unit_on_stage();
             this.update_movement_background(current_node, depth - 1);
 
-        }, current_node.get_movement_time() / 30);
+        }, current_node.get_movement_time() * 1000 / 30);
     }
 
     update_unit_movement_background(){

@@ -75,7 +75,7 @@ function update_node_action_button_and_information(node: Node){
             (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/mountains.png";
             break;
         case Node.GRASS:
-            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/beach.png";
+            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/grass_plane.png";
             break;
     }
 }

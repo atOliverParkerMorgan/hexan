@@ -78,6 +78,26 @@ export namespace Player {
         return false;
     }
 
+    export function owns_city(city_name: string){
+        for (const city of all_cities) {
+            if(city.name === city_name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    export function remove_city(city_name: string){
+
+        for (let index = 0; index < all_cities.length; index++) {
+            if(all_cities[index].name === city_name){
+                all_cities.splice(index);
+                break;
+            }
+        }
+    }
+
     export function has_enemy_unit(unit_id: string):boolean{
         for (const enemy_unit of Player.all_enemy_visible_units) {
             if(unit_id === enemy_unit.id) return true

@@ -211,17 +211,17 @@ export class Node{
     get_movement_time(): number{
         switch (this.type) {
             case Node.MOUNTAIN:
-                return 4000;
+                return 4;
             case Node.FOREST:
-                return 2000;
+                return 2;
             case Node.OCEAN:
-                return 1000;
+                return 1;
             case Node.LAKE:
-                return 1000;
+                return 1;
         }
 
         // GRASS
-        return 1000;
+        return 1;
     }
 
     get_distance_to_node(node: Node) {

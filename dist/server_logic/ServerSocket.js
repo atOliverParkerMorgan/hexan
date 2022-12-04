@@ -24,6 +24,7 @@ var ServerSocket;
         HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
         NEW_CITY: "NEW_CITY",
         CANNOT_SETTLE: "CANNOT_SETTLE",
+        CONQUERED_CITY_RESPONSE: "CONQUERED_CITY",
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
@@ -315,6 +316,16 @@ var ServerSocket;
         }, player.token);
     }
     ServerSocket.send_update_harvest_cost = send_update_harvest_cost;
+    function send_conquered_city(socket, game, player, city) {
+        ServerSocket.send_data(socket, {
+            response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
+            date: {
+                city: city === null || city === void 0 ? void 0 : city.get_data(player.token)
+            }
+        }, player.token);
+        return;
+    }
+    ServerSocket.send_conquered_city = send_conquered_city;
     function send_unit_attack(socket, game, player, attacked_unit_id, unit_id, path) {
         var enemy_player = game.get_enemy_player_by_unit(attacked_unit_id);
         if (enemy_player == null) {
@@ -364,7 +375,7 @@ var ServerSocket;
             ServerSocket.send_data(socket, {
                 response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
                 data: {
-                    message: "invalid range"
+                    message: "Invalid range"
                 }
             }, player.token);
         }

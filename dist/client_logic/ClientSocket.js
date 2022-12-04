@@ -23,6 +23,7 @@ export var ClientSocket;
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
         PURCHASED_TECHNOLOGY_RESPONSE: "PURCHASED_TECHNOLOGY_RESPONSE",
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
+        CONQUERED_CITY_RESPONSE: "CONQUERED_CITY",
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
         HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
@@ -229,6 +230,24 @@ export var ClientSocket;
                     for (var _l = 0, _m = node.get_neighbours(); _l < _m.length; _l++) {
                         var neighbor = _m[_l];
                         neighbor === null || neighbor === void 0 ? void 0 : neighbor.update();
+                    }
+                    break;
+                case ClientSocket.response_types.CONQUERED_CITY_RESPONSE:
+                    // if player conquered a city
+                    var city_node = Node.all_nodes[response_data.city.y][response_data.city.x];
+                    if (Player.owns_city(response_data.city.name)) {
+                        city_node.set_city(response_data.city_node.city_data, response_data.city_node.sprite_name);
+                        for (var _o = 0, _p = city_node.get_neighbours(); _o < _p.length; _o++) {
+                            var neighbour = _p[_o];
+                            if (neighbour != null) {
+                                neighbour.update();
+                            }
+                        }
+                    }
+                    else {
+                        Player.remove_city(response_data.city.name);
+                        city_node.city.is_friendly = false;
+                        city_node.update();
                     }
                     break;
             }
