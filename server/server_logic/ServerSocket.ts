@@ -190,7 +190,7 @@ export namespace ServerSocket {
                                     const city = game.get_city(request_data.city_name, player);
                                     const unit_type = request_data.unit_type;
                                     if (city != null) {
-                                        city.produce_unit_and_send_response(socket, unit_type, game.map);
+                                        city.produce_unit_and_send_response(socket, unit_type, game);
                                     }
                                     break;
 
@@ -274,16 +274,31 @@ export namespace ServerSocket {
         });
     }
 
-    export function send_unit_produced_response( socket: Socket, city: City, unit: Unit){
-        ServerSocket.send_data(socket, {
-                response_type: ServerSocket.response_types.UNIT_RESPONSE,
-                data: {
-                    unit: unit.get_data(),
-                    // update client stars
-                    total_owned_stars: city.owner.total_owned_stars
-                }
-            },
-            city.owner.token);
+    export function send_unit_produced_response( socket: Socket, city: City, unit: Unit, player: Player){
+
+        if(city.owner.token === player.token) {
+
+            ServerSocket.send_data(socket, {
+                    response_type: ServerSocket.response_types.UNIT_RESPONSE,
+                    data: {
+                        unit: unit.get_data(),
+                        // update client stars
+                        total_owned_stars:  city.owner.total_owned_stars
+                    }
+                },
+                player.token);
+        }
+        else {
+            ServerSocket.send_data_to_all(socket, {
+                    response_type: ServerSocket.response_types.UNIT_RESPONSE,
+                    data: {
+                        unit: unit.get_data(),
+                        // update client stars
+                        total_owned_stars: -1
+                    }
+                },
+                player.token);
+        }
     }
 
     export function send_node_harvested_response( socket: Socket, node: Node, player: Player){
@@ -357,13 +372,21 @@ export namespace ServerSocket {
     }
 
     export function send_conquered_city(socket: Socket, game: Game, player: Player, city: City){
-        ServerSocket.send_data(socket, {
-            response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
-            date:{
-                city: city?.get_data(player.token)
-            }
-        }, player.token);
-        return;
+        if(player.token === city.owner.token){
+            ServerSocket.send_data(socket, {
+                response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
+                data:{
+                    city: city?.get_data(city.owner.token)
+                }
+            }, player.token);
+        }else{
+            ServerSocket.send_data_to_all(socket, {
+                response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
+                data:{
+                    city: city?.get_data(city.owner.token)
+                }
+            }, player.token);
+        }
     }
 
 

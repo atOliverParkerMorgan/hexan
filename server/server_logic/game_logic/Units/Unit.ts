@@ -70,7 +70,7 @@ export class Unit implements UnitInterface{
         this.move_along_path(game, player, socket, path);
     }
 
-    // move this Unit along a valid path provided by the public
+    // move this Unit along a valid path provided by the client
     move_along_path(game: Game, player: Player, socket: Socket, path: Node[]){
 
         // used at the end of the path
@@ -96,7 +96,7 @@ export class Unit implements UnitInterface{
             // check if movement is valid or if move can be translated as attack
             if(current_node.unit != null){
                 if(player.owns_this_unit(current_node.unit.id)){
-                    ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a friendly unit or city you can only attack")
+                    ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a friendly unit you can only attack an enemy unit.")
                     return
                 }
             }
@@ -164,7 +164,7 @@ export class Unit implements UnitInterface{
                 if(game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
                     const node_city: any = game.map.all_nodes[this.y][this.x].city;
 
-                    if(node_city != null && game.map.all_nodes[this.y][this.x].city?.owner.token !=  player.token){
+                    if(node_city != null && node_city?.owner.token !=  player.token){
                        node_city.owner = player;
                        ServerSocket.send_conquered_city(socket, game, in_game_player, node_city);
                     }

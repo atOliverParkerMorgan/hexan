@@ -67,6 +67,25 @@ export var Player;
         return false;
     }
     Player.has_friendly_unit = has_friendly_unit;
+    function owns_city(city_name) {
+        for (var _i = 0, all_cities_1 = Player.all_cities; _i < all_cities_1.length; _i++) {
+            var city = all_cities_1[_i];
+            if (city.name === city_name) {
+                return true;
+            }
+        }
+        return false;
+    }
+    Player.owns_city = owns_city;
+    function remove_city(city_name) {
+        for (var index = 0; index < Player.all_cities.length; index++) {
+            if (Player.all_cities[index].name === city_name) {
+                Player.all_cities.splice(index);
+                break;
+            }
+        }
+    }
+    Player.remove_city = remove_city;
     function has_enemy_unit(unit_id) {
         for (var _i = 0, _a = Player.all_enemy_visible_units; _i < _a.length; _i++) {
             var enemy_unit = _a[_i];

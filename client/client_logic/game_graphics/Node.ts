@@ -325,7 +325,7 @@ export class Node{
         }
 
         // show bottom information menu
-        if(this.city != null && !Node.already_selected) {
+        if(this.city != null && !Node.already_selected && this.city.is_friendly) {
             Node.bottom_menu_shown = !Node.bottom_menu_shown;
             // get bottom menu information
             ClientSocket.socket.emit("get_data", {

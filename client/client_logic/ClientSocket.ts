@@ -97,8 +97,14 @@ export namespace ClientSocket {
                     break;
 
                 case ClientSocket.response_types.UNIT_RESPONSE:
-                    Player.add_unit(response_data.unit);
-                    Player.update_total_number_of_stars(response_data);
+                    console.log(response_data.unit)
+                    if(Node.all_nodes[response_data.unit.y][response_data.unit.x].city.is_friendly){
+                        Player.add_unit(response_data.unit);
+                        Player.update_total_number_of_stars(response_data);
+                    }else{
+                        Player.add_enemy_unit(response_data.unit);
+                        Node.all_nodes[response_data.unit.y][response_data.unit.x].update()
+                    }
 
                     break;
 
@@ -295,7 +301,7 @@ export namespace ClientSocket {
                     const city_node: Node = Node.all_nodes[response_data.city.y][response_data.city.x];
 
                     if(Player.owns_city(response_data.city.name)) {
-                        city_node.set_city(response_data.city_node.city_data, response_data.city_node.sprite_name);
+                        city_node.set_city(response_data.city, response_data.city.sprite_name);
 
                         for (const neighbour of city_node.get_neighbours()) {
                             if (neighbour != null) {
@@ -306,6 +312,12 @@ export namespace ClientSocket {
                         Player.remove_city(response_data.city.name);
                         city_node.city.is_friendly = false;
                         city_node.update();
+
+                        for (const neighbour of city_node.get_neighbours()) {
+                            if (neighbour != null) {
+                                neighbour.update();
+                            }
+                        }
                     }
                     break;
             }

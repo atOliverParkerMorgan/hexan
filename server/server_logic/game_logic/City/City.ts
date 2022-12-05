@@ -69,7 +69,7 @@ class City{
         this.population = 3;
     }
 
-    produce_unit_and_send_response(socket: Socket, unit_name: string, map: Map): void{
+    produce_unit_and_send_response(socket: Socket, unit_name: string, game: Game): void{
         const cost: number | undefined = Utils.get_unit_cost(unit_name);
         if(cost == null) return;
 
@@ -79,14 +79,21 @@ class City{
             return;
         }
         // make sure there isn't a unit on this city node
-        if(map.all_nodes[this.y][this.x].unit != null){
+        if(game.map.all_nodes[this.y][this.x].unit != null){
             ServerSocket.something_wrong_response(socket, this.owner, "NO ROOM!", "There already is a unit in this city! Move it and then produce another one.")
             return;
         }
         this.owner.pay_stars(cost);
 
-        let unit: Unit = this.owner.add_unit(this.x, this.y, unit_name, map);
-        ServerSocket.send_unit_produced_response(socket, this, unit);
+
+        let unit: Unit = this.owner.add_unit(this.x, this.y, unit_name, game.map);
+
+        game.all_players.map((in_game_player: Player)=> {
+            if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
+                console.log("player+token ", in_game_player.token)
+                ServerSocket.send_unit_produced_response(socket, this, unit, in_game_player);
+            }
+        });
     }
 
     get_x_in_pixels(): number{

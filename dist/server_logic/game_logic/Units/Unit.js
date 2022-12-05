@@ -29,7 +29,7 @@ var Unit = /** @class */ (function () {
         path.shift();
         this.move_along_path(game, player, socket, path);
     };
-    // move this Unit along a valid path provided by the public
+    // move this Unit along a valid path provided by the client
     Unit.prototype.move_along_path = function (game, player, socket, path) {
         var _this = this;
         // used at the end of the path
@@ -104,6 +104,11 @@ var Unit = /** @class */ (function () {
             // show unit to player if the unit steps on a discovered node
             game.all_players.map(function (in_game_player) {
                 if (game.map.all_nodes[_this.y][_this.x].is_shown.includes(in_game_player.token)) {
+                    var node_city = game.map.all_nodes[_this.y][_this.x].city;
+                    if (node_city != null && (node_city === null || node_city === void 0 ? void 0 : node_city.owner.token) != player.token) {
+                        node_city.owner = player;
+                        ServerSocket_1.ServerSocket.send_conquered_city(socket, game, in_game_player, node_city);
+                    }
                     if (in_game_player.token === player.token) {
                         ServerSocket_1.ServerSocket.send_unit_movement_to_owner(socket, _this, all_discovered_nodes, in_game_player);
                     }

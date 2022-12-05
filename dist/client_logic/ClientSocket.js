@@ -75,8 +75,15 @@ export var ClientSocket;
                     }
                     break;
                 case ClientSocket.response_types.UNIT_RESPONSE:
-                    Player.add_unit(response_data.unit);
-                    Player.update_total_number_of_stars(response_data);
+                    console.log(response_data.unit);
+                    if (Node.all_nodes[response_data.unit.y][response_data.unit.x].city.is_friendly) {
+                        Player.add_unit(response_data.unit);
+                        Player.update_total_number_of_stars(response_data);
+                    }
+                    else {
+                        Player.add_enemy_unit(response_data.unit);
+                        Node.all_nodes[response_data.unit.y][response_data.unit.x].update();
+                    }
                     break;
                 case ClientSocket.response_types.ALL_RESPONSE:
                     var map = response_data.map;
@@ -236,7 +243,7 @@ export var ClientSocket;
                     // if player conquered a city
                     var city_node = Node.all_nodes[response_data.city.y][response_data.city.x];
                     if (Player.owns_city(response_data.city.name)) {
-                        city_node.set_city(response_data.city_node.city_data, response_data.city_node.sprite_name);
+                        city_node.set_city(response_data.city, response_data.city.sprite_name);
                         for (var _o = 0, _p = city_node.get_neighbours(); _o < _p.length; _o++) {
                             var neighbour = _p[_o];
                             if (neighbour != null) {
@@ -248,6 +255,12 @@ export var ClientSocket;
                         Player.remove_city(response_data.city.name);
                         city_node.city.is_friendly = false;
                         city_node.update();
+                        for (var _q = 0, _r = city_node.get_neighbours(); _q < _r.length; _q++) {
+                            var neighbour = _r[_q];
+                            if (neighbour != null) {
+                                neighbour.update();
+                            }
+                        }
                     }
                     break;
             }

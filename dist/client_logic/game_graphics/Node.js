@@ -113,16 +113,16 @@ var Node = /** @class */ (function () {
     Node.prototype.get_movement_time = function () {
         switch (this.type) {
             case Node.MOUNTAIN:
-                return 4000;
+                return 4;
             case Node.FOREST:
-                return 2000;
+                return 2;
             case Node.OCEAN:
-                return 1000;
+                return 1;
             case Node.LAKE:
-                return 1000;
+                return 1;
         }
         // GRASS
-        return 1000;
+        return 1;
     };
     Node.prototype.get_distance_to_node = function (node) {
         return Math.sqrt(Math.pow((node.get_x_in_pixels() - this.get_x_in_pixels()), 2) + Math.pow((node.get_y_in_pixels() - this.get_y_in_pixels()), 2));
@@ -215,7 +215,7 @@ var Node = /** @class */ (function () {
             this.remove_selected();
         }
         // show bottom information menu
-        if (this.city != null && !Node.already_selected) {
+        if (this.city != null && !Node.already_selected && this.city.is_friendly) {
             Node.bottom_menu_shown = !Node.bottom_menu_shown;
             // get bottom menu information
             ClientSocket.socket.emit("get_data", {

@@ -28,7 +28,8 @@ var City = /** @class */ (function () {
         this.stars_per_a_minute = 20;
         this.population = 3;
     }
-    City.prototype.produce_unit_and_send_response = function (socket, unit_name, map) {
+    City.prototype.produce_unit_and_send_response = function (socket, unit_name, game) {
+        var _this = this;
         var cost = Utils_1.Utils.get_unit_cost(unit_name);
         if (cost == null)
             return;
@@ -38,13 +39,18 @@ var City = /** @class */ (function () {
             return;
         }
         // make sure there isn't a unit on this city node
-        if (map.all_nodes[this.y][this.x].unit != null) {
+        if (game.map.all_nodes[this.y][this.x].unit != null) {
             ServerSocket_1.ServerSocket.something_wrong_response(socket, this.owner, "NO ROOM!", "There already is a unit in this city! Move it and then produce another one.");
             return;
         }
         this.owner.pay_stars(cost);
-        var unit = this.owner.add_unit(this.x, this.y, unit_name, map);
-        ServerSocket_1.ServerSocket.send_unit_produced_response(socket, this, unit);
+        var unit = this.owner.add_unit(this.x, this.y, unit_name, game.map);
+        game.all_players.map(function (in_game_player) {
+            if (game.map.all_nodes[_this.y][_this.x].is_shown.includes(in_game_player.token)) {
+                console.log("player+token ", in_game_player.token);
+                ServerSocket_1.ServerSocket.send_unit_produced_response(socket, _this, unit, in_game_player);
+            }
+        });
     };
     City.prototype.get_x_in_pixels = function () {
         var row_bias = this.y % 2 === 0 ? Map_1.default.DISTANCE_BETWEEN_HEX / 2 : 0;

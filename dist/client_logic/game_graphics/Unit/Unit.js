@@ -169,7 +169,7 @@ var Unit = /** @class */ (function () {
             _this.background_unit_movement_percentage += 5;
             _this.update_unit_on_stage();
             _this.update_movement_background(current_node, depth - 1);
-        }, current_node.get_movement_time() / 30);
+        }, current_node.get_movement_time() * 1000 / 30);
     };
     Unit.prototype.update_unit_movement_background = function () {
         this.current_path.shift();
