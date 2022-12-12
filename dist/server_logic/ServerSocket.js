@@ -328,12 +328,13 @@ var ServerSocket;
         }, player.token);
     }
     ServerSocket.send_update_harvest_cost = send_update_harvest_cost;
-    function send_conquered_city(socket, game, player, city) {
+    function send_conquered_city(socket, game, player, city, unit) {
         if (player.token === city.owner.token) {
             ServerSocket.send_data(socket, {
                 response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
                 data: {
-                    city: city === null || city === void 0 ? void 0 : city.get_data(city.owner.token)
+                    city: city.get_data(player.token),
+                    unit: unit.get_data()
                 }
             }, player.token);
         }
@@ -341,7 +342,8 @@ var ServerSocket;
             ServerSocket.send_data_to_all(socket, {
                 response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
                 data: {
-                    city: city === null || city === void 0 ? void 0 : city.get_data(city.owner.token)
+                    city: city.get_data(player.token),
+                    unit: unit.get_data()
                 }
             }, player.token);
         }

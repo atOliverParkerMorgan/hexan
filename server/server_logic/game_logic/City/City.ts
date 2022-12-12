@@ -29,7 +29,7 @@ class City{
 
     public static readonly BASE_HARVEST_COST = 5;
 
-    public readonly owner: Player;
+    public owner: Player;
     public readonly x: number;
     public readonly y: number;
     public readonly cords_in_pixels_x: number;

@@ -26,7 +26,7 @@ var Melee = /** @class */ (function (_super) {
         attack: 25,
         health: 100,
         range: 1,
-        movement: 100,
+        movement: 1000,
         cost: 4,
         action: Unit_1.Unit.FORTIFY,
         type: Unit_1.Unit.MELEE

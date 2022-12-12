@@ -148,7 +148,7 @@ function settings_logic_init(){
 
                     // send POST request if there is available match
                     request_match_status_update(JSON_response.player_token, nick_name, map_size, game_mode)
-                    interval_id_match_request = setInterval(() => request_match_status_update(JSON_response.player_token, nick_name, map_size, game_mode), 5000);
+                    interval_id_match_request = setInterval(() => request_match_status_update(JSON_response.player_token, nick_name, map_size, game_mode), 1000);
 
                 }
             }

@@ -9,7 +9,7 @@ class Melee extends Unit{
         attack: 25,
         health: 100,
         range: 1,
-        movement: 100,
+        movement: 1000,
         cost: 4,
 
         action: Unit.FORTIFY,

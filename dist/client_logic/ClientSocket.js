@@ -129,7 +129,6 @@ export var ClientSocket;
                     break;
                 // deal with sever UNIT_MOVED response
                 case ClientSocket.response_types.UNIT_MOVED_RESPONSE:
-                    var found_unit_1 = false;
                     if (Player.all_units == null) {
                         return;
                     }
@@ -143,31 +142,13 @@ export var ClientSocket;
                         }
                     });
                     // find the unit in question
-                    Player.all_units.map(function (unit) {
-                        if (unit.id === response_data.unit.id) {
-                            found_unit_1 = true;
-                            // transform unit into ship if on a water node
-                            unit.is_on_water = response_data.unit.is_on_water;
-                            unit.move_to(response_data.unit.x, response_data.unit.y);
-                            return;
-                        }
-                    });
-                    // if not found something went wrong
-                    if (!found_unit_1) {
+                    if (!move_unit(response_data.unit)) {
                         console.error("Error, something has gone wrong with the sever public communication");
                         break;
                     }
                     break;
                 case ClientSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE:
-                    var found_enemy_unit_1 = false;
-                    Player.all_enemy_visible_units.map(function (enemy_visible_unit) {
-                        if (enemy_visible_unit.id === response_data.unit.id) {
-                            found_enemy_unit_1 = true;
-                            enemy_visible_unit.move_to(response_data.unit.x, response_data.unit.y);
-                            return;
-                        }
-                    });
-                    if (!found_enemy_unit_1) {
+                    if (!move_enemy_units(response_data.unit)) {
                         Player.add_enemy_unit(response_data.unit);
                     }
                     break;
@@ -242,31 +223,50 @@ export var ClientSocket;
                 case ClientSocket.response_types.CONQUERED_CITY_RESPONSE:
                     // if player conquered a city
                     var city_node = Node.all_nodes[response_data.city.y][response_data.city.x];
-                    if (Player.owns_city(response_data.city.name)) {
-                        city_node.set_city(response_data.city, response_data.city.sprite_name);
-                        for (var _o = 0, _p = city_node.get_neighbours(); _o < _p.length; _o++) {
-                            var neighbour = _p[_o];
-                            if (neighbour != null) {
-                                neighbour.update();
-                            }
-                        }
+                    city_node.city.is_friendly = response_data.city.is_friendly;
+                    city_node.update();
+                    for (var _o = 0, _p = city_node.get_neighbours(); _o < _p.length; _o++) {
+                        var neighbour = _p[_o];
+                        neighbour === null || neighbour === void 0 ? void 0 : neighbour.update();
+                    }
+                    if (city_node.city.is_friendly) {
+                        move_unit(response_data.unit);
                     }
                     else {
-                        Player.remove_city(response_data.city.name);
-                        city_node.city.is_friendly = false;
-                        city_node.update();
-                        for (var _q = 0, _r = city_node.get_neighbours(); _q < _r.length; _q++) {
-                            var neighbour = _r[_q];
-                            if (neighbour != null) {
-                                neighbour.update();
-                            }
-                        }
+                        move_enemy_units(response_data.unit);
                     }
                     break;
             }
         });
     }
     ClientSocket.add_data_listener = add_data_listener;
+    // return if unit move was valid
+    function move_unit(response_unit) {
+        // find the unit in question
+        for (var _i = 0, _a = Player.all_units; _i < _a.length; _i++) {
+            var unit = _a[_i];
+            if (unit.id === response_unit.id) {
+                // transform unit into ship if on a water node
+                unit.is_on_water = response_unit.is_on_water;
+                unit.move_to(response_unit.x, response_unit.y);
+                return true;
+            }
+        }
+        return false;
+    }
+    function move_enemy_units(response_unit) {
+        // find the unit in question
+        for (var _i = 0, _a = Player.all_enemy_visible_units; _i < _a.length; _i++) {
+            var enemy_unit = _a[_i];
+            if (enemy_unit.id === response_unit.id) {
+                // transform unit into ship if on a water node
+                enemy_unit.is_on_water = response_unit.is_on_water;
+                enemy_unit.move_to(response_unit.x, response_unit.y);
+                return true;
+            }
+        }
+        return false;
+    }
     function get_data(request_type, game_token, player_token) {
         console.log("REQUEST: " + request_type);
         ClientSocket.socket.emit("get_data", {

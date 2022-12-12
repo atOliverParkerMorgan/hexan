@@ -34,7 +34,7 @@ export class Node{
 
     public static readonly MOUNTAIN_TRAVEL_BIAS = 10;
 
-    private static last_hovered_node: Node | null = null;
+    public static last_hovered_node: Node | null = null;
     private static selected_node: Node | null = null;
 
     private static selected_line: any;
@@ -158,8 +158,10 @@ export class Node{
         // draw hex
         this.hex = new Graphics();
 
-
-        if(this.city != null)this.hex.beginFill(this.city.get_node_color(), this.opacity);
+        if(this.city != null){
+            console.log(this.city.get_node_color())
+            this.hex.beginFill(this.city.get_node_color(), this.opacity);
+        }
         else if(this.is_hidden) this.hex.beginFill(Node.HIDDEN, this.opacity);
         else{
             if(this.can_be_harvested()) this.hex.beginFill(Node.CAN_BE_HARVESTED, this.opacity);
@@ -512,9 +514,7 @@ export class Node{
 
                                 Node.movement_hint_lines.push(movement_hint_line);
 
-
                                 last_node = Node.path[i];
-
                         }
                     }
                 }

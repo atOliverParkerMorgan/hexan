@@ -159,15 +159,26 @@ export class Unit implements UnitInterface{
                 }
             }
 
+            let city_node: Node = game.map.all_nodes[this.y][this.x];
+
+            if(city_node.city != null && city_node?.city?.owner.token !=  player.token){
+                city_node.city.owner = player;
+                let is_conquered = false;
+
+                game.all_players.map((in_game_player: Player)=> {
+                    if(game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
+                        ServerSocket.send_conquered_city(socket, game, in_game_player, <any> city_node.city, this);
+                        is_conquered = true;
+                    }
+                });
+                if(is_conquered){
+                    return;
+                }
+            }
+
             // show unit to player if the unit steps on a discovered node
             game.all_players.map((in_game_player: Player)=>{
                 if(game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
-                    const node_city: any = game.map.all_nodes[this.y][this.x].city;
-
-                    if(node_city != null && node_city?.owner.token !=  player.token){
-                       node_city.owner = player;
-                       ServerSocket.send_conquered_city(socket, game, in_game_player, node_city);
-                    }
 
                     if (in_game_player.token === player.token) {
                         ServerSocket.send_unit_movement_to_owner(socket, this, all_discovered_nodes, in_game_player);

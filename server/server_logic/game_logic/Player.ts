@@ -7,6 +7,7 @@ import Cavalry from "./Units/Cavalry";
 import Settler from "./Units/Settler";
 import Map from "./Map/Map";
 import {Technology} from "./Technology/Technology";
+import City from "./City/City";
 
 class Player{
     token: string;

@@ -26,20 +26,8 @@ var Game = /** @class */ (function () {
             var continent = _a[_i];
             if (!continent.has_player) {
                 var starting_node = continent.get_random_river_node();
-                if (continent.grass_nodes.length !== 0) {
-                    while (starting_node == null)
-                        starting_node = continent.get_random_node_of_type(Node_1.Node.GRASS);
-                }
-                else if (continent.forest_nodes.length !== 0) {
-                    while (starting_node == null)
-                        starting_node = continent.get_random_node_of_type(Node_1.Node.FOREST);
-                }
-                else if (continent.mountain_nodes.length !== 0) {
-                    while (starting_node == null)
-                        starting_node = continent.get_random_node_of_type(Node_1.Node.MOUNTAIN);
-                }
-                if (starting_node == null)
-                    continue;
+                while (starting_node === undefined)
+                    starting_node = continent.get_random_river_node();
                 this.add_city(player, starting_node);
                 continent.has_player = true;
                 break;

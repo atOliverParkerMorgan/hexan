@@ -19,6 +19,13 @@ export namespace Player {
     export let production_units: any[] = [];
     export let owned_technologies: string[] = [];
 
+    export function contains_city(city_name: String): boolean{
+        for (const city of all_cities) {
+            if(city.name === city_name) return true
+        }
+        return false;
+    }
+
     // player star logic
     export function produce_stars() {
         Interval.make_star_production_interval(() => {
@@ -78,25 +85,6 @@ export namespace Player {
         return false;
     }
 
-    export function owns_city(city_name: string){
-        for (const city of all_cities) {
-            if(city.name === city_name) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    export function remove_city(city_name: string){
-
-        for (let index = 0; index < all_cities.length; index++) {
-            if(all_cities[index].name === city_name){
-                all_cities.splice(index);
-                break;
-            }
-        }
-    }
 
     export function has_enemy_unit(unit_id: string):boolean{
         for (const enemy_unit of Player.all_enemy_visible_units) {

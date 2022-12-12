@@ -38,6 +38,7 @@ var Unit = /** @class */ (function () {
         if (path.length !== 0)
             MOVEMENT_PER_A_MINUTE = path[0].get_movement_time() / (this.movement / 100);
         setTimeout(function () {
+            var _a;
             if (path.length === 0) {
                 return;
             }
@@ -49,7 +50,7 @@ var Unit = /** @class */ (function () {
             // check if movement is valid or if move can be translated as attack
             if (current_node.unit != null) {
                 if (player.owns_this_unit(current_node.unit.id)) {
-                    ServerSocket_1.ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a friendly unit or city you can only attack");
+                    ServerSocket_1.ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a friendly unit you can only attack an enemy unit.");
                     return;
                 }
             }
@@ -72,8 +73,8 @@ var Unit = /** @class */ (function () {
             _this.x = current_node.x;
             _this.y = current_node.y;
             var all_discovered_nodes = [];
-            for (var _i = 0, _a = current_node.neighbors; _i < _a.length; _i++) {
-                var node = _a[_i];
+            for (var _i = 0, _b = current_node.neighbors; _i < _b.length; _i++) {
+                var node = _b[_i];
                 if (node != null) {
                     game.map.make_neighbour_nodes_shown(player, node);
                     all_discovered_nodes.push(node.get_data(player.token));
@@ -81,14 +82,14 @@ var Unit = /** @class */ (function () {
             }
             all_discovered_nodes.push(current_node.get_data(player.token));
             // find previously unseen enemy units
-            for (var _b = 0, _c = game.get_enemy_players(player.token); _b < _c.length; _b++) {
-                var enemy_player = _c[_b];
-                for (var _d = 0, all_discovered_nodes_1 = all_discovered_nodes; _d < all_discovered_nodes_1.length; _d++) {
-                    var node = all_discovered_nodes_1[_d];
+            for (var _c = 0, _d = game.get_enemy_players(player.token); _c < _d.length; _c++) {
+                var enemy_player = _d[_c];
+                for (var _e = 0, all_discovered_nodes_1 = all_discovered_nodes; _e < all_discovered_nodes_1.length; _e++) {
+                    var node = all_discovered_nodes_1[_e];
                     if (node.unit == null)
                         continue;
-                    for (var _e = 0, _f = enemy_player.units; _e < _f.length; _e++) {
-                        var unit = _f[_e];
+                    for (var _f = 0, _g = enemy_player.units; _f < _g.length; _f++) {
+                        var unit = _g[_f];
                         if (node.x === unit.x && node.y === unit.y) {
                             // found new enemy unit by moving
                             ServerSocket_1.ServerSocket.send_data(socket, {
@@ -101,14 +102,23 @@ var Unit = /** @class */ (function () {
                     }
                 }
             }
+            var city_node = game.map.all_nodes[_this.y][_this.x];
+            if (city_node.city != null && ((_a = city_node === null || city_node === void 0 ? void 0 : city_node.city) === null || _a === void 0 ? void 0 : _a.owner.token) != player.token) {
+                city_node.city.owner = player;
+                var is_conquered_1 = false;
+                game.all_players.map(function (in_game_player) {
+                    if (game.map.all_nodes[_this.y][_this.x].is_shown.includes(in_game_player.token)) {
+                        ServerSocket_1.ServerSocket.send_conquered_city(socket, game, in_game_player, city_node.city, _this);
+                        is_conquered_1 = true;
+                    }
+                });
+                if (is_conquered_1) {
+                    return;
+                }
+            }
             // show unit to player if the unit steps on a discovered node
             game.all_players.map(function (in_game_player) {
                 if (game.map.all_nodes[_this.y][_this.x].is_shown.includes(in_game_player.token)) {
-                    var node_city = game.map.all_nodes[_this.y][_this.x].city;
-                    if (node_city != null && (node_city === null || node_city === void 0 ? void 0 : node_city.owner.token) != player.token) {
-                        node_city.owner = player;
-                        ServerSocket_1.ServerSocket.send_conquered_city(socket, game, in_game_player, node_city);
-                    }
                     if (in_game_player.token === player.token) {
                         ServerSocket_1.ServerSocket.send_unit_movement_to_owner(socket, _this, all_discovered_nodes, in_game_player);
                     }

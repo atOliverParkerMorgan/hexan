@@ -31,15 +31,7 @@ class Game{
         for (const continent of this.map.all_continents) {
             if(!continent.has_player){
                 let starting_node: Node | undefined = continent.get_random_river_node();
-
-                if(continent.grass_nodes.length !== 0) {
-                    while (starting_node == null) starting_node = continent.get_random_node_of_type(Node.GRASS);
-                }else if(continent.forest_nodes.length !== 0){
-                    while (starting_node == null) starting_node = continent.get_random_node_of_type(Node.FOREST);
-                }else if(continent.mountain_nodes.length !== 0){
-                    while (starting_node == null) starting_node = continent.get_random_node_of_type(Node.MOUNTAIN);
-                }
-                if(starting_node == null) continue;
+                while (starting_node === undefined) starting_node = continent.get_random_river_node();
 
                 this.add_city(player, starting_node);
                 continent.has_player = true;

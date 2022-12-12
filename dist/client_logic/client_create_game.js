@@ -117,7 +117,7 @@ function settings_logic_init() {
                     interval_id_timer = setInterval(function () { return update_timer(main_div_1, start_1); }, 1000);
                     // send POST request if there is available match
                     request_match_status_update(JSON_response_1.player_token, nick_name, map_size, game_mode);
-                    interval_id_match_request = setInterval(function () { return request_match_status_update(JSON_response_1.player_token, nick_name, map_size, game_mode); }, 5000);
+                    interval_id_match_request = setInterval(function () { return request_match_status_update(JSON_response_1.player_token, nick_name, map_size, game_mode); }, 1000);
                 }
             }
         };
