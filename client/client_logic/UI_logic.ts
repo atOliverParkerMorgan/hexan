@@ -3,30 +3,14 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {Player} from "./game_graphics/Player.js";
 import {Technology, graph, nodes, interaction_nodes_values} from "./game_graphics/Technology/Technology.js";
+import {viewport} from "./game_graphics/Pixi.js";
 
 export let renderer: any;
 export let current_node: Node | undefined;
 
-let is_city_menu_visible = false;
+let current_city: any;
 let is_mouse_on_city_menu = false;
 let are_listeners_added = false;
-
-let mouse_x: number | undefined;
-let mouse_y: number | undefined;
-
-// overwrite scroll
-document.addEventListener("wheel", () => {
-    if(is_city_menu_visible && is_mouse_on_city_menu) {
-        //viewport.plugins.pause('wheel');
-        if(mouse_x != null && mouse_y != null) {
-            //TODO fix scrolling canvas
-            //viewport.snap(mouse_x, mouse_y, {removeOnComplete: true});
-        }
-    }else{
-        //viewport.plugins.resume('wheel');
-    }
-}, { passive: false });
-
 
 // hot keys
 document.addEventListener("keydown", (event)=>{
@@ -125,27 +109,39 @@ export function hide_unit_info(){
 }
 
 export function show_city_menu(city: any){
+    current_city = city
+
     if(!are_listeners_added) {
         (<HTMLInputElement>document.getElementById("city_side_menu")).addEventListener("mouseover", () => {
-            is_mouse_on_city_menu = true
+            if(!is_mouse_on_city_menu) {
+                is_mouse_on_city_menu = true;
+
+                viewport.plugins.pause('wheel');
+                viewport.plugins.pause('drag');
+                viewport.plugins.pause('decelerate');
+
+                if(city != null) {
+                    viewport.snap(current_city.cords_in_pixels_x, current_city.cords_in_pixels_y, {removeOnComplete: true});
+                }
+            }
         }, false);
 
 
         (<HTMLInputElement>document.getElementById("city_side_menu")).addEventListener("mouseleave", () => {
-            is_mouse_on_city_menu = false
+            if(is_mouse_on_city_menu) {
+                is_mouse_on_city_menu = false;
+                viewport.plugins.resume('wheel');
+                viewport.plugins.resume('drag');
+                viewport.plugins.resume('decelerate');
+            }
         }, false);
         are_listeners_added = true;
     }
 
-    mouse_x = city.cords_in_pixels_x;
-    mouse_y = city.cords_in_pixels_y;
-
-    is_city_menu_visible = true;
     show_city_data(city);
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "visible";
 }
 export function hide_city_menu(){
-    is_city_menu_visible = false;
     // move info menu
     (<HTMLInputElement >document.getElementById("unit_info_menu")).style.right = "0";
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "hidden";
@@ -309,7 +305,7 @@ export function create_tech_tree(){
     );
 
     let canvas: any = document.getElementById('tech_tree');
-    let ctx = canvas?.getContext('2d');
+    let ctx = canvas.getContext('2d');
     let background_gradient=ctx.createLinearGradient(0, 0, TECH_TREE_CANVAS_WIDTH, TECH_TREE_CANVAS_HEIGHT);
     background_gradient.addColorStop(0, "#2c5364");
     background_gradient.addColorStop(0.5, "#203a43");
@@ -395,7 +391,13 @@ export function create_tech_tree(){
                     }
                 })
 
-                ctx.roundRect(rect_x, rect_y, rect_width, rect_height, [0, 50, 0, 25]);
+                try {
+                    ctx.roundRect(rect_x, rect_y, rect_width, rect_height, [0, 50, 0, 25]);
+                }catch (e) {
+                    // for Firefox
+                    ctx.rect(rect_x, rect_y, rect_width, rect_height);
+                }
+
                 ctx.drawImage(image, x + (longest_line) - 90 , y - 60 - 10 * lines.length , 50 , 50);
             }else{
                 const width = 130;

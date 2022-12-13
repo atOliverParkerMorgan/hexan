@@ -32,7 +32,8 @@ var ServerSocket;
         PURCHASED_TECHNOLOGY_RESPONSE: "PURCHASED_TECHNOLOGY_RESPONSE",
         INVALID_ATTACK_RESPONSE: "INVALID_ATTACK_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
-        SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE"
+        SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
+        END_GAME_RESPONSE: "END_GAME_RESPONSE"
     };
     ServerSocket.request_types = {
         // game play
@@ -349,6 +350,15 @@ var ServerSocket;
         }
     }
     ServerSocket.send_conquered_city = send_conquered_city;
+    function send_end_game(socket, game, player, won) {
+        ServerSocket.send_data(socket, {
+            response_type: ServerSocket.response_types.END_GAME_RESPONSE,
+            data: {
+                won: won
+            }
+        }, player.token);
+    }
+    ServerSocket.send_end_game = send_end_game;
     function send_unit_attack(socket, game, player, attacked_unit_id, unit_id, path) {
         var enemy_player = game.get_enemy_player_by_unit(attacked_unit_id);
         if (enemy_player == null) {

@@ -38,6 +38,8 @@ class Continent{
 
     add_forest_node(node: Node): void{
         node.type = Node.FOREST;
+        node.production_stars = 2;
+        
         node.sprite_name = "trees_" + Utils.random_int(1, 2) + ".png";
 
         if(!this.forest_nodes.includes(node)) this.forest_nodes.push(node);
@@ -51,6 +53,8 @@ class Continent{
 
     add_grass_node(node: Node): void{
         node.type = Node.GRASS;
+        node.production_stars = 1;
+
         node.sprite_name = "";
 
         if(!this.grass_nodes.includes(node))this.grass_nodes.push(node);
@@ -64,7 +68,10 @@ class Continent{
 
     add_mountain_node(node: Node, mountain_type: number): void{
         node.type = Node.MOUNTAIN;
+        node.production_stars = 3;
+
         node.sprite_name = "mountain_" + Utils.random_int(1, 3) + ".png"
+
         if(!this.mountain_nodes.includes(node)) this.mountain_nodes.push(node);
         if(!this.all_nodes.includes(node)) this.all_nodes.push(node);
     }

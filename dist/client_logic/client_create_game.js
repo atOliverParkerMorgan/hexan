@@ -172,7 +172,7 @@ if (nick_input != null) {
         }
     });
 }
-function loadFile(filePath) {
+export function loadFile(filePath) {
     var result = null;
     var xhr = new XMLHttpRequest();
     xhr.open("GET", filePath, false);

@@ -4,6 +4,7 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import { Node } from "./game_graphics/Node.js";
 import { show_city_menu, show_modal } from "./UI_logic.js";
 import { City } from "./game_graphics/City/City.js";
+import { loadFile } from "./client_create_game.js";
 // singleton
 export var ClientSocket;
 (function (ClientSocket) {
@@ -27,7 +28,8 @@ export var ClientSocket;
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
         HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
-        SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE"
+        SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
+        END_GAME_RESPONSE: "END_GAME_RESPONSE"
     };
     ClientSocket.request_types = {
         // game play
@@ -235,6 +237,10 @@ export var ClientSocket;
                     else {
                         move_enemy_units(response_data.unit);
                     }
+                    break;
+                case ClientSocket.response_types.END_GAME_RESPONSE:
+                    var main_div = document.getElementById("app");
+                    main_div.innerHTML = loadFile("/views/end_screen.html");
                     break;
             }
         });

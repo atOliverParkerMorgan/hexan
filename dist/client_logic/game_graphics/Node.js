@@ -70,8 +70,10 @@ var Node = /** @class */ (function () {
         var _this = this;
         // draw hex
         this.hex = new Graphics();
-        if (this.city != null)
+        if (this.city != null) {
+            console.log(this.city.get_node_color());
             this.hex.beginFill(this.city.get_node_color(), this.opacity);
+        }
         else if (this.is_hidden)
             this.hex.beginFill(Node.HIDDEN, this.opacity);
         else {

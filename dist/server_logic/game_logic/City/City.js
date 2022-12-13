@@ -85,7 +85,7 @@ var City = /** @class */ (function () {
         }
     };
     City.prototype.get_harvest_cost = function () {
-        return Math.round(City.BASE_HARVEST_COST * (this.number_of_harvested_nodes + 1));
+        return Math.round(City.BASE_HARVEST_COST + 4 * (this.number_of_harvested_nodes));
     };
     City.prototype.add_harvested_node = function (node) {
         this.harvested_nodes.push(node);

@@ -113,6 +113,16 @@ var Unit = /** @class */ (function () {
                     }
                 });
                 if (is_conquered_1) {
+                    for (var _h = 0, _j = game.all_players; _h < _j.length; _h++) {
+                        var player_1 = _j[_h];
+                        if (!game.player_is_alive(player_1)) {
+                            for (var _k = 0, _l = game.all_players; _k < _l.length; _k++) {
+                                var player_2 = _l[_k];
+                                ServerSocket_1.ServerSocket.send_end_game(socket, game, player_2, game.player_is_alive(player_2));
+                            }
+                            return;
+                        }
+                    }
                     return;
                 }
             }

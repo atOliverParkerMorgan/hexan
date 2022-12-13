@@ -194,8 +194,6 @@ class Map{
                 max_mountains_ranges = 7;
                 break;
         }
-        let max_rivers = max_mountains_ranges;
-
 
         let number_of_mountain_ranges = Utils.random_int(1, max_mountains_ranges);
         for (let i = 0; i <= number_of_mountain_ranges; i++) {

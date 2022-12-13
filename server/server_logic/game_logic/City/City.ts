@@ -130,7 +130,7 @@ class City{
     }
 
     get_harvest_cost(){
-        return Math.round(City.BASE_HARVEST_COST * (this.number_of_harvested_nodes + 1))
+        return Math.round(City.BASE_HARVEST_COST  + 4 * (this.number_of_harvested_nodes))
 
     }
 

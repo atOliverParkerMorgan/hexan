@@ -172,6 +172,15 @@ export class Unit implements UnitInterface{
                     }
                 });
                 if(is_conquered){
+                    for (const player_1 of game.all_players) {
+                        if(!game.player_is_alive(player_1)){
+                            for (const player_2 of game.all_players) {
+                                ServerSocket.send_end_game(socket, game, player_2, game.player_is_alive(player_2));
+                            }
+                            return;
+                        }
+                    }
+
                     return;
                 }
             }

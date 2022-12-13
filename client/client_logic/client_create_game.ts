@@ -214,7 +214,7 @@ if(nick_input != null) {
     });
 }
 
-function loadFile(filePath: string) {
+export function loadFile(filePath: string) {
     let result = null;
     let xhr = new XMLHttpRequest();
     xhr.open("GET", filePath, false);

@@ -4,6 +4,7 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {show_city_menu, show_modal} from "./UI_logic.js";
 import {City} from "./game_graphics/City/City.js";
+import {loadFile} from "./client_create_game.js";
 
 // singleton
 export namespace ClientSocket {
@@ -12,7 +13,7 @@ export namespace ClientSocket {
             HARVEST_NODE_RESPONSE: string, HARVEST_COST_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
             ENEMY_FOUND_RESPONSE:string, NEW_CITY: string, CANNOT_SETTLE: string, CONQUERED_CITY_RESPONSE: string,
             STARS_DATA_RESPONSE: string, PURCHASED_TECHNOLOGY_RESPONSE: string, INVALID_MOVE_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
-            ATTACK_UNIT_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string } = {
+            ATTACK_UNIT_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string, END_GAME_RESPONSE: string } = {
 
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -41,7 +42,9 @@ export namespace ClientSocket {
         HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
 
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
-        SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE"
+        SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
+
+        END_GAME_RESPONSE: "END_GAME_RESPONSE"
 
     };
     export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
@@ -291,6 +294,12 @@ export namespace ClientSocket {
                         move_enemy_units(response_data.unit);
                     }
 
+
+                    break;
+
+                case ClientSocket.response_types.END_GAME_RESPONSE:
+                    const main_div: any = document.getElementById("app");
+                    main_div.innerHTML = loadFile("/views/end_screen.html");
 
                     break;
             }

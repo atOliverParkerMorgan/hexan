@@ -3,26 +3,12 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import { Node } from "./game_graphics/Node.js";
 import { Player } from "./game_graphics/Player.js";
 import { Technology, graph, interaction_nodes_values } from "./game_graphics/Technology/Technology.js";
+import { viewport } from "./game_graphics/Pixi.js";
 export var renderer;
 export var current_node;
-var is_city_menu_visible = false;
+var current_city;
 var is_mouse_on_city_menu = false;
 var are_listeners_added = false;
-var mouse_x;
-var mouse_y;
-// overwrite scroll
-document.addEventListener("wheel", function () {
-    if (is_city_menu_visible && is_mouse_on_city_menu) {
-        //viewport.plugins.pause('wheel');
-        if (mouse_x != null && mouse_y != null) {
-            //TODO fix scrolling canvas
-            //viewport.snap(mouse_x, mouse_y, {removeOnComplete: true});
-        }
-    }
-    else {
-        //viewport.plugins.resume('wheel');
-    }
-}, { passive: false });
 // hot keys
 document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
@@ -109,23 +95,33 @@ export function hide_unit_info() {
     document.getElementById("unit_info_menu").style.visibility = "hidden";
 }
 export function show_city_menu(city) {
+    current_city = city;
     if (!are_listeners_added) {
         document.getElementById("city_side_menu").addEventListener("mouseover", function () {
-            is_mouse_on_city_menu = true;
+            if (!is_mouse_on_city_menu) {
+                is_mouse_on_city_menu = true;
+                viewport.plugins.pause('wheel');
+                viewport.plugins.pause('drag');
+                viewport.plugins.pause('decelerate');
+                if (city != null) {
+                    viewport.snap(current_city.cords_in_pixels_x, current_city.cords_in_pixels_y, { removeOnComplete: true });
+                }
+            }
         }, false);
         document.getElementById("city_side_menu").addEventListener("mouseleave", function () {
-            is_mouse_on_city_menu = false;
+            if (is_mouse_on_city_menu) {
+                is_mouse_on_city_menu = false;
+                viewport.plugins.resume('wheel');
+                viewport.plugins.resume('drag');
+                viewport.plugins.resume('decelerate');
+            }
         }, false);
         are_listeners_added = true;
     }
-    mouse_x = city.cords_in_pixels_x;
-    mouse_y = city.cords_in_pixels_y;
-    is_city_menu_visible = true;
     show_city_data(city);
     document.getElementById("city_side_menu").style.visibility = "visible";
 }
 export function hide_city_menu() {
-    is_city_menu_visible = false;
     // move info menu
     document.getElementById("unit_info_menu").style.right = "0";
     document.getElementById("city_side_menu").style.visibility = "hidden";
@@ -257,7 +253,7 @@ export function create_tech_tree() {
     0.5 // Damping
     );
     var canvas = document.getElementById('tech_tree');
-    var ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext('2d');
+    var ctx = canvas.getContext('2d');
     var background_gradient = ctx.createLinearGradient(0, 0, TECH_TREE_CANVAS_WIDTH, TECH_TREE_CANVAS_HEIGHT);
     background_gradient.addColorStop(0, "#2c5364");
     background_gradient.addColorStop(0.5, "#203a43");
@@ -325,7 +321,13 @@ export function create_tech_tree() {
                     return;
                 }
             });
-            ctx.roundRect(rect_x_1, rect_y_1, rect_width_1, rect_height_1, [0, 50, 0, 25]);
+            try {
+                ctx.roundRect(rect_x_1, rect_y_1, rect_width_1, rect_height_1, [0, 50, 0, 25]);
+            }
+            catch (e) {
+                // for Firefox
+                ctx.rect(rect_x_1, rect_y_1, rect_width_1, rect_height_1);
+            }
             ctx.drawImage(image, x + (longest_line) - 90, y - 60 - 10 * lines.length, 50, 50);
         }
         else {

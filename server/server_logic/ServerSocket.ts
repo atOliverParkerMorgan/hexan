@@ -18,7 +18,7 @@ export namespace ServerSocket {
         INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
         NEW_CITY: string, CANNOT_SETTLE: string, CONQUERED_CITY_RESPONSE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ENEMY_FOUND_RESPONSE: string, ATTACK_UNIT_RESPONSE: string,
         HARVEST_COST_RESPONSE: string, MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, PURCHASED_TECHNOLOGY_RESPONSE:string,
-        INVALID_ATTACK_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string} =  {
+        INVALID_ATTACK_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string, END_GAME_RESPONSE: string} =  {
 
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -48,7 +48,9 @@ export namespace ServerSocket {
 
         INVALID_ATTACK_RESPONSE: "INVALID_ATTACK_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
-        SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE"
+        SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
+
+        END_GAME_RESPONSE: "END_GAME_RESPONSE"
 
     };
     export const request_types: {
@@ -373,7 +375,6 @@ export namespace ServerSocket {
 
     export function send_conquered_city(socket: Socket, game: Game, player: Player, city: City, unit: Unit){
 
-
         if(player.token === city.owner.token){
             ServerSocket.send_data(socket, {
                 response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
@@ -385,12 +386,21 @@ export namespace ServerSocket {
         }else{
             ServerSocket.send_data_to_all(socket, {
                 response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
-                data:{
+                data: {
                     city: city.get_data(player.token),
                     unit: unit.get_data()
                 }
             }, player.token);
         }
+    }
+
+    export function send_end_game(socket: Socket, game: Game, player: Player, won: boolean){
+        ServerSocket.send_data(socket, {
+            response_type: ServerSocket.response_types.END_GAME_RESPONSE,
+            data:{
+                won: won
+            }
+        }, player.token);
     }
 
 

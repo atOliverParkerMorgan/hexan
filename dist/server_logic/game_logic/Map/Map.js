@@ -153,7 +153,6 @@ var Map = /** @class */ (function () {
                 max_mountains_ranges = 7;
                 break;
         }
-        var max_rivers = max_mountains_ranges;
         var number_of_mountain_ranges = Utils_1.Utils.random_int(1, max_mountains_ranges);
         for (var i = 0; i <= number_of_mountain_ranges; i++) {
             var mountain_type = Utils_1.Utils.random_int(Map.NORMAL_MOUNTAIN, Map.SNOWY_MOUNTAIN);

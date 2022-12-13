@@ -20,11 +20,19 @@ class Game{
         this.map.generate_island_map();
     }
 
-
     start_star_production(){
         this.all_players.map((player: Player)=>{
             player.produce_stars();
         })
+    }
+
+
+    player_is_alive(player: Player): boolean{
+        for (const city of this.all_cities) {
+            if(city.owner.token === player.token) return true;
+        }
+
+        return false;
     }
 
     place_start_city(player: Player): void{

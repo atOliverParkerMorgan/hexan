@@ -48,7 +48,7 @@ export class Node{
         this.borders = [];
         this.is_shown = [];
 
-        this.production_stars = 1 ;
+        this.production_stars = 1;
         this.harvest_cost = City.BASE_HARVEST_COST;
         this.is_harvested = false;
 
