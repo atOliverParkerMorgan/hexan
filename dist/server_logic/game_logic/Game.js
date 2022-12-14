@@ -21,6 +21,14 @@ var Game = /** @class */ (function () {
             player.produce_stars();
         });
     };
+    Game.prototype.player_is_alive = function (player) {
+        for (var _i = 0, _a = this.all_cities; _i < _a.length; _i++) {
+            var city = _a[_i];
+            if (city.owner.token === player.token)
+                return true;
+        }
+        return false;
+    };
     Game.prototype.place_start_city = function (player) {
         for (var _i = 0, _a = this.map.all_continents; _i < _a.length; _i++) {
             var continent = _a[_i];

@@ -21,6 +21,7 @@ var Continent = /** @class */ (function () {
     }
     Continent.prototype.add_forest_node = function (node) {
         node.type = Node_1.Node.FOREST;
+        node.production_stars = 2;
         node.sprite_name = "trees_" + Utils_1.Utils.random_int(1, 2) + ".png";
         if (!this.forest_nodes.includes(node))
             this.forest_nodes.push(node);
@@ -34,6 +35,7 @@ var Continent = /** @class */ (function () {
     };
     Continent.prototype.add_grass_node = function (node) {
         node.type = Node_1.Node.GRASS;
+        node.production_stars = 1;
         node.sprite_name = "";
         if (!this.grass_nodes.includes(node))
             this.grass_nodes.push(node);
@@ -46,6 +48,7 @@ var Continent = /** @class */ (function () {
     };
     Continent.prototype.add_mountain_node = function (node, mountain_type) {
         node.type = Node_1.Node.MOUNTAIN;
+        node.production_stars = 3;
         node.sprite_name = "mountain_" + Utils_1.Utils.random_int(1, 3) + ".png";
         if (!this.mountain_nodes.includes(node))
             this.mountain_nodes.push(node);
