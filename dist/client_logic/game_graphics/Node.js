@@ -203,11 +203,11 @@ var Node = /** @class */ (function () {
                     var node = _c[_i];
                     path_node_cords.push([node.x, node.y]);
                 }
-                show_unit_info(Node.selected_node.unit);
                 // send movement request to server
                 ClientSocket.request_move_unit(Node.selected_node.unit, path_node_cords);
                 to_node.update();
                 node_from.update();
+                show_unit_info(Node.selected_node.unit);
             }
         }
         Node.already_selected = this === Node.selected_node && !Node.already_selected;

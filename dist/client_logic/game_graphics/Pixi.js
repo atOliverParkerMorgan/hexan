@@ -121,13 +121,21 @@ export function init_canvas(map, cities) {
         .moveCenter(0, 0)
         .snap(city_x, city_y, { removeOnComplete: true })
         .wheel()
-        .clampZoom({ minWidth: 4 * HEX_SIDE_SIZE, minHeight: 4 * HEX_SIDE_SIZE, maxWidth: WORLD_WIDTH, maxHeight: WORLD_HEIGHT })
-        .clamp({ top: -WORLD_HEIGHT / 2 - HEX_SIDE_SIZE, left: -WORLD_WIDTH / 2 - HEX_SIDE_SIZE,
-        right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE,
-        bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2 });
+        .clampZoom({ minWidth: 4 * HEX_SIDE_SIZE, minHeight: 4 * HEX_SIDE_SIZE, maxWidth: WORLD_WIDTH, maxHeight: WORLD_HEIGHT });
+    clamp_viewport();
     document.body.appendChild(app.view);
     // @ts-ignore
     app.ticker.add(function (delta) { return loop(delta); });
+}
+export function clamp_viewport() {
+    viewport.clamp({ top: -WORLD_HEIGHT / 2 - HEX_SIDE_SIZE - 70, left: -WORLD_WIDTH / 2 - HEX_SIDE_SIZE,
+        right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE,
+        bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2 });
+}
+export function clamp_viewport_menu() {
+    viewport.clamp({ top: -WORLD_HEIGHT / 2 - HEX_SIDE_SIZE - 70, left: -WORLD_WIDTH / 2 - HEX_SIDE_SIZE,
+        right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE + 400,
+        bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2 });
 }
 export function init_game() {
     var player_token = localStorage.getItem("player_token");

@@ -1,4 +1,5 @@
 import {init_game} from "./game_graphics/Pixi.js";
+import {ClientSocket} from "./ClientSocket.js";
 
 const REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
@@ -105,7 +106,6 @@ function settings_logic_init(){
 
         const nick_name = localStorage.getItem("nick_name");
         if(nick_name == null) return;
-        //client_socket.send_data("create_game_with_ai", nick);
 
         const xhr = new XMLHttpRequest();
 
@@ -156,7 +156,7 @@ function settings_logic_init(){
     };
 }
 
-// ask if there server has a match
+// ask if their server has a match
 function request_match_status_update(player_token: string, nick_name: string, map_size: number, game_mode: string){
     const xhr = new XMLHttpRequest();
 

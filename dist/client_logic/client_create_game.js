@@ -85,7 +85,6 @@ function settings_logic_init() {
         var nick_name = localStorage.getItem("nick_name");
         if (nick_name == null)
             return;
-        //client_socket.send_data("create_game_with_ai", nick);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", window.location.href, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
@@ -123,7 +122,7 @@ function settings_logic_init() {
         };
     };
 }
-// ask if there server has a match
+// ask if their server has a match
 function request_match_status_update(player_token, nick_name, map_size, game_mode) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", window.location.href, true);

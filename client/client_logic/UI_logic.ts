@@ -2,8 +2,16 @@ import {ClientSocket} from "./ClientSocket.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {Player} from "./game_graphics/Player.js";
-import {Technology, graph, nodes, interaction_nodes_values} from "./game_graphics/Technology/Technology.js";
-import {viewport} from "./game_graphics/Pixi.js";
+import {Technology, graph,interaction_nodes_values} from "./game_graphics/Technology/Technology.js";
+import {
+    clamp_viewport,
+    clamp_viewport_menu,
+    DISTANCE_BETWEEN_HEX,
+    HEX_SIDE_SIZE,
+    viewport,
+    WORLD_HEIGHT,
+    WORLD_WIDTH
+} from "./game_graphics/Pixi.js";
 
 export let renderer: any;
 export let current_node: Node | undefined;
@@ -11,6 +19,9 @@ export let current_node: Node | undefined;
 let current_city: any;
 let is_mouse_on_city_menu = false;
 let are_listeners_added = false;
+
+let last_city_cords_in_pixels_x = 0;
+let last_city_cords_in_pixels_y = 0;
 
 // hot keys
 document.addEventListener("keydown", (event)=>{
@@ -21,7 +32,9 @@ document.addEventListener("keydown", (event)=>{
 })
 
 export function show_node_info(node: Node){
-    if(node.type === Node.HIDDEN) return
+    if(node.type === Node.HIDDEN) return;
+
+    clamp_viewport_menu();
 
     current_node = node;
 
@@ -67,6 +80,7 @@ function update_node_action_button_and_information(node: Node){
 export function hide_node_info(){
     (<HTMLInputElement>document.getElementById("harvest_button")).style.visibility = "hidden";
     (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "hidden";
+    clamp_viewport()
 }
 
 export function show_unit_info(unit: Unit){
@@ -83,6 +97,8 @@ export function show_unit_info(unit: Unit){
     const div_unit_info_menu: any = (<HTMLInputElement >document.getElementById("unit_info_menu"));
     div_unit_info_menu.querySelector("#hide_unit_info_button").onclick = hide_unit_info;
     div_unit_info_menu.querySelector("#action_button").onclick = () => unit_action(unit);
+
+    clamp_viewport_menu();
 }
 
 function update_unit_action_button(unit: Unit){
@@ -99,12 +115,13 @@ function update_unit_action_button(unit: Unit){
     }
 }
 
-// send a request for an unit action to the server
+// send a request for a unit action to the server
 function unit_action(unit: Unit){
     ClientSocket.request_unit_action(unit);
 }
 
 export function hide_unit_info(){
+    clamp_viewport();
     (<HTMLInputElement >document.getElementById("unit_info_menu")).style.visibility = "hidden";
 }
 
@@ -119,9 +136,18 @@ export function show_city_menu(city: any){
                 viewport.plugins.pause('wheel');
                 viewport.plugins.pause('drag');
                 viewport.plugins.pause('decelerate');
+                clamp_viewport_menu()
 
-                if(city != null) {
-                    viewport.snap(current_city.cords_in_pixels_x, current_city.cords_in_pixels_y, {removeOnComplete: true});
+                if(current_city != null) {
+
+                    // get city cords
+                    let row_bias = current_city.y % 2 === 0 ? DISTANCE_BETWEEN_HEX/2 : 0;
+                    const city_x = (current_city.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
+                    const city_y = (current_city.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
+
+                    viewport.snap(city_x, city_y, {removeOnComplete: true});
+
+
                 }
             }
         }, false);
@@ -145,6 +171,8 @@ export function hide_city_menu(){
     // move info menu
     (<HTMLInputElement >document.getElementById("unit_info_menu")).style.right = "0";
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "hidden";
+
+    clamp_viewport();
 }
 
 
@@ -176,7 +204,7 @@ function show_city_data(city: any){
        unit_html.className = "w3-bar";
        unit_html.innerHTML = loadFile("/views/unit_item.html")
 
-       unit_html = set_unit_data(unit_html, unit.name, "/images/"+unit.name+".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
+       unit_html = set_unit_data(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
 
        ul_unit_menu.appendChild(unit_html);
        div_side_menu.appendChild(ul_unit_menu)
@@ -249,7 +277,7 @@ export function create_tech_tree(){
     tech_tree_canvas.style.borderRadius = "border-radius: 10px";
 
 
-    tech_tree_canvas.onmousedown = (event: any)=>{
+    tech_tree_canvas.onmousedown = ()=>{
         mouse_held = true;
         interaction_nodes_values.map((node_cords: (string | number | boolean)[])=>{
             // make sure that user is hovering over this node and that it isn't already purchased
@@ -288,7 +316,7 @@ export function create_tech_tree(){
         renderer.start();
     }
 
-    tech_tree_canvas.onmouseup = (event: any)=>{
+    tech_tree_canvas.onmouseup = ()=>{
         mouse_held = false;
     }
     document.getElementById("tech_tree_container")?.appendChild(tech_tree_canvas);
@@ -374,7 +402,7 @@ export function create_tech_tree(){
                         node_cords[3] = rect_x + rect_width;
                         node_cords[4] = rect_y + rect_height;
 
-                        // color nodes depending on if the are owned by the player
+                        // color nodes depending on if they are owned by the player
 
                         if(!node_cords[6]) {
                             ctx.fillStyle = "#880808"
