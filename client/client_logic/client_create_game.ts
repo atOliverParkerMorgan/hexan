@@ -1,9 +1,10 @@
 import {init_game} from "./game_graphics/Pixi.js";
-import {ClientSocket} from "./ClientSocket.js";
+import {XMLHttpRequest} from "aws-sdk/lib/http_response";
 
 const REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
-    FIND_MATCH: "FIND_MATCH"
+    FIND_MATCH: "FIND_MATCH",
+    START_GAME: "START_GAME"
 }
 
 let interval_id_timer: any;
@@ -146,18 +147,21 @@ function settings_logic_init(){
                     // update the timer about every second
                     interval_id_timer = setInterval(()=> update_timer(main_div, start), 1000);
 
-                    // send POST request if there is available match
-                    request_match_status_update(JSON_response.player_token, nick_name, map_size, game_mode)
-                    interval_id_match_request = setInterval(() => request_match_status_update(JSON_response.player_token, nick_name, map_size, game_mode), 1000);
-
+                    start_search(JSON_response.player_token, nick_name, map_size, game_mode, REQUEST_TYPES.FIND_MATCH);
                 }
             }
         }
     };
 }
 
-// ask if their server has a match
-function request_match_status_update(player_token: string, nick_name: string, map_size: number, game_mode: string){
+function start_search(player_token: string, nick_name: string, map_size: number, game_mode: string, request_type: string){
+    // send POST request if there is available match
+    request_match_status_update(player_token, nick_name, map_size, game_mode, request_type)
+    interval_id_match_request = setInterval(() => request_match_status_update(player_token, nick_name, map_size, game_mode, request_type), 1000);
+
+}
+
+function send_post_request(player_token: string, nick_name: string, map_size: number, game_mode: string, request_type: string): any{
     const xhr = new XMLHttpRequest();
 
     xhr.open("POST", window.location.href, true);
@@ -168,8 +172,18 @@ function request_match_status_update(player_token: string, nick_name: string, ma
         player_token: player_token,
         map_size: map_size,
         game_mode: game_mode,
-        request_type: REQUEST_TYPES.FIND_MATCH
+        request_type: request_type
     }));
+
+    return xhr;
+}
+
+
+// ask if their server has a match
+function request_match_status_update(player_token: string, nick_name: string, map_size: number, game_mode: string, request_type: string){
+
+    const xhr = send_post_request(player_token, nick_name, map_size, game_mode, request_type);
+
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
@@ -177,14 +191,52 @@ function request_match_status_update(player_token: string, nick_name: string, ma
                 let JSON_response = JSON.parse(xhr.responseText);
                 localStorage.setItem("game_token", JSON_response.game_token);
 
+                accept_game(player_token, nick_name, map_size, game_mode);
+            }
+        }
+    }
+}
+
+function accept_game(player_token: string, nick_name: string, map_size: number, game_mode: string){
+    // make visible
+    (<HTMLInputElement> document.getElementById("accept_game_box")).style.visibility = "visible"
+
+    // refresh in 20000 seconds
+    setTimeout(()=>{
+        window.location.reload();
+    }, 10_000);
+
+    // accept game
+    const accept_button: any = document.getElementById("accept_button");
+    accept_button.onclick = ()=>{
+
+        setInterval(()=>{
+            request_start_game(player_token, nick_name, map_size, game_mode)
+        },1000 );
+    }
+}
+
+function request_start_game(player_token: string, nick_name: string, map_size: number, game_mode: string){
+    const xhr = send_post_request(player_token, nick_name, map_size, game_mode, REQUEST_TYPES.START_GAME);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+
                 // init game
                 const main_div: any = document.getElementById("app");
+
                 //replace index.html with game.html
                 main_div.innerHTML = loadFile("/views/game.html");
                 init_game();
 
                 clearInterval(interval_id_timer);
                 clearInterval(interval_id_match_request);
+            }
+            // enemy left query
+            else if(xhr.status === 201){
+
+                // restart search
+                start_search(player_token, nick_name, map_size, game_mode, REQUEST_TYPES.START_GAME);
             }
         }
     }

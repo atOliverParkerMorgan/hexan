@@ -201,7 +201,7 @@ var Node = /** @class */ (function () {
     };
     Node.prototype.harvest = function (player, game, socket) {
         if (this.is_harvested)
-            ServerSocket_1.ServerSocket.something_wrong_response(socket, player, 'CANNOT HARVEST', "You cannot harvest a already harvested node");
+            ServerSocket_1.ServerSocket.something_wrong_response(socket, player.token, 'CANNOT HARVEST', "You cannot harvest a already harvested node");
         // check if node can be harvested
         var current_city;
         var cities = game.get_player_cities(player.token);
@@ -216,7 +216,7 @@ var Node = /** @class */ (function () {
             }
         }
         if (current_city == null) {
-            ServerSocket_1.ServerSocket.something_wrong_response(socket, player, 'THIS NODE CANNOT BE HARVESTED', "A node must be next to a city or adjacent to two harvested node inorder to be harvested");
+            ServerSocket_1.ServerSocket.something_wrong_response(socket, player.token, 'THIS NODE CANNOT BE HARVESTED', "A node must be next to a city or adjacent to two harvested node inorder to be harvested");
             return;
         }
         if (player.is_payment_valid(this.harvest_cost)) {
@@ -229,7 +229,7 @@ var Node = /** @class */ (function () {
             ServerSocket_1.ServerSocket.send_node_harvested_response(socket, this, player);
         }
         else {
-            ServerSocket_1.ServerSocket.something_wrong_response(socket, player, 'INSUFFICIENT STARS', "You need ".concat(Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost)), " to harvest this node"));
+            ServerSocket_1.ServerSocket.something_wrong_response(socket, player.token, 'INSUFFICIENT STARS', "You need ".concat(Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost)), " to harvest this node"));
         }
     };
     Node.prototype.is_water = function () {

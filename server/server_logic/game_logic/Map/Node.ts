@@ -248,7 +248,7 @@ export class Node{
     }
 
     harvest(player: Player, game: Game, socket: any){
-        if(this.is_harvested) ServerSocket.something_wrong_response(socket, player, 'CANNOT HARVEST', `You cannot harvest a already harvested node`);
+        if(this.is_harvested) ServerSocket.something_wrong_response(socket, player.token, 'CANNOT HARVEST', `You cannot harvest a already harvested node`);
 
         // check if node can be harvested
         let current_city;
@@ -265,7 +265,7 @@ export class Node{
         }
 
         if(current_city == null){
-            ServerSocket.something_wrong_response(socket, player, 'THIS NODE CANNOT BE HARVESTED', `A node must be next to a city or adjacent to two harvested node inorder to be harvested`);
+            ServerSocket.something_wrong_response(socket, player.token, 'THIS NODE CANNOT BE HARVESTED', `A node must be next to a city or adjacent to two harvested node inorder to be harvested`);
             return;
         }
 
@@ -282,7 +282,7 @@ export class Node{
             ServerSocket.send_node_harvested_response(socket, this, player);
 
         }else {
-            ServerSocket.something_wrong_response(socket, player, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost))} to harvest this node`);
+            ServerSocket.something_wrong_response(socket, player.token, 'INSUFFICIENT STARS', `You need ${Math.abs(Math.floor(player.total_owned_stars - this.harvest_cost))} to harvest this node`);
 
         }
     }

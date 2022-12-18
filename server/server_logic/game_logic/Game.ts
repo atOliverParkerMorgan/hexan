@@ -26,6 +26,13 @@ class Game{
         })
     }
 
+    is_game_ready(): boolean{
+        for (const player of this.all_players) {
+            if(!player.is_ready) return false;
+        }
+        return true;
+    }
+
 
     player_is_alive(player: Player): boolean{
         for (const city of this.all_cities) {

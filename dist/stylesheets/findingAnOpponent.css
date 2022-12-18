@@ -25,6 +25,16 @@ body {
   font-size: 25px;
 }
 
+.opponent_text {
+  color: white;
+  font-size: 30px;
+}
+
+.accept_text {
+  color: white;
+  font-size: 20px;
+}
+
 .elapse_time {
   color: white;
   display: inline-block;
@@ -38,6 +48,30 @@ body {
   margin-left: 5px;
   font-size: 50px;
 }
+
+.bar {
+  border: 1px solid #666;
+  height: 20px;
+  width: 100%;
+}
+
+.in {
+  animation: fill 10s linear 1;
+  height: 100%;
+  background-color: red;
+}
+
+
+@keyframes fill {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+
 .bounceball1 {
   position: relative;
   display: inline-block;
@@ -113,4 +147,6 @@ body {
     top: -100px;
   }
 }
+
+
 

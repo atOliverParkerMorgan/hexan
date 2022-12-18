@@ -3,7 +3,7 @@ import Unit from "./game_graphics/Unit/Unit.js";
 import { Node } from "./game_graphics/Node.js";
 import { Player } from "./game_graphics/Player.js";
 import { Technology, graph, interaction_nodes_values } from "./game_graphics/Technology/Technology.js";
-import { clamp_viewport, clamp_viewport_menu, DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH } from "./game_graphics/Pixi.js";
+import { DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH } from "./game_graphics/Pixi.js";
 export var renderer;
 export var current_node;
 var current_city;
@@ -22,7 +22,6 @@ export function show_node_info(node) {
     var _a, _b, _c, _d;
     if (node.type === Node.HIDDEN)
         return;
-    clamp_viewport_menu();
     current_node = node;
     update_node_action_button_and_information(node);
     document.getElementById("node_info_menu").style.visibility = "visible";
@@ -63,7 +62,6 @@ function update_node_action_button_and_information(node) {
 export function hide_node_info() {
     document.getElementById("harvest_button").style.visibility = "hidden";
     document.getElementById("node_info_menu").style.visibility = "hidden";
-    clamp_viewport();
 }
 export function show_unit_info(unit) {
     update_unit_action_button(unit);
@@ -77,7 +75,6 @@ export function show_unit_info(unit) {
     var div_unit_info_menu = document.getElementById("unit_info_menu");
     div_unit_info_menu.querySelector("#hide_unit_info_button").onclick = hide_unit_info;
     div_unit_info_menu.querySelector("#action_button").onclick = function () { return unit_action(unit); };
-    clamp_viewport_menu();
 }
 function update_unit_action_button(unit) {
     document.getElementById("action_button_text").innerText = unit.action;
@@ -97,7 +94,6 @@ function unit_action(unit) {
     ClientSocket.request_unit_action(unit);
 }
 export function hide_unit_info() {
-    clamp_viewport();
     document.getElementById("unit_info_menu").style.visibility = "hidden";
 }
 export function show_city_menu(city) {
@@ -109,7 +105,6 @@ export function show_city_menu(city) {
                 viewport.plugins.pause('wheel');
                 viewport.plugins.pause('drag');
                 viewport.plugins.pause('decelerate');
-                clamp_viewport_menu();
                 if (current_city != null) {
                     // get city cords
                     var row_bias = current_city.y % 2 === 0 ? DISTANCE_BETWEEN_HEX / 2 : 0;
@@ -136,7 +131,10 @@ export function hide_city_menu() {
     // move info menu
     document.getElementById("unit_info_menu").style.right = "0";
     document.getElementById("city_side_menu").style.visibility = "hidden";
-    clamp_viewport();
+}
+export function game_over() {
+    // ClientSocket.socket.disconnect();
+    document.getElementById("game_over_modal").style.visibility = "visibility";
 }
 function show_city_data(city) {
     // move info menu

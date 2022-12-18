@@ -9,6 +9,9 @@ export namespace MatchMaker {
     export let all_games: Game[] = [];
     export let all_players_searching_2v2: Player[] = [];
 
+    export function add_player_ai(nick_name: string): Player{
+        return new Player(Utils.generate_token(nick_name));
+    }
     export function add_player_1v1(nick_name: string): Player{
         const player_token = Utils.generate_token(nick_name);
         const player = new Player(player_token)

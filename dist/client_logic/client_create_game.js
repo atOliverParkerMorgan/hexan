@@ -1,7 +1,8 @@
 import { init_game } from "./game_graphics/Pixi.js";
 var REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
-    FIND_MATCH: "FIND_MATCH"
+    FIND_MATCH: "FIND_MATCH",
+    START_GAME: "START_GAME"
 };
 var interval_id_timer;
 var interval_id_match_request;
@@ -98,8 +99,8 @@ function settings_logic_init() {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    var JSON_response_1 = JSON.parse(xhr.responseText);
-                    localStorage.setItem("player_token", JSON_response_1.player_token);
+                    var JSON_response = JSON.parse(xhr.responseText);
+                    localStorage.setItem("player_token", JSON_response.player_token);
                     var main_div_1 = document.getElementById("app");
                     // replace index.html with findingAnOpponent.html
                     main_div_1.innerHTML = loadFile("/views/findingAnOpponent.html");
@@ -114,16 +115,18 @@ function settings_logic_init() {
                     update_timer(main_div_1, start_1);
                     // update the timer about every second
                     interval_id_timer = setInterval(function () { return update_timer(main_div_1, start_1); }, 1000);
-                    // send POST request if there is available match
-                    request_match_status_update(JSON_response_1.player_token, nick_name, map_size, game_mode);
-                    interval_id_match_request = setInterval(function () { return request_match_status_update(JSON_response_1.player_token, nick_name, map_size, game_mode); }, 1000);
+                    start_search(JSON_response.player_token, nick_name, map_size, game_mode, REQUEST_TYPES.FIND_MATCH);
                 }
             }
         };
     };
 }
-// ask if their server has a match
-function request_match_status_update(player_token, nick_name, map_size, game_mode) {
+function start_search(player_token, nick_name, map_size, game_mode, request_type) {
+    // send POST request if there is available match
+    request_match_status_update(player_token, nick_name, map_size, game_mode, request_type);
+    interval_id_match_request = setInterval(function () { return request_match_status_update(player_token, nick_name, map_size, game_mode, request_type); }, 1000);
+}
+function send_post_request(player_token, nick_name, map_size, game_mode, request_type) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", window.location.href, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
@@ -132,14 +135,44 @@ function request_match_status_update(player_token, nick_name, map_size, game_mod
         player_token: player_token,
         map_size: map_size,
         game_mode: game_mode,
-        request_type: REQUEST_TYPES.FIND_MATCH
+        request_type: request_type
     }));
+    return xhr;
+}
+// ask if their server has a match
+function request_match_status_update(player_token, nick_name, map_size, game_mode, request_type) {
+    var xhr = send_post_request(player_token, nick_name, map_size, game_mode, request_type);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 // store game token
                 var JSON_response = JSON.parse(xhr.responseText);
                 localStorage.setItem("game_token", JSON_response.game_token);
+                accept_game(player_token, nick_name, map_size, game_mode);
+            }
+        }
+    };
+}
+function accept_game(player_token, nick_name, map_size, game_mode) {
+    // make visible
+    document.getElementById("accept_game_box").style.visibility = "visible";
+    // refresh in 20000 seconds
+    setTimeout(function () {
+        window.location.reload();
+    }, 10000);
+    // accept game
+    var accept_button = document.getElementById("accept_button");
+    accept_button.onclick = function () {
+        setInterval(function () {
+            request_start_game(player_token, nick_name, map_size, game_mode);
+        }, 1000);
+    };
+}
+function request_start_game(player_token, nick_name, map_size, game_mode) {
+    var xhr = send_post_request(player_token, nick_name, map_size, game_mode, REQUEST_TYPES.START_GAME);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
                 // init game
                 var main_div = document.getElementById("app");
                 //replace index.html with game.html
@@ -147,6 +180,11 @@ function request_match_status_update(player_token, nick_name, map_size, game_mod
                 init_game();
                 clearInterval(interval_id_timer);
                 clearInterval(interval_id_match_request);
+            }
+            // enemy left query
+            else if (xhr.status === 201) {
+                // restart search
+                start_search(player_token, nick_name, map_size, game_mode, REQUEST_TYPES.START_GAME);
             }
         }
     };

@@ -44,13 +44,13 @@ var Unit = /** @class */ (function () {
             }
             var current_node = path[0];
             if (current_node.is_water() && !player.owned_technology.includes("Ship Building")) {
-                ServerSocket_1.ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over water tiles without owning the Ship Building technology");
+                ServerSocket_1.ServerSocket.something_wrong_response(socket, player.token, "INVALID MOVE", "You cannot move over water tiles without owning the Ship Building technology");
                 return;
             }
             // check if movement is valid or if move can be translated as attack
             if (current_node.unit != null) {
                 if (player.owns_this_unit(current_node.unit.id)) {
-                    ServerSocket_1.ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a friendly unit you can only attack an enemy unit.");
+                    ServerSocket_1.ServerSocket.something_wrong_response(socket, player.token, "INVALID MOVE", "You cannot move over a friendly unit you can only attack an enemy unit.");
                     return;
                 }
             }
@@ -113,16 +113,6 @@ var Unit = /** @class */ (function () {
                     }
                 });
                 if (is_conquered_1) {
-                    for (var _h = 0, _j = game.all_players; _h < _j.length; _h++) {
-                        var player_1 = _j[_h];
-                        if (!game.player_is_alive(player_1)) {
-                            for (var _k = 0, _l = game.all_players; _k < _l.length; _k++) {
-                                var player_2 = _l[_k];
-                                ServerSocket_1.ServerSocket.send_end_game(socket, game, player_2, game.player_is_alive(player_2));
-                            }
-                            return;
-                        }
-                    }
                     return;
                 }
             }
@@ -184,7 +174,6 @@ var Unit = /** @class */ (function () {
     // action that designated units can take
     Unit.FORTIFY = "Fortify";
     Unit.SETTLE = "Settle";
-    Unit.BUILD = "Build";
     return Unit;
 }());
 exports.Unit = Unit;

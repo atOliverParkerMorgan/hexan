@@ -35,12 +35,12 @@ var City = /** @class */ (function () {
             return;
         // check if payment is valid if not terminate
         if (!this.owner.is_payment_valid(cost)) {
-            ServerSocket_1.ServerSocket.something_wrong_response(socket, this.owner, 'INSUFFICIENT STARS', "You need ".concat(Math.abs(Math.floor(this.owner.total_owned_stars - cost)), " more stars to buy a ").concat(unit_name));
+            ServerSocket_1.ServerSocket.something_wrong_response(socket, this.owner.token, 'INSUFFICIENT STARS', "You need ".concat(Math.abs(Math.floor(this.owner.total_owned_stars - cost)), " more stars to buy a ").concat(unit_name));
             return;
         }
         // make sure there isn't a unit on this city node
         if (game.map.all_nodes[this.y][this.x].unit != null) {
-            ServerSocket_1.ServerSocket.something_wrong_response(socket, this.owner, "NO ROOM!", "There already is a unit in this city! Move it and then produce another one.");
+            ServerSocket_1.ServerSocket.something_wrong_response(socket, this.owner.token, "NO ROOM!", "There already is a unit in this city! Move it and then produce another one.");
             return;
         }
         this.owner.pay_stars(cost);

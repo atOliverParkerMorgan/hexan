@@ -4,8 +4,6 @@ import {Node} from "./game_graphics/Node.js";
 import {Player} from "./game_graphics/Player.js";
 import {Technology, graph,interaction_nodes_values} from "./game_graphics/Technology/Technology.js";
 import {
-    clamp_viewport,
-    clamp_viewport_menu,
     DISTANCE_BETWEEN_HEX,
     HEX_SIDE_SIZE,
     viewport,
@@ -33,8 +31,6 @@ document.addEventListener("keydown", (event)=>{
 
 export function show_node_info(node: Node){
     if(node.type === Node.HIDDEN) return;
-
-    clamp_viewport_menu();
 
     current_node = node;
 
@@ -80,7 +76,6 @@ function update_node_action_button_and_information(node: Node){
 export function hide_node_info(){
     (<HTMLInputElement>document.getElementById("harvest_button")).style.visibility = "hidden";
     (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "hidden";
-    clamp_viewport()
 }
 
 export function show_unit_info(unit: Unit){
@@ -98,7 +93,6 @@ export function show_unit_info(unit: Unit){
     div_unit_info_menu.querySelector("#hide_unit_info_button").onclick = hide_unit_info;
     div_unit_info_menu.querySelector("#action_button").onclick = () => unit_action(unit);
 
-    clamp_viewport_menu();
 }
 
 function update_unit_action_button(unit: Unit){
@@ -121,7 +115,6 @@ function unit_action(unit: Unit){
 }
 
 export function hide_unit_info(){
-    clamp_viewport();
     (<HTMLInputElement >document.getElementById("unit_info_menu")).style.visibility = "hidden";
 }
 
@@ -136,7 +129,6 @@ export function show_city_menu(city: any){
                 viewport.plugins.pause('wheel');
                 viewport.plugins.pause('drag');
                 viewport.plugins.pause('decelerate');
-                clamp_viewport_menu()
 
                 if(current_city != null) {
 
@@ -169,10 +161,14 @@ export function show_city_menu(city: any){
 }
 export function hide_city_menu(){
     // move info menu
-    (<HTMLInputElement >document.getElementById("unit_info_menu")).style.right = "0";
+    (<HTMLInputElement> document.getElementById("unit_info_menu")).style.right = "0";
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "hidden";
+}
 
-    clamp_viewport();
+export function game_over(){
+    // ClientSocket.socket.disconnect();
+    (<HTMLInputElement> document.getElementById("game_over_modal")).style.visibility = "visibility";
+
 }
 
 

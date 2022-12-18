@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// const {Unit} = require("./Units/Unit.ts");
 var Unit_1 = require("./Units/Unit");
 var Melee_1 = __importDefault(require("./Units/Melee"));
 var Range_1 = __importDefault(require("./Units/Range"));
@@ -16,6 +15,7 @@ var Player = /** @class */ (function () {
         this.units = [];
         // units that this player can produce
         this.production_units = [Melee_1.default.WARRIOR, Range_1.default.SLINGER, Settler_1.default.SETTLER_UNIT];
+        this.is_ready = false;
         this.total_owned_stars = 1000;
         this.star_production = 10;
         this.star_production_has_started = false;
@@ -63,7 +63,7 @@ var Player = /** @class */ (function () {
         if (remove_unit == null) {
             return false;
         }
-        this.units.splice(this.units.indexOf(remove_unit));
+        this.units.splice(this.units.indexOf(remove_unit), 1);
         return true;
     };
     Player.prototype.get_unit_type = function (id) {
@@ -91,11 +91,11 @@ var Player = /** @class */ (function () {
         var enemy_died = unit_enemy.health <= 0;
         if (friendly_died) {
             map.all_nodes[unit_friendly.y][unit_friendly.x].unit = null;
-            this.units.splice(this.units.indexOf(unit_friendly));
+            this.units.splice(this.units.indexOf(unit_friendly), 1);
         }
         if (enemy_died) {
             map.all_nodes[unit_enemy.y][unit_enemy.x].unit = null;
-            enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy));
+            enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy), 1);
         }
         return [friendly_died, enemy_died];
     };

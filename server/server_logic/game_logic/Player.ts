@@ -1,4 +1,3 @@
-// const {Unit} = require("./Units/Unit.ts");
 import {Unit} from "./Units/Unit";
 
 import Melee from "./Units/Melee";
@@ -7,12 +6,12 @@ import Cavalry from "./Units/Cavalry";
 import Settler from "./Units/Settler";
 import Map from "./Map/Map";
 import {Technology} from "./Technology/Technology";
-import City from "./City/City";
 
 class Player{
     token: string;
     units: Unit[];
     production_units: any[];
+    is_ready_timer_id: number;
 
     root_tech_tree_node: Technology;
     total_owned_stars: number;
@@ -28,6 +27,8 @@ class Player{
         this.units = [];
         // units that this player can produce
         this.production_units = [Melee.WARRIOR, Range.SLINGER, Settler.SETTLER_UNIT];
+
+        this.is_ready_timer_id = -1;
 
         this.total_owned_stars = 1000;
         this.star_production = 10;
@@ -86,7 +87,7 @@ class Player{
         if(remove_unit == null){
             return false;
         }
-        this.units.splice(this.units.indexOf(remove_unit));
+        this.units.splice(this.units.indexOf(remove_unit), 1);
 
         return true;
     }
@@ -122,11 +123,11 @@ class Player{
 
         if(friendly_died){
             map.all_nodes[unit_friendly.y][unit_friendly.x].unit = null;
-            this.units.splice(this.units.indexOf(unit_friendly));
+            this.units.splice(this.units.indexOf(unit_friendly), 1);
         }
         if(enemy_died){
             map.all_nodes[unit_enemy.y][unit_enemy.x].unit = null;
-            enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy));
+            enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy), 1);
         }
 
         return [friendly_died, enemy_died];

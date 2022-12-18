@@ -21,6 +21,14 @@ var Game = /** @class */ (function () {
             player.produce_stars();
         });
     };
+    Game.prototype.is_game_ready = function () {
+        for (var _i = 0, _a = this.all_players; _i < _a.length; _i++) {
+            var player = _a[_i];
+            if (!player.is_ready)
+                return false;
+        }
+        return true;
+    };
     Game.prototype.player_is_alive = function (player) {
         for (var _i = 0, _a = this.all_cities; _i < _a.length; _i++) {
             var city = _a[_i];

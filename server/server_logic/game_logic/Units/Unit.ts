@@ -24,7 +24,6 @@ export class Unit implements UnitInterface{
     // action that designated units can take
     public static readonly FORTIFY: string = "Fortify";
     public static readonly SETTLE: string = "Settle";
-    public static readonly BUILD: string = "Build";
 
     x: number;
     y: number;
@@ -88,7 +87,7 @@ export class Unit implements UnitInterface{
 
 
             if(current_node.is_water() && !player.owned_technology.includes("Ship Building")){
-                ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over water tiles without owning the Ship Building technology");
+                ServerSocket.something_wrong_response(socket, player.token, "INVALID MOVE", "You cannot move over water tiles without owning the Ship Building technology");
                 return
             }
 
@@ -96,7 +95,7 @@ export class Unit implements UnitInterface{
             // check if movement is valid or if move can be translated as attack
             if(current_node.unit != null){
                 if(player.owns_this_unit(current_node.unit.id)){
-                    ServerSocket.something_wrong_response(socket, player, "INVALID MOVE", "You cannot move over a friendly unit you can only attack an enemy unit.")
+                    ServerSocket.something_wrong_response(socket, player.token, "INVALID MOVE", "You cannot move over a friendly unit you can only attack an enemy unit.")
                     return
                 }
             }
@@ -172,15 +171,6 @@ export class Unit implements UnitInterface{
                     }
                 });
                 if(is_conquered){
-                    for (const player_1 of game.all_players) {
-                        if(!game.player_is_alive(player_1)){
-                            for (const player_2 of game.all_players) {
-                                ServerSocket.send_end_game(socket, game, player_2, game.player_is_alive(player_2));
-                            }
-                            return;
-                        }
-                    }
-
                     return;
                 }
             }

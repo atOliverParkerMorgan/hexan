@@ -90,9 +90,10 @@
 <div class="w3-display-bottomleft w3-bar-block" id="tech_button" style="width: auto">
     <span><span class="w3-button w3-round w3-padding-8 w3-blue"><img src="/images/tech_tree.png"></span></span>
 </div>
-<div id="tech_tree_container">
 
-</div>
+<div id="tech_tree_container"></div>
+
+
 <!-- Modal -->
 <div class="w3-container">
     <div id="modal" class="w3-modal w3-display-middle">
@@ -110,3 +111,24 @@
         </div>
     </div>
 </div>
+
+<div class="w3-container">
+    <div id="game_over_modal" class="w3-modal w3-display-middle">
+        <div class="w3-modal-content w3-animate-top w3-card-4">
+            <header class="w3-container w3-center">
+                <h1 class="w3-wide w3-center">GAME OVER</h1>
+                <hr>
+            </header>
+            <br>
+            <div class="w3-container" id="game_over_modal_message">
+                You lost.
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+
+<script>
+    game_over()
+</script>
+
