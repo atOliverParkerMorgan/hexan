@@ -2,6 +2,8 @@ import express, {Request, Response} from "express";
 import {Router} from "express/ts4.0";
 import {MatchMaker} from "../server_logic/MatchMaker";
 import {Utils} from "../Utils";
+import Player from "../server_logic/game_logic/Player";
+import {combine_sourcemaps} from "svelte/types/compiler/utils/mapped_code";
 export default class IndexController{
 
   public readonly REQUEST_TYPES = {
@@ -75,22 +77,31 @@ export default class IndexController{
 
                 case Utils.GAME_MODE_1v1:
                     const game = MatchMaker.get_game(game_token);
-                    const current_player = game?.get_player(player_token)
-
+                    const current_player = MatchMaker.get_player_searching_1v1(player_token)
+                    console.log("here")
                     if(current_player == null) {
+                        console.log("here1")
                         res.statusMessage = "Error something went wrong"
                         res.status(500).send();
                     }
 
                     else if (game == null) {
-
+                        console.log("here2")
                         res.statusMessage = "Enemy aborted query"
                         res.status(201).send();
                     }else {
-                        clearTimeout(current_player.is_ready_timer_id);
-                        if(game.get_enemy_players(current_player.token)[0].is_ready)
+                        console.log("here3")
+
+                        current_player.is_ready = true;
+
+                        if(game.is_game_ready()) {
+                            console.log("here4")
+                            game.all_players.map((player: Player)=>{
+                                player.is_ready = false;
+                            })
                             res.status(200).send(JSON.stringify({game_token: game.token}));
-                        else{
+
+                        }else{
                             res.statusMessage = "Enemy player didn't accept yet"
                             res.status(204).send();
                         }
@@ -124,22 +135,26 @@ export default class IndexController{
 
           case Utils.GAME_MODE_1v1:
                 game = MatchMaker.find_match_for_1v1(player_token, map_size);
-                const player = game?.get_player(req.body.player_token)
                 console.log("found game", game!=null);
                 console.log("all_players length", MatchMaker.all_players_searching_1v1.length)
-                if(game == undefined || player == null){
+                if(game == undefined){
                     res.statusMessage = "No match found";
                     res.status(204).send();
                 }else{
+                    const player = MatchMaker.get_player_searching_1v1(player_token);
 
-                    player.is_ready_timer_id = setTimeout(()=>{
-                        if(!player.is_ready){
+                    if(player == null){
+                        res.statusMessage = "Player not found";
+                        res.status(404).send();
+                        return;
+                    }
+
+                    setTimeout(()=>{
+                        if(!player.is_ready) {
                             MatchMaker.all_players_searching_1v1.splice(MatchMaker.all_players_searching_1v1.indexOf(player), 1);
                             MatchMaker.all_games.splice(MatchMaker.all_games.indexOf(game), 1);
-
                         }
-
-                    }, 10_000);
+                    }, 1000_000);
 
                     res.status(200).send(JSON.stringify({game_token: game.token}));
                 }

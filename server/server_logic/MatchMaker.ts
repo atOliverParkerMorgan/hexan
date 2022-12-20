@@ -119,6 +119,14 @@ export namespace MatchMaker {
         }
     }
 
+    export function get_player_searching_1v1(player_token: String): Player | undefined{
+        for (const player of MatchMaker.all_players_searching_1v1) {
+            if(player.token === player_token){
+                return player;
+            }
+        }
+    }
+
     export function has_match_for_2v2(): boolean{
         return all_players_searching_2v2.length % 4 === 0;
     }

@@ -73,10 +73,14 @@ export namespace ClientSocket {
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
 
-
-    // @ts-ignore
-    export let socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`, {transports: ['websocket', 'polling']});
+    export let socket: any;
     console.log(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`)
+
+    export function connect(){
+
+        // @ts-ignore
+        socket = io(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`, {transports: ['websocket', 'polling']});
+    }
     export function send_data(data: any): void{
         ClientSocket.socket.emit("send-data", data);
     }

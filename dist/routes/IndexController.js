@@ -61,19 +61,28 @@ var IndexController = /** @class */ (function () {
                     switch (game_mode) {
                         case Utils_1.Utils.GAME_MODE_1v1:
                             var game = MatchMaker_1.MatchMaker.get_game(game_token);
-                            var current_player = game === null || game === void 0 ? void 0 : game.get_player(player_token);
+                            var current_player = MatchMaker_1.MatchMaker.get_player_searching_1v1(player_token);
+                            console.log("here");
                             if (current_player == null) {
+                                console.log("here1");
                                 res.statusMessage = "Error something went wrong";
                                 res.status(500).send();
                             }
                             else if (game == null) {
+                                console.log("here2");
                                 res.statusMessage = "Enemy aborted query";
                                 res.status(201).send();
                             }
                             else {
+                                console.log("here3");
                                 current_player.is_ready = true;
-                                if (game.get_enemy_players(current_player.token)[0].is_ready)
+                                if (game.is_game_ready()) {
+                                    console.log("here4");
+                                    game.all_players.map(function (player) {
+                                        player.is_ready = false;
+                                    });
                                     res.status(200).send(JSON.stringify({ game_token: game.token }));
+                                }
                                 else {
                                     res.statusMessage = "Enemy player didn't accept yet";
                                     res.status(204).send();
@@ -111,16 +120,18 @@ var IndexController = /** @class */ (function () {
                                 res.status(204).send();
                             }
                             else {
+                                var player_1 = MatchMaker_1.MatchMaker.get_player_searching_1v1(player_token);
+                                if (player_1 == null) {
+                                    res.statusMessage = "Player not found";
+                                    res.status(404).send();
+                                    return;
+                                }
                                 setTimeout(function () {
-                                    game_1 = MatchMaker_1.MatchMaker.get_game(game_token);
-                                    var player = game_1 === null || game_1 === void 0 ? void 0 : game_1.get_player(player_token);
-                                    if (player == null)
-                                        return;
-                                    if (!player.is_ready) {
-                                        MatchMaker_1.MatchMaker.all_players_searching_1v1.splice(MatchMaker_1.MatchMaker.all_players_searching_1v1.indexOf(player), 1);
+                                    if (!player_1.is_ready) {
+                                        MatchMaker_1.MatchMaker.all_players_searching_1v1.splice(MatchMaker_1.MatchMaker.all_players_searching_1v1.indexOf(player_1), 1);
                                         MatchMaker_1.MatchMaker.all_games.splice(MatchMaker_1.MatchMaker.all_games.indexOf(game_1), 1);
                                     }
-                                }, 10000);
+                                }, 1000000);
                                 res.status(200).send(JSON.stringify({ game_token: game_1.token }));
                             }
                             break;

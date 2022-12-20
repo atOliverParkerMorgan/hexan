@@ -11,7 +11,8 @@ class Player{
     token: string;
     units: Unit[];
     production_units: any[];
-    is_ready_timer_id: number;
+
+    is_ready: boolean;
 
     root_tech_tree_node: Technology;
     total_owned_stars: number;
@@ -28,7 +29,7 @@ class Player{
         // units that this player can produce
         this.production_units = [Melee.WARRIOR, Range.SLINGER, Settler.SETTLER_UNIT];
 
-        this.is_ready_timer_id = -1;
+        this.is_ready = false;
 
         this.total_owned_stars = 1000;
         this.star_production = 10;

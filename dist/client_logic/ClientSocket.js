@@ -48,9 +48,12 @@ export var ClientSocket;
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
-    // @ts-ignore
-    ClientSocket.socket = io("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port), { transports: ['websocket', 'polling'] });
     console.log("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port));
+    function connect() {
+        // @ts-ignore
+        ClientSocket.socket = io("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port), { transports: ['websocket', 'polling'] });
+    }
+    ClientSocket.connect = connect;
     function send_data(data) {
         ClientSocket.socket.emit("send-data", data);
     }

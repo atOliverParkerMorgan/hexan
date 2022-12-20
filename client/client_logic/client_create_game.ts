@@ -9,6 +9,7 @@ const REQUEST_TYPES = {
 
 let interval_id_timer: any;
 let interval_id_match_request: any;
+let interval_id_start_game: any;
 
 function settings_logic_init(){
 
@@ -199,18 +200,26 @@ function request_match_status_update(player_token: string, nick_name: string, ma
 
 function accept_game(player_token: string, nick_name: string, map_size: number, game_mode: string){
     // make visible
-    (<HTMLInputElement> document.getElementById("accept_game_box")).style.visibility = "visible"
+    show_opponent_found();
 
-    // refresh in 20000 seconds
+    // refresh in 10 000 seconds
     setTimeout(()=>{
+
+        clearInterval(interval_id_start_game);
+        clearInterval(interval_id_start_game);
+        clearInterval(interval_id_timer);
+
         window.location.reload();
-    }, 10_000);
+    }, 1000_000);
 
     // accept game
     const accept_button: any = document.getElementById("accept_button");
     accept_button.onclick = ()=>{
 
-        setInterval(()=>{
+        clearInterval(interval_id_match_request);
+        show_waiting_for_opponent_to_accept();
+
+        interval_id_start_game = setInterval(()=>{
             request_start_game(player_token, nick_name, map_size, game_mode)
         },1000 );
     }
@@ -229,17 +238,37 @@ function request_start_game(player_token: string, nick_name: string, map_size: n
                 main_div.innerHTML = loadFile("/views/game.html");
                 init_game();
 
+                clearInterval(interval_id_start_game)
                 clearInterval(interval_id_timer);
-                clearInterval(interval_id_match_request);
+
             }
+            else if(xhr.status === 204){
+                show_opponent_didnt_accept();
+            }
+
             // enemy left query
             else if(xhr.status === 201){
-
-                // restart search
-                start_search(player_token, nick_name, map_size, game_mode, REQUEST_TYPES.START_GAME);
+                clearInterval(interval_id_start_game);
+                start_search(player_token, nick_name, map_size, game_mode, REQUEST_TYPES.FIND_MATCH);
+                show_opponent_didnt_accept();
             }
         }
     }
+}
+
+function show_opponent_found(){
+    const info_div: any = document.getElementById("info");
+    info_div.innerHTML = loadFile("/views/opponent_found.html");
+}
+
+function show_waiting_for_opponent_to_accept(){
+    const info_div: any = document.getElementById("info");
+    info_div.innerHTML = loadFile("/views/waiting_for_opponent.html");
+}
+
+function show_opponent_didnt_accept(){
+    const info_div: any = document.getElementById("info");
+    info_div.innerHTML = loadFile("/views/opponent_didnt_accept.html");
 }
 
 function update_timer(main_div: any, start: number){

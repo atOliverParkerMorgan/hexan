@@ -14,6 +14,10 @@ var MatchMaker;
     MatchMaker.all_players_searching_1v1 = [];
     MatchMaker.all_games = [];
     MatchMaker.all_players_searching_2v2 = [];
+    function add_player_ai(nick_name) {
+        return new Player_1.default(Utils_1.Utils.generate_token(nick_name));
+    }
+    MatchMaker.add_player_ai = add_player_ai;
     function add_player_1v1(nick_name) {
         var player_token = Utils_1.Utils.generate_token(nick_name);
         var player = new Player_1.default(player_token);
@@ -111,6 +115,15 @@ var MatchMaker;
             }
         }
     }
+    function get_player_searching_1v1(player_token) {
+        for (var _i = 0, _a = MatchMaker.all_players_searching_1v1; _i < _a.length; _i++) {
+            var player = _a[_i];
+            if (player.token === player_token) {
+                return player;
+            }
+        }
+    }
+    MatchMaker.get_player_searching_1v1 = get_player_searching_1v1;
     function has_match_for_2v2() {
         return MatchMaker.all_players_searching_2v2.length % 4 === 0;
     }
