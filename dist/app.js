@@ -28,14 +28,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
-const IndexController_1 = __importDefault(require("./routes/IndexController"));
+const IndexController_1 = __importDefault(require("./Routes/IndexController"));
 const path = __importStar(require("path"));
 const express_1 = __importDefault(require("express"));
 const ejs_1 = require("ejs");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const http_1 = require("http");
 const socket_io_1 = require("socket.io");
-const ServerSocket_1 = require("./server_logic/Classes/ServerSocket");
+const ServerSocket_1 = require("./ServerLogic/Classes/ServerSocket");
 var App;
 (function (App) {
     App.app = (0, express_1.default)();
@@ -50,7 +50,6 @@ var App;
         App.httpServer.listen(port);
         ServerSocket_1.ServerSocket.addRequestListener();
         ServerSocket_1.ServerSocket.addResponseListener();
-        ServerSocket_1.ServerSocket.addConnectionListener();
     }
     App.init = init;
     function initViewEngine() {
@@ -69,7 +68,7 @@ var App;
         // html files
         App.app.use('/views', express_1.default.static(__dirname + '/views/'));
         // static public files
-        App.app.use('/javascript', express_1.default.static(__dirname + '/client_logic/'));
+        App.app.use('/', express_1.default.static(__dirname + '/ClientLogic/'));
         App.app.use('/stylesheets', express_1.default.static(__dirname + '/stylesheets/'));
         App.app.use('/images', express_1.default.static(__dirname + '/images/'));
         // modules

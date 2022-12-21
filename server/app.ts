@@ -1,13 +1,13 @@
 import createError from "http-errors";
-import IndexController from "./routes/IndexController";
-import Controller from "./routes/IndexController";
+import IndexController from "./Routes/IndexController";
+import Controller from "./Routes/IndexController";
 import * as path from "path";
 import express, {Application, NextFunction, Response, Request} from "express";
 import {renderFile} from "ejs";
 import cookieParser from "cookie-parser";
 import {createServer} from "http";
 import {Server} from "socket.io";
-import {ServerSocket} from "./server_logic/Classes/ServerSocket";
+import {ServerSocket} from "./ServerLogic/Classes/ServerSocket";
 
 export namespace App {
   export const app: Application = express();
@@ -30,7 +30,6 @@ export namespace App {
 
     ServerSocket.addRequestListener();
     ServerSocket.addResponseListener();
-    ServerSocket.addConnectionListener();
 
   }
 
@@ -55,7 +54,7 @@ export namespace App {
     app.use('/views', express.static(__dirname + '/views/'));
 
     // static public files
-    app.use('/javascript', express.static(__dirname + '/client_logic/'));
+    app.use('/', express.static(__dirname + '/ClientLogic/'));
     app.use('/stylesheets', express.static(__dirname + '/stylesheets/'));
     app.use('/images', express.static(__dirname + '/images/'));
 
