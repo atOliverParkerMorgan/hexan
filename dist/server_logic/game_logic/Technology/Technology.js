@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Technology = void 0;
-var Range_1 = __importDefault(require("../Units/Range"));
-var Cavalry_1 = __importDefault(require("../Units/Cavalry"));
-var Melee_1 = __importDefault(require("../Units/Melee"));
-var Technology = /** @class */ (function () {
-    function Technology(children, name, image, description, cost, is_owned) {
+const Range_1 = __importDefault(require("../Units/Range"));
+const Cavalry_1 = __importDefault(require("../Units/Cavalry"));
+const Melee_1 = __importDefault(require("../Units/Melee"));
+class Technology {
+    constructor(children, name, image, description, cost, is_owned) {
         this.children = children;
         this.name = name;
         this.image = image;
@@ -17,17 +17,17 @@ var Technology = /** @class */ (function () {
         this.is_owned = is_owned;
     }
     // creates a link list of all technologies
-    Technology.init_tech_tree = function () {
-        var mining = new Technology(null, "Mining", "", "Unlock the the ability to harvest mountains", 10, false);
-        var ship_building = new Technology(null, "Ship Building", "", "Unlock the ability to build battle ship \n and to move on ocean tiles", 10, false);
-        var construction = new Technology(null, "Construction", "", "Enables the construction of walls and keeps. \n It also allow to extract production from forests", 10, false);
-        var archery = new Technology([construction], "Archery", "/images/archer.png", "Unlocks new range unit: Archers \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
-        var spearman = new Technology([mining], "Spearman", "", "Unlocks new melee unit: Spearman \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
-        var horseman = new Technology(null, "Horseman", "", "Unlocks new cavalry unit: Horseman \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
+    static init_tech_tree() {
+        const mining = new Technology(null, "Mining", "", "Unlock the the ability to harvest mountains", 10, false);
+        const ship_building = new Technology(null, "Ship Building", "", "Unlock the ability to build battle ship \n and to move on ocean tiles", 10, false);
+        const construction = new Technology(null, "Construction", "", "Enables the construction of walls and keeps. \n It also allow to extract production from forests", 10, false);
+        const archery = new Technology([construction], "Archery", "/images/archer.png", "Unlocks new range unit: Archers \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
+        const spearman = new Technology([mining], "Spearman", "", "Unlocks new melee unit: Spearman \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
+        const horseman = new Technology(null, "Horseman", "", "Unlocks new cavalry unit: Horseman \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
         return new Technology([archery, spearman, horseman, ship_building], "", "/images/king.png", "", 0, true);
-    };
+    }
     // works only on root node!
-    Technology.purchase = function (node, tech_name, player) {
+    static purchase(node, tech_name, player) {
         console.log(node.name);
         if (node.name === tech_name) {
             // purchase technology
@@ -53,16 +53,14 @@ var Technology = /** @class */ (function () {
             return false;
         else if (!node.is_owned)
             return false;
-        var outputs = node.children.map(function (child_node) {
+        const outputs = node.children.map((child_node) => {
             return Technology.purchase(child_node, tech_name, player);
         });
-        for (var _i = 0, outputs_1 = outputs; _i < outputs_1.length; _i++) {
-            var output = outputs_1[_i];
+        for (const output of outputs) {
             if (output)
                 return true;
         }
         return false;
-    };
-    return Technology;
-}());
+    }
+}
 exports.Technology = Technology;

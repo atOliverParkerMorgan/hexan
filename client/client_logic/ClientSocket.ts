@@ -1,19 +1,13 @@
 import {Player} from "./game_graphics/Player.js"
-import {init_canvas, HEX_SIDE_SIZE, setup_tech_tree,} from "./game_graphics/Pixi.js";
+import {init_canvas, HEX_SIDE_SIZE, setup_tech_tree, init_game,} from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import {Node} from "./game_graphics/Node.js";
 import {game_over, show_city_menu, show_modal} from "./UI_logic.js";
 import {City} from "./game_graphics/City/City.js";
-import {loadFile} from "./client_create_game.js";
 
 // singleton
 export namespace ClientSocket {
-    export const response_types: { ALL_RESPONSE: string, MAP_RESPONSE: string, UNIT_MOVED_RESPONSE: string,
-            UNITS_RESPONSE: string, UNIT_RESPONSE: string, MENU_INFO_RESPONSE: string,
-            HARVEST_NODE_RESPONSE: string, HARVEST_COST_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
-            ENEMY_FOUND_RESPONSE:string, NEW_CITY: string, CANNOT_SETTLE: string, CONQUERED_CITY_RESPONSE: string,
-            STARS_DATA_RESPONSE: string, PURCHASED_TECHNOLOGY_RESPONSE: string, INVALID_MOVE_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string,
-            ATTACK_UNIT_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string, END_GAME_RESPONSE: string } = {
+    export const response_types = {
 
         // game play
         MAP_RESPONSE: "MAP_RESPONSE",
@@ -44,14 +38,11 @@ export namespace ClientSocket {
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
 
-        END_GAME_RESPONSE: "END_GAME_RESPONSE"
+        END_GAME_RESPONSE: "END_GAME_RESPONSE",
+        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
 
     };
-    export const request_types:{readonly GET_MAP: string, readonly GET_UNITS: string, readonly GET_ALL: string,
-                            readonly GET_MENU_INFO: string, GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly HARVEST_NODE: string,
-                            readonly HARVEST_COST:string, readonly PURCHASE_TECHNOLOGY: string, readonly MOVE_UNITS: string, readonly SETTLE: string,
-                            ATTACK_UNIT: string,
-                            readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string } = {
+    export const request_types = {
         // game play
         GET_MAP: "GET_MAP",
         GET_UNITS: "GET_UNITS",
@@ -69,6 +60,7 @@ export namespace ClientSocket {
         ATTACK_UNIT: "ATTACK_UNIT",
 
         // match making
+        FIND_AI_OPPONENT: "FIND_AI_OPPONENT",
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
@@ -77,7 +69,6 @@ export namespace ClientSocket {
     console.log(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`)
 
     export function connect(){
-
         // @ts-ignore
         socket = io(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`, {transports: ['websocket', 'polling']});
     }
@@ -92,6 +83,11 @@ export namespace ClientSocket {
             const response_data = args[0].data;
 
             switch (response_type) {
+                case ClientSocket.response_types.FOUND_GAME_RESPONSE:
+
+                    init_game(player_token, response_data.game_token);
+                    break
+
                 case ClientSocket.response_types.UNITS_RESPONSE:
                     for(let unit of response_data.units){
                         unit = <UnitData> unit;

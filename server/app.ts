@@ -7,7 +7,7 @@ import {renderFile} from "ejs";
 import cookieParser from "cookie-parser";
 import {createServer} from "http";
 import {Server} from "socket.io";
-import {ServerSocket} from "./server_logic/ServerSocket";
+import {ServerSocket} from "./server_logic/Classes/ServerSocket";
 
 export namespace App {
   export const app: Application = express();
@@ -19,20 +19,22 @@ export namespace App {
 
 
   export function init() {
+
     httpServer = createServer(app);
     io = new Server(httpServer);
-    init_view_engine();
-    init_static_routes();
-    init_controllers();
+    initViewEngine();
+    initStaticRoutes();
+    initControllers();
 
     httpServer.listen(port);
 
-    ServerSocket.add_request_listener();
-    ServerSocket.add_response_listener();
+    ServerSocket.addRequestListener();
+    ServerSocket.addResponseListener();
+    ServerSocket.addConnectionListener();
 
   }
 
-  function init_view_engine() {
+  function initViewEngine() {
     app.engine('html', renderFile);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'html');
@@ -42,13 +44,13 @@ export namespace App {
     app.use(express.urlencoded({ extended: false }));
   }
 
-  function init_controllers() {
+  function initControllers() {
     // use all controller routers
     app.use('/', controller.router);
 
   }
 
-  function init_static_routes() {
+  function initStaticRoutes() {
     // html files
     app.use('/views', express.static(__dirname + '/views/'));
 
@@ -65,7 +67,7 @@ export namespace App {
     app.use('/springy', express.static(__dirname + '/../node_modules/springy/'));
   }
 
-  export function handle_error() {
+  export function handleError() {
     app.use(function (req: Request, res: Response, next: NextFunction) {
       next(createError(404));
     });
@@ -86,7 +88,7 @@ export namespace App {
   }
 
 
-  export function server_info() {
+  export function serverInfo() {
     const host = httpServer.address().address;
     const port = httpServer.address().port;
 
@@ -95,5 +97,5 @@ export namespace App {
 }
 
 App.init();
-App.handle_error();
-App.server_info();
+App.handleError();
+App.serverInfo();

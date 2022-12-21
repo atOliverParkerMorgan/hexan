@@ -27,32 +27,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
-var http_errors_1 = __importDefault(require("http-errors"));
-var IndexController_1 = __importDefault(require("./routes/IndexController"));
-var path = __importStar(require("path"));
-var express_1 = __importDefault(require("express"));
-var ejs_1 = require("ejs");
-var cookie_parser_1 = __importDefault(require("cookie-parser"));
-var http_1 = require("http");
-var socket_io_1 = require("socket.io");
-var ServerSocket_1 = require("./server_logic/ServerSocket");
+const http_errors_1 = __importDefault(require("http-errors"));
+const IndexController_1 = __importDefault(require("./routes/IndexController"));
+const path = __importStar(require("path"));
+const express_1 = __importDefault(require("express"));
+const ejs_1 = require("ejs");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const http_1 = require("http");
+const socket_io_1 = require("socket.io");
+const ServerSocket_1 = require("./server_logic/Classes/ServerSocket");
 var App;
 (function (App) {
     App.app = (0, express_1.default)();
-    var port = process.env.PORT || 8000;
-    var controller = new IndexController_1.default();
+    const port = process.env.PORT || 8000;
+    const controller = new IndexController_1.default();
     function init() {
         App.httpServer = (0, http_1.createServer)(App.app);
         App.io = new socket_io_1.Server(App.httpServer);
-        init_view_engine();
-        init_static_routes();
-        init_controllers();
+        initViewEngine();
+        initStaticRoutes();
+        initControllers();
         App.httpServer.listen(port);
-        ServerSocket_1.ServerSocket.add_request_listener();
-        ServerSocket_1.ServerSocket.add_response_listener();
+        ServerSocket_1.ServerSocket.addRequestListener();
+        ServerSocket_1.ServerSocket.addResponseListener();
+        ServerSocket_1.ServerSocket.addConnectionListener();
     }
     App.init = init;
-    function init_view_engine() {
+    function initViewEngine() {
         App.app.engine('html', ejs_1.renderFile);
         App.app.set('views', path.join(__dirname, 'views'));
         App.app.set('view engine', 'html');
@@ -60,11 +61,11 @@ var App;
         App.app.use(express_1.default.json());
         App.app.use(express_1.default.urlencoded({ extended: false }));
     }
-    function init_controllers() {
+    function initControllers() {
         // use all controller routers
         App.app.use('/', controller.router);
     }
-    function init_static_routes() {
+    function initStaticRoutes() {
         // html files
         App.app.use('/views', express_1.default.static(__dirname + '/views/'));
         // static public files
@@ -78,11 +79,11 @@ var App;
         App.app.use('/socket.io-client', express_1.default.static(__dirname + '/../node_modules/socket.io-client/dist/'));
         App.app.use('/springy', express_1.default.static(__dirname + '/../node_modules/springy/'));
     }
-    function handle_error() {
+    function handleError() {
         App.app.use(function (req, res, next) {
             next((0, http_errors_1.default)(404));
         });
-        App.app.use(function (err, req, res) {
+        App.app.use((err, req, res) => {
             // set locals, only providing error in development
             res.locals.message = err.message;
             res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -95,14 +96,14 @@ var App;
             });
         });
     }
-    App.handle_error = handle_error;
-    function server_info() {
-        var host = App.httpServer.address().address;
-        var port = App.httpServer.address().port;
-        console.log("hexan is running at http://".concat(host).concat(port));
+    App.handleError = handleError;
+    function serverInfo() {
+        const host = App.httpServer.address().address;
+        const port = App.httpServer.address().port;
+        console.log(`hexan is running at http://${host}${port}`);
     }
-    App.server_info = server_info;
+    App.serverInfo = serverInfo;
 })(App = exports.App || (exports.App = {}));
 App.init();
-App.handle_error();
-App.server_info();
+App.handleError();
+App.serverInfo();

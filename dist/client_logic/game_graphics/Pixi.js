@@ -3,6 +3,7 @@ import { ClientSocket } from "../ClientSocket.js";
 import { setup_tech_tree_button } from "../UI_logic.js";
 import { Technology } from "./Technology/Technology.js";
 import { Player } from "./Player.js";
+import { interval_id_start_game, interval_id_timer, loadFile } from "../client_create_game.js";
 export var HEX_SIDE_SIZE;
 export var DISTANCE_BETWEEN_HEX;
 export var WORLD_WIDTH;
@@ -129,14 +130,17 @@ export function init_canvas(map, cities) {
     // @ts-ignore
     app.ticker.add(function (delta) { return loop(delta); });
 }
-export function init_game() {
-    var player_token = localStorage.getItem("player_token");
-    var game_token = localStorage.getItem("game_token");
+export function init_game(player_token, game_token) {
+    // init game
+    var main_div = document.getElementById("app");
+    //replace index.html with game.html
+    main_div.innerHTML = loadFile("/views/game.html");
+    clearInterval(interval_id_start_game);
+    clearInterval(interval_id_timer);
     // the typescript hasn't provided a token for the public
     if (player_token == null || game_token == null) {
         return;
     }
-    ClientSocket.add_data_listener(player_token);
     ClientSocket.get_data(ClientSocket.request_types.GET_ALL, game_token, player_token);
 }
 function loop() {

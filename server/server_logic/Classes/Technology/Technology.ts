@@ -1,9 +1,12 @@
-import Player from "../Player";
-import Range from "../Units/Range";
-import Cavalry from "../Units/Cavalry";
-import Melee from "../Units/Melee";
 
-export class Technology{
+
+import TechnologyInterface from "../../Interfaces/Technology/TechnologyInterface";
+import PlayerInterface from "../../Interfaces/PlayerInterface";
+import {Utils} from "../Utils";
+
+
+
+export default class Technology implements TechnologyInterface {
     children: Technology[] | null;
     name: string;
     image: string;
@@ -35,7 +38,7 @@ export class Technology{
     }
 
     // works only on root node!
-    static purchase(node: Technology, tech_name: string, player: Player): boolean{
+    static purchase(node: Technology, tech_name: string, player: PlayerInterface): boolean{
         console.log(node.name)
         if(node.name === tech_name) {
             // purchase technology
@@ -45,11 +48,11 @@ export class Technology{
 
                 // technology logic
                 if(tech_name === "Archery"){
-                    player.production_units.push(Range.ARCHER);
+                    player.production_units.push(Utils.ARCHER);
                 }else if(tech_name === "Horseman"){
-                    player.production_units.push(Cavalry.HORSEMAN);
+                    player.production_units.push(Utils.HORSEMAN);
                 }else if(tech_name === "Spearman"){
-                    player.production_units.push(Melee.SPEARMAN);
+                    player.production_units.push(Utils.SPEARMAN);
                 }
                 player.owned_technology.push(tech_name);
 

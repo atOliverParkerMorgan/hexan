@@ -1,5 +1,5 @@
-import {init_game} from "./game_graphics/Pixi.js";
 import {XMLHttpRequest} from "aws-sdk/lib/http_response";
+import {ClientSocket} from "./ClientSocket.js";
 
 const REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
@@ -7,9 +7,8 @@ const REQUEST_TYPES = {
     START_GAME: "START_GAME"
 }
 
-let interval_id_timer: any;
-let interval_id_match_request: any;
-let interval_id_start_game: any;
+export let interval_id_timer: any;
+export let interval_id_start_game: any;
 
 function settings_logic_init(){
 
@@ -109,151 +108,37 @@ function settings_logic_init(){
         const nick_name = localStorage.getItem("nick_name");
         if(nick_name == null) return;
 
-        const xhr = new XMLHttpRequest();
+        const main_div: any = document.getElementById("app");
 
-        xhr.open("POST", window.location.href, true);
+        // replace index.html with findingAnOpponent.html
+        main_div.innerHTML = loadFile("/views/findingAnOpponent.html");
 
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        console.log(`nick_name: ${nick_name} map_size: ${map_size} game_mode: ${game_mode} request_type: ${REQUEST_TYPES.GENERATE_PLAYER_TOKEN}`)
-        xhr.send(JSON.stringify({
-            nick_name: nick_name,
-            map_size: map_size,
-            game_mode: game_mode,
-            request_type: REQUEST_TYPES.GENERATE_PLAYER_TOKEN
-        }));
-
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    let JSON_response = JSON.parse(xhr.responseText);
-
-                    localStorage.setItem("player_token", JSON_response.player_token);
-
-                    const main_div: any = document.getElementById("app");
-
-                    // replace index.html with findingAnOpponent.html
-                    main_div.innerHTML = loadFile("/views/findingAnOpponent.html");
-
-                    if(game_mode === GAME_MODE_AI){
-                        const title = document.querySelector("#title");
-                        if(title != null) {
-                            title.textContent = "LOADING AI";
-                        }
-                    }
-
-                    // starting time
-                    const start = Date.now();
-                    update_timer(main_div, start);
-
-                    // update the timer about every second
-                    interval_id_timer = setInterval(()=> update_timer(main_div, start), 1000);
-
-                    start_search(JSON_response.player_token, nick_name, map_size, game_mode, REQUEST_TYPES.FIND_MATCH);
-                }
+        if(game_mode === GAME_MODE_AI){
+            const title = document.querySelector("#title");
+            if(title != null) {
+                title.textContent = "LOADING AI";
             }
         }
+
+        // starting time
+        const start = Date.now();
+        update_timer(main_div, start);
+
+        // update the timer about every second
+        interval_id_timer = setInterval(()=> update_timer(main_div, start), 1000);
+
+        // connect to socket.io
+        ClientSocket.connect();
+        // client-side
+        ClientSocket.socket.on("connect", () => {
+            ClientSocket.add_data_listener(ClientSocket.socket.id)
+            ClientSocket.send_data({request_type: ClientSocket.request_types.FIND_1v1_OPPONENT,
+                data:{ map_size: map_size}
+            });
+        });
+
+
     };
-}
-
-function start_search(player_token: string, nick_name: string, map_size: number, game_mode: string, request_type: string){
-    // send POST request if there is available match
-    request_match_status_update(player_token, nick_name, map_size, game_mode, request_type)
-    interval_id_match_request = setInterval(() => request_match_status_update(player_token, nick_name, map_size, game_mode, request_type), 1000);
-
-}
-
-function send_post_request(player_token: string, nick_name: string, map_size: number, game_mode: string, request_type: string): any{
-    const xhr = new XMLHttpRequest();
-
-    xhr.open("POST", window.location.href, true);
-
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({
-        nick_name: nick_name,
-        player_token: player_token,
-        map_size: map_size,
-        game_mode: game_mode,
-        request_type: request_type
-    }));
-
-    return xhr;
-}
-
-
-// ask if their server has a match
-function request_match_status_update(player_token: string, nick_name: string, map_size: number, game_mode: string, request_type: string){
-
-    const xhr = send_post_request(player_token, nick_name, map_size, game_mode, request_type);
-
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                // store game token
-                let JSON_response = JSON.parse(xhr.responseText);
-                localStorage.setItem("game_token", JSON_response.game_token);
-
-                accept_game(player_token, nick_name, map_size, game_mode);
-            }
-        }
-    }
-}
-
-function accept_game(player_token: string, nick_name: string, map_size: number, game_mode: string){
-    // make visible
-    show_opponent_found();
-
-    // refresh in 10 000 seconds
-    setTimeout(()=>{
-
-        clearInterval(interval_id_start_game);
-        clearInterval(interval_id_start_game);
-        clearInterval(interval_id_timer);
-
-        window.location.reload();
-    }, 1000_000);
-
-    // accept game
-    const accept_button: any = document.getElementById("accept_button");
-    accept_button.onclick = ()=>{
-
-        clearInterval(interval_id_match_request);
-        show_waiting_for_opponent_to_accept();
-
-        interval_id_start_game = setInterval(()=>{
-            request_start_game(player_token, nick_name, map_size, game_mode)
-        },1000 );
-    }
-}
-
-function request_start_game(player_token: string, nick_name: string, map_size: number, game_mode: string){
-    const xhr = send_post_request(player_token, nick_name, map_size, game_mode, REQUEST_TYPES.START_GAME);
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-
-                // init game
-                const main_div: any = document.getElementById("app");
-
-                //replace index.html with game.html
-                main_div.innerHTML = loadFile("/views/game.html");
-                init_game();
-
-                clearInterval(interval_id_start_game)
-                clearInterval(interval_id_timer);
-
-            }
-            else if(xhr.status === 204){
-                show_opponent_didnt_accept();
-            }
-
-            // enemy left query
-            else if(xhr.status === 201){
-                clearInterval(interval_id_start_game);
-                start_search(player_token, nick_name, map_size, game_mode, REQUEST_TYPES.FIND_MATCH);
-                show_opponent_didnt_accept();
-            }
-        }
-    }
 }
 
 function show_opponent_found(){

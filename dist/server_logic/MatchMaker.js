@@ -5,73 +5,63 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MatchMaker = void 0;
 // this class creates matches between players
-var Player_1 = __importDefault(require("./game_logic/Player"));
-var Game_1 = __importDefault(require("./game_logic/Game"));
-var Utils_1 = require("../Utils");
+const Player_1 = __importDefault(require("./game_logic/Player"));
+const Game_1 = __importDefault(require("./game_logic/Game"));
+const Utils_1 = require("../Utils");
+const ServerSocket_1 = require("./ServerSocket");
 // Singleton
 var MatchMaker;
 (function (MatchMaker) {
-    MatchMaker.all_players_searching_1v1 = [];
-    MatchMaker.all_games = [];
-    MatchMaker.all_players_searching_2v2 = [];
-    function add_player_ai(nick_name) {
-        return new Player_1.default(Utils_1.Utils.generate_token(nick_name));
-    }
-    MatchMaker.add_player_ai = add_player_ai;
-    function add_player_1v1(nick_name) {
-        var player_token = Utils_1.Utils.generate_token(nick_name);
-        var player = new Player_1.default(player_token);
-        MatchMaker.all_players_searching_1v1.push(player);
-        return player;
+    MatchMaker.all_players_searching_1v1 = new Map();
+    MatchMaker.all_players_searching_2v2 = new Map();
+    MatchMaker.all_games = new Map();
+    function add_player_1v1(socket, map_size) {
+        MatchMaker.all_players_searching_1v1.set(socket.id, new Player_1.default(socket.id, map_size));
+        find_match_for_1v1(socket, map_size);
     }
     MatchMaker.add_player_1v1 = add_player_1v1;
     // matches a player with another player if possible
     function get_game_1v1_with_player(player_token, map_size) {
-        var current_player;
-        MatchMaker.all_players_searching_1v1.filter(function (player) {
-            if (player.token === player_token) {
-                current_player = player;
-            }
-        });
+        let current_player = MatchMaker.all_players_searching_1v1.get(player_token);
         if (current_player != null) {
-            var match_player_1;
-            MatchMaker.all_players_searching_1v1.filter(function (player) {
+            let match_player;
+            for (let player of MatchMaker.all_players_searching_1v1.values()) {
                 if (current_player !== player) {
-                    match_player_1 = player;
+                    match_player = player;
                 }
-            });
-            if (match_player_1 == undefined)
+            }
+            if (match_player == undefined)
                 return undefined;
-            var new_game = new Game_1.default(Utils_1.Utils.generate_token(player_token), map_size, 4);
+            const new_game = new Game_1.default(Utils_1.Utils.generate_token(player_token), map_size, 4);
             new_game.all_players.push(current_player);
-            new_game.all_players.push(match_player_1);
+            new_game.all_players.push(match_player);
             return new_game;
         }
     }
     MatchMaker.get_game_1v1_with_player = get_game_1v1_with_player;
-    function get_ai_game(player_token, map_size) {
-        var new_game = new Game_1.default(Utils_1.Utils.generate_token(player_token), map_size, 4);
-        new_game.all_players.push(new Player_1.default(player_token));
-        MatchMaker.all_games.push(new_game);
-        var player = new_game === null || new_game === void 0 ? void 0 : new_game.get_player(player_token);
+    function find_ai_game(socket, map_size) {
+        const game = new Game_1.default(Utils_1.Utils.generate_token(socket.id), map_size, 4);
+        game.all_players.push(new Player_1.default(socket.id, map_size));
+        MatchMaker.all_games.set(game.token, game);
+        const player = game === null || game === void 0 ? void 0 : game.get_player(socket.id);
         if (player != null) {
-            new_game.place_start_city(player);
-            return new_game;
+            game.place_start_city(player);
+            ServerSocket_1.ServerSocket.send_data(socket, {
+                response_type: ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                data: {
+                    game_token: game.token
+                }
+            }, player.token);
         }
     }
-    MatchMaker.get_ai_game = get_ai_game;
+    MatchMaker.find_ai_game = find_ai_game;
     function get_game(game_token) {
-        for (var _i = 0, _a = MatchMaker.all_games; _i < _a.length; _i++) {
-            var game = _a[_i];
-            if (game.token === game_token) {
-                return game;
-            }
-        }
+        return MatchMaker.all_games.get(game_token);
     }
     MatchMaker.get_game = get_game;
-    function add_player_2v2(nick_name) {
-        var player_token = Utils_1.Utils.generate_token(nick_name);
-        MatchMaker.all_players_searching_2v2.push(new Player_1.default(player_token));
+    function add_player_2v2(nick_name, map_size) {
+        const player_token = Utils_1.Utils.generate_token(nick_name);
+        MatchMaker.all_players_searching_2v2.set(player_token, new Player_1.default(player_token, map_size));
         if (has_match_for_1v1()) {
             return [player_token, new Game_1.default(Utils_1.Utils.generate_token(player_token), 2500, 4)];
         }
@@ -79,36 +69,56 @@ var MatchMaker;
     }
     MatchMaker.add_player_2v2 = add_player_2v2;
     // find a game for a player if there is one
-    function find_match_for_1v1(player_token, map_size) {
-        var game = found_match_1v1(player_token);
+    function find_match_for_1v1(socket, map_size) {
+        const game = found_match_1v1(socket.id);
         if (game != null) {
-            var player = game === null || game === void 0 ? void 0 : game.get_player(player_token);
+            const player = game === null || game === void 0 ? void 0 : game.get_player(socket.id);
             if (player != null) {
                 game.place_start_city(player);
-                return game;
+                ServerSocket_1.ServerSocket.send_data(socket, {
+                    response_type: ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                    data: {
+                        game_token: game.token
+                    }
+                }, player.token);
+                ServerSocket_1.ServerSocket.send_data_to_all(socket, {
+                    response_type: ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                    data: {
+                        game_token: game.token
+                    }
+                }, player.token);
             }
         }
         if (has_match_for_1v1()) {
-            var game_1 = MatchMaker.get_game_1v1_with_player(player_token, map_size);
-            if (game_1 != null) {
-                MatchMaker.all_games.push(game_1);
-                var player = game_1 === null || game_1 === void 0 ? void 0 : game_1.get_player(player_token);
+            const game = MatchMaker.get_game_1v1_with_player(socket.id, map_size);
+            if (game != null) {
+                MatchMaker.all_games.set(game.token, game);
+                const player = game === null || game === void 0 ? void 0 : game.get_player(socket.id);
                 if (player != null) {
-                    game_1.place_start_city(player);
-                    return game_1;
+                    game.place_start_city(player);
+                    ServerSocket_1.ServerSocket.send_data(socket, {
+                        response_type: ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                        data: {
+                            game_token: game.token
+                        }
+                    }, player.token);
+                    ServerSocket_1.ServerSocket.send_data_to_all(socket, {
+                        response_type: ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                        data: {
+                            game_token: game.token
+                        }
+                    }, player.token);
                 }
             }
         }
     }
     MatchMaker.find_match_for_1v1 = find_match_for_1v1;
     function has_match_for_1v1() {
-        return MatchMaker.all_players_searching_1v1.length % 2 === 0;
+        return MatchMaker.all_players_searching_1v1.size % 2 === 0;
     }
     function found_match_1v1(player_token) {
-        for (var _i = 0, all_games_1 = MatchMaker.all_games; _i < all_games_1.length; _i++) {
-            var game = all_games_1[_i];
-            for (var _a = 0, _b = game.all_players; _a < _b.length; _a++) {
-                var player = _b[_a];
+        for (const game of MatchMaker.all_games.values()) {
+            for (const player of game.all_players) {
                 if (player.token === player_token) {
                     return game;
                 }
@@ -116,21 +126,15 @@ var MatchMaker;
         }
     }
     function get_player_searching_1v1(player_token) {
-        for (var _i = 0, _a = MatchMaker.all_players_searching_1v1; _i < _a.length; _i++) {
-            var player = _a[_i];
-            if (player.token === player_token) {
-                return player;
-            }
-        }
+        return MatchMaker.all_players_searching_1v1.get(player_token);
     }
     MatchMaker.get_player_searching_1v1 = get_player_searching_1v1;
     function has_match_for_2v2() {
-        return MatchMaker.all_players_searching_2v2.length % 4 === 0;
+        return MatchMaker.all_players_searching_2v2.size % 4 === 0;
     }
     MatchMaker.has_match_for_2v2 = has_match_for_2v2;
     function print_current_1v1() {
-        for (var _i = 0, all_players_searching_1v1_1 = MatchMaker.all_players_searching_1v1; _i < all_players_searching_1v1_1.length; _i++) {
-            var player_token = all_players_searching_1v1_1[_i];
+        for (const player_token of MatchMaker.all_players_searching_1v1) {
             console.log(player_token);
         }
     }

@@ -3,15 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Unit_1 = require("./Units/Unit");
-var Melee_1 = __importDefault(require("./Units/Melee"));
-var Range_1 = __importDefault(require("./Units/Range"));
-var Cavalry_1 = __importDefault(require("./Units/Cavalry"));
-var Settler_1 = __importDefault(require("./Units/Settler"));
-var Technology_1 = require("./Technology/Technology");
-var Player = /** @class */ (function () {
-    function Player(token) {
+const Unit_1 = require("./Units/Unit");
+const Melee_1 = __importDefault(require("./Units/Melee"));
+const Range_1 = __importDefault(require("./Units/Range"));
+const Cavalry_1 = __importDefault(require("./Units/Cavalry"));
+const Settler_1 = __importDefault(require("./Units/Settler"));
+const Technology_1 = require("./Technology/Technology");
+class Player {
+    constructor(token, map_size) {
         this.token = token;
+        this.map_size = map_size;
         this.units = [];
         // units that this player can produce
         this.production_units = [Melee_1.default.WARRIOR, Range_1.default.SLINGER, Settler_1.default.SETTLER_UNIT];
@@ -22,8 +23,8 @@ var Player = /** @class */ (function () {
         this.owned_technology = [];
         this.root_tech_tree_node = Technology_1.Technology.init_tech_tree();
     }
-    Player.prototype.add_unit = function (x, y, name, map) {
-        var new_unit;
+    add_unit(x, y, name, map) {
+        let new_unit;
         switch (name) {
             case Melee_1.default.WARRIOR.name:
                 new_unit = new Melee_1.default(x, y, Math.random().toString(), map, Melee_1.default.WARRIOR);
@@ -46,49 +47,47 @@ var Player = /** @class */ (function () {
         }
         this.units.push(new_unit);
         return new_unit;
-    };
-    Player.prototype.get_unit = function (id) {
-        for (var _i = 0, _a = this.units; _i < _a.length; _i++) {
-            var unit = _a[_i];
+    }
+    get_unit(id) {
+        for (const unit of this.units) {
             if (unit.get_id() === id)
                 return unit;
         }
-    };
-    Player.prototype.owns_this_unit = function (id) {
+    }
+    owns_this_unit(id) {
         return this.get_unit(id) != null;
-    };
+    }
     // returns true if the unit was successfully removed; false if not
-    Player.prototype.remove_unit = function (id) {
-        var remove_unit = this.get_unit(id);
+    remove_unit(id) {
+        let remove_unit = this.get_unit(id);
         if (remove_unit == null) {
             return false;
         }
         this.units.splice(this.units.indexOf(remove_unit), 1);
         return true;
-    };
-    Player.prototype.get_unit_type = function (id) {
+    }
+    get_unit_type(id) {
         var _a;
         return (_a = this.get_unit(id)) === null || _a === void 0 ? void 0 : _a.type;
-    };
+    }
     // used to send simplified unit data structure threw socket.io
-    Player.prototype.get_unit_data = function () {
-        var all_unit_data = [];
-        for (var _i = 0, _a = this.units; _i < _a.length; _i++) {
-            var unit = _a[_i];
-            var unit_data = unit.get_data();
+    get_unit_data() {
+        let all_unit_data = [];
+        for (const unit of this.units) {
+            const unit_data = unit.get_data();
             if (unit_data == undefined)
                 continue;
             all_unit_data.push(unit_data);
         }
         return all_unit_data;
-    };
-    Player.prototype.attack_unit = function (unit_friendly, unit_enemy, enemy_player, map) {
+    }
+    attack_unit(unit_friendly, unit_enemy, enemy_player, map) {
         if (unit_friendly.type !== Unit_1.Unit.RANGE) {
             unit_friendly.health -= unit_enemy.attack;
         }
         unit_enemy.health -= unit_friendly.attack;
-        var friendly_died = unit_friendly.health <= 0;
-        var enemy_died = unit_enemy.health <= 0;
+        const friendly_died = unit_friendly.health <= 0;
+        const enemy_died = unit_enemy.health <= 0;
         if (friendly_died) {
             map.all_nodes[unit_friendly.y][unit_friendly.x].unit = null;
             this.units.splice(this.units.indexOf(unit_friendly), 1);
@@ -98,31 +97,29 @@ var Player = /** @class */ (function () {
             enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy), 1);
         }
         return [friendly_died, enemy_died];
-    };
+    }
     // The client and server run two separate timers to produce stars
     // this eliminates otherwise necessary server-client communication (the server would have to constantly update the client stars)
-    Player.prototype.produce_stars = function () {
-        var _this = this;
-        setInterval(function () {
-            _this.total_owned_stars += _this.star_production / 120;
+    produce_stars() {
+        setInterval(() => {
+            this.total_owned_stars += this.star_production / 120;
         }, 500);
         this.star_production_has_started = true;
-    };
-    Player.prototype.is_payment_valid = function (payment) {
+    }
+    is_payment_valid(payment) {
         return this.total_owned_stars - payment >= 0;
-    };
-    Player.prototype.pay_stars = function (payment) {
+    }
+    pay_stars(payment) {
         this.total_owned_stars -= payment;
-    };
-    Player.prototype.increase_production = function (star_increment) {
+    }
+    increase_production(star_increment) {
         this.star_production += star_increment;
-    };
-    Player.prototype.get_data = function () {
+    }
+    get_data() {
         return {
             // units that this player can produce
             production_unit_types: this.production_units,
         };
-    };
-    return Player;
-}());
+    }
+}
 exports.default = Player;

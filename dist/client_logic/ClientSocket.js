@@ -1,5 +1,5 @@
 import { Player } from "./game_graphics/Player.js";
-import { init_canvas, HEX_SIDE_SIZE, setup_tech_tree, } from "./game_graphics/Pixi.js";
+import { init_canvas, HEX_SIDE_SIZE, setup_tech_tree, init_game, } from "./game_graphics/Pixi.js";
 import Unit from "./game_graphics/Unit/Unit.js";
 import { Node } from "./game_graphics/Node.js";
 import { game_over, show_city_menu, show_modal } from "./UI_logic.js";
@@ -28,7 +28,8 @@ export var ClientSocket;
         HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
-        END_GAME_RESPONSE: "END_GAME_RESPONSE"
+        END_GAME_RESPONSE: "END_GAME_RESPONSE",
+        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
     };
     ClientSocket.request_types = {
         // game play
@@ -45,6 +46,7 @@ export var ClientSocket;
         SETTLE: "SETTLE",
         ATTACK_UNIT: "ATTACK_UNIT",
         // match making
+        FIND_AI_OPPONENT: "FIND_AI_OPPONENT",
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
@@ -68,6 +70,9 @@ export var ClientSocket;
             var response_type = args[0].response_type;
             var response_data = args[0].data;
             switch (response_type) {
+                case ClientSocket.response_types.FOUND_GAME_RESPONSE:
+                    init_game(player_token, response_data.game_token);
+                    break;
                 case ClientSocket.response_types.UNITS_RESPONSE:
                     for (var _a = 0, _b = response_data.units; _a < _b.length; _a++) {
                         var unit = _b[_a];

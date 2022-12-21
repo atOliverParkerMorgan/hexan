@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unit = void 0;
-var ServerSocket_1 = require("../../ServerSocket");
-var Path_1 = __importDefault(require("../Map/Path"));
-var Unit = /** @class */ (function () {
-    function Unit(x, y, id, map, unit_init_data) {
+const ServerSocket_1 = require("../../ServerSocket");
+const Path_1 = __importDefault(require("../Map/Path"));
+class Unit {
+    constructor(x, y, id, map, unit_init_data) {
         this.x = x;
         this.y = y;
         this.id = id;
@@ -24,25 +24,24 @@ var Unit = /** @class */ (function () {
         map.all_nodes[this.y][this.x].unit = this;
     }
     // send response to public if the unit has successfully moved
-    Unit.prototype.move_and_send_response = function (path, game, player, socket) {
+    move_and_send_response(path, game, player, socket) {
         // remove first element
         path.shift();
         this.move_along_path(game, player, socket, path);
-    };
+    }
     // move this Unit along a valid path provided by the client
-    Unit.prototype.move_along_path = function (game, player, socket, path) {
-        var _this = this;
+    move_along_path(game, player, socket, path) {
         // used at the end of the path
-        var MOVEMENT_PER_A_MINUTE = 1;
+        let MOVEMENT_PER_A_MINUTE = 1;
         // movement per a minute calculation
         if (path.length !== 0)
             MOVEMENT_PER_A_MINUTE = path[0].get_movement_time() / (this.movement / 100);
-        setTimeout(function () {
+        setTimeout(() => {
             var _a;
             if (path.length === 0) {
                 return;
             }
-            var current_node = path[0];
+            const current_node = path[0];
             if (current_node.is_water() && !player.owned_technology.includes("Ship Building")) {
                 ServerSocket_1.ServerSocket.something_wrong_response(socket, player.token, "INVALID MOVE", "You cannot move over water tiles without owning the Ship Building technology");
                 return;
@@ -55,26 +54,25 @@ var Unit = /** @class */ (function () {
                 }
             }
             // for range attack units
-            var destination = path[path.length - 1];
+            const destination = path[path.length - 1];
             if (destination.unit != null) {
-                if (!player.owns_this_unit(destination.unit.id) && _this.range >= path.length) {
-                    var path_cords_1 = [];
-                    path.map(function (node) {
-                        path_cords_1.push([node.x, node.y]);
+                if (!player.owns_this_unit(destination.unit.id) && this.range >= path.length) {
+                    let path_cords = [];
+                    path.map((node) => {
+                        path_cords.push([node.x, node.y]);
                     });
-                    ServerSocket_1.ServerSocket.send_unit_attack(socket, game, player, destination.unit.id, _this.id, new Path_1.default(game, path_cords_1));
+                    ServerSocket_1.ServerSocket.send_unit_attack(socket, game, player, destination.unit.id, this.id, new Path_1.default(game, path_cords));
                     return;
                 }
             }
             // movement
-            game.map.all_nodes[_this.y][_this.x].unit = null;
-            current_node.unit = _this;
-            _this.is_on_water = current_node.is_water();
-            _this.x = current_node.x;
-            _this.y = current_node.y;
-            var all_discovered_nodes = [];
-            for (var _i = 0, _b = current_node.neighbors; _i < _b.length; _i++) {
-                var node = _b[_i];
+            game.map.all_nodes[this.y][this.x].unit = null;
+            current_node.unit = this;
+            this.is_on_water = current_node.is_water();
+            this.x = current_node.x;
+            this.y = current_node.y;
+            let all_discovered_nodes = [];
+            for (const node of current_node.neighbors) {
                 if (node != null) {
                     game.map.make_neighbour_nodes_shown(player, node);
                     all_discovered_nodes.push(node.get_data(player.token));
@@ -82,14 +80,11 @@ var Unit = /** @class */ (function () {
             }
             all_discovered_nodes.push(current_node.get_data(player.token));
             // find previously unseen enemy units
-            for (var _c = 0, _d = game.get_enemy_players(player.token); _c < _d.length; _c++) {
-                var enemy_player = _d[_c];
-                for (var _e = 0, all_discovered_nodes_1 = all_discovered_nodes; _e < all_discovered_nodes_1.length; _e++) {
-                    var node = all_discovered_nodes_1[_e];
+            for (const enemy_player of game.get_enemy_players(player.token)) {
+                for (const node of all_discovered_nodes) {
                     if (node.unit == null)
                         continue;
-                    for (var _f = 0, _g = enemy_player.units; _f < _g.length; _f++) {
-                        var unit = _g[_f];
+                    for (const unit of enemy_player.units) {
                         if (node.x === unit.x && node.y === unit.y) {
                             // found new enemy unit by moving
                             ServerSocket_1.ServerSocket.send_data(socket, {
@@ -102,28 +97,28 @@ var Unit = /** @class */ (function () {
                     }
                 }
             }
-            var city_node = game.map.all_nodes[_this.y][_this.x];
+            let city_node = game.map.all_nodes[this.y][this.x];
             if (city_node.city != null && ((_a = city_node === null || city_node === void 0 ? void 0 : city_node.city) === null || _a === void 0 ? void 0 : _a.owner.token) != player.token) {
                 city_node.city.owner = player;
-                var is_conquered_1 = false;
-                game.all_players.map(function (in_game_player) {
-                    if (game.map.all_nodes[_this.y][_this.x].is_shown.includes(in_game_player.token)) {
-                        ServerSocket_1.ServerSocket.send_conquered_city(socket, game, in_game_player, city_node.city, _this);
-                        is_conquered_1 = true;
+                let is_conquered = false;
+                game.all_players.map((in_game_player) => {
+                    if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
+                        ServerSocket_1.ServerSocket.send_conquered_city(socket, game, in_game_player, city_node.city, this);
+                        is_conquered = true;
                     }
                 });
-                if (is_conquered_1) {
+                if (is_conquered) {
                     return;
                 }
             }
             // show unit to player if the unit steps on a discovered node
-            game.all_players.map(function (in_game_player) {
-                if (game.map.all_nodes[_this.y][_this.x].is_shown.includes(in_game_player.token)) {
+            game.all_players.map((in_game_player) => {
+                if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
                     if (in_game_player.token === player.token) {
-                        ServerSocket_1.ServerSocket.send_unit_movement_to_owner(socket, _this, all_discovered_nodes, in_game_player);
+                        ServerSocket_1.ServerSocket.send_unit_movement_to_owner(socket, this, all_discovered_nodes, in_game_player);
                     }
                     else {
-                        ServerSocket_1.ServerSocket.send_unit_movement_to_all(socket, _this, in_game_player);
+                        ServerSocket_1.ServerSocket.send_unit_movement_to_all(socket, this, in_game_player);
                     }
                 }
                 else {
@@ -131,26 +126,26 @@ var Unit = /** @class */ (function () {
                         ServerSocket_1.ServerSocket.send_data_to_all(socket, {
                             response_type: ServerSocket_1.ServerSocket.response_types.ENEMY_UNIT_DISAPPEARED,
                             data: {
-                                unit: _this.get_data(),
+                                unit: this.get_data(),
                             }
                         }, in_game_player.token);
                     }
                 }
             });
             path.shift();
-            _this.move_along_path(game, player, socket, path);
+            this.move_along_path(game, player, socket, path);
         }, MOVEMENT_PER_A_MINUTE);
-    };
-    Unit.prototype.get_id = function () {
+    }
+    get_id() {
         return this.id;
-    };
-    Unit.prototype.get_x = function () {
+    }
+    get_x() {
         return this.x;
-    };
-    Unit.prototype.get_y = function () {
+    }
+    get_y() {
         return this.y;
-    };
-    Unit.prototype.get_data = function () {
+    }
+    get_data() {
         return {
             id: this.id,
             x: this.x,
@@ -165,15 +160,14 @@ var Unit = /** @class */ (function () {
             name: this.name,
             cost: this.cost,
         };
-    };
-    // types of units
-    Unit.CAVALRY = "Cavalry";
-    Unit.MELEE = "Melee";
-    Unit.RANGE = "Range";
-    Unit.SETTLER = "Settler";
-    // action that designated units can take
-    Unit.FORTIFY = "Fortify";
-    Unit.SETTLE = "Settle";
-    return Unit;
-}());
+    }
+}
 exports.Unit = Unit;
+// types of units
+Unit.CAVALRY = "Cavalry";
+Unit.MELEE = "Melee";
+Unit.RANGE = "Range";
+Unit.SETTLER = "Settler";
+// action that designated units can take
+Unit.FORTIFY = "Fortify";
+Unit.SETTLE = "Settle";

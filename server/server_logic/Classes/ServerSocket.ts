@@ -1,22 +1,17 @@
 import {Socket} from "socket.io";
-import Path from "./game_logic/Map/Path";
+import Path from "./Map/Path";
 import {MatchMaker} from "./MatchMaker";
-import City from "./game_logic/City/City";
-import {Unit} from "./game_logic/Units/Unit";
-import Player from "./game_logic/Player";
-import {Node} from "./game_logic/Map/Node";
-import {NodeInterface} from "./game_logic/Map/NodeInterface";
-import Game from "./game_logic/Game";
-import {App} from "../app";
 
+import {App} from "../../app";
+import GameInterface from "../Interfaces/GameInterface";
+import UnitInterface from "../Interfaces/Units/UnitInterface";
+import NodeInterface from "../Interfaces/Map/NodeInterface";
+import PlayerInterface from "../Interfaces/PlayerInterface";
+import CityInterface from "../Interfaces/City/CityInterface";
 // singleton
 export namespace ServerSocket {
 
-    export const response_types: { ALL_RESPONSE: string; MAP_RESPONSE: string; UNIT_MOVED_RESPONSE: string;
-        INVALID_MOVE_RESPONSE: string; UNITS_RESPONSE: string; UNIT_RESPONSE: string, ENEMY_UNIT_MOVED_RESPONSE: string,
-        NEW_CITY: string, CANNOT_SETTLE: string, CONQUERED_CITY_RESPONSE: string, STARS_DATA_RESPONSE: string, ENEMY_UNIT_DISAPPEARED: string, ENEMY_FOUND_RESPONSE: string, ATTACK_UNIT_RESPONSE: string,
-        HARVEST_COST_RESPONSE: string, MENU_INFO_RESPONSE: string, HARVEST_NODE_RESPONSE: string, HARVEST_NODE: string, PURCHASED_TECHNOLOGY_RESPONSE:string,
-        INVALID_ATTACK_RESPONSE: string, SOMETHING_WRONG_RESPONSE: string, END_GAME_RESPONSE: string} =  {
+    export const response_types = {
 
         MAP_RESPONSE: "MAP_RESPONSE",
         UNITS_RESPONSE: "UNITS_RESPONSE",
@@ -48,15 +43,12 @@ export namespace ServerSocket {
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
 
-        END_GAME_RESPONSE: "END_GAME_RESPONSE"
+        END_GAME_RESPONSE: "END_GAME_RESPONSE",
+        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
 
     };
-    export const request_types: {
-        readonly GET_MAP: string, readonly GET_UNITS: string,
-        readonly GET_ALL: string, readonly GET_MENU_INFO: string,
-        readonly GET_STARS_DATA: string, readonly PRODUCE_UNIT: string, readonly PURCHASE_TECHNOLOGY: string,
-        readonly MOVE_UNITS: string, readonly HARVEST_NODE: string, readonly SETTLE: string,
-        readonly ATTACK_UNIT: string, readonly FIND_1v1_OPPONENT: string, readonly FIND_2v2_OPPONENTS: string, HARVEST_COST: string} = {
+
+    export const request_types = {
 
         // game play
         GET_MAP: "GET_MAP",
@@ -75,20 +67,27 @@ export namespace ServerSocket {
         ATTACK_UNIT: "ATTACK_UNIT",
 
         // match making
+        FIND_AI_OPPONENT: "FIND_AI_OPPONENT",
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
 
-    export function send_data(socket: Socket, data: any, player_token: string): void{
+    export function sendData(socket: Socket, data: any, player_token: string): void{
         socket.emit(player_token, data);
     }
 
-    export function send_data_to_all(socket: Socket, data: any, player_token: string): void{
+    export function sendDataToAll(socket: Socket, data: any, player_token: string): void{
         socket.broadcast.emit(player_token, data);
     }
 
+    export function addConnectionListener(): void{
+        App.io.on("connection", (socket: Socket) => {
+            console.log("Socket id: ",socket.id);
+        })
+    }
+
     // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
-    export function add_response_listener(): void{
+    export function addResponseListener(): void{
 
         App.io.on("connect_error", (err: any) => {
             console.log(`connect_error due to ${err.message}`);
@@ -102,14 +101,14 @@ export namespace ServerSocket {
                     const request_data = args[0].data;
                     console.log(`REQUEST TYPE: ${request_type}`)
 
-                    const game_player_array = is_game_valid(socket, request_data);
+                    const game_and_player_array = isGameValid(socket, request_data);
 
-                    if(game_player_array == null){
+                    if(game_and_player_array == null){
                         return
                     }
 
-                    const game = game_player_array[0];
-                    const player = game_player_array[1];
+                    const game = game_and_player_array[0];
+                    const player = game_and_player_array[1];
 
                     // switch for different responses
                     switch (request_type) {
@@ -173,7 +172,7 @@ export namespace ServerSocket {
     }
 
     // acts as a setter - changes game_state according to clients request and game rules.
-    export function add_request_listener(): void{
+    export function addRequestListener(): void{
         App.io.on("connection", (socket: Socket) => {
             console.log(socket.id)
             // receive a message from the public
@@ -182,17 +181,25 @@ export namespace ServerSocket {
                 const request_type: string = args[0].request_type;
                 const request_data = args[0].data;
 
-                const game_player_array = is_game_valid(socket, request_data);
+                const game_and_player_array = isGameValid(socket, request_data);
 
-                if(game_player_array == null){
+                if(game_and_player_array == null){
                     return
                 }
 
-                const game = game_player_array[0];
-                const player = game_player_array[1];
+                const game = game_and_player_array[0];
+                const player = game_and_player_array[1];
 
                 // switch for different request types
                 switch (request_type) {
+                    case ServerSocket.request_types.FIND_1v1_OPPONENT:
+                        MatchMaker.addPlayer1v1(socket, request_data.map_size);
+                        break;
+
+                    case ServerSocket.request_types.FIND_AI_OPPONENT:
+                        MatchMaker.findAiGame(socket, request_data.map_size);
+                        break;
+
                     case ServerSocket.request_types.PRODUCE_UNIT:
                         const city = game.get_city(request_data.city_name, player);
                         const unit_type = request_data.unit_type;
@@ -206,8 +213,8 @@ export namespace ServerSocket {
                         const unit = player.get_unit(request_data.unit_id);
                         const path = new Path(game, request_data.path);
 
-                        if (!path.is_valid() || unit == null) {
-                            ServerSocket.send_data(socket, {
+                        if (!path.isValid() || unit == null) {
+                            ServerSocket.sendData(socket, {
                                 response_type: ServerSocket.response_types.INVALID_MOVE_RESPONSE,
                                 data: {
                                     unit: unit
@@ -221,7 +228,7 @@ export namespace ServerSocket {
                         break;
 
                     case ServerSocket.request_types.ATTACK_UNIT:
-                        ServerSocket.send_unit_attack(socket, game, player, request_data.attacked_unit_id, request_data.unit_id,  new Path(game, request_data.path));
+                        ServerSocket.sendUnitAttack(socket, game, player, request_data.attacked_unit_id, request_data.unit_id,  new Path(game, request_data.path));
                         break;
 
                     case ServerSocket.request_types.SETTLE:
@@ -229,7 +236,7 @@ export namespace ServerSocket {
                         let can_settle: boolean = game.can_settle(player, city_node, request_data.id)
                         if (can_settle) {
                             game.add_city(player, city_node);
-                            ServerSocket.send_data(socket, {
+                            ServerSocket.sendData(socket, {
                                 response_type: ServerSocket.response_types.NEW_CITY,
                                 data: {
                                     city_x: request_data.x,
@@ -239,7 +246,7 @@ export namespace ServerSocket {
 
                             }, player.token);
                         } else {
-                            ServerSocket.send_data(socket, {
+                            ServerSocket.sendData(socket, {
                                 response_type: ServerSocket.response_types.CANNOT_SETTLE,
                                 data: {
                                     x: request_data.x,
@@ -255,7 +262,7 @@ export namespace ServerSocket {
 
                     case ServerSocket.request_types.PURCHASE_TECHNOLOGY:
                         if(game.purchase_technology(request_data.player_token, request_data.tech_name)){
-                            ServerSocket.send_data(socket, {
+                            ServerSocket.sendData(socket, {
                                 response_type: ServerSocket.response_types.PURCHASED_TECHNOLOGY_RESPONSE,
                                 data: {
                                     root_tech_tree_node: player.root_tech_tree_node,
@@ -263,7 +270,7 @@ export namespace ServerSocket {
                                 }
                             }, player.token);
                         }else{
-                            ServerSocket.send_data(socket, {
+                            ServerSocket.sendData(socket, {
                                 response_type: ServerSocket.response_types.SOMETHING_WRONG_RESPONSE,
                                 data: {
                                     title: "Cannot purchase "+ request_data.tech_name,
@@ -281,14 +288,14 @@ export namespace ServerSocket {
         });
     }
 
-    export function send_unit_produced_response( socket: Socket, city: City, unit: Unit, player: Player){
+    export function sendUnitProducedResponse(socket: Socket, city: CityInterface, unit: UnitInterface, player: PlayerInterface){
 
         if(city.owner.token === player.token) {
 
-            ServerSocket.send_data(socket, {
+            ServerSocket.sendData(socket, {
                     response_type: ServerSocket.response_types.UNIT_RESPONSE,
                     data: {
-                        unit: unit.get_data(),
+                        unit: unit.getData(),
                         // update client stars
                         total_owned_stars:  city.owner.total_owned_stars
                     }
@@ -296,10 +303,10 @@ export namespace ServerSocket {
                 player.token);
         }
         else {
-            ServerSocket.send_data_to_all(socket, {
+            ServerSocket.sendDataToAll(socket, {
                     response_type: ServerSocket.response_types.UNIT_RESPONSE,
                     data: {
-                        unit: unit.get_data(),
+                        unit: unit.getData(),
                         // update client stars
                         total_owned_stars: -1
                     }
@@ -308,11 +315,11 @@ export namespace ServerSocket {
         }
     }
 
-    export function send_node_harvested_response( socket: Socket, node: Node, player: Player){
-        ServerSocket.send_data(socket, {
+    export function sendNodeHarvestedResponse(socket: Socket, node: NodeInterface, player: PlayerInterface){
+        ServerSocket.sendData(socket, {
                 response_type: ServerSocket.response_types.HARVEST_NODE_RESPONSE,
                 data: {
-                    node: node.get_data(player.token),
+                    node: node.getData(player.token),
                     // update client stars
                     total_owned_stars: player.total_owned_stars,
                     star_production: player.star_production
@@ -321,8 +328,8 @@ export namespace ServerSocket {
             player.token);
     }
 
-    export function something_wrong_response(socket: Socket, player_token: string, title: string, message: string){
-        ServerSocket.send_data(socket, {
+    export function somethingWrongResponse(socket: Socket, player_token: string, title: string, message: string){
+        ServerSocket.sendData(socket, {
                 response_type: ServerSocket.response_types.SOMETHING_WRONG_RESPONSE,
                 data: {
                     title: title,
@@ -332,8 +339,8 @@ export namespace ServerSocket {
             player_token);
     }
 
-    export function invalid_move_response(socket: Socket, player: Player, title: string, message: string){
-        ServerSocket.send_data(socket, {
+    export function invalidMoveResponse(socket: Socket, player: PlayerInterface, title: string, message: string){
+        ServerSocket.sendData(socket, {
                 response_type: ServerSocket.response_types.INVALID_MOVE_RESPONSE,
                 data: {
                     title: title,
@@ -343,33 +350,33 @@ export namespace ServerSocket {
             player.token);
     }
 
-    export function send_unit_movement_to_owner(socket: Socket, unit: Unit, all_discovered_nodes: NodeInterface[], in_game_player: Player){
-        ServerSocket.send_data(socket,
+    export function sendUnitMovementToOwner(socket: Socket, unit: UnitInterface, all_discovered_nodes: NodeInterface[], in_game_player: PlayerInterface){
+        ServerSocket.sendData(socket,
             {
                 response_type: ServerSocket.response_types.UNIT_MOVED_RESPONSE,
                 data: {
-                    unit: unit.get_data(),
+                    unit: unit.getData(),
                     nodes: all_discovered_nodes,
                 }
             }, in_game_player.token)
     }
-    export function send_unit_movement_to_all(socket: Socket, unit: Unit, in_game_player: Player){
-        ServerSocket.send_data_to_all(socket,
+    export function sendUnitMovementToAll(socket: Socket, unit: UnitInterface, in_game_player: PlayerInterface){
+        ServerSocket.sendDataToAll(socket,
             {
                 response_type: ServerSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE,
                 data: {
-                    unit: unit.get_data(),
+                    unit: unit.getData(),
                 }
             }, in_game_player.token)
     }
 
-    export function send_update_harvest_cost(socket:Socket, nodes: Node[], harvest_cost: number, player: Player){
+    export function sendUpdateHarvestCost(socket:Socket, nodes: NodeInterface[], harvest_cost: number, player: PlayerInterface){
         let node_cords: number[][] = []
         nodes.map((node)=>{
             node_cords.push([node.x, node.y])
         })
 
-        ServerSocket.send_data(socket, {
+        ServerSocket.sendData(socket, {
             response_type: response_types.HARVEST_COST_RESPONSE,
             data:{
                 node_cords: node_cords,
@@ -378,11 +385,11 @@ export namespace ServerSocket {
         }, player.token)
     }
 
-    export function send_conquered_city(socket: Socket, game: Game, player: Player, city: City, unit: Unit){
+    export function sendConqueredCity(socket: Socket, game: GameInterface, player: PlayerInterface, city: CityInterface, unit: UnitInterface){
 
         if(player.token === city.owner.token){
-            if(!game.player_is_alive(game.get_enemy_players(player.token)[0])){
-                ServerSocket.send_data(socket, {
+            if(!game.playerIsAlive(game.getEnemyPlayers(player.token)[0])){
+                ServerSocket.sendData(socket, {
                     response_type: ServerSocket.response_types.END_GAME_RESPONSE,
                     data:{
                         won: true
@@ -390,18 +397,18 @@ export namespace ServerSocket {
                 }, player.token);
             }
 
-            ServerSocket.send_data(socket, {
+            ServerSocket.sendData(socket, {
                 response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
                 data:{
-                    city: city.get_data(player.token),
-                    unit: unit.get_data()
+                    city: city.getData(player.token),
+                    unit: unit.getData()
                 }
             }, player.token);
 
         }else{
 
-            if(!game.player_is_alive(player)){
-                ServerSocket.send_data_to_all(socket, {
+            if(!game.playerIsAlive(player)){
+                ServerSocket.sendDataToAll(socket, {
                     response_type: ServerSocket.response_types.END_GAME_RESPONSE,
                     data:{
                         won: false
@@ -409,34 +416,34 @@ export namespace ServerSocket {
                 }, player.token);
             }
 
-            ServerSocket.send_data_to_all(socket, {
+            ServerSocket.sendDataToAll(socket, {
                 response_type: ServerSocket.response_types.CONQUERED_CITY_RESPONSE,
                 data: {
-                    city: city.get_data(player.token),
-                    unit: unit.get_data()
+                    city: city.getData(player.token),
+                    unit: unit.getData()
                 }
             }, player.token);
         }
     }
 
-    function is_game_valid(socket: Socket, request_data: any): any{
+    function isGameValid(socket: Socket, request_data: any): any{
 
-        const game = MatchMaker.get_game(request_data.game_token);
+        const game = MatchMaker.getGame(request_data.game_token);
         if (game == null) {
-            ServerSocket.something_wrong_response(socket, request_data.player_token, "Game doesn't exist", "Error could find your game!");
+            ServerSocket.somethingWrongResponse(socket, request_data.player_token, "Game doesn't exist", "Error could find your game!");
             return null;
         }
 
         // check if player exists
-        const player = game.get_player(request_data.player_token);
+        const player = game.getPlayer(request_data.player_token);
         if(player == null){
-            ServerSocket.something_wrong_response(socket, request_data.player_token, "Player doesn't exist", "Error could find you!");
+            ServerSocket.somethingWrongResponse(socket, request_data.player_token, "Player doesn't exist", "Error could find you!");
             return null;
         }
 
         // check if game is ready
-        if(!game?.is_game_ready()){
-            ServerSocket.something_wrong_response(socket, player.token, "Game is not ready", "Error all player in this game aren't ready!");
+        if(!game?.isGameReady()){
+            ServerSocket.somethingWrongResponse(socket, player.token, "Game is not ready", "Error all player in this game aren't ready!");
             return null;
         }
 
@@ -445,15 +452,15 @@ export namespace ServerSocket {
 
     }
 
-    export function send_game_over(socket: Socket, game: Game, player_won: Player, player_lost: Player){
-        ServerSocket.send_data_to_all(socket, {
+    export function sendGameOver(socket: Socket, game: GameInterface, player_won: PlayerInterface, player_lost: PlayerInterface){
+        ServerSocket.sendDataToAll(socket, {
             response_type: ServerSocket.response_types.END_GAME_RESPONSE,
             data:{
                 won: false
             }
         }, player_lost.token);
 
-        ServerSocket.send_data(socket, {
+        ServerSocket.sendData(socket, {
             response_type: ServerSocket.response_types.END_GAME_RESPONSE,
             data:{
                 won: true
@@ -463,23 +470,23 @@ export namespace ServerSocket {
 
 
 
-    export function send_unit_attack(socket: Socket, game: Game, player: Player, attacked_unit_id: string, unit_id: string, path: Path){
-        const enemy_player = game.get_enemy_player_by_unit(attacked_unit_id);
+    export function sendUnitAttack(socket: Socket, game: GameInterface, player: PlayerInterface, attacked_unit_id: string, unit_id: string, path: Path){
+        const enemy_player = game.getEnemyPlayerByUnit(attacked_unit_id);
 
         if(enemy_player == null){
 
-            ServerSocket.send_data(socket, {
+            ServerSocket.sendData(socket, {
                 response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
             }, player.token);
             return;
         }
 
-        const friendly_unit = player.get_unit(unit_id);
-        const enemy_unit = enemy_player.get_unit(attacked_unit_id)
+        const friendly_unit = player.getUnit(unit_id);
+        const enemy_unit = enemy_player.getUnit(attacked_unit_id)
 
         if(friendly_unit == null || enemy_unit == null){
 
-            ServerSocket.send_data(socket, {
+            ServerSocket.sendData(socket, {
                 response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
             }, player.token);
 
@@ -487,16 +494,16 @@ export namespace ServerSocket {
         // attack path length is the request range of the attack
         else if(friendly_unit.range >= path.path.length - 1){
 
-            const are_units_dead = player.attack_unit(friendly_unit, enemy_unit, enemy_player, game.map);
+            const are_units_dead = player.attackUnit(friendly_unit, enemy_unit, enemy_player, game.map);
             const is_friendly_unit_dead = are_units_dead[0];
             const is_enemy_unit_dead = are_units_dead[1];
 
             if(!is_friendly_unit_dead && is_enemy_unit_dead){
-                friendly_unit.move_and_send_response(path.path, game, player, socket);
+                friendly_unit.moveAndSendResponse(path.path, game, player, socket);
             }
 
             // send to enemy
-            ServerSocket.send_data_to_all(socket, {
+            ServerSocket.sendDataToAll(socket, {
                 response_type: ServerSocket.response_types.ATTACK_UNIT_RESPONSE,
                 data: {
                     unit_1: friendly_unit,
@@ -507,7 +514,7 @@ export namespace ServerSocket {
             }, enemy_player.token);
 
             // send to me
-            ServerSocket.send_data(socket, {
+            ServerSocket.sendData(socket, {
                 response_type: ServerSocket.response_types.ATTACK_UNIT_RESPONSE,
                 data: {
                     unit_1: friendly_unit,
@@ -520,7 +527,7 @@ export namespace ServerSocket {
         }
         // unit out of range
         else{
-            ServerSocket.send_data(socket, {
+            ServerSocket.sendData(socket, {
                 response_type: ServerSocket.response_types.INVALID_ATTACK_RESPONSE,
                 data: {
                     message: "Invalid range"

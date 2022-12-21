@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Utils = void 0;
-var crypto_1 = require("crypto");
-var Melee_1 = __importDefault(require("./server_logic/game_logic/Units/Melee"));
-var Range_1 = __importDefault(require("./server_logic/game_logic/Units/Range"));
-var Cavalry_1 = __importDefault(require("./server_logic/game_logic/Units/Cavalry"));
-var Settler_1 = __importDefault(require("./server_logic/game_logic/Units/Settler"));
-var Unit_1 = require("./server_logic/game_logic/Units/Unit");
+const crypto_1 = require("crypto");
+const Melee_1 = __importDefault(require("./server_logic/game_logic/Units/Melee"));
+const Range_1 = __importDefault(require("./server_logic/game_logic/Units/Range"));
+const Cavalry_1 = __importDefault(require("./server_logic/game_logic/Units/Cavalry"));
+const Settler_1 = __importDefault(require("./server_logic/game_logic/Units/Settler"));
+const Unit_1 = require("./server_logic/game_logic/Units/Unit");
 var Utils;
 (function (Utils) {
     Utils.HOSTNAME = "mysterious-sea-69962.herokuapp.com";

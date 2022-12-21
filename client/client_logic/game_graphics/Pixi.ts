@@ -3,6 +3,7 @@ import {ClientSocket} from "../ClientSocket.js"
 import {setup_tech_tree_button} from "../UI_logic.js";
 import {Technology} from "./Technology/Technology.js";
 import {Player} from "./Player.js";
+import {interval_id_start_game, interval_id_timer, loadFile} from "../client_create_game.js";
 
 export let HEX_SIDE_SIZE: number;
 export let DISTANCE_BETWEEN_HEX: number;
@@ -161,17 +162,22 @@ export function init_canvas(map: any, cities: any){
 
 
 
-export function init_game() {
+export function init_game(player_token: string, game_token: string) {
 
-    const player_token: string | null = localStorage.getItem("player_token");
-    const game_token: string | null = localStorage.getItem("game_token");
+    // init game
+    const main_div: any = document.getElementById("app");
+
+    //replace index.html with game.html
+    main_div.innerHTML = loadFile("/views/game.html");
+
+    clearInterval(interval_id_start_game)
+    clearInterval(interval_id_timer);
 
     // the typescript hasn't provided a token for the public
     if (player_token == null || game_token == null){
         return;
     }
 
-    ClientSocket.add_data_listener(player_token)
     ClientSocket.get_data(ClientSocket.request_types.GET_ALL, game_token, player_token)
 }
 
