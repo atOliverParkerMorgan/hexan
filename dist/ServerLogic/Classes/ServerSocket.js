@@ -54,161 +54,189 @@ var ServerSocket;
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
     };
     function sendData(socket, response_type, response_data) {
-        console.log("emitting data: ", response_data);
         socket.emit(response_type, response_data);
     }
     ServerSocket.sendData = sendData;
-    function sendDataToAll(socket, response_type, response_data) {
-        socket.broadcast.emit(response_type, response_data);
+    function sendDataToAll(socket, game_token, response_type, response_data) {
+        socket.broadcast.to(game_token).emit(response_type, response_data);
     }
     ServerSocket.sendDataToAll = sendDataToAll;
-    // acts as a getter - sends responses to clients requests. Doesn't change the state of the game.
-    function addResponseListener() {
+    function sendDataToPlayer(socket, player_token, response_type, response_data) {
+        socket.to(player_token).emit(response_type, response_data);
+    }
+    ServerSocket.sendDataToPlayer = sendDataToPlayer;
+    function addListener() {
         app_1.App.io.on("connect_error", (err) => {
             console.log(`connect_error due to ${err.message}`);
         });
         app_1.App.io.on("connection", (socket) => {
-            socket.on("get_data", (...args) => {
-                try {
-                    // get request data from public
-                    const request_type = args[0].request_type;
-                    const request_data = args[0].data;
-                    console.log(`REQUEST TYPE: ${request_type}`);
-                    const game_and_player_array = isGameValid(socket, request_data);
-                    if (game_and_player_array == null) {
-                        return;
-                    }
-                    const game = game_and_player_array[0];
-                    const player = game_and_player_array[1];
-                    // switch for different responses
-                    switch (request_type) {
-                        case ServerSocket.request_types.GET_UNITS:
-                            let all_units = [];
-                            for (const unit of player.units) {
-                                all_units.push(unit.getData());
-                            }
-                            ServerSocket.sendData(socket, ServerSocket.response_types.UNITS_RESPONSE, {
-                                units: all_units
-                            });
-                            break;
-                        case ServerSocket.request_types.GET_MENU_INFO:
-                            // get city information and possible units to produce
-                            let request_city;
-                            for (const city of game.getCitiesThatPlayerOwns(player)) {
-                                if (city.name === request_data.city.name) {
-                                    request_city = city;
-                                    break;
-                                }
-                            }
-                            ServerSocket.sendData(socket, ServerSocket.response_types.MENU_INFO_RESPONSE, {
-                                city_data: request_city,
-                                production_units: player.production_units
-                            });
-                            break;
-                        case ServerSocket.request_types.GET_STARS_DATA:
-                            if (!player.star_production_has_started) {
-                                player.produceStars();
-                            }
-                            ServerSocket.sendData(socket, ServerSocket.response_types.STARS_DATA_RESPONSE, {
-                                star_production: player.star_production,
-                                total_owned_stars: player.total_owned_stars,
-                            });
-                            break;
-                        case ServerSocket.request_types.GET_ALL:
-                            ServerSocket.sendData(socket, ServerSocket.response_types.ALL_RESPONSE, game.getData(player));
-                    }
-                }
-                catch (e) {
-                    console.log(e);
-                }
+            socket.on('disconnect', function () {
+                MatchMaker_1.MatchMaker.all_players_searching_1v1.delete(socket.id);
+                MatchMaker_1.MatchMaker.all_players_searching_2v2.delete(socket.id);
             });
-        });
-    }
-    ServerSocket.addResponseListener = addResponseListener;
-    // acts as a setter - changes game_state according to clients request and game rules.
-    function addRequestListener() {
-        app_1.App.io.on("connection", (socket) => {
-            console.log(socket.id);
-            // receive a message from the public
-            socket.on("send_data", (...args) => {
-                var _a, _b;
-                const request_type = args[0].request_type;
-                const request_data = args[0].data;
-                if (ServerSocket.request_types.FIND_1v1_OPPONENT === request_type) {
-                    MatchMaker_1.MatchMaker.addPlayer1v1(socket, request_data.map_size);
-                    return;
-                }
-                if (ServerSocket.request_types.FIND_AI_OPPONENT === request_type) {
-                    MatchMaker_1.MatchMaker.findAiGame(socket, request_data.map_size);
-                    return;
-                }
+            socket.on(ServerSocket.request_types.GET_UNITS, (...args) => {
+                const request_data = args[0];
                 const game_and_player_array = isGameValid(socket, request_data);
-                if (game_and_player_array == null) {
+                if (game_and_player_array == null)
                     return;
+                const player = game_and_player_array[1];
+                let all_units = [];
+                for (const unit of player.units) {
+                    all_units.push(unit.getData());
                 }
+                ServerSocket.sendData(socket, ServerSocket.response_types.UNITS_RESPONSE, {
+                    units: all_units
+                });
+            });
+            socket.on(ServerSocket.request_types.GET_MENU_INFO, (...args) => {
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
                 const game = game_and_player_array[0];
                 const player = game_and_player_array[1];
-                // switch for different request types
-                console.log("REQUEST TYPE: ", request_type);
-                switch (request_type) {
-                    case ServerSocket.request_types.PRODUCE_UNIT:
-                        const city = game.getCity(request_data.city_name, player);
-                        const unit_type = request_data.unit_type;
-                        if (city != null) {
-                            city.produceUnitAndSendResponse(socket, unit_type, game);
-                        }
+                // get city information and possible units to produce
+                let request_city;
+                for (const city of game.getCitiesThatPlayerOwns(player)) {
+                    if (city.name === request_data.city.name) {
+                        request_city = city;
                         break;
-                    case ServerSocket.request_types.MOVE_UNITS:
-                        const unit = player.getUnit(request_data.unit_id);
-                        const path = new Path_1.default(game, request_data.path);
-                        if (!path.isValid() || unit == null) {
-                            ServerSocket.sendData(socket, ServerSocket.response_types.INVALID_MOVE_RESPONSE, {
-                                unit: unit
-                            });
-                            break;
-                        }
-                        unit.moveAndSendResponse(path.path, game, player, socket);
-                        break;
-                    case ServerSocket.request_types.ATTACK_UNIT:
-                        ServerSocket.sendUnitAttack(socket, game, player, request_data.attacked_unit_id, request_data.unit_id, new Path_1.default(game, request_data.path));
-                        break;
-                    case ServerSocket.request_types.SETTLE:
-                        let city_node = game.map.getNode(request_data.x, request_data.y);
-                        let can_settle = game.can_settle(player, city_node, request_data.id);
-                        if (can_settle) {
-                            game.add_city(player, city_node);
-                            ServerSocket.sendData(socket, ServerSocket.response_types.NEW_CITY, {
-                                city_x: request_data.x,
-                                city_y: request_data.y,
-                                city_node: (_a = game.map.getNode(request_data.x, request_data.y)) === null || _a === void 0 ? void 0 : _a.getData(player.token)
-                            });
-                        }
-                        else {
-                            ServerSocket.somethingWrongResponse(socket, "", "CAN'T SETTLE", "You can't settle this node");
-                        }
-                        break;
-                    case ServerSocket.request_types.HARVEST_NODE:
-                        (_b = game.map.getNode(request_data.node_x, request_data.node_y)) === null || _b === void 0 ? void 0 : _b.harvest(player, game, socket);
-                        break;
-                    case ServerSocket.request_types.PURCHASE_TECHNOLOGY:
-                        if (game.purchase_technology(request_data.player_token, request_data.tech_name)) {
-                            ServerSocket.sendData(socket, ServerSocket.response_types.PURCHASED_TECHNOLOGY_RESPONSE, {
-                                root_tech_tree_node: player.root_tech_tree_node,
-                                total_owned_stars: player.total_owned_stars
-                            });
-                        }
-                        else {
-                            ServerSocket.sendData(socket, ServerSocket.response_types.SOMETHING_WRONG_RESPONSE, {
-                                title: "Cannot purchase " + request_data.tech_name,
-                                message: "You don't have enough stars to purchase this technology"
-                            });
-                        }
+                    }
+                }
+                ServerSocket.sendData(socket, ServerSocket.response_types.MENU_INFO_RESPONSE, {
+                    city_data: request_city,
+                    production_units: player.production_units
+                });
+            });
+            socket.on(ServerSocket.request_types.GET_STARS_DATA, (...args) => {
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
+                const player = game_and_player_array[1];
+                if (!player.star_production_has_started) {
+                    player.produceStars();
+                }
+                ServerSocket.sendData(socket, ServerSocket.response_types.STARS_DATA_RESPONSE, {
+                    star_production: player.star_production,
+                    total_owned_stars: player.total_owned_stars,
+                });
+            });
+            socket.on(ServerSocket.request_types.GET_ALL, (...args) => {
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
+                const game = game_and_player_array[0];
+                const player = game_and_player_array[1];
+                if (!socket.rooms.has(game.token)) {
+                    socket.join(game.token);
+                }
+                ServerSocket.sendData(socket, ServerSocket.response_types.ALL_RESPONSE, game.getData(player));
+            });
+            socket.on(ServerSocket.request_types.FIND_1v1_OPPONENT, (...args) => {
+                const request_data = args[0];
+                MatchMaker_1.MatchMaker.addPlayer1v1(socket, request_data.map_size);
+            });
+            socket.on(ServerSocket.request_types.FIND_AI_OPPONENT, (...args) => {
+                const request_data = args[0];
+                MatchMaker_1.MatchMaker.findAiGame(socket, request_data.map_size);
+            });
+            socket.on(ServerSocket.request_types.PRODUCE_UNIT, (...args) => {
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
+                const game = game_and_player_array[0];
+                const player = game_and_player_array[1];
+                const city = game.getCity(request_data.city_name, player);
+                const unit_type = request_data.unit_type;
+                if (city != null) {
+                    city.produceUnitAndSendResponse(socket, unit_type, game);
+                }
+            });
+            socket.on(ServerSocket.request_types.MOVE_UNITS, (...args) => {
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
+                const game = game_and_player_array[0];
+                const player = game_and_player_array[1];
+                const unit = player.getUnit(request_data.unit_id);
+                const path = new Path_1.default(game, request_data.path);
+                if (!path.isValid() || unit == null) {
+                    ServerSocket.sendData(socket, ServerSocket.response_types.INVALID_MOVE_RESPONSE, {
+                        unit: unit
+                    });
+                    return;
+                }
+                unit.moveAndSendResponse(path.path, game, player, socket);
+            });
+            socket.on(ServerSocket.request_types.ATTACK_UNIT, (...args) => {
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
+                const game = game_and_player_array[0];
+                const player = game_and_player_array[1];
+                ServerSocket.sendUnitAttack(socket, game, player, request_data.attacked_unit_id, request_data.unit_id, new Path_1.default(game, request_data.path));
+            });
+            socket.on(ServerSocket.request_types.SETTLE, (...args) => {
+                var _a;
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
+                const game = game_and_player_array[0];
+                const player = game_and_player_array[1];
+                let city_node = game.map.getNode(request_data.x, request_data.y);
+                let can_settle = game.canSettle(player, city_node, request_data.id);
+                if (can_settle) {
+                    game.addCity(player, city_node);
+                    ServerSocket.sendData(socket, ServerSocket.response_types.NEW_CITY, {
+                        city_x: request_data.x,
+                        city_y: request_data.y,
+                        city_node: (_a = game.map.getNode(request_data.x, request_data.y)) === null || _a === void 0 ? void 0 : _a.getData(player.token)
+                    });
+                }
+                else {
+                    ServerSocket.somethingWrongResponse(socket, "", "CAN'T SETTLE", "You can't settle this node");
+                }
+            });
+            socket.on(ServerSocket.request_types.HARVEST_NODE, (...args) => {
+                var _a;
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
+                const game = game_and_player_array[0];
+                const player = game_and_player_array[1];
+                (_a = game.map.getNode(request_data.node_x, request_data.node_y)) === null || _a === void 0 ? void 0 : _a.harvest(player, game, socket);
+            });
+            socket.on(ServerSocket.request_types.PURCHASE_TECHNOLOGY, (...args) => {
+                const request_data = args[0];
+                const game_and_player_array = isGameValid(socket, request_data);
+                if (game_and_player_array == null)
+                    return;
+                const game = game_and_player_array[0];
+                const player = game_and_player_array[1];
+                if (game.purchaseTechnology(request_data.player_token, request_data.tech_name)) {
+                    ServerSocket.sendData(socket, ServerSocket.response_types.PURCHASED_TECHNOLOGY_RESPONSE, {
+                        root_tech_tree_node: player.root_tech_tree_node,
+                        total_owned_stars: player.total_owned_stars
+                    });
+                }
+                else {
+                    ServerSocket.sendData(socket, ServerSocket.response_types.SOMETHING_WRONG_RESPONSE, {
+                        title: "Cannot purchase " + request_data.tech_name,
+                        message: "You don't have enough stars to purchase this technology"
+                    });
                 }
             });
         });
     }
-    ServerSocket.addRequestListener = addRequestListener;
-    function sendUnitProducedResponse(socket, city, unit, player) {
+    ServerSocket.addListener = addListener;
+    function sendUnitProducedResponse(socket, city, unit, player, game_token) {
         if (city.owner.token === player.token) {
             ServerSocket.sendData(socket, ServerSocket.response_types.UNIT_RESPONSE, {
                 unit: unit.getData(),
@@ -217,7 +245,7 @@ var ServerSocket;
             });
         }
         else {
-            ServerSocket.sendDataToAll(socket, ServerSocket.response_types.UNIT_RESPONSE, {
+            ServerSocket.sendDataToAll(socket, game_token, ServerSocket.response_types.UNIT_RESPONSE, {
                 unit: unit.getData(),
                 // update client stars
                 total_owned_stars: -1
@@ -255,8 +283,8 @@ var ServerSocket;
         });
     }
     ServerSocket.sendUnitMovementToOwner = sendUnitMovementToOwner;
-    function sendUnitMovementToAll(socket, unit, in_game_player) {
-        ServerSocket.sendDataToAll(socket, ServerSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE, {
+    function sendUnitMovementToAll(socket, unit, in_game_player, game_token) {
+        ServerSocket.sendDataToAll(socket, game_token, ServerSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE, {
             unit: unit.getData(),
         });
     }
@@ -286,11 +314,11 @@ var ServerSocket;
         }
         else {
             if (!game.playerIsAlive(player)) {
-                ServerSocket.sendDataToAll(socket, ServerSocket.response_types.END_GAME_RESPONSE, {
+                ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.END_GAME_RESPONSE, {
                     won: false
                 });
             }
-            ServerSocket.sendDataToAll(socket, ServerSocket.response_types.CONQUERED_CITY_RESPONSE, {
+            ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.CONQUERED_CITY_RESPONSE, {
                 city: city.getData(player.token),
                 unit: unit.getData()
             });
@@ -309,15 +337,10 @@ var ServerSocket;
             ServerSocket.somethingWrongResponse(socket, request_data.player_token, "Player doesn't exist", "Error could find you!");
             return null;
         }
-        // // check if game is ready
-        // if(!game?.isGameReady()){
-        //     ServerSocket.somethingWrongResponse(socket, player.token, "Game is not ready", "Error all player in this game aren't ready!");
-        //     return null;
-        // }
         return [game, player];
     }
     function sendGameOver(socket, game, player_won, player_lost) {
-        ServerSocket.sendDataToAll(socket, ServerSocket.response_types.END_GAME_RESPONSE, {
+        ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.END_GAME_RESPONSE, {
             won: false
         });
         ServerSocket.sendData(socket, ServerSocket.response_types.END_GAME_RESPONSE, {
@@ -345,7 +368,7 @@ var ServerSocket;
                 friendly_unit.moveAndSendResponse(path.path, game, player, socket);
             }
             // send to enemy
-            ServerSocket.sendDataToAll(socket, ServerSocket.response_types.ATTACK_UNIT_RESPONSE, {
+            ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.ATTACK_UNIT_RESPONSE, {
                 unit_1: friendly_unit,
                 is_unit_1_dead: is_friendly_unit_dead,
                 unit_2: enemy_unit,

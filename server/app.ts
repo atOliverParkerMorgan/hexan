@@ -28,8 +28,7 @@ export namespace App {
 
     httpServer.listen(port);
 
-    ServerSocket.addRequestListener();
-    ServerSocket.addResponseListener();
+    ServerSocket.addListener();
 
   }
 

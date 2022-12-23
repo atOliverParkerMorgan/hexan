@@ -9,6 +9,7 @@ import Path from "../Map/Path";
 import MapInterface from "../../Interfaces/Map/MapInterface";
 import GameInterface from "../../Interfaces/GameInterface";
 import PlayerInterface from "../../Interfaces/PlayerInterface";
+import {App} from "../../../app";
 
 export default class Unit implements UnitInterface{
     x: number;
@@ -132,13 +133,9 @@ export default class Unit implements UnitInterface{
                     for (const unit of enemy_player.units) {
                         if (node.x === unit.x && node.y === unit.y) {
                             // found new enemy unit by moving
-                            ServerSocket.sendData(socket,
-                                {
-                                    response_type: ServerSocket.response_types.ENEMY_FOUND_RESPONSE,
-                                    data: {
+                            ServerSocket.sendData(socket, ServerSocket.response_types.ENEMY_FOUND_RESPONSE, {
                                         unit: unit.getData(),
-                                    }
-                                }, player.token)
+                                    })
                         }
                     }
                 }
@@ -157,6 +154,19 @@ export default class Unit implements UnitInterface{
                     }
                 });
                 if (is_conquered) {
+                    // if win condition disconnect players
+                    game.all_players.map((player_1: PlayerInterface)=>{
+                        if(!game.playerIsAlive(player_1)){
+                            App.io.sockets.sockets.forEach((socket: Socket) => {
+                                game.all_players.map((player_2: PlayerInterface)=> {
+                                    if (socket.id === player_2.token) {
+                                        socket.disconnect(true);
+                                    }
+                                });
+                            });
+                            return;
+                        }
+                    })
                     return;
                 }
             }
@@ -164,22 +174,18 @@ export default class Unit implements UnitInterface{
             // show unit to player if the unit steps on a discovered node
             game.all_players.map((in_game_player: any) => {
                 if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
-
                     if (in_game_player.token === player.token) {
                         ServerSocket.sendUnitMovementToOwner(socket, this, all_discovered_nodes, in_game_player);
                     } else {
-                        ServerSocket.sendUnitMovementToAll(socket, this, in_game_player);
+                        ServerSocket.sendUnitMovementToAll(socket, this, in_game_player, game.token);
                     }
 
                 } else {
                     if (in_game_player.token !== player.token) {
-                        ServerSocket.sendDataToAll(socket,
-                            {
-                                response_type: ServerSocket.response_types.ENEMY_UNIT_DISAPPEARED,
-                                data: {
+                        ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.ENEMY_UNIT_DISAPPEARED,
+                                {
                                     unit: this.getData(),
-                                }
-                            }, in_game_player.token)
+                                })
                     }
                 }
             })

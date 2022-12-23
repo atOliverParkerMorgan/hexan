@@ -39,9 +39,9 @@ var Unit = /** @class */ (function () {
         this.background_circle = null;
         this.sprite = Sprite.from(this.texture_path);
         this.boat_sprite = Sprite.from("/images/boat.png");
-        this.update_unit_on_stage();
+        this.updateUnitOnStage();
     }
-    Unit.prototype.remove_children = function () {
+    Unit.prototype.removeChildren = function () {
         // remove the unit Graphics when unit moves
         if (this.sprite != null) {
             viewport.removeChild(this.sprite);
@@ -60,13 +60,13 @@ var Unit = /** @class */ (function () {
             viewport.removeChild(this.movement_circle);
         }
     };
-    Unit.prototype.update_unit_on_stage = function () {
-        this.remove_children();
-        this.show_movement(this.background_unit_movement_percentage);
-        this.show_health();
-        this.show_background();
-        this.set_sprite_position();
-        this.set_sprite_size();
+    Unit.prototype.updateUnitOnStage = function () {
+        this.removeChildren();
+        this.showMovement(this.background_unit_movement_percentage);
+        this.showHealth();
+        this.showBackground();
+        this.setSpritePosition();
+        this.setSpriteSize();
         if (this.is_on_water) {
             this.boat_sprite.interactive = false;
             this.boat_sprite.buttonMode = false;
@@ -78,17 +78,17 @@ var Unit = /** @class */ (function () {
             viewport.addChild(this.sprite);
         }
     };
-    Unit.prototype.set_sprite_position = function () {
+    Unit.prototype.setSpritePosition = function () {
         if (this.is_on_water) {
-            this.boat_sprite.x = this.get_x_in_pixels();
-            this.boat_sprite.y = this.get_y_in_pixels();
+            this.boat_sprite.x = this.getXInPixels();
+            this.boat_sprite.y = this.getYInPixels();
         }
         else {
-            this.sprite.x = this.get_x_in_pixels();
-            this.sprite.y = this.get_y_in_pixels();
+            this.sprite.x = this.getXInPixels();
+            this.sprite.y = this.getYInPixels();
         }
     };
-    Unit.prototype.show_background = function () {
+    Unit.prototype.showBackground = function () {
         this.background_circle = new Graphics();
         if (this.is_friendly) {
             this.background_circle.beginFill(Unit.FRIENDLY_BACKGROUND_COLOR);
@@ -96,25 +96,25 @@ var Unit = /** @class */ (function () {
         else {
             this.background_circle.beginFill(Unit.ENEMY_BACKGROUND_COLOR);
         }
-        this.background_circle.drawCircle(this.get_x_in_pixels() + this.width / 2, this.get_y_in_pixels() + this.height / 2, HEX_SIDE_SIZE / 1.8);
+        this.background_circle.drawCircle(this.getXInPixels() + this.width / 2, this.getYInPixels() + this.height / 2, HEX_SIDE_SIZE / 1.8);
         this.background_circle.endFill();
         viewport.addChild(this.background_circle);
     };
-    Unit.prototype.show_health = function () {
+    Unit.prototype.showHealth = function () {
         this.health_circle = new Graphics();
         this.health_circle_background = new Graphics();
         this.health_circle_background.beginFill(0xffffff);
         this.health_circle_background.lineStyle(2, 0xffffff);
-        this.health_circle_background.arc(this.get_x_in_pixels() + this.width / 2, this.get_y_in_pixels() + this.height / 2, HEX_SIDE_SIZE / 1.38, 0, 2 * Math.PI);
+        this.health_circle_background.arc(this.getXInPixels() + this.width / 2, this.getYInPixels() + this.height / 2, HEX_SIDE_SIZE / 1.38, 0, 2 * Math.PI);
         this.health_circle_background.endFill();
         viewport.addChild(this.health_circle_background);
         this.health_circle.beginFill(Unit.HEALTH_BAR_COLOR);
         this.health_circle.lineStyle(2, 0xffffff);
-        this.health_circle.arc(this.get_x_in_pixels() + this.width / 2, this.get_y_in_pixels() + this.height / 2, HEX_SIDE_SIZE / 1.38, 0, 2 * Math.PI / (this.max_health / this.health));
+        this.health_circle.arc(this.getXInPixels() + this.width / 2, this.getYInPixels() + this.height / 2, HEX_SIDE_SIZE / 1.38, 0, 2 * Math.PI / (this.max_health / this.health));
         this.health_circle.endFill();
         viewport.addChild(this.health_circle);
     };
-    Unit.prototype.show_movement = function (percentage_of_movement) {
+    Unit.prototype.showMovement = function (percentage_of_movement) {
         if (this.current_path.length === 0) {
             if (this.movement_circle != null) {
                 viewport.removeChild(this.movement_circle);
@@ -124,11 +124,11 @@ var Unit = /** @class */ (function () {
         this.movement_circle = new Graphics;
         this.movement_circle.beginFill(Unit.MOVEMENT_COLOR);
         this.movement_circle.lineStyle(2, Unit.MOVEMENT_COLOR);
-        this.movement_circle.arc(this.get_x_in_pixels() + this.width / 2, this.get_y_in_pixels() + this.height / 2, HEX_SIDE_SIZE / 1.2, 0, 2 * Math.PI / (100 / percentage_of_movement));
+        this.movement_circle.arc(this.getXInPixels() + this.width / 2, this.getYInPixels() + this.height / 2, HEX_SIDE_SIZE / 1.2, 0, 2 * Math.PI / (100 / percentage_of_movement));
         this.movement_circle.endFill();
         viewport.addChild(this.movement_circle);
     };
-    Unit.prototype.set_sprite_size = function () {
+    Unit.prototype.setSpriteSize = function () {
         if (this.is_on_water) {
             this.boat_sprite.width = this.width;
             this.boat_sprite.height = this.height;
@@ -138,14 +138,14 @@ var Unit = /** @class */ (function () {
             this.sprite.height = this.height;
         }
     };
-    Unit.prototype.get_x_in_pixels = function () {
+    Unit.prototype.getXInPixels = function () {
         var row_bias = this.y % 2 === 0 ? DISTANCE_BETWEEN_HEX / 2 : 0;
         return (this.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2 - this.width / 2;
     };
-    Unit.prototype.get_y_in_pixels = function () {
+    Unit.prototype.getYInPixels = function () {
         return (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2 - this.height / 2;
     };
-    Unit.prototype.move_to = function (x, y) {
+    Unit.prototype.moveTo = function (x, y) {
         var old_node = Node.all_nodes[this.y][this.x];
         old_node.unit = null;
         var new_node = Node.all_nodes[y][x];
@@ -153,13 +153,13 @@ var Unit = /** @class */ (function () {
         this.x = x;
         this.y = y;
         // redraw graphics children
-        this.update_unit_movement_background();
+        this.updateUnitMovementBackground();
     };
-    Unit.prototype.set_current_path = function (current_path) {
+    Unit.prototype.setCurrentPath = function (current_path) {
         this.current_path = current_path;
-        this.update_unit_movement_background();
+        this.updateUnitMovementBackground();
     };
-    Unit.prototype.update_movement_background = function (current_node, depth) {
+    Unit.prototype.updateMovementBackground = function (current_node, depth) {
         var _this = this;
         if (depth === 0) {
             this.background_unit_movement_percentage = 0;
@@ -167,19 +167,19 @@ var Unit = /** @class */ (function () {
         }
         setTimeout(function () {
             _this.background_unit_movement_percentage += 5;
-            _this.update_unit_on_stage();
-            _this.update_movement_background(current_node, depth - 1);
-        }, current_node.get_movement_time() * 1000 / 30);
+            _this.updateUnitOnStage();
+            _this.updateMovementBackground(current_node, depth - 1);
+        }, current_node.getMovementTime() * 1000 / 30);
     };
-    Unit.prototype.update_unit_movement_background = function () {
+    Unit.prototype.updateUnitMovementBackground = function () {
         this.current_path.shift();
         if (this.current_path.length !== 0) {
             var current_node = Node.all_nodes[this.current_path[0][1]][this.current_path[0][0]];
-            this.update_movement_background(current_node, 30);
+            this.updateMovementBackground(current_node, 30);
         }
         else {
             this.background_unit_movement_percentage = 0;
-            this.update_unit_on_stage();
+            this.updateUnitOnStage();
         }
     };
     // unit types

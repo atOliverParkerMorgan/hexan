@@ -98,14 +98,14 @@
 <div class="w3-container">
     <div id="modal" class="w3-modal w3-display-middle">
         <div class="w3-modal-content w3-animate-top w3-card-4">
-            <header id="modal_header" class="w3-container w3-center">
+            <header id="modal_header" class="w3-container w3-center w3-padding-16">
             <span onclick="document.getElementById('modal').style.display='none'"
                   class="w3-button w3-display-topright">&times;</span>
                 <h2 id="modal_title" class="w3-wide w3-center"></h2>
                 <hr>
             </header>
             <br>
-            <div class="w3-container" id="modal_message">
+            <div class="w3-container w3-center" id="modal_message">
             </div>
             <br>
         </div>
@@ -114,16 +114,19 @@
 
 <div class="w3-container">
     <div id="game_over_modal" class="w3-modal w3-display-middle">
-        <div class="w3-modal-content w3-animate-top w3-card-4">
-            <header class="w3-container w3-center">
-                <h1 class="w3-wide w3-center">GAME OVER</h1>
-                <hr>
+        <div class="w3-modal-content w3-animate-top">
+            <header id="game_over_modal_header" class="w3-container w3-center w3-padding-16">
+                <h1 id="game_over_modal_title" class="w3-wide w3-center"></h1>
             </header>
             <br>
-            <div class="w3-container" id="game_over_modal_message">
-                You lost.
-            </div>
             <br>
+            <h5 class="w3-container w3-center" id="game_over_modal_message">
+            </h5>
+            <br>
+            <br>
+            <br>
+            <div class="w3-container w3-center"><button id="play_again" class="w3-button w3-round w3-green">Play Again</button><button id="view_game" class="w3-button w3-round w3-indigo">View Game</button></div>
+
         </div>
     </div>
 </div>

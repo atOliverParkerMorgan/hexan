@@ -10,6 +10,8 @@ import {
     WORLD_HEIGHT,
     WORLD_WIDTH
 } from "./GameGraphics/Pixi.js";
+import {interval_id_timer, settingsLogicInit} from "./ClientCreateGame.js";
+import {Interval} from "./GameGraphics/Interval.js";
 
 export let renderer: any;
 export let current_node: Node | undefined;
@@ -18,46 +20,43 @@ let current_city: any;
 let is_mouse_on_city_menu = false;
 let are_listeners_added = false;
 
-let last_city_cords_in_pixels_x = 0;
-let last_city_cords_in_pixels_y = 0;
-
 // hot keys
 document.addEventListener("keydown", (event)=>{
     if(event.key === "Escape"){
-        hide_city_menu();
-        hide_unit_info();
+        hideCityMenu();
+        hideUnitInfo();
     }
 })
 
-export function show_node_info(node: Node){
+export function showNodeInfo(node: Node){
     if(node.type === Node.HIDDEN) return;
 
     current_node = node;
 
-    update_node_action_button_and_information(node);
+    updateNodeActionButtonAndInformation(node);
 
     (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "visible";
-    (<HTMLInputElement >document.getElementById("node_info_title")).innerText = node.get_type_string();
+    (<HTMLInputElement >document.getElementById("node_info_title")).innerText = node.getTypeString();
 
     const div_unit_info_menu: any = (<HTMLInputElement >document.getElementById("node_info_menu"));
-    div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hide_node_info;
-    if(node.can_be_harvested()){
+    div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hideNodeInfo;
+    if(node.canBeHarvested()){
         div_unit_info_menu.querySelector("#harvest_button").style.visibility = "visible";
 
-        if(Player.get_total_number_of_stars() < node.harvest_cost){
+        if(Player.getTotalNumberOfStars() < node.harvest_cost){
             document.getElementById("harvest_button")?.classList.remove("w3-green");
             document.getElementById("harvest_button")?.classList.add("w3-red");
         }else{
             document.getElementById("harvest_button")?.classList.remove("w3-red");
             document.getElementById("harvest_button")?.classList.add("w3-green");
         }
-        div_unit_info_menu.querySelector("#harvest_button").onclick = () => ClientSocket.request_harvest(node.x, node.y);
+        div_unit_info_menu.querySelector("#harvest_button").onclick = () => ClientSocket.requestHarvest(node.x, node.y);
     }else{
         div_unit_info_menu.querySelector("#harvest_button").style.visibility = "hidden";
     }
 }
 
-function update_node_action_button_and_information(node: Node){
+function updateNodeActionButtonAndInformation(node: Node){
     (<HTMLInputElement>document.getElementById("harvest_cost")).innerText = node.harvest_cost.toString();
     (<HTMLInputElement>document.getElementById("gain_stars")).innerText = node.production_stars.toString();
     switch(node.type) {
@@ -73,13 +72,13 @@ function update_node_action_button_and_information(node: Node){
     }
 }
 
-export function hide_node_info(){
+export function hideNodeInfo(){
     (<HTMLInputElement>document.getElementById("harvest_button")).style.visibility = "hidden";
     (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "hidden";
 }
 
-export function show_unit_info(unit: Unit){
-    update_unit_action_button(unit);
+export function showUnitInfo(unit: Unit){
+    updateUnitActionButton(unit);
 
     (<HTMLInputElement >document.getElementById("unit_info_image")).src =  unit.texture_path;
     (<HTMLInputElement >document.getElementById("unit_info_menu")).style.visibility = "visible";
@@ -90,12 +89,12 @@ export function show_unit_info(unit: Unit){
     (<HTMLInputElement >document.getElementById("unit_info_movement_data")).innerText = unit.movement.toString();
 
     const div_unit_info_menu: any = (<HTMLInputElement >document.getElementById("unit_info_menu"));
-    div_unit_info_menu.querySelector("#hide_unit_info_button").onclick = hide_unit_info;
-    div_unit_info_menu.querySelector("#action_button").onclick = () => unit_action(unit);
+    div_unit_info_menu.querySelector("#hide_unit_info_button").onclick = hideUnitInfo;
+    div_unit_info_menu.querySelector("#action_button").onclick = () => unitAction(unit);
 
 }
 
-function update_unit_action_button(unit: Unit){
+function updateUnitActionButton(unit: Unit){
     (<HTMLInputElement>document.getElementById("action_button_text")).innerText = unit.action;
     switch(unit.action){
         case Unit.FORTIFY:
@@ -110,15 +109,15 @@ function update_unit_action_button(unit: Unit){
 }
 
 // send a request for a unit action to the server
-function unit_action(unit: Unit){
-    ClientSocket.request_unit_action(unit);
+function unitAction(unit: Unit){
+    ClientSocket.requestUnitAction(unit);
 }
 
-export function hide_unit_info(){
+export function hideUnitInfo(){
     (<HTMLInputElement >document.getElementById("unit_info_menu")).style.visibility = "hidden";
 }
 
-export function show_city_menu(city: any){
+export function showCityMenu(city: any){
     current_city = city
 
     if(!are_listeners_added) {
@@ -156,23 +155,39 @@ export function show_city_menu(city: any){
         are_listeners_added = true;
     }
 
-    show_city_data(city);
+    showCityData(city);
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "visible";
 }
-export function hide_city_menu(){
+export function hideCityMenu(){
     // move info menu
     (<HTMLInputElement> document.getElementById("unit_info_menu")).style.right = "0";
     (<HTMLInputElement> document.getElementById("city_side_menu")).style.visibility = "hidden";
 }
 
-export function game_over(){
-    // ClientSocket.socket.disconnect();
-    (<HTMLInputElement> document.getElementById("game_over_modal")).style.visibility = "visibility";
+export function gameOver(title: string, message: string, w3_color_classname: string){
+    clearInterval(Interval.update_stars_interval_id);
+    clearInterval(Interval.update_progress_bar_interval_id);
+
+    (<HTMLInputElement>document.getElementById("game_over_modal")).style.display = "block";
+    (<HTMLInputElement>document.getElementById("game_over_modal_title")).innerText = title;
+    (<HTMLInputElement>document.getElementById("game_over_modal_message")).innerText = message;
+    (<HTMLInputElement>document.getElementById("game_over_modal_header")).classList.add(w3_color_classname);
+
+    (<HTMLInputElement>document.getElementById("play_again")).onclick = ()=>{
+        const main_div: any = document.getElementById("app");
+        main_div.innerHTML = loadFile("/views/gameSettings.html");
+        settingsLogicInit()
+    }
+
+    (<HTMLInputElement>document.getElementById("view_game")).onclick = ()=>{
+        (<HTMLInputElement>document.getElementById("game_over_modal")).style.display = "none";
+
+    }
 
 }
 
 
-function show_city_data(city: any){
+function showCityData(city: any){
     // move info menu
    (<HTMLInputElement >document.getElementById("unit_info_menu")).style.right = "420px";
    (<HTMLInputElement >document.getElementById("city_name")).innerText = city.name;
@@ -184,7 +199,7 @@ function show_city_data(city: any){
    const div_side_menu: any = (<HTMLInputElement >document.getElementById("city_side_menu"));
    div_side_menu.removeChild((<HTMLInputElement >document.getElementById("unit_menu")));
 
-   div_side_menu.querySelector("#hide_city_menu_button").onclick = hide_city_menu;
+   div_side_menu.querySelector("#hide_city_menu_button").onclick = hideCityMenu;
 
 
    const ul_unit_menu = document.createElement("ul");
@@ -200,18 +215,18 @@ function show_city_data(city: any){
        unit_html.className = "w3-bar";
        unit_html.innerHTML = loadFile("/views/unit_item.html")
 
-       unit_html = set_unit_data(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
+       unit_html = setUnitData(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
 
        ul_unit_menu.appendChild(unit_html);
        div_side_menu.appendChild(ul_unit_menu)
    }
 }
 
-function set_unit_data(unit_html: any, unit_name: string, src: string, type: string, damage: number, health: number, movement: number, cost: number){
+function setUnitData(unit_html: any, unit_name: string, src: string, type: string, damage: number, health: number, movement: number, cost: number){
     unit_html.querySelector("#image").src = src
     unit_html.querySelector("#produce").src = "/images/production.png"
     unit_html.querySelector("#produce").onclick = function () {
-        ClientSocket.request_production(unit_name);
+        ClientSocket.requestProduction(unit_name);
     };
     unit_html.querySelector("#name").innerText = unit_name;
     unit_html.querySelector("#type").innerText = type;
@@ -224,10 +239,10 @@ function set_unit_data(unit_html: any, unit_name: string, src: string, type: str
 }
 
 // updates the total stars on screen
-export function update_star_info(total_owned_stars: number, star_production?: number){
+export function updateStarInfo(total_owned_stars: number, star_production?: number){
     (<HTMLInputElement>document.getElementById("star_info")).style.visibility = "visible";
     if(current_node != null && (Number(total_owned_stars.toFixed(1)) - Math.floor(total_owned_stars)) === 0 && (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility === "visible") {
-        show_node_info(current_node);
+        showNodeInfo(current_node);
     }
 
     (<HTMLInputElement>document.getElementById("total_owned_stars")).innerText = Math.floor(total_owned_stars).toString();
@@ -236,7 +251,7 @@ export function update_star_info(total_owned_stars: number, star_production?: nu
     }
 }
 
-export function update_progress_bar(total_owned_stars: number){
+export function updateProgressBar(total_owned_stars: number){
 
     let number_of_bars = (Number(total_owned_stars.toFixed(1)) - Math.floor(total_owned_stars));
     let bars = "";
@@ -246,7 +261,7 @@ export function update_progress_bar(total_owned_stars: number){
     (<HTMLInputElement>document.getElementById("star_loading_bar")).innerText = bars;
 }
 
-export function create_tech_tree(){
+export function createTechTree(){
     //add canvas element
 
     const TECH_TREE_CANVAS_WIDTH: number = document.body.clientWidth;
@@ -278,7 +293,7 @@ export function create_tech_tree(){
         interaction_nodes_values.map((node_cords: (string | number | boolean)[])=>{
             // make sure that user is hovering over this node and that it isn't already purchased
             if(node_cords[5] && !node_cords[6]){
-                ClientSocket.request_buy_technology(<string> node_cords[0])
+                ClientSocket.requestBuyTechnology(<string> node_cords[0])
                 mouse_held = false;
                 return
             }
@@ -318,7 +333,7 @@ export function create_tech_tree(){
     document.getElementById("tech_tree_container")?.appendChild(tech_tree_canvas);
 
     // make a new graph
-    Technology.init_graph_arrays();
+    Technology.initGraphArrays();
 
     // @ts-ignore
     let layout = new Springy.Layout.ForceDirected(
@@ -459,31 +474,31 @@ export function create_tech_tree(){
 }
 
 let is_tech_tree_hidden: boolean = true;
-export function setup_tech_tree_button(){
+export function setupTechTreeButton(){
     (<HTMLInputElement>document.getElementById("tech_button")).onclick = ()=>{
         if(is_tech_tree_hidden){
-            show_tech_tree();
+            showTechTree();
         }else{
-            hide_tech_tree();
+            hideTechTree();
         }
         is_tech_tree_hidden = !is_tech_tree_hidden;
     }
 }
 
-export function show_tech_tree(){
+export function showTechTree(){
     document.getElementsByTagName("canvas")[0].style.visibility = "hidden";
     (<HTMLInputElement>document.getElementById("star_info")).style.color = "white"
-    create_tech_tree();
+    createTechTree();
 }
 
-export function hide_tech_tree(){
+export function hideTechTree(){
     document.getElementsByTagName("canvas")[1].style.visibility = "visible";
     (<HTMLInputElement>document.getElementById("star_info")).style.color = "black"
     document.getElementById("tech_tree_container")?.removeChild(<HTMLInputElement>document.getElementById("tech_tree"))
 }
 
 
-export function show_modal(title: string, message: string, w3_color_classname: string){
+export function showModal(title: string, message: string, w3_color_classname: string){
     (<HTMLInputElement>document.getElementById("modal")).style.display = "block";
     (<HTMLInputElement>document.getElementById("modal_title")).innerText = title;
     (<HTMLInputElement>document.getElementById("modal_message")).innerText = message;

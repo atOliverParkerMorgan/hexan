@@ -59,9 +59,9 @@ class Game implements GameInterface {
         }
     }
 
-    getEnemyPlayers(token: string): PlayerInterface[] {
+    getEnemyPlayers(player_token: string): PlayerInterface[] {
         return this.all_players.filter((player: PlayerInterface) => {
-            return player.token != token;
+            return player.token != player_token;
         })
     }
 

@@ -1,5 +1,5 @@
-import { a_star, DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, Graphics, WORLD_HEIGHT, WORLD_WIDTH, viewport } from "./Pixi.js";
-import { hide_city_menu, hide_unit_info, show_unit_info, show_node_info, hide_node_info } from "../UiLogic.js";
+import { aStar, DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, Graphics, WORLD_HEIGHT, WORLD_WIDTH, viewport } from "./Pixi.js";
+import { hideCityMenu, hideUnitInfo, showUnitInfo, showNodeInfo, hideNodeInfo } from "../UiLogic.js";
 import { City } from "./City/City.js";
 import { ClientSocket } from "../ClientSocket.js";
 import { Player } from "./Player.js";
@@ -24,11 +24,11 @@ var Node = /** @class */ (function () {
         this.line_borders_cords = line_borders_cords;
         this.sprite_name = sprite_name;
         if (!this.is_hidden)
-            this.set_border(Node.LAKE, 5, 1, this.line_borders_cords);
+            this.setBorder(Node.LAKE, 5, 1, this.line_borders_cords);
         // used for A* searching algorithm
         this.parent = null;
     }
-    Node.prototype.get_neighbours = function () {
+    Node.prototype.getNeighbours = function () {
         var cords;
         if (this.y % 2 === 0) {
             cords = [[-1, 0], [1, 0], [0, -1], [1, -1], [0, 1], [1, 1]];
@@ -50,9 +50,9 @@ var Node = /** @class */ (function () {
         }
         return neighbours;
     };
-    Node.prototype.get_valid_movement_neighbours = function () {
+    Node.prototype.getValidMovementNeighbours = function () {
         var valid_movement_neighbours = [];
-        var neighbours = this.get_neighbours();
+        var neighbours = this.getNeighbours();
         neighbours.map(function (neighbour) {
             if (neighbour == null)
                 return;
@@ -62,45 +62,44 @@ var Node = /** @class */ (function () {
         });
         return valid_movement_neighbours;
     };
-    Node.prototype.get_heuristic_value = function (start_node, goal_node) {
-        var value = this.get_distance_to_node(start_node) + this.get_distance_to_node(goal_node);
-        return value + this.get_movement_time();
+    Node.prototype.getHeuristicValue = function (start_node, goal_node) {
+        var value = this.getDistanceToNode(start_node) + this.getDistanceToNode(goal_node);
+        return value + this.getMovementTime();
     };
-    Node.prototype.add_node_to_stage = function () {
+    Node.prototype.addNodeToStage = function () {
         var _this = this;
         // draw hex
         this.hex = new Graphics();
         if (this.city != null) {
-            console.log(this.city.get_node_color());
-            this.hex.beginFill(this.city.get_node_color(), this.opacity);
+            this.hex.beginFill(this.city.getNodeColor(), this.opacity);
         }
         else if (this.is_hidden)
             this.hex.beginFill(Node.HIDDEN, this.opacity);
         else {
-            if (this.can_be_harvested())
+            if (this.canBeHarvested())
                 this.hex.beginFill(Node.CAN_BE_HARVESTED, this.opacity);
             else if (this.is_harvested)
                 this.hex.beginFill(Node.HARVESTED, this.opacity);
             else
                 this.hex.beginFill(this.type, this.opacity);
         }
-        this.hex.drawRegularPolygon(this.get_x_in_pixels(), this.get_y_in_pixels(), HEX_SIDE_SIZE, 6, 0);
+        this.hex.drawRegularPolygon(this.getXInPixels(), this.getYInPixels(), HEX_SIDE_SIZE, 6, 0);
         this.hex.endFill();
         this.hex.interactive = true;
         this.hex.button = true;
         this.hex.on('click', function () {
-            _this.on_click();
+            _this.onClick();
         });
-        this.hex.on('mouseover', function () { _this.set_hovered(); });
+        this.hex.on('mouseover', function () { _this.setHovered(); });
         viewport.addChild(this.hex);
-        this.show_city(this.city);
+        this.showCity(this.city);
         // draw node sprite
-        this.show_sprite();
+        this.showSprite();
     };
-    Node.prototype.show_city = function (city) {
+    Node.prototype.showCity = function (city) {
         this.city = city;
     };
-    Node.prototype.show_sprite = function () {
+    Node.prototype.showSprite = function () {
         if (this.sprite_name === "") {
             return;
         }
@@ -108,11 +107,11 @@ var Node = /** @class */ (function () {
         this.sprite = PIXI.Sprite.from("/images/" + this.sprite_name);
         this.sprite.width = DISTANCE_BETWEEN_HEX * .7;
         this.sprite.height = DISTANCE_BETWEEN_HEX * .7;
-        this.sprite.x = this.get_x_in_pixels() - DISTANCE_BETWEEN_HEX / 2.5;
-        this.sprite.y = this.get_y_in_pixels() - DISTANCE_BETWEEN_HEX / 2.5;
+        this.sprite.x = this.getXInPixels() - DISTANCE_BETWEEN_HEX / 2.5;
+        this.sprite.y = this.getYInPixels() - DISTANCE_BETWEEN_HEX / 2.5;
         viewport.addChild(this.sprite);
     };
-    Node.prototype.get_movement_time = function () {
+    Node.prototype.getMovementTime = function () {
         switch (this.type) {
             case Node.MOUNTAIN:
                 return 4;
@@ -126,21 +125,21 @@ var Node = /** @class */ (function () {
         // GRASS
         return 1;
     };
-    Node.prototype.get_distance_to_node = function (node) {
-        return Math.sqrt(Math.pow((node.get_x_in_pixels() - this.get_x_in_pixels()), 2) + Math.pow((node.get_y_in_pixels() - this.get_y_in_pixels()), 2));
+    Node.prototype.getDistanceToNode = function (node) {
+        return Math.sqrt(Math.pow((node.getXInPixels() - this.getXInPixels()), 2) + Math.pow((node.getYInPixels() - this.getYInPixels()), 2));
     };
-    Node.prototype.get_x_in_pixels = function () {
+    Node.prototype.getXInPixels = function () {
         var row_bias = this.y % 2 === 0 ? DISTANCE_BETWEEN_HEX / 2 : 0;
         return (this.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2;
     };
-    Node.prototype.get_y_in_pixels = function () {
+    Node.prototype.getYInPixels = function () {
         return (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
     };
     Node.prototype.get_unit_id = function () {
         var _a;
         return (_a = this.unit) === null || _a === void 0 ? void 0 : _a.id;
     };
-    Node.prototype.set_border = function (color, thickness, opacity, borders) {
+    Node.prototype.setBorder = function (color, thickness, opacity, borders) {
         this.line_borders.forEach(function (line) { return line.clear(); });
         this.line_borders = [];
         var line = new Graphics();
@@ -153,7 +152,7 @@ var Node = /** @class */ (function () {
                 case Node.TOP_RIGHT:
                 case Node.BOTTOM_LEFT:
                     direction_bias = border === Node.TOP_RIGHT ? 1 : -1;
-                    line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+                    line.position.set(this.getXInPixels(), this.getYInPixels());
                     line.lineStyle(thickness, color)
                         .moveTo(0, direction_bias * -HEX_SIDE_SIZE)
                         .lineTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * -HEX_SIDE_SIZE / 2);
@@ -163,7 +162,7 @@ var Node = /** @class */ (function () {
                 case Node.RIGHT:
                 case Node.LEFT:
                     direction_bias = border === Node.RIGHT ? 1 : -1;
-                    line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+                    line.position.set(this.getXInPixels(), this.getYInPixels());
                     line.lineStyle(thickness, color)
                         .moveTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * -HEX_SIDE_SIZE / 2)
                         .lineTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * HEX_SIDE_SIZE / 2);
@@ -173,7 +172,7 @@ var Node = /** @class */ (function () {
                 case Node.BOTTOM_RIGHT:
                 case Node.TOP_LEFT:
                     direction_bias = border === Node.BOTTOM_RIGHT ? 1 : -1;
-                    line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+                    line.position.set(this.getXInPixels(), this.getYInPixels());
                     line.lineStyle(thickness, color)
                         .moveTo(direction_bias * DISTANCE_BETWEEN_HEX / 2, direction_bias * HEX_SIDE_SIZE / 2)
                         .lineTo(0, direction_bias * HEX_SIDE_SIZE);
@@ -182,13 +181,12 @@ var Node = /** @class */ (function () {
             }
         }
     };
-    Node.prototype.on_click = function () {
-        var _a, _b;
+    Node.prototype.onClick = function () {
+        var _a;
         var is_moving_unit = false;
         // unit movement on second click (after selecting unit)
         if (Node.selected_node != null) {
             if (Node.selected_node !== this && Node.selected_node.unit != null && Node.selected_node.unit.is_friendly) {
-                console.log((_a = Node.last_hovered_node) === null || _a === void 0 ? void 0 : _a.unit);
                 // cannot move without hovering on above a node
                 if (Node.last_hovered_node == null)
                     return;
@@ -199,71 +197,66 @@ var Node = /** @class */ (function () {
                 if (Node.path == null)
                     return;
                 var path_node_cords = [];
-                for (var _i = 0, _c = Node.path; _i < _c.length; _i++) {
-                    var node = _c[_i];
+                for (var _i = 0, _b = Node.path; _i < _b.length; _i++) {
+                    var node = _b[_i];
                     path_node_cords.push([node.x, node.y]);
                 }
-                show_unit_info(Node.selected_node.unit);
+                showUnitInfo(Node.selected_node.unit);
                 // send movement request to server
-                ClientSocket.request_move_unit(Node.selected_node.unit, path_node_cords);
+                ClientSocket.requestMoveUnit(Node.selected_node.unit, path_node_cords);
                 to_node.update();
                 node_from.update();
             }
         }
         Node.already_selected = this === Node.selected_node && !Node.already_selected;
         if (!Node.already_selected)
-            (_b = Node.last_hovered_node) === null || _b === void 0 ? void 0 : _b.set_selected();
+            (_a = Node.last_hovered_node) === null || _a === void 0 ? void 0 : _a.setSelected();
         else {
-            this.remove_selected();
+            this.removeSelected();
         }
         // show bottom information menu
         if (this.city != null && !Node.already_selected && this.city.is_friendly) {
             Node.bottom_menu_shown = !Node.bottom_menu_shown;
             // get bottom menu information
-            ClientSocket.socket.emit("get_data", {
-                request_type: ClientSocket.request_types.GET_MENU_INFO,
-                data: {
-                    game_token: localStorage.game_token,
-                    player_token: localStorage.player_token,
-                    city: this.city
-                }
+            ClientSocket.sendData(ClientSocket.request_types.GET_MENU_INFO, {
+                city: this.city
             });
         }
         else {
-            hide_city_menu();
+            hideCityMenu();
         }
         // unit info
         if (this.unit != null && !Node.already_selected) {
             if (this.unit.is_friendly) {
-                show_unit_info(this.unit);
+                showUnitInfo(this.unit);
             }
         }
         else if (!is_moving_unit) {
-            hide_unit_info();
+            hideUnitInfo();
         }
         // show node data
         if (this.unit == null && this.city == null) {
-            show_node_info(this);
+            showNodeInfo(this);
         }
         else {
-            hide_node_info();
+            hideNodeInfo();
         }
     };
-    Node.prototype.set_city = function (city_data, sprite_name) {
+    Node.prototype.setCity = function (city_data, sprite_name) {
         this.city = new City(city_data);
         this.is_hidden = this.type === Node.HIDDEN;
         this.sprite_name = sprite_name;
         Player.all_cities.push(this.city);
         this.update();
-        this.show_sprite();
+        this.showSprite();
     };
-    Node.prototype.set_type = function (type, sprite_name) {
+    Node.prototype.setType = function (type, sprite_name) {
         this.type = type;
         this.is_hidden = this.type === Node.HIDDEN;
         this.sprite_name = sprite_name;
         this.update();
     };
-    Node.prototype.get_type_string = function () {
+    Node.prototype.getTypeString = function () {
         switch (this.type) {
             case Node.FOREST:
                 return "Planes";
@@ -278,20 +271,20 @@ var Node = /** @class */ (function () {
         }
         return "Unknown";
     };
-    Node.prototype.remove_selected = function () {
+    Node.prototype.removeSelected = function () {
         if (Node.selected_line != null) {
             viewport.removeChild(Node.selected_line);
         }
         Node.selected_node = null;
         this.update();
     };
-    Node.prototype.remove_unit = function () {
+    Node.prototype.removeUnit = function () {
         var _a;
-        (_a = this.unit) === null || _a === void 0 ? void 0 : _a.remove_children();
+        (_a = this.unit) === null || _a === void 0 ? void 0 : _a.removeChildren();
         this.unit = null;
         this.update();
     };
-    Node.prototype.set_selected = function () {
+    Node.prototype.setSelected = function () {
         // clear all hint lines
         for (var _i = 0, _a = Node.movement_hint_lines; _i < _a.length; _i++) {
             var movement_hint_line = _a[_i];
@@ -306,22 +299,22 @@ var Node = /** @class */ (function () {
         Node.selected_line.beginFill(Node.selected_color, Node.selected_opacity);
         // adding an outline to the node that is currently selected
         for (var i = 0, direction_bias = 1; i < 2; i++, direction_bias = -1) {
-            Node.selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+            Node.selected_line.position.set(this.getXInPixels(), this.getYInPixels());
             Node.selected_line.lineStyle(Node.selected_thickness, Node.selected_color)
                 .moveTo(0, direction_bias * (-HEX_SIDE_SIZE + Node.selected_thickness / 2))
                 .lineTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - Node.selected_thickness / 2), direction_bias * (-HEX_SIDE_SIZE / 2 + Node.selected_thickness / 2));
-            Node.selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+            Node.selected_line.position.set(this.getXInPixels(), this.getYInPixels());
             Node.selected_line.lineStyle(Node.selected_thickness, Node.selected_color)
                 .moveTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - Node.selected_thickness / 2), direction_bias * (-HEX_SIDE_SIZE / 2 + Node.selected_thickness / 2))
                 .lineTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - Node.selected_thickness / 2), direction_bias * (HEX_SIDE_SIZE / 2 - Node.selected_thickness / 2));
-            Node.selected_line.position.set(this.get_x_in_pixels(), this.get_y_in_pixels());
+            Node.selected_line.position.set(this.getXInPixels(), this.getYInPixels());
             Node.selected_line.lineStyle(Node.selected_thickness, Node.selected_color)
                 .moveTo(direction_bias * (DISTANCE_BETWEEN_HEX / 2 - Node.selected_thickness / 2), direction_bias * (HEX_SIDE_SIZE / 2 - Node.selected_thickness / 2))
                 .lineTo(0, direction_bias * (HEX_SIDE_SIZE - Node.selected_thickness / 2));
         }
         viewport.addChild(Node.selected_line);
     };
-    Node.prototype.set_hovered = function () {
+    Node.prototype.setHovered = function () {
         function set_last_node_hovered(this_node) {
             Node.last_hovered_node = this_node;
             this_node.opacity = .5;
@@ -343,17 +336,17 @@ var Node = /** @class */ (function () {
                             }
                             Node.movement_hint_lines = [];
                         }
-                        Node.path = a_star(Node.selected_node, Node.last_hovered_node);
+                        Node.path = aStar(Node.selected_node, Node.last_hovered_node);
                         if (Node.path == null || Node.path.length === 0)
                             return;
                         var last_node = Node.selected_node;
                         for (var i = 1; i < Node.path.length; i++) {
                             var movement_hint_line = new Graphics();
                             viewport.addChild(movement_hint_line);
-                            var last_x = last_node.get_x_in_pixels();
-                            var last_y = last_node.get_y_in_pixels();
-                            var current_x = Node.path[i].get_x_in_pixels();
-                            var current_y = Node.path[i].get_y_in_pixels();
+                            var last_x = last_node.getXInPixels();
+                            var last_y = last_node.getYInPixels();
+                            var current_x = Node.path[i].getXInPixels();
+                            var current_y = Node.path[i].getYInPixels();
                             var path_color = void 0;
                             if (Node.last_hovered_node.unit != null) {
                                 // if unit is friendly
@@ -394,11 +387,11 @@ var Node = /** @class */ (function () {
             set_last_node_hovered(this);
         }
     };
-    Node.prototype.can_be_harvested = function () {
+    Node.prototype.canBeHarvested = function () {
         if (this.is_harvested || this.city != null)
             return false;
         var harvested_neighbours = 0;
-        for (var _i = 0, _a = this.get_neighbours(); _i < _a.length; _i++) {
+        for (var _i = 0, _a = this.getNeighbours(); _i < _a.length; _i++) {
             var neighbour = _a[_i];
             if ((neighbour === null || neighbour === void 0 ? void 0 : neighbour.city) != null && (neighbour === null || neighbour === void 0 ? void 0 : neighbour.city.is_friendly) && (this === null || this === void 0 ? void 0 : this.type) !== Node.OCEAN && (this === null || this === void 0 ? void 0 : this.type) !== Node.LAKE) {
                 return true;
@@ -415,14 +408,14 @@ var Node = /** @class */ (function () {
     Node.prototype.update = function () {
         var _a;
         (_a = this === null || this === void 0 ? void 0 : this.hex) === null || _a === void 0 ? void 0 : _a.clear();
-        this.add_node_to_stage();
+        this.addNodeToStage();
         if (this.unit != null) {
-            this.unit.update_unit_on_stage();
+            this.unit.updateUnitOnStage();
         }
         if (this === Node.selected_node)
-            this.set_selected();
+            this.setSelected();
         if (!this.is_hidden)
-            this.set_border(Node.LAKE, 5, 1, this.line_borders_cords);
+            this.setBorder(Node.LAKE, 5, 1, this.line_borders_cords);
     };
     // types of nodes displayed as colors
     Node.OCEAN = 0x0AA3CF;

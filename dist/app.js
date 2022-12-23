@@ -48,8 +48,7 @@ var App;
         initStaticRoutes();
         initControllers();
         App.httpServer.listen(port);
-        ServerSocket_1.ServerSocket.addRequestListener();
-        ServerSocket_1.ServerSocket.addResponseListener();
+        ServerSocket_1.ServerSocket.addListener();
     }
     App.init = init;
     function initViewEngine() {

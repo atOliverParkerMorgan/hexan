@@ -4,33 +4,33 @@ import { Node } from "./GameGraphics/Node.js";
 import { Player } from "./GameGraphics/Player.js";
 import { Technology, graph, interaction_nodes_values } from "./GameGraphics/Technology/Technology.js";
 import { DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH } from "./GameGraphics/Pixi.js";
+import { settingsLogicInit } from "./ClientCreateGame.js";
+import { Interval } from "./GameGraphics/Interval.js";
 export var renderer;
 export var current_node;
 var current_city;
 var is_mouse_on_city_menu = false;
 var are_listeners_added = false;
-var last_city_cords_in_pixels_x = 0;
-var last_city_cords_in_pixels_y = 0;
 // hot keys
 document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
-        hide_city_menu();
-        hide_unit_info();
+        hideCityMenu();
+        hideUnitInfo();
     }
 });
-export function show_node_info(node) {
+export function showNodeInfo(node) {
     var _a, _b, _c, _d;
     if (node.type === Node.HIDDEN)
         return;
     current_node = node;
-    update_node_action_button_and_information(node);
+    updateNodeActionButtonAndInformation(node);
     document.getElementById("node_info_menu").style.visibility = "visible";
-    document.getElementById("node_info_title").innerText = node.get_type_string();
+    document.getElementById("node_info_title").innerText = node.getTypeString();
     var div_unit_info_menu = document.getElementById("node_info_menu");
-    div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hide_node_info;
-    if (node.can_be_harvested()) {
+    div_unit_info_menu.querySelector("#hide_node_info_button").onclick = hideNodeInfo;
+    if (node.canBeHarvested()) {
         div_unit_info_menu.querySelector("#harvest_button").style.visibility = "visible";
-        if (Player.get_total_number_of_stars() < node.harvest_cost) {
+        if (Player.getTotalNumberOfStars() < node.harvest_cost) {
             (_a = document.getElementById("harvest_button")) === null || _a === void 0 ? void 0 : _a.classList.remove("w3-green");
             (_b = document.getElementById("harvest_button")) === null || _b === void 0 ? void 0 : _b.classList.add("w3-red");
         }
@@ -38,13 +38,13 @@ export function show_node_info(node) {
             (_c = document.getElementById("harvest_button")) === null || _c === void 0 ? void 0 : _c.classList.remove("w3-red");
             (_d = document.getElementById("harvest_button")) === null || _d === void 0 ? void 0 : _d.classList.add("w3-green");
         }
-        div_unit_info_menu.querySelector("#harvest_button").onclick = function () { return ClientSocket.request_harvest(node.x, node.y); };
+        div_unit_info_menu.querySelector("#harvest_button").onclick = function () { return ClientSocket.requestHarvest(node.x, node.y); };
     }
     else {
         div_unit_info_menu.querySelector("#harvest_button").style.visibility = "hidden";
     }
 }
-function update_node_action_button_and_information(node) {
+function updateNodeActionButtonAndInformation(node) {
     document.getElementById("harvest_cost").innerText = node.harvest_cost.toString();
     document.getElementById("gain_stars").innerText = node.production_stars.toString();
     switch (node.type) {
@@ -59,12 +59,12 @@ function update_node_action_button_and_information(node) {
             break;
     }
 }
-export function hide_node_info() {
+export function hideNodeInfo() {
     document.getElementById("harvest_button").style.visibility = "hidden";
     document.getElementById("node_info_menu").style.visibility = "hidden";
 }
-export function show_unit_info(unit) {
-    update_unit_action_button(unit);
+export function showUnitInfo(unit) {
+    updateUnitActionButton(unit);
     document.getElementById("unit_info_image").src = unit.texture_path;
     document.getElementById("unit_info_menu").style.visibility = "visible";
     document.getElementById("unit_info_title").innerText = unit.type;
@@ -73,10 +73,10 @@ export function show_unit_info(unit) {
     document.getElementById("unit_info_range_data").innerText = unit.range.toString();
     document.getElementById("unit_info_movement_data").innerText = unit.movement.toString();
     var div_unit_info_menu = document.getElementById("unit_info_menu");
-    div_unit_info_menu.querySelector("#hide_unit_info_button").onclick = hide_unit_info;
-    div_unit_info_menu.querySelector("#action_button").onclick = function () { return unit_action(unit); };
+    div_unit_info_menu.querySelector("#hide_unit_info_button").onclick = hideUnitInfo;
+    div_unit_info_menu.querySelector("#action_button").onclick = function () { return unitAction(unit); };
 }
-function update_unit_action_button(unit) {
+function updateUnitActionButton(unit) {
     document.getElementById("action_button_text").innerText = unit.action;
     switch (unit.action) {
         case Unit.FORTIFY:
@@ -90,13 +90,13 @@ function update_unit_action_button(unit) {
     }
 }
 // send a request for a unit action to the server
-function unit_action(unit) {
-    ClientSocket.request_unit_action(unit);
+function unitAction(unit) {
+    ClientSocket.requestUnitAction(unit);
 }
-export function hide_unit_info() {
+export function hideUnitInfo() {
     document.getElementById("unit_info_menu").style.visibility = "hidden";
 }
-export function show_city_menu(city) {
+export function showCityMenu(city) {
     current_city = city;
     if (!are_listeners_added) {
         document.getElementById("city_side_menu").addEventListener("mouseover", function () {
@@ -124,19 +124,31 @@ export function show_city_menu(city) {
         }, false);
         are_listeners_added = true;
     }
-    show_city_data(city);
+    showCityData(city);
     document.getElementById("city_side_menu").style.visibility = "visible";
 }
-export function hide_city_menu() {
+export function hideCityMenu() {
     // move info menu
     document.getElementById("unit_info_menu").style.right = "0";
     document.getElementById("city_side_menu").style.visibility = "hidden";
 }
-export function game_over() {
-    // ClientSocket.socket.disconnect();
-    document.getElementById("game_over_modal").style.visibility = "visibility";
+export function gameOver(title, message, w3_color_classname) {
+    clearInterval(Interval.update_stars_interval_id);
+    clearInterval(Interval.update_progress_bar_interval_id);
+    document.getElementById("game_over_modal").style.display = "block";
+    document.getElementById("game_over_modal_title").innerText = title;
+    document.getElementById("game_over_modal_message").innerText = message;
+    document.getElementById("game_over_modal_header").classList.add(w3_color_classname);
+    document.getElementById("play_again").onclick = function () {
+        var main_div = document.getElementById("app");
+        main_div.innerHTML = loadFile("/views/gameSettings.html");
+        settingsLogicInit();
+    };
+    document.getElementById("view_game").onclick = function () {
+        document.getElementById("game_over_modal").style.display = "none";
+    };
 }
-function show_city_data(city) {
+function showCityData(city) {
     // move info menu
     document.getElementById("unit_info_menu").style.right = "420px";
     document.getElementById("city_name").innerText = city.name;
@@ -146,7 +158,7 @@ function show_city_data(city) {
     // create html menu with javascript
     var div_side_menu = document.getElementById("city_side_menu");
     div_side_menu.removeChild(document.getElementById("unit_menu"));
-    div_side_menu.querySelector("#hide_city_menu_button").onclick = hide_city_menu;
+    div_side_menu.querySelector("#hide_city_menu_button").onclick = hideCityMenu;
     var ul_unit_menu = document.createElement("ul");
     ul_unit_menu.id = "unit_menu";
     ul_unit_menu.className = "w3-ul w3-card-4";
@@ -159,16 +171,16 @@ function show_city_data(city) {
         var unit_html = document.createElement("li");
         unit_html.className = "w3-bar";
         unit_html.innerHTML = loadFile("/views/unit_item.html");
-        unit_html = set_unit_data(unit_html, unit.name, "/images/" + unit.name.toLowerCase() + ".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
+        unit_html = setUnitData(unit_html, unit.name, "/images/" + unit.name.toLowerCase() + ".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
         ul_unit_menu.appendChild(unit_html);
         div_side_menu.appendChild(ul_unit_menu);
     }
 }
-function set_unit_data(unit_html, unit_name, src, type, damage, health, movement, cost) {
+function setUnitData(unit_html, unit_name, src, type, damage, health, movement, cost) {
     unit_html.querySelector("#image").src = src;
     unit_html.querySelector("#produce").src = "/images/production.png";
     unit_html.querySelector("#produce").onclick = function () {
-        ClientSocket.request_production(unit_name);
+        ClientSocket.requestProduction(unit_name);
     };
     unit_html.querySelector("#name").innerText = unit_name;
     unit_html.querySelector("#type").innerText = type;
@@ -179,17 +191,17 @@ function set_unit_data(unit_html, unit_name, src, type, damage, health, movement
     return unit_html;
 }
 // updates the total stars on screen
-export function update_star_info(total_owned_stars, star_production) {
+export function updateStarInfo(total_owned_stars, star_production) {
     document.getElementById("star_info").style.visibility = "visible";
     if (current_node != null && (Number(total_owned_stars.toFixed(1)) - Math.floor(total_owned_stars)) === 0 && document.getElementById("node_info_menu").style.visibility === "visible") {
-        show_node_info(current_node);
+        showNodeInfo(current_node);
     }
     document.getElementById("total_owned_stars").innerText = Math.floor(total_owned_stars).toString();
     if (star_production != null) {
         document.getElementById("star_production").innerText = star_production.toString();
     }
 }
-export function update_progress_bar(total_owned_stars) {
+export function updateProgressBar(total_owned_stars) {
     var number_of_bars = (Number(total_owned_stars.toFixed(1)) - Math.floor(total_owned_stars));
     var bars = "";
     for (var i = 0; i < Math.round(number_of_bars * 10); i++) {
@@ -197,7 +209,7 @@ export function update_progress_bar(total_owned_stars) {
     }
     document.getElementById("star_loading_bar").innerText = bars;
 }
-export function create_tech_tree() {
+export function createTechTree() {
     //add canvas element
     var _a;
     var TECH_TREE_CANVAS_WIDTH = document.body.clientWidth;
@@ -223,7 +235,7 @@ export function create_tech_tree() {
         interaction_nodes_values.map(function (node_cords) {
             // make sure that user is hovering over this node and that it isn't already purchased
             if (node_cords[5] && !node_cords[6]) {
-                ClientSocket.request_buy_technology(node_cords[0]);
+                ClientSocket.requestBuyTechnology(node_cords[0]);
                 mouse_held = false;
                 return;
             }
@@ -256,7 +268,7 @@ export function create_tech_tree() {
     };
     (_a = document.getElementById("tech_tree_container")) === null || _a === void 0 ? void 0 : _a.appendChild(tech_tree_canvas);
     // make a new graph
-    Technology.init_graph_arrays();
+    Technology.initGraphArrays();
     // @ts-ignore
     var layout = new Springy.Layout.ForceDirected(graph, 300.0, // Spring stiffness
     800.0, // Node repulsion
@@ -370,29 +382,29 @@ export function create_tech_tree() {
     renderer.start();
 }
 var is_tech_tree_hidden = true;
-export function setup_tech_tree_button() {
+export function setupTechTreeButton() {
     document.getElementById("tech_button").onclick = function () {
         if (is_tech_tree_hidden) {
-            show_tech_tree();
+            showTechTree();
         }
         else {
-            hide_tech_tree();
+            hideTechTree();
         }
         is_tech_tree_hidden = !is_tech_tree_hidden;
     };
 }
-export function show_tech_tree() {
+export function showTechTree() {
     document.getElementsByTagName("canvas")[0].style.visibility = "hidden";
     document.getElementById("star_info").style.color = "white";
-    create_tech_tree();
+    createTechTree();
 }
-export function hide_tech_tree() {
+export function hideTechTree() {
     var _a;
     document.getElementsByTagName("canvas")[1].style.visibility = "visible";
     document.getElementById("star_info").style.color = "black";
     (_a = document.getElementById("tech_tree_container")) === null || _a === void 0 ? void 0 : _a.removeChild(document.getElementById("tech_tree"));
 }
-export function show_modal(title, message, w3_color_classname) {
+export function showModal(title, message, w3_color_classname) {
     document.getElementById("modal").style.display = "block";
     document.getElementById("modal_title").innerText = title;
     document.getElementById("modal_message").innerText = message;

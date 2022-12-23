@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const ServerSocket_1 = require("../ServerSocket");
 const Path_1 = __importDefault(require("../Map/Path"));
+const app_1 = require("../../../app");
 class Unit {
     constructor(x, y, id, map, unit_init_data) {
         this.x = x;
@@ -104,6 +105,19 @@ class Unit {
                     }
                 });
                 if (is_conquered) {
+                    // if win condition disconnect players
+                    game.all_players.map((player_1) => {
+                        if (!game.playerIsAlive(player_1)) {
+                            app_1.App.io.sockets.sockets.forEach((socket) => {
+                                game.all_players.map((player_2) => {
+                                    if (socket.id === player_2.token) {
+                                        socket.disconnect(true);
+                                    }
+                                });
+                            });
+                            return;
+                        }
+                    });
                     return;
                 }
             }
@@ -114,12 +128,12 @@ class Unit {
                         ServerSocket_1.ServerSocket.sendUnitMovementToOwner(socket, this, all_discovered_nodes, in_game_player);
                     }
                     else {
-                        ServerSocket_1.ServerSocket.sendUnitMovementToAll(socket, this, in_game_player);
+                        ServerSocket_1.ServerSocket.sendUnitMovementToAll(socket, this, in_game_player, game.token);
                     }
                 }
                 else {
                     if (in_game_player.token !== player.token) {
-                        ServerSocket_1.ServerSocket.sendDataToAll(socket, ServerSocket_1.ServerSocket.response_types.ENEMY_UNIT_DISAPPEARED, {
+                        ServerSocket_1.ServerSocket.sendDataToAll(socket, game.token, ServerSocket_1.ServerSocket.response_types.ENEMY_UNIT_DISAPPEARED, {
                             unit: this.getData(),
                         });
                     }

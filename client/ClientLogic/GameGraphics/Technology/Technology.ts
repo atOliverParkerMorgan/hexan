@@ -25,7 +25,7 @@ export class Technology{
     }
 
 
-    static init_graph_arrays(){
+    static initGraphArrays(){
 
         // @ts-ignore
         graph = new Springy.Graph();

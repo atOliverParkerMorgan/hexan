@@ -9,7 +9,7 @@ var City = /** @class */ (function () {
         this.population = city_data.population;
         this.is_friendly = city_data.is_friendly;
     }
-    City.prototype.get_node_color = function () {
+    City.prototype.getNodeColor = function () {
         if (this.is_friendly) {
             return City.FRIENDLY_CITY_COLOR;
         }

@@ -93,7 +93,7 @@ export default class City implements CityInterface {
         game.all_players.map((in_game_player: PlayerInterface) => {
             if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
                 console.log("player+token ", in_game_player.token)
-                ServerSocket.sendUnitProducedResponse(socket, <City>this, unit, in_game_player);
+                ServerSocket.sendUnitProducedResponse(socket, <City>this, unit, in_game_player, game.token);
             }
         });
     }

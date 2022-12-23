@@ -46,9 +46,9 @@ class Game {
             }
         }
     }
-    getEnemyPlayers(token) {
+    getEnemyPlayers(player_token) {
         return this.all_players.filter((player) => {
-            return player.token != token;
+            return player.token != player_token;
         });
     }
     getEnemyPlayerByUnit(unit_id) {

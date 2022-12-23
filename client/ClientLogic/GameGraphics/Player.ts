@@ -1,5 +1,5 @@
 import Unit from "./Unit/Unit.js";
-import {update_progress_bar, update_star_info} from "../UiLogic.js";
+import {updateProgressBar, updateStarInfo} from "../UiLogic.js";
 import {Interval} from "./Interval.js";
 import {Node} from "./Node.js";
 import {HEX_SIDE_SIZE} from "./Pixi.js";
@@ -19,7 +19,7 @@ export namespace Player {
     export let production_units: any[] = [];
     export let owned_technologies: string[] = [];
 
-    export function contains_city(city_name: String): boolean{
+    export function containsCity(city_name: String): boolean{
         for (const city of all_cities) {
             if(city.name === city_name) return true
         }
@@ -27,58 +27,58 @@ export namespace Player {
     }
 
     // player star logic
-    export function produce_stars() {
-        Interval.make_star_production_interval(() => {
+    export function produceStars() {
+        Interval.makeStarProductionInterval(() => {
             total_owned_stars += star_production / 120;
-            update_star_info(Math.floor(total_owned_stars));
+            updateStarInfo(Math.floor(total_owned_stars));
 
         }, 500); // update every half second
 
         // update star production bar
-        Interval.make_update_progress_bar_interval(() => {
-            update_progress_bar(total_owned_stars);
+        Interval.makeUpdateProgressBarInterval(() => {
+            updateProgressBar(total_owned_stars);
 
         }, 50);
     }
 
 
-    export function update_units_after_attack(unit_data: UnitData){
+    export function updateUnitsAfterAttack(unit_data: UnitData){
 
         all_units.map((unit)=>{
             if(unit.id === unit_data.id){
                 unit.health = unit_data.health
-                unit.update_unit_on_stage();
+                unit.updateUnitOnStage();
             }
         })
         all_enemy_visible_units.map((enemy_unit)=>{
             if(enemy_unit.id === unit_data.id){
                 enemy_unit.health = unit_data.health
-                enemy_unit.update_unit_on_stage();
+                enemy_unit.updateUnitOnStage();
             }
         })
 
     }
 
-    export function setup_star_production(data: any) {
+    export function setupStarProduction(data: any) {
         total_owned_stars = data.total_owned_stars;
         star_production = data.star_production;
 
-        update_star_info(total_owned_stars, star_production);
+        updateStarInfo(total_owned_stars, star_production);
 
         // check if the intervals haven't been already added
-        produce_stars();
+        produceStars();
 
     }
 
-    export function set_total_owned_stars(new_total_owned_stars: number) {
+    export function setTotalOwnedStars(new_total_owned_stars: number) {
         total_owned_stars = new_total_owned_stars;
     }
 
-    export function reset_units() {
+    export function resetUnits() {
         all_units = [];
     }
 
-    export function has_friendly_unit(unit_id: string):boolean{
+    export function hasFriendlyUnit(unit_id: string):boolean{
         for (const unit of Player.all_units) {
             if(unit_id === unit.id) return true
         }
@@ -86,15 +86,15 @@ export namespace Player {
     }
 
 
-    export function has_enemy_unit(unit_id: string):boolean{
+    export function hasEnemyUnit(unit_id: string):boolean{
         for (const enemy_unit of Player.all_enemy_visible_units) {
             if(unit_id === enemy_unit.id) return true
         }
         return false;
     }
 
-    export function delete_enemy_visible_unit(unit: any){
-        if(!Player.has_enemy_unit(unit.id)) return;
+    export function deleteEnemyVisibleUnit(unit: any){
+        if(!Player.hasEnemyUnit(unit.id)) return;
 
         let index = 0;
         for (; index < Player.all_enemy_visible_units.length; index++) {
@@ -104,14 +104,14 @@ export namespace Player {
         const enemy_unit = Player.all_enemy_visible_units[index];
         if(enemy_unit == null) return
 
-        enemy_unit.remove_children();
+        enemy_unit.removeChildren();
         Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
         Player.all_enemy_visible_units.splice(index);
 
     }
 
-    export function delete_friendly_unit(unit: any){
-        if(!Player.has_friendly_unit(unit.id)) return;
+    export function deleteFriendlyUnit(unit: any){
+        if(!Player.hasFriendlyUnit(unit.id)) return;
 
         let index = 0;
         for (; index < Player.all_units.length; index++) {
@@ -121,33 +121,33 @@ export namespace Player {
         const friendly_unit = Player.all_units[index];
         if(friendly_unit == null) return
 
-        friendly_unit.remove_children();
+        friendly_unit.removeChildren();
         Node.all_nodes[friendly_unit.y][friendly_unit.x].unit = null;
         Player.all_units.splice(index);
     }
 
-    export function add_enemy_unit(unit: any){
+    export function addEnemyUnit(unit: any){
         let graphics_enemy_unit: Unit =  new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE* .75, false);
 
         Player.all_enemy_visible_units.push(graphics_enemy_unit);
         Node.all_nodes[unit.y][unit.x].unit = graphics_enemy_unit;
     }
 
-    export function add_unit(unit: any) {
+    export function addUnit(unit: any) {
         let graphics_unit: Unit = new Unit(unit, HEX_SIDE_SIZE * .75, HEX_SIDE_SIZE * .75, true);
 
         Player.all_units.push(graphics_unit);
         Node.all_nodes[unit.y][unit.x].unit = graphics_unit;
     }
 
-    export function update_total_number_of_stars(response_data: any){
+    export function updateTotalNumberOfStars(response_data: any){
         let total_owned_stars = response_data.total_owned_stars;
         if(total_owned_stars != null){
-            set_total_owned_stars(total_owned_stars);
+            setTotalOwnedStars(total_owned_stars);
         }
     }
 
-    export function get_total_number_of_stars(){
+    export function getTotalNumberOfStars(){
         return total_owned_stars;
     }
 

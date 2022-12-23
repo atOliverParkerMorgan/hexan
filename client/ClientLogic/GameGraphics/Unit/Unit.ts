@@ -99,10 +99,10 @@ export class Unit implements UnitData{
         this.sprite = Sprite.from(this.texture_path);
         this.boat_sprite = Sprite.from("/images/boat.png");
 
-        this.update_unit_on_stage();
+        this.updateUnitOnStage();
     }
 
-    remove_children(){
+    removeChildren(){
         // remove the unit Graphics when unit moves
         if(this.sprite != null){
             viewport.removeChild(this.sprite);
@@ -121,14 +121,14 @@ export class Unit implements UnitData{
         }
     }
 
-    update_unit_on_stage(): void{
-        this.remove_children();
-        this.show_movement(this.background_unit_movement_percentage);
+    updateUnitOnStage(): void{
+        this.removeChildren();
+        this.showMovement(this.background_unit_movement_percentage);
 
-        this.show_health();
-        this.show_background();
-        this.set_sprite_position();
-        this.set_sprite_size();
+        this.showHealth();
+        this.showBackground();
+        this.setSpritePosition();
+        this.setSpriteSize();
         
         if(this.is_on_water){
             this.boat_sprite.interactive = false;
@@ -141,18 +141,18 @@ export class Unit implements UnitData{
         }
     }
 
-    set_sprite_position(): void{
+    setSpritePosition(): void{
         if(this.is_on_water) {
-            this.boat_sprite.x = this.get_x_in_pixels();
-            this.boat_sprite.y = this.get_y_in_pixels();
+            this.boat_sprite.x = this.getXInPixels();
+            this.boat_sprite.y = this.getYInPixels();
 
         }else{
-            this.sprite.x = this.get_x_in_pixels();
-            this.sprite.y = this.get_y_in_pixels();
+            this.sprite.x = this.getXInPixels();
+            this.sprite.y = this.getYInPixels();
         }
     }
 
-    show_background(): void{
+    showBackground(): void{
 
         this.background_circle = new Graphics();
 
@@ -162,34 +162,34 @@ export class Unit implements UnitData{
             this.background_circle.beginFill(Unit.ENEMY_BACKGROUND_COLOR);
         }
 
-        this.background_circle.drawCircle(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2, HEX_SIDE_SIZE/1.8);
+        this.background_circle.drawCircle(this.getXInPixels()+this.width/2, this.getYInPixels()+this.height/2, HEX_SIDE_SIZE/1.8);
         this.background_circle.endFill();
         viewport.addChild(this.background_circle);
 
     }
 
-    show_health(): void{
+    showHealth(): void{
 
         this.health_circle = new Graphics();
         this.health_circle_background = new Graphics();
 
         this.health_circle_background.beginFill(0xffffff);
         this.health_circle_background.lineStyle(2, 0xffffff)
-        this.health_circle_background.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
+        this.health_circle_background.arc(this.getXInPixels()+this.width/2, this.getYInPixels()+this.height/2,
             HEX_SIDE_SIZE/1.38, 0, 2*Math.PI);
         this.health_circle_background.endFill();
         viewport.addChild(this.health_circle_background);
 
         this.health_circle.beginFill(Unit.HEALTH_BAR_COLOR);
         this.health_circle.lineStyle(2, 0xffffff)
-        this.health_circle.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
+        this.health_circle.arc(this.getXInPixels()+this.width/2, this.getYInPixels()+this.height/2,
             HEX_SIDE_SIZE/1.38, 0,2 * Math.PI / (this.max_health / this.health));
         this.health_circle.endFill();
 
         viewport.addChild(this.health_circle);
     }
 
-    show_movement(percentage_of_movement: number): void{
+    showMovement(percentage_of_movement: number): void{
         if(this.current_path.length === 0){
             if(this.movement_circle != null){
                 viewport.removeChild(this.movement_circle);
@@ -200,14 +200,14 @@ export class Unit implements UnitData{
         this.movement_circle = new Graphics;
         this.movement_circle.beginFill(Unit.MOVEMENT_COLOR);
         this.movement_circle.lineStyle(2, Unit.MOVEMENT_COLOR)
-        this.movement_circle.arc(this.get_x_in_pixels()+this.width/2, this.get_y_in_pixels()+this.height/2,
+        this.movement_circle.arc(this.getXInPixels()+this.width/2, this.getYInPixels()+this.height/2,
             HEX_SIDE_SIZE/1.2, 0,2 * Math.PI / (100 / percentage_of_movement));
         this.movement_circle.endFill();
 
         viewport.addChild(this.movement_circle);
     }
 
-    set_sprite_size(): void{
+    setSpriteSize(): void{
         if(this.is_on_water) {
             this.boat_sprite.width = this.width;
             this.boat_sprite.height = this.height;
@@ -217,16 +217,16 @@ export class Unit implements UnitData{
         }
     }
 
-    get_x_in_pixels(): number{
+    getXInPixels(): number{
         let row_bias = this.y % 2 === 0 ? DISTANCE_BETWEEN_HEX/2 : 0;
         return (this.x * DISTANCE_BETWEEN_HEX + row_bias) - WORLD_WIDTH / 2 - this.width/2;
     }
 
-    get_y_in_pixels(): number{
+    getYInPixels(): number{
         return  (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2 - this.height/2;
     }
 
-    move_to(x: number, y: number): void{
+    moveTo(x: number, y: number): void{
         const old_node = Node.all_nodes[this.y][this.x];
         old_node.unit = null;
 
@@ -236,36 +236,36 @@ export class Unit implements UnitData{
         this.y = y;
 
         // redraw graphics children
-        this.update_unit_movement_background();
+        this.updateUnitMovementBackground();
     }
 
-    set_current_path(current_path: number[][]){
+    setCurrentPath(current_path: number[][]){
         this.current_path = current_path;
-        this.update_unit_movement_background()
+        this.updateUnitMovementBackground()
     }
 
-    update_movement_background(current_node: Node, depth: number){
+    updateMovementBackground(current_node: Node, depth: number){
         if(depth === 0){
             this.background_unit_movement_percentage = 0;
             return;
         }
         setTimeout(()=>{
             this.background_unit_movement_percentage += 5;
-            this.update_unit_on_stage();
-            this.update_movement_background(current_node, depth - 1);
+            this.updateUnitOnStage();
+            this.updateMovementBackground(current_node, depth - 1);
 
-        }, current_node.get_movement_time() * 1000 / 30);
+        }, current_node.getMovementTime() * 1000 / 30);
     }
 
-    update_unit_movement_background(){
+    updateUnitMovementBackground(){
         this.current_path.shift();
 
         if(this.current_path.length !== 0){
             const current_node: Node = Node.all_nodes[this.current_path[0][1]][this.current_path[0][0]];
-            this.update_movement_background(current_node, 30)
+            this.updateMovementBackground(current_node, 30)
         }else{
             this.background_unit_movement_percentage = 0;
-            this.update_unit_on_stage()
+            this.updateUnitOnStage()
         }
     }
 }

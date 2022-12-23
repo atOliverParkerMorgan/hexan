@@ -13,7 +13,7 @@ var Technology = /** @class */ (function () {
         this.cost = cost;
         this.is_owned = is_owned;
     }
-    Technology.init_graph_arrays = function () {
+    Technology.initGraphArrays = function () {
         var _a;
         // @ts-ignore
         graph = new Springy.Graph();

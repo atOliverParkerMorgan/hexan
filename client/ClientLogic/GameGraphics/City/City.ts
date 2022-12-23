@@ -25,7 +25,7 @@ export class City{
         this.is_friendly = city_data.is_friendly;
     }
 
-    get_node_color(){
+    getNodeColor(){
         if(this.is_friendly){
             return City.FRIENDLY_CITY_COLOR;
         }

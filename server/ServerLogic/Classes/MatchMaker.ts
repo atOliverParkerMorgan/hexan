@@ -20,12 +20,13 @@ export namespace MatchMaker {
     // matches a player with another player if possible
     export function getGame1v1WithPlayer(player_token: string, map_size: number): Game | undefined{
         let current_player: Player | undefined = all_players_searching_1v1.get(player_token);
-
+        console.log("current player: ", current_player != null)
         if(current_player != null){
             let match_player: Player | undefined;
             for(let player of all_players_searching_1v1.values()) {
                 if (current_player !== player) {
                     match_player = player;
+                    break;
                 }
             }
 
@@ -44,7 +45,7 @@ export namespace MatchMaker {
         const game = new Game(Utils.generateToken(socket.id), map_size, 4);
         const player = new Player(socket.id, map_size);
 
-        game.all_players.push(new Player(socket.id, map_size));
+        game.all_players.push(player);
         all_games.set(game.token, game);
         game.placeStartCity(player);
 
@@ -52,6 +53,7 @@ export namespace MatchMaker {
             {
                 game_token: game.token
             });
+
     }
 
     export function getGame (game_token: string): Game | undefined{
@@ -69,65 +71,54 @@ export namespace MatchMaker {
 
     // find a game for a player if there is one
     export function findMatchFor1v1(socket: Socket, map_size: number){
-
-        const game = foundMatch1v1(socket.id);
-        if(game != null){
-
-            const player: Player | undefined = game?.getPlayer(socket.id);
-            if(player != null) {
-                game.placeStartCity(player);
-
-                ServerSocket.sendData(socket,ServerSocket.response_types.FOUND_GAME_RESPONSE,
-                    {
-                        game_token: game.token
-                    })
-
-                ServerSocket.sendDataToAll(socket, ServerSocket.response_types.FOUND_GAME_RESPONSE,
-                    {
-                        game_token: game.token
-                    })
-            }
-        }
-
+        console.log("finding player1v1: "+all_players_searching_1v1.size);
         if(hasMatchFor1v1()) {
-
             const game: Game | undefined = MatchMaker.getGame1v1WithPlayer(socket.id, map_size);
+            console.log("game ", game != null)
             if(game != null){
-
                 all_games.set(game.token, game);
 
                 const player: Player | undefined = game?.getPlayer(socket.id);
-                if(player != null) {
-                    game.placeStartCity(player);
+                const enemy_player: Player | undefined  = game?.getEnemyPlayers(socket.id)[0];
 
+                if(player == null || enemy_player == null) {
+                    ServerSocket.somethingWrongResponse(socket, socket.id, "COULDN'T FIND MATCH", "Something went wrong can't find match");
 
-                    ServerSocket.sendData(socket, ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                    ServerSocket.sendDataToPlayer(socket, enemy_player?.token, ServerSocket.response_types.SOMETHING_WRONG_RESPONSE,
                         {
-                            game_token: game.token
-                        })
-
-                    ServerSocket.sendDataToAll(socket,  ServerSocket.response_types.FOUND_GAME_RESPONSE,
-                        {
-                            game_token: game.token
+                            title: "COULDN'T FIND MATCH",
+                            message: "Something went wrong can't find match"
                         });
+
+                    return
+
                 }
+
+                game.placeStartCity(player);
+                game.placeStartCity(enemy_player);
+
+                all_players_searching_1v1.delete(player.token);
+                all_players_searching_1v1.delete(enemy_player.token);
+
+                ServerSocket.sendData(socket, ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                    {
+                        game_token: game.token
+                    })
+
+                ServerSocket.sendDataToPlayer(socket, enemy_player.token, ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                    {
+                        game_token: game.token
+                    });
+            }else {
+                console.log("error");
             }
         }
     }
 
     function hasMatchFor1v1(): boolean{
-        return all_players_searching_1v1.size % 2 === 0;
+        return all_players_searching_1v1.size % 2 ===0 && all_players_searching_1v1.size  !== 0;
     }
 
-    function foundMatch1v1(player_token: string): Game | undefined{
-        for(const game of all_games.values()){
-            for(const player of game.all_players){
-                if(player.token === player_token){
-                    return game;
-                }
-            }
-        }
-    }
 
     export function getPlayerSearching1v1(player_token: string): Player | undefined{
        return all_players_searching_1v1.get(player_token);

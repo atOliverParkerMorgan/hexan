@@ -41,7 +41,7 @@ class City {
         game.all_players.map((in_game_player) => {
             if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
                 console.log("player+token ", in_game_player.token);
-                ServerSocket_1.ServerSocket.sendUnitProducedResponse(socket, this, unit, in_game_player);
+                ServerSocket_1.ServerSocket.sendUnitProducedResponse(socket, this, unit, in_game_player, game.token);
             }
         });
     }

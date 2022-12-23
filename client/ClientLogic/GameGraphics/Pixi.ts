@@ -1,10 +1,11 @@
 import {Node} from "./Node.js";
 import {ClientSocket} from "../ClientSocket.js"
-import {setup_tech_tree_button} from "../UiLogic.js";
+import {setupTechTreeButton} from "../UiLogic.js";
 import {Technology} from "./Technology/Technology.js";
 import {Player} from "./Player.js";
-import {interval_id_start_game, interval_id_timer, loadFile} from "../ClientCreateGame.js";
+import {interval_id_timer, loadFile} from "../ClientCreateGame.js";
 import {City} from "./City/City.js";
+import {Interval} from "./Interval.js";
 
 export let HEX_SIDE_SIZE: number;
 export let DISTANCE_BETWEEN_HEX: number;
@@ -14,11 +15,11 @@ export let viewport: any;
 
 export let tech_tree_root: Technology;
 
-export function setup_tech_tree_node(node: any): Technology{
+export function setupTechTreeNode(node: any): Technology{
      let children_node: Technology[] | null = []
      if(node.children != null) {
         for (const child of node.children) {
-            children_node.push(setup_tech_tree_node(child))
+            children_node.push(setupTechTreeNode(child))
         }
      }else {
          children_node = null;
@@ -31,12 +32,12 @@ export function setup_tech_tree_node(node: any): Technology{
      return new Technology(children_node, node.name, node.image, node.description, node.cost, node.is_owned)
 }
 
-export function setup_tech_tree(tech_tree: any){
+export function setupTechTree(tech_tree: any){
     // get player owned technologies into array
     Player.owned_technologies = []
-    tech_tree_root = setup_tech_tree_node(tech_tree);
+    tech_tree_root = setupTechTreeNode(tech_tree);
 
-    Technology.init_graph_arrays();
+    Technology.initGraphArrays();
 }
 
 // @ts-ignore
@@ -52,7 +53,7 @@ export const TilingSprite = PIXI.TilingSprite;
 
 // @TODO public a_star doesn't always match sever a_star
 // get the shortest path between two nodes
-export function a_star(start_node: Node, goal_node: Node){
+export function aStar(start_node: Node, goal_node: Node){
     let open_set = [start_node];
     let closed_set = []
 
@@ -61,7 +62,7 @@ export function a_star(start_node: Node, goal_node: Node){
         let current_index = 0;
 
         for(let i = 0; i < open_set.length; i++){
-            if(open_set[i].get_heuristic_value(start_node, goal_node) < current_node.get_heuristic_value(start_node, goal_node)){
+            if(open_set[i].getHeuristicValue(start_node, goal_node) < current_node.getHeuristicValue(start_node, goal_node)){
                 current_node = open_set[i];
                 current_index = i;
             }
@@ -78,7 +79,7 @@ export function a_star(start_node: Node, goal_node: Node){
             return solution_path.reverse();
         }
 
-        for(const node of current_node.get_valid_movement_neighbours()) {
+        for(const node of current_node.getValidMovementNeighbours()) {
 
             if(node == null){
                 continue;
@@ -88,8 +89,8 @@ export function a_star(start_node: Node, goal_node: Node){
                 continue;
             }
 
-            let distance_from_start = node.get_distance_to_node(start_node);
-            let current_score = distance_from_start + current_node.get_distance_to_node(node);
+            let distance_from_start = node.getDistanceToNode(start_node);
+            let current_score = distance_from_start + current_node.getDistanceToNode(node);
             let is_better = false;
 
             if (!open_set.includes(node)) {
@@ -107,9 +108,9 @@ export function a_star(start_node: Node, goal_node: Node){
     return null;
 }
 
-export function init_canvas(map: any, cities: any){
+export function initCanvas(map: any, cities: any){
 
-    setup_tech_tree_button();
+    setupTechTreeButton();
 
     if(viewport != null){
         Node.all_nodes = [];
@@ -163,7 +164,7 @@ export function init_canvas(map: any, cities: any){
 
 
 
-export function init_game(player_token: string, game_token: string) {
+export function initGame(player_token: string, game_token: string) {
 
     // init game
     const main_div: any = document.getElementById("app");
@@ -174,7 +175,7 @@ export function init_game(player_token: string, game_token: string) {
     localStorage.setItem("player_token", player_token);
     localStorage.setItem("game_token", game_token);
 
-    clearInterval(interval_id_start_game)
+    clearInterval(Interval.update_stars_interval_id)
     clearInterval(interval_id_timer);
 
     // the typescript hasn't provided a token for the public
@@ -182,7 +183,7 @@ export function init_game(player_token: string, game_token: string) {
         return;
     }
 
-    ClientSocket.get_data(ClientSocket.request_types.GET_ALL)
+    ClientSocket.sendData(ClientSocket.request_types.GET_ALL, {})
 }
 
 export function updateBoard(...args: any[]){
@@ -193,7 +194,7 @@ export function updateBoard(...args: any[]){
     const map = response_data.map;
     const cities = response_data.cities;
 
-    init_canvas(map, cities);
+    initCanvas(map, cities);
 
     // adding nodes from linear array to 2d array
     let y = 0;
@@ -222,10 +223,10 @@ export function updateBoard(...args: any[]){
     console.log(response_data.production_units)
     Player.production_units = response_data.production_units;
 
-    setup_tech_tree(response_data.root_tech_tree_node);
+    setupTechTree(response_data.root_tech_tree_node);
 
     // get star data after game setup is initialized
-    ClientSocket.get_data(ClientSocket.request_types.GET_STARS_DATA)
+    ClientSocket.sendData(ClientSocket.request_types.GET_STARS_DATA, {})
 }
 
 function loop(){}
