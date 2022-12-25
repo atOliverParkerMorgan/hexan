@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ServerSocket_1 = require("../ServerSocket");
 const Path_1 = __importDefault(require("../Map/Path"));
 const app_1 = require("../../../app");
+const MatchMaker_1 = require("../MatchMaker");
 class Unit {
     constructor(x, y, id, map, unit_init_data) {
         this.x = x;
@@ -106,18 +107,9 @@ class Unit {
                 });
                 if (is_conquered) {
                     // if win condition disconnect players
-                    game.all_players.map((player_1) => {
-                        if (!game.playerIsAlive(player_1)) {
-                            app_1.App.io.sockets.sockets.forEach((socket) => {
-                                game.all_players.map((player_2) => {
-                                    if (socket.id === player_2.token) {
-                                        socket.disconnect(true);
-                                    }
-                                });
-                            });
-                            return;
-                        }
-                    });
+                    app_1.App.io.sockets.sockets.get(game.getEnemyPlayers(player.token)[0].token).disconnect();
+                    socket.disconnect();
+                    MatchMaker_1.MatchMaker.all_games.delete(game.token);
                     return;
                 }
             }

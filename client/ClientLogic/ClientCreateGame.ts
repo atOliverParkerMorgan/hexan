@@ -10,6 +10,9 @@ const REQUEST_TYPES = {
 export let interval_id_timer: any;
 export function settingsLogicInit(){
 
+    // setup nickname
+    (<HTMLInputElement>document.getElementById("nickname")).textContent = localStorage.getItem("nickname");
+
     // slider logic
     const args = [400, 900, 1225, 1600, 2025, 2500];
     const element: any = document.querySelector('.slider')
@@ -98,14 +101,19 @@ export function settingsLogicInit(){
         }
     )
 
+    const edit_nickname_button: any = document.getElementById("edit_nickname");
+    edit_nickname_button.onclick = ()=>{
+        localStorage.removeItem("nickname");
+        window.location.reload();
+    }
 
     // play button logic
     const play_button: any = document.getElementById("play_button");
 
     play_button.onclick = () => {
-        const nick_name = localStorage.getItem("nick_name");
-        console.log("Nick Name: ", nick_name)
-        if (nick_name == null) return;
+        const nickname = localStorage.getItem("nickname");
+        console.log("Nick Name: ", nickname)
+        if (nickname == null) return;
 
         const main_div: any = document.getElementById("app");
 
@@ -157,11 +165,18 @@ function updateTimer(main_div: any, start: number){
     main_div.querySelector("span").innerText =  minute_text + (seconds % 60)+" "+seconds_string;
 }
 
+// load right away if a nickname exists
+if(localStorage.getItem("nickname") != null){
+    const main_div: any = document.getElementById("app");
+    main_div.innerHTML = loadFile("/views/gameSettings.html");
+    settingsLogicInit()
+}
+
 const nick_input: any = document.getElementById("nick_input");
 if(nick_input != null) {
     nick_input.addEventListener("keypress", function onEvent(event: any) {
         if (event.key === "Enter" && nick_input.value.length > 0) {
-            localStorage.setItem("nick_name", nick_input.value);
+            localStorage.setItem("nickname", nick_input.value);
             const main_div: any = document.getElementById("app");
             main_div.innerHTML = loadFile("/views/gameSettings.html");
             settingsLogicInit()

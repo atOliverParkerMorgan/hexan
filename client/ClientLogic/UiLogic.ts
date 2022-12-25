@@ -10,7 +10,6 @@ import {
     WORLD_HEIGHT,
     WORLD_WIDTH
 } from "./GameGraphics/Pixi.js";
-import {interval_id_timer, settingsLogicInit} from "./ClientCreateGame.js";
 import {Interval} from "./GameGraphics/Interval.js";
 
 export let renderer: any;
@@ -174,9 +173,7 @@ export function gameOver(title: string, message: string, w3_color_classname: str
     (<HTMLInputElement>document.getElementById("game_over_modal_header")).classList.add(w3_color_classname);
 
     (<HTMLInputElement>document.getElementById("play_again")).onclick = ()=>{
-        const main_div: any = document.getElementById("app");
-        main_div.innerHTML = loadFile("/views/gameSettings.html");
-        settingsLogicInit()
+        window.location.reload();
     }
 
     (<HTMLInputElement>document.getElementById("view_game")).onclick = ()=>{

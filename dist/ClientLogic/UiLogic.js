@@ -4,7 +4,6 @@ import { Node } from "./GameGraphics/Node.js";
 import { Player } from "./GameGraphics/Player.js";
 import { Technology, graph, interaction_nodes_values } from "./GameGraphics/Technology/Technology.js";
 import { DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH } from "./GameGraphics/Pixi.js";
-import { settingsLogicInit } from "./ClientCreateGame.js";
 import { Interval } from "./GameGraphics/Interval.js";
 export var renderer;
 export var current_node;
@@ -140,9 +139,7 @@ export function gameOver(title, message, w3_color_classname) {
     document.getElementById("game_over_modal_message").innerText = message;
     document.getElementById("game_over_modal_header").classList.add(w3_color_classname);
     document.getElementById("play_again").onclick = function () {
-        var main_div = document.getElementById("app");
-        main_div.innerHTML = loadFile("/views/gameSettings.html");
-        settingsLogicInit();
+        window.location.reload();
     };
     document.getElementById("view_game").onclick = function () {
         document.getElementById("game_over_modal").style.display = "none";

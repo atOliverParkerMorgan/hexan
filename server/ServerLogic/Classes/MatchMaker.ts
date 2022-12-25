@@ -80,6 +80,9 @@ export namespace MatchMaker {
 
                 const player: Player | undefined = game?.getPlayer(socket.id);
                 const enemy_player: Player | undefined  = game?.getEnemyPlayers(socket.id)[0];
+                console.log("player ", player != null);
+                console.log("player enemy ", enemy_player != null);
+
 
                 if(player == null || enemy_player == null) {
                     ServerSocket.somethingWrongResponse(socket, socket.id, "COULDN'T FIND MATCH", "Something went wrong can't find match");
@@ -109,6 +112,8 @@ export namespace MatchMaker {
                     {
                         game_token: game.token
                     });
+
+                console.log("sent");
             }else {
                 console.log("error");
             }

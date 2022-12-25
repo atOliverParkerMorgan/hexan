@@ -6,6 +6,8 @@ var REQUEST_TYPES = {
 };
 export var interval_id_timer;
 export function settingsLogicInit() {
+    // setup nickname
+    document.getElementById("nickname").textContent = localStorage.getItem("nickname");
     // slider logic
     var args = [400, 900, 1225, 1600, 2025, 2500];
     var element = document.querySelector('.slider');
@@ -79,12 +81,17 @@ export function settingsLogicInit() {
         game_mode_to_FRIEND_button.classList.remove("w3-red");
         game_mode_to_FRIEND_button.classList.add("w3-green");
     });
+    var edit_nickname_button = document.getElementById("edit_nickname");
+    edit_nickname_button.onclick = function () {
+        localStorage.removeItem("nickname");
+        window.location.reload();
+    };
     // play button logic
     var play_button = document.getElementById("play_button");
     play_button.onclick = function () {
-        var nick_name = localStorage.getItem("nick_name");
-        console.log("Nick Name: ", nick_name);
-        if (nick_name == null)
+        var nickname = localStorage.getItem("nickname");
+        console.log("Nick Name: ", nickname);
+        if (nickname == null)
             return;
         var main_div = document.getElementById("app");
         // replace index.html with findingAnOpponent.html
@@ -121,11 +128,17 @@ function updateTimer(main_div, start) {
     var minute_text = minutes === 0 ? "" : (minutes) + " " + minute_string + "  :  ";
     main_div.querySelector("span").innerText = minute_text + (seconds % 60) + " " + seconds_string;
 }
+// load right away if a nickname exists
+if (localStorage.getItem("nickname") != null) {
+    var main_div = document.getElementById("app");
+    main_div.innerHTML = loadFile("/views/gameSettings.html");
+    settingsLogicInit();
+}
 var nick_input = document.getElementById("nick_input");
 if (nick_input != null) {
     nick_input.addEventListener("keypress", function onEvent(event) {
         if (event.key === "Enter" && nick_input.value.length > 0) {
-            localStorage.setItem("nick_name", nick_input.value);
+            localStorage.setItem("nickname", nick_input.value);
             var main_div = document.getElementById("app");
             main_div.innerHTML = loadFile("/views/gameSettings.html");
             settingsLogicInit();

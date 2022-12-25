@@ -10,6 +10,7 @@ import MapInterface from "../../Interfaces/Map/MapInterface";
 import GameInterface from "../../Interfaces/GameInterface";
 import PlayerInterface from "../../Interfaces/PlayerInterface";
 import {App} from "../../../app";
+import {MatchMaker} from "../MatchMaker";
 
 export default class Unit implements UnitInterface{
     x: number;
@@ -155,18 +156,11 @@ export default class Unit implements UnitInterface{
                 });
                 if (is_conquered) {
                     // if win condition disconnect players
-                    game.all_players.map((player_1: PlayerInterface)=>{
-                        if(!game.playerIsAlive(player_1)){
-                            App.io.sockets.sockets.forEach((socket: Socket) => {
-                                game.all_players.map((player_2: PlayerInterface)=> {
-                                    if (socket.id === player_2.token) {
-                                        socket.disconnect(true);
-                                    }
-                                });
-                            });
-                            return;
-                        }
-                    })
+                    App.io.sockets.sockets.get(game.getEnemyPlayers(player.token)[0].token).disconnect();
+                    socket.disconnect();
+
+                    MatchMaker.all_games.delete(game.token)
+
                     return;
                 }
             }
