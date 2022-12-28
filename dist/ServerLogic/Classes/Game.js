@@ -28,14 +28,48 @@ class Game {
         return false;
     }
     placeStartCity(player) {
+        let found = false;
         for (const continent of this.map.all_continents) {
             if (!continent.has_player) {
-                let starting_node = continent.getRandomRiverNode();
-                while (starting_node === undefined)
+                let starting_node;
+                if (continent.river_nodes.length > 0) {
                     starting_node = continent.getRandomRiverNode();
+                }
+                else if (continent.beach_nodes.length > 0) {
+                    starting_node = continent.getRandomBeachNode();
+                }
+                else if (continent.grass_nodes.length > 0) {
+                    starting_node = continent.getRandomNodeOfType(Utils_1.Utils.GRASS);
+                }
+                else if (continent.mountain_nodes.length > 0) {
+                    starting_node = continent.getRandomNodeOfType(Utils_1.Utils.MOUNTAIN);
+                }
+                else {
+                    continue;
+                }
                 this.addCity(player, starting_node);
                 continent.has_player = true;
+                found = true;
                 break;
+            }
+        }
+        // if all continents are used up choose a random node on a already used continent
+        if (!found) {
+            for (const continent of this.map.all_continents) {
+                let starting_node = continent.getRandomNode();
+                let i = 0;
+                while (starting_node == null || starting_node.city != null) {
+                    starting_node = continent.getRandomNode();
+                    i++;
+                    if (continent.all_nodes.length < i) {
+                        break;
+                    }
+                }
+                if (starting_node == null) {
+                    continue;
+                }
+                this.addCity(player, starting_node);
+                continent.has_player = true;
             }
         }
     }

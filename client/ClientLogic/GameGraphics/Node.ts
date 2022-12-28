@@ -465,6 +465,8 @@ export class Node{
                                 Node.movement_hint_lines = [];
                             }
 
+                            // draw unit path
+
                             Node.path = aStar(Node.selected_node, Node.last_hovered_node);
                             if (Node.path == null || Node.path.length === 0) return;
 
@@ -480,19 +482,35 @@ export class Node{
                                 const current_y = Node.path[i].getYInPixels();
 
                                 let path_color;
-                                if(Node.last_hovered_node.unit != null){
-                                    // if unit is friendly
-                                    if(Node.last_hovered_node.unit.is_friendly) return;
 
-                                    // if the unit is out of range don't show any attack or movement hint
-                                    if(Node.selected_node.unit.range >= Node.path.length - i){
-                                        path_color =  Node.attack_hint_color;
-                                    }else{
-                                        path_color =  Node.movement_hint_color;
+                                // if unit is friendly
+                                if(Node.last_hovered_node.unit?.is_friendly) return;
+
+                                // if the unit is out of range don't show any attack or movement hint
+                                // if(Node.selected_node.unit.range >= Node.path.length - i){
+                                //     path_color =  Node.attack_hint_color;
+                                // }else{
+                                //     path_color =  Node.movement_hint_color;
+                                // }
+                                let is_attacking = false;
+
+                                for (let j = 0; j < Node.selected_node.unit.range; j++) {
+
+                                    if(j+i >= Node.path.length) break
+                                    if(Node.path[j+i].unit == null) continue;
+
+                                    if(!Node.path[j+i].unit?.is_friendly){
+                                        is_attacking = true;
+                                        break;
                                     }
-                                }else{
-                                    path_color =  Node.movement_hint_color;
                                 }
+
+                                if(is_attacking){
+                                    path_color = Node.attack_hint_color;
+                                }else {
+                                    path_color = Node.movement_hint_color;
+                                }
+
 
                                 if (i === 1) {
                                     movement_hint_line.position.set((last_x + current_x) / 2, (last_y + current_y) / 2);

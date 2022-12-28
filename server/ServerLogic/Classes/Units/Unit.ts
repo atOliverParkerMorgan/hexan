@@ -88,18 +88,21 @@ export default class Unit implements UnitInterface{
                 }
             }
 
+            // check all upcoming nodes in the range of the current moving unit  for enemy units
+            for (let i = 0; i < this.range; i++) {
+                if(i >= path.length) break;
+                let possible_attack_node = path[i]
 
-            // for range attack units
-            const destination = path[path.length - 1];
-            if (destination.unit != null) {
-                if (!player.ownsThisUnit(destination.unit.id) && this.range >= path.length) {
-                    let path_cords: any = [];
-                    path.map((node: NodeInterface) => {
-                        path_cords.push([node.x, node.y]);
-                    })
+                if (possible_attack_node.unit != null) {
+                    if (!player.ownsThisUnit(possible_attack_node.unit.id)) {
+                        let path_cords: any = [];
+                        path.map((node: NodeInterface) => {
+                            path_cords.push([node.x, node.y]);
+                        })
+                        ServerSocket.sendUnitAttack(socket, game, player, possible_attack_node.unit.id, this.id, new Path(game, path_cords))
 
-                    ServerSocket.sendUnitAttack(socket, game, player, destination.unit.id, this.id, new Path(game, path_cords))
-                    return;
+                        return;
+                    }
                 }
             }
 

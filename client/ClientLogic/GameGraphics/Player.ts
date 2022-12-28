@@ -93,37 +93,45 @@ export namespace Player {
         return false;
     }
 
+    export function getUnit(id: string){
+        let index = 0;
+        for (; index < Player.all_units.length; index++) {
+            if(Player.all_units[index].id === id) break
+        }
+
+        if(index === Player.all_units.length) return null
+        return Player.all_units[index];
+    }
+
+    export function getEnemyVisibleUnit(id: string){
+        let index = 0;
+        for (; index < Player.all_enemy_visible_units.length; index++) {
+            if(Player.all_enemy_visible_units[index].id === id) break
+        }
+
+        if(index === Player.all_enemy_visible_units.length) return null
+        return Player.all_enemy_visible_units[index];
+    }
+
     export function deleteEnemyVisibleUnit(unit: any){
         if(!Player.hasEnemyUnit(unit.id)) return;
 
-        let index = 0;
-        for (; index < Player.all_enemy_visible_units.length; index++) {
-            if(Player.all_enemy_visible_units[index].id === unit.id) break
-        }
-
-        const enemy_unit = Player.all_enemy_visible_units[index];
+        const enemy_unit = Player.getEnemyVisibleUnit(unit.id);
         if(enemy_unit == null) return
 
-        enemy_unit.removeChildren();
-        Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
-        Player.all_enemy_visible_units.splice(index);
+        Node.all_nodes[enemy_unit.y][enemy_unit.x].removeUnit()
+        Player.all_enemy_visible_units.splice(Player.all_enemy_visible_units.indexOf(enemy_unit), 1);
 
     }
 
     export function deleteFriendlyUnit(unit: any){
         if(!Player.hasFriendlyUnit(unit.id)) return;
 
-        let index = 0;
-        for (; index < Player.all_units.length; index++) {
-            if(Player.all_units[index].id === unit.id) break
-        }
-
-        const friendly_unit = Player.all_units[index];
+        const friendly_unit = getUnit(unit.id);
         if(friendly_unit == null) return
 
-        friendly_unit.removeChildren();
-        Node.all_nodes[friendly_unit.y][friendly_unit.x].unit = null;
-        Player.all_units.splice(index);
+        Node.all_nodes[friendly_unit.y][friendly_unit.x].removeUnit();
+        Player.all_units.splice(Player.all_units.indexOf(friendly_unit), 1);
     }
 
     export function addEnemyUnit(unit: any){

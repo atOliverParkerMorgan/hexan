@@ -111,7 +111,7 @@ export namespace ClientSocket {
 
         socket.on(ClientSocket.response_types.UNIT_RESPONSE, (...args: any[]) => {
             const response_data = args[0];
-            if(Node.all_nodes[response_data.unit.y][response_data.unit.x].city.is_friendly){
+            if(Node.all_nodes[response_data.unit.y][response_data.unit.x].city?.is_friendly){
                 Player.addUnit(response_data.unit);
                 Player.updateTotalNumberOfStars(response_data);
             }else{
@@ -123,10 +123,11 @@ export namespace ClientSocket {
         socket.on(ClientSocket.response_types.UNIT_MOVED_RESPONSE, (...args: any[]) => {
             const response_data = args[0];
 
-            if(Player.all_units == null){
+            if(Player.all_units == null || !Player.hasFriendlyUnit(response_data.unit.id)){
                 return;
             }
 
+            console.log("MOVED")
             // update nodes
             response_data.nodes.map( (node: any) => {
                 if(node.type != null) {
@@ -178,12 +179,13 @@ export namespace ClientSocket {
                 }
             }
 
-            current_node.removeUnit();
+            Player.deleteFriendlyUnit(current_node.unit)
         })
 
 
         socket.on(ClientSocket.response_types.ATTACK_UNIT_RESPONSE, (...args: any[]) => {
             const response_data = args[0];
+            console.log(ClientSocket.response_types.ATTACK_UNIT_RESPONSE);
 
             // updates unit graphics after attack
             if(response_data.is_unit_1_dead) {

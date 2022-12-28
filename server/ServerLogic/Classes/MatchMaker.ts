@@ -31,6 +31,7 @@ export namespace MatchMaker {
             }
 
             if(match_player == undefined) return undefined;
+            if(match_player.map_size !== current_player.map_size) return undefined;
 
             const new_game = new Game(Utils.generateToken(player_token), map_size, 4);
 

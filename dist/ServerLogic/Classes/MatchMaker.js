@@ -34,6 +34,8 @@ var MatchMaker;
             }
             if (match_player == undefined)
                 return undefined;
+            if (match_player.map_size !== current_player.map_size)
+                return undefined;
             const new_game = new Game_1.default(Utils_1.Utils.generateToken(player_token), map_size, 4);
             new_game.all_players.push(current_player);
             new_game.all_players.push(match_player);
@@ -75,6 +77,8 @@ var MatchMaker;
                 MatchMaker.all_games.set(game.token, game);
                 const player = game === null || game === void 0 ? void 0 : game.getPlayer(socket.id);
                 const enemy_player = game === null || game === void 0 ? void 0 : game.getEnemyPlayers(socket.id)[0];
+                console.log("player ", player != null);
+                console.log("player enemy ", enemy_player != null);
                 if (player == null || enemy_player == null) {
                     ServerSocket_1.ServerSocket.somethingWrongResponse(socket, socket.id, "COULDN'T FIND MATCH", "Something went wrong can't find match");
                     ServerSocket_1.ServerSocket.sendDataToPlayer(socket, enemy_player === null || enemy_player === void 0 ? void 0 : enemy_player.token, ServerSocket_1.ServerSocket.response_types.SOMETHING_WRONG_RESPONSE, {
@@ -93,6 +97,7 @@ var MatchMaker;
                 ServerSocket_1.ServerSocket.sendDataToPlayer(socket, enemy_player.token, ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE, {
                     game_token: game.token
                 });
+                console.log("sent");
             }
             else {
                 console.log("error");

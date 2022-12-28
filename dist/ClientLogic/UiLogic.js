@@ -207,8 +207,9 @@ export function updateProgressBar(total_owned_stars) {
     document.getElementById("star_loading_bar").innerText = bars;
 }
 export function createTechTree() {
-    //add canvas element
     var _a;
+    hideCityMenu();
+    //add canvas element
     var TECH_TREE_CANVAS_WIDTH = document.body.clientWidth;
     var TECH_TREE_CANVAS_HEIGHT = document.body.clientHeight;
     var SPACE_BETWEEN_NODES_X = 160;

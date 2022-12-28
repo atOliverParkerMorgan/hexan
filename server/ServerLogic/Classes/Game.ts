@@ -61,6 +61,8 @@ class Game implements GameInterface {
                 break;
             }
         }
+
+        // if all continents are used up choose a random node on a already used continent
         if(!found) {
             for (const continent of this.map.all_continents) {
                 let starting_node = continent.getRandomNode()

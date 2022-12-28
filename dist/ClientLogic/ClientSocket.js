@@ -103,12 +103,13 @@ export var ClientSocket;
             }
         });
         ClientSocket.socket.on(ClientSocket.response_types.UNIT_RESPONSE, function () {
+            var _a;
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
             var response_data = args[0];
-            if (Node.all_nodes[response_data.unit.y][response_data.unit.x].city.is_friendly) {
+            if ((_a = Node.all_nodes[response_data.unit.y][response_data.unit.x].city) === null || _a === void 0 ? void 0 : _a.is_friendly) {
                 Player.addUnit(response_data.unit);
                 Player.updateTotalNumberOfStars(response_data);
             }
@@ -123,9 +124,10 @@ export var ClientSocket;
                 args[_i] = arguments[_i];
             }
             var response_data = args[0];
-            if (Player.all_units == null) {
+            if (Player.all_units == null || !Player.hasFriendlyUnit(response_data.unit.id)) {
                 return;
             }
+            console.log("MOVED");
             // update nodes
             response_data.nodes.map(function (node) {
                 if (node.type != null) {
@@ -191,7 +193,7 @@ export var ClientSocket;
                     neighbour.update();
                 }
             }
-            current_node.removeUnit();
+            Player.deleteFriendlyUnit(current_node.unit);
         });
         ClientSocket.socket.on(ClientSocket.response_types.ATTACK_UNIT_RESPONSE, function () {
             var args = [];
@@ -199,6 +201,7 @@ export var ClientSocket;
                 args[_i] = arguments[_i];
             }
             var response_data = args[0];
+            console.log(ClientSocket.response_types.ATTACK_UNIT_RESPONSE);
             // updates unit graphics after attack
             if (response_data.is_unit_1_dead) {
                 Player.deleteFriendlyUnit(response_data.unit_1);

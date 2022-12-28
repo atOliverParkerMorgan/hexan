@@ -259,6 +259,7 @@ export function updateProgressBar(total_owned_stars: number){
 }
 
 export function createTechTree(){
+    hideCityMenu();
     //add canvas element
 
     const TECH_TREE_CANVAS_WIDTH: number = document.body.clientWidth;

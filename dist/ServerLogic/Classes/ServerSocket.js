@@ -172,15 +172,17 @@ var ServerSocket;
                 }
                 unit.moveAndSendResponse(path.path, game, player, socket);
             });
-            socket.on(ServerSocket.request_types.ATTACK_UNIT, (...args) => {
-                const request_data = args[0];
-                const game_and_player_array = isGameValid(socket, request_data);
-                if (game_and_player_array == null)
-                    return;
-                const game = game_and_player_array[0];
-                const player = game_and_player_array[1];
-                ServerSocket.sendUnitAttack(socket, game, player, request_data.attacked_unit_id, request_data.unit_id, new Path_1.default(game, request_data.path));
-            });
+            // socket.on(ServerSocket.request_types.ATTACK_UNIT, (...args: any[]) => {
+            //     const request_data = args[0];
+            //
+            //     const game_and_player_array = isGameValid(socket, request_data);
+            //     if(game_and_player_array == null) return
+            //
+            //     const game = game_and_player_array[0];
+            //     const player = game_and_player_array[1];
+            //
+            //     ServerSocket.sendUnitAttack(socket, game, player, request_data.attacked_unit_id, request_data.unit_id,  new Path(game, request_data.path));
+            // });
             socket.on(ServerSocket.request_types.SETTLE, (...args) => {
                 var _a;
                 const request_data = args[0];
@@ -358,36 +360,29 @@ var ServerSocket;
         const enemy_unit = enemy_player.getUnit(attacked_unit_id);
         if (friendly_unit == null || enemy_unit == null) {
             ServerSocket.sendData(socket, ServerSocket.response_types.INVALID_ATTACK_RESPONSE, {});
+            return;
         }
         // attack path length is the request range of the attack
-        else if (friendly_unit.range >= path.path.length - 1) {
-            const are_units_dead = player.attackUnit(friendly_unit, enemy_unit, enemy_player, game.map);
-            const is_friendly_unit_dead = are_units_dead[0];
-            const is_enemy_unit_dead = are_units_dead[1];
-            if (!is_friendly_unit_dead && is_enemy_unit_dead) {
-                friendly_unit.moveAndSendResponse(path.path, game, player, socket);
-            }
-            // send to enemy
-            ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.ATTACK_UNIT_RESPONSE, {
-                unit_1: friendly_unit,
-                is_unit_1_dead: is_friendly_unit_dead,
-                unit_2: enemy_unit,
-                is_unit_2_dead: is_enemy_unit_dead
-            });
-            // send to me
-            ServerSocket.sendData(socket, ServerSocket.response_types.ATTACK_UNIT_RESPONSE, {
-                unit_1: friendly_unit,
-                is_unit_1_dead: is_friendly_unit_dead,
-                unit_2: enemy_unit,
-                is_unit_2_dead: is_enemy_unit_dead
-            });
+        const are_units_dead = player.attackUnit(friendly_unit, enemy_unit, enemy_player, game.map);
+        const is_friendly_unit_dead = are_units_dead[0];
+        const is_enemy_unit_dead = are_units_dead[1];
+        if (!is_friendly_unit_dead && is_enemy_unit_dead) {
+            friendly_unit.moveAndSendResponse(path.path, game, player, socket);
         }
-        // unit out of range
-        else {
-            ServerSocket.sendData(socket, ServerSocket.response_types.INVALID_ATTACK_RESPONSE, {
-                message: "Invalid range"
-            });
-        }
+        // send to enemy
+        ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.ATTACK_UNIT_RESPONSE, {
+            unit_1: friendly_unit,
+            is_unit_1_dead: is_friendly_unit_dead,
+            unit_2: enemy_unit,
+            is_unit_2_dead: is_enemy_unit_dead
+        });
+        // send to me
+        ServerSocket.sendData(socket, ServerSocket.response_types.ATTACK_UNIT_RESPONSE, {
+            unit_1: friendly_unit,
+            is_unit_1_dead: is_friendly_unit_dead,
+            unit_2: enemy_unit,
+            is_unit_2_dead: is_enemy_unit_dead
+        });
     }
     ServerSocket.sendUnitAttack = sendUnitAttack;
 })(ServerSocket = exports.ServerSocket || (exports.ServerSocket = {}));
