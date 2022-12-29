@@ -23,7 +23,6 @@ var MatchMaker;
     // matches a player with another player if possible
     function getGame1v1WithPlayer(player_token, map_size) {
         let current_player = MatchMaker.all_players_searching_1v1.get(player_token);
-        console.log("current player: ", current_player != null);
         if (current_player != null) {
             let match_player;
             for (let player of MatchMaker.all_players_searching_1v1.values()) {
@@ -69,16 +68,12 @@ var MatchMaker;
     MatchMaker.addPlayer2v2 = addPlayer2v2;
     // find a game for a player if there is one
     function findMatchFor1v1(socket, map_size) {
-        console.log("finding player1v1: " + MatchMaker.all_players_searching_1v1.size);
         if (hasMatchFor1v1()) {
             const game = MatchMaker.getGame1v1WithPlayer(socket.id, map_size);
-            console.log("game ", game != null);
             if (game != null) {
                 MatchMaker.all_games.set(game.token, game);
                 const player = game === null || game === void 0 ? void 0 : game.getPlayer(socket.id);
                 const enemy_player = game === null || game === void 0 ? void 0 : game.getEnemyPlayers(socket.id)[0];
-                console.log("player ", player != null);
-                console.log("player enemy ", enemy_player != null);
                 if (player == null || enemy_player == null) {
                     ServerSocket_1.ServerSocket.somethingWrongResponse(socket, socket.id, "COULDN'T FIND MATCH", "Something went wrong can't find match");
                     ServerSocket_1.ServerSocket.sendDataToPlayer(socket, enemy_player === null || enemy_player === void 0 ? void 0 : enemy_player.token, ServerSocket_1.ServerSocket.response_types.SOMETHING_WRONG_RESPONSE, {
@@ -97,10 +92,6 @@ var MatchMaker;
                 ServerSocket_1.ServerSocket.sendDataToPlayer(socket, enemy_player.token, ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE, {
                     game_token: game.token
                 });
-                console.log("sent");
-            }
-            else {
-                console.log("error");
             }
         }
     }

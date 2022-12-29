@@ -378,10 +378,10 @@ var ServerSocket;
         });
         // send to me
         ServerSocket.sendData(socket, ServerSocket.response_types.ATTACK_UNIT_RESPONSE, {
-            unit_1: friendly_unit,
-            is_unit_1_dead: is_friendly_unit_dead,
-            unit_2: enemy_unit,
-            is_unit_2_dead: is_enemy_unit_dead
+            unit_1: enemy_unit,
+            is_unit_1_dead: is_enemy_unit_dead,
+            unit_2: friendly_unit,
+            is_unit_2_dead: is_friendly_unit_dead
         });
     }
     ServerSocket.sendUnitAttack = sendUnitAttack;

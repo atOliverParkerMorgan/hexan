@@ -72,7 +72,7 @@ export namespace ClientSocket {
         socket = io(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`, {transports: ['websocket', 'polling']});
     }
     export function sendData(request: string , data: any): void{
-        console.log(request);
+       // console.log(request);
 
         data.player_token = localStorage.player_token;
         data.game_token = localStorage.game_token;
@@ -82,15 +82,21 @@ export namespace ClientSocket {
 
     export function addDataListener(): void{
         socket.on(ClientSocket.response_types.ALL_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.ALL_RESPONSE);
+
             updateBoard(args);
         })
 
         socket.on(ClientSocket.response_types.FOUND_GAME_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.FOUND_GAME_RESPONSE);
+
             const response_data = args[0];
             initGame(socket.id, response_data.game_token);
         })
 
         socket.on(ClientSocket.response_types.MENU_INFO_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.MENU_INFO_RESPONSE);
+
             const response_data = args[0];
             // update production info
             Player.production_units = response_data.production_units;
@@ -98,6 +104,7 @@ export namespace ClientSocket {
         })
 
         socket.on(ClientSocket.response_types.UNITS_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.UNITS_RESPONSE);
             const response_data = args[0];
             for(let unit of response_data.units){
                 unit = <UnitData> unit;
@@ -110,6 +117,7 @@ export namespace ClientSocket {
         })
 
         socket.on(ClientSocket.response_types.UNIT_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.UNIT_RESPONSE);
             const response_data = args[0];
             if(Node.all_nodes[response_data.unit.y][response_data.unit.x].city?.is_friendly){
                 Player.addUnit(response_data.unit);
@@ -121,13 +129,14 @@ export namespace ClientSocket {
         })
 
         socket.on(ClientSocket.response_types.UNIT_MOVED_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.UNIT_MOVED_RESPONSE);
+
             const response_data = args[0];
 
             if(Player.all_units == null || !Player.hasFriendlyUnit(response_data.unit.id)){
                 return;
             }
 
-            console.log("MOVED")
             // update nodes
             response_data.nodes.map( (node: any) => {
                 if(node.type != null) {
@@ -144,6 +153,8 @@ export namespace ClientSocket {
         })
 
         socket.on(ClientSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE);
+
             const response_data = args[0];
 
             if(!moveEnemyUnits(response_data.unit)){
@@ -152,16 +163,23 @@ export namespace ClientSocket {
         })
 
         socket.on(ClientSocket.response_types.ENEMY_FOUND_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.ENEMY_FOUND_RESPONSE);
+
+
             const response_data = args[0];
             Player.addEnemyUnit(response_data.unit);
         })
 
         socket.on(ClientSocket.response_types.ENEMY_UNIT_DISAPPEARED, (...args: any[]) => {
+            console.log(ClientSocket.response_types.ENEMY_UNIT_DISAPPEARED);
+
             const response_data = args[0];
             Player.deleteEnemyVisibleUnit(response_data.unit)
         })
 
         socket.on(ClientSocket.response_types.HARVEST_COST_RESPONSE, (...args: any[]) => {
+            console.log(ClientSocket.response_types.HARVEST_COST_RESPONSE);
+
             const response_data = args[0];
             for (const cords of response_data.node_cords) {
                 Node.all_nodes[cords[1]][cords[0]].harvest_cost = response_data.harvest_cost;
@@ -169,6 +187,7 @@ export namespace ClientSocket {
         })
 
         socket.on(ClientSocket.response_types.NEW_CITY, (...args: any[]) => {
+            console.log(ClientSocket.response_types.NEW_CITY);
             const response_data = args[0];
             const current_node: Node = Node.all_nodes[response_data.city_y][response_data.city_x];
             current_node.setCity(response_data.city_node.city_data, response_data.city_node.sprite_name);

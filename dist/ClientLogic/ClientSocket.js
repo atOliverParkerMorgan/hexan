@@ -55,7 +55,7 @@ export var ClientSocket;
     }
     ClientSocket.connect = connect;
     function sendData(request, data) {
-        console.log(request);
+        // console.log(request);
         data.player_token = localStorage.player_token;
         data.game_token = localStorage.game_token;
         ClientSocket.socket.emit(request, data);
@@ -67,6 +67,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.ALL_RESPONSE);
             updateBoard(args);
         });
         ClientSocket.socket.on(ClientSocket.response_types.FOUND_GAME_RESPONSE, function () {
@@ -74,6 +75,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.FOUND_GAME_RESPONSE);
             var response_data = args[0];
             initGame(ClientSocket.socket.id, response_data.game_token);
         });
@@ -82,6 +84,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.MENU_INFO_RESPONSE);
             var response_data = args[0];
             // update production info
             Player.production_units = response_data.production_units;
@@ -92,6 +95,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.UNITS_RESPONSE);
             var response_data = args[0];
             for (var _a = 0, _b = response_data.units; _a < _b.length; _a++) {
                 var unit = _b[_a];
@@ -108,6 +112,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.UNIT_RESPONSE);
             var response_data = args[0];
             if ((_a = Node.all_nodes[response_data.unit.y][response_data.unit.x].city) === null || _a === void 0 ? void 0 : _a.is_friendly) {
                 Player.addUnit(response_data.unit);
@@ -123,11 +128,11 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.UNIT_MOVED_RESPONSE);
             var response_data = args[0];
             if (Player.all_units == null || !Player.hasFriendlyUnit(response_data.unit.id)) {
                 return;
             }
-            console.log("MOVED");
             // update nodes
             response_data.nodes.map(function (node) {
                 if (node.type != null) {
@@ -147,6 +152,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.ENEMY_UNIT_MOVED_RESPONSE);
             var response_data = args[0];
             if (!moveEnemyUnits(response_data.unit)) {
                 Player.addEnemyUnit(response_data.unit);
@@ -157,6 +163,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.ENEMY_FOUND_RESPONSE);
             var response_data = args[0];
             Player.addEnemyUnit(response_data.unit);
         });
@@ -165,6 +172,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.ENEMY_UNIT_DISAPPEARED);
             var response_data = args[0];
             Player.deleteEnemyVisibleUnit(response_data.unit);
         });
@@ -173,6 +181,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.HARVEST_COST_RESPONSE);
             var response_data = args[0];
             for (var _a = 0, _b = response_data.node_cords; _a < _b.length; _a++) {
                 var cords = _b[_a];
@@ -184,6 +193,7 @@ export var ClientSocket;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
+            console.log(ClientSocket.response_types.NEW_CITY);
             var response_data = args[0];
             var current_node = Node.all_nodes[response_data.city_y][response_data.city_x];
             current_node.setCity(response_data.city_node.city_data, response_data.city_node.sprite_name);

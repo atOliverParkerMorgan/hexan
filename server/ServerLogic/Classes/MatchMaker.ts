@@ -20,7 +20,6 @@ export namespace MatchMaker {
     // matches a player with another player if possible
     export function getGame1v1WithPlayer(player_token: string, map_size: number): Game | undefined{
         let current_player: Player | undefined = all_players_searching_1v1.get(player_token);
-        console.log("current player: ", current_player != null)
         if(current_player != null){
             let match_player: Player | undefined;
             for(let player of all_players_searching_1v1.values()) {
@@ -72,18 +71,13 @@ export namespace MatchMaker {
 
     // find a game for a player if there is one
     export function findMatchFor1v1(socket: Socket, map_size: number){
-        console.log("finding player1v1: "+all_players_searching_1v1.size);
         if(hasMatchFor1v1()) {
             const game: Game | undefined = MatchMaker.getGame1v1WithPlayer(socket.id, map_size);
-            console.log("game ", game != null)
             if(game != null){
                 all_games.set(game.token, game);
 
                 const player: Player | undefined = game?.getPlayer(socket.id);
                 const enemy_player: Player | undefined  = game?.getEnemyPlayers(socket.id)[0];
-                console.log("player ", player != null);
-                console.log("player enemy ", enemy_player != null);
-
 
                 if(player == null || enemy_player == null) {
                     ServerSocket.somethingWrongResponse(socket, socket.id, "COULDN'T FIND MATCH", "Something went wrong can't find match");
@@ -114,9 +108,6 @@ export namespace MatchMaker {
                         game_token: game.token
                     });
 
-                console.log("sent");
-            }else {
-                console.log("error");
             }
         }
     }

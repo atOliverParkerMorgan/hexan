@@ -85,36 +85,46 @@ export var Player;
         return false;
     }
     Player.hasEnemyUnit = hasEnemyUnit;
+    function getUnit(id) {
+        var index = 0;
+        for (; index < Player.all_units.length; index++) {
+            if (Player.all_units[index].id === id)
+                break;
+        }
+        if (index === Player.all_units.length)
+            return null;
+        return Player.all_units[index];
+    }
+    Player.getUnit = getUnit;
+    function getEnemyVisibleUnit(id) {
+        var index = 0;
+        for (; index < Player.all_enemy_visible_units.length; index++) {
+            if (Player.all_enemy_visible_units[index].id === id)
+                break;
+        }
+        if (index === Player.all_enemy_visible_units.length)
+            return null;
+        return Player.all_enemy_visible_units[index];
+    }
+    Player.getEnemyVisibleUnit = getEnemyVisibleUnit;
     function deleteEnemyVisibleUnit(unit) {
         if (!Player.hasEnemyUnit(unit.id))
             return;
-        var index = 0;
-        for (; index < Player.all_enemy_visible_units.length; index++) {
-            if (Player.all_enemy_visible_units[index].id === unit.id)
-                break;
-        }
-        var enemy_unit = Player.all_enemy_visible_units[index];
+        var enemy_unit = Player.getEnemyVisibleUnit(unit.id);
         if (enemy_unit == null)
             return;
-        enemy_unit.removeChildren();
-        Node.all_nodes[enemy_unit.y][enemy_unit.x].unit = null;
-        Player.all_enemy_visible_units.splice(index);
+        Node.all_nodes[enemy_unit.y][enemy_unit.x].removeUnit();
+        Player.all_enemy_visible_units.splice(Player.all_enemy_visible_units.indexOf(enemy_unit), 1);
     }
     Player.deleteEnemyVisibleUnit = deleteEnemyVisibleUnit;
     function deleteFriendlyUnit(unit) {
         if (!Player.hasFriendlyUnit(unit.id))
             return;
-        var index = 0;
-        for (; index < Player.all_units.length; index++) {
-            if (Player.all_units[index].id === unit.id)
-                break;
-        }
-        var friendly_unit = Player.all_units[index];
+        var friendly_unit = getUnit(unit.id);
         if (friendly_unit == null)
             return;
-        friendly_unit.removeChildren();
-        Node.all_nodes[friendly_unit.y][friendly_unit.x].unit = null;
-        Player.all_units.splice(index);
+        Node.all_nodes[friendly_unit.y][friendly_unit.x].removeUnit();
+        Player.all_units.splice(Player.all_units.indexOf(friendly_unit), 1);
     }
     Player.deleteFriendlyUnit = deleteFriendlyUnit;
     function addEnemyUnit(unit) {

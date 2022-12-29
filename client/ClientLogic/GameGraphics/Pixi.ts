@@ -189,8 +189,6 @@ export function initGame(player_token: string, game_token: string) {
 export function updateBoard(...args: any[]){
     const response_data = args[0][0 ];
 
-    console.log(args);
-
     const map = response_data.map;
     const cities = response_data.cities;
 
@@ -220,7 +218,6 @@ export function updateBoard(...args: any[]){
             node.update();
         }
     }
-    console.log(response_data.production_units)
     Player.production_units = response_data.production_units;
 
     setupTechTree(response_data.root_tech_tree_node);
@@ -230,3 +227,17 @@ export function updateBoard(...args: any[]){
 }
 
 function loop(){}
+
+export function printGame(){
+    console.log("\n---\n")
+    for (let y = 0; y < Node.all_nodes.length; y++) {
+        let line = ""
+        for (let x = 0; x < Node.all_nodes.length; x++) {
+            if(Node.all_nodes[y][x].unit != null) line += Node.all_nodes[y][x].unit?.type.charAt(0)+" ";
+            else if(Node.all_nodes[y][x].city != null) line += "C ";
+            else line += Node.all_nodes[y][x].getTypeString().charAt(0)+" ";
+        }
+        console.log(line)
+    }
+    console.log("\n---\n\n")
+}

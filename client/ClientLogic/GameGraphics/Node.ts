@@ -21,6 +21,8 @@ export class Node{
     public static readonly FOREST: number = 0x228B22;
     public static readonly MOUNTAIN: number = 0xF2F2F2;
     public static readonly HIDDEN: number = 0xE0D257;
+
+    public static readonly HOVERED_COLOR: number = 0xFFDB58;
     public static readonly CAN_BE_HARVESTED = 0xFFBF00;
     public static readonly HARVESTED = 0xFF7800;
 
@@ -35,7 +37,7 @@ export class Node{
     public static readonly MOUNTAIN_TRAVEL_BIAS = 10;
 
     public static last_hovered_node: Node | null = null;
-    private static selected_node: Node | null = null;
+    public static selected_node: Node | null = null;
 
     private static selected_line: any;
     private static selected_color: number = 0xFFAC1C;
@@ -162,6 +164,9 @@ export class Node{
             this.hex.beginFill(this.city.getNodeColor(), this.opacity);
         }
         else if(this.is_hidden) this.hex.beginFill(Node.HIDDEN, this.opacity);
+        else if(this.opacity === 0.5){
+            this.hex.beginFill(Node.HOVERED_COLOR, 1);
+        }
         else{
             if(this.canBeHarvested()) this.hex.beginFill(Node.CAN_BE_HARVESTED, this.opacity);
 
@@ -397,8 +402,9 @@ export class Node{
     }
 
     removeUnit(){
+        console.log("Sprite: ", this.sprite_name);
         this.unit?.removeChildren();
-        this.unit = null;
+        this.unit = null
         this.update();
     }
 
@@ -445,6 +451,7 @@ export class Node{
             Node.last_hovered_node = this_node;
             this_node.opacity = .5;
             this_node.update();
+
         }
 
         // restores last node to original value
@@ -456,7 +463,7 @@ export class Node{
                 // sets new node (this node) to hovered
                 set_last_node_hovered(this);
                 if (Node.selected_node != null) {
-                    if (Node.selected_node.unit != null && Node.selected_node.unit.is_friendly) {
+                    if (Node.selected_node.unit != null && Node.selected_node?.unit.is_friendly) {
 
                             if (Node.movement_hint_lines.length > 0) {
                                 for (const movement_hint_line of Node.movement_hint_lines) {
@@ -566,4 +573,5 @@ export class Node{
 
         if(!this.is_hidden) this.setBorder(Node.LAKE, 5, 1 , this.line_borders_cords);
     }
+
 }

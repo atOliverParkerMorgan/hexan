@@ -120,6 +120,7 @@ export namespace Player {
         if(enemy_unit == null) return
 
         Node.all_nodes[enemy_unit.y][enemy_unit.x].removeUnit()
+
         Player.all_enemy_visible_units.splice(Player.all_enemy_visible_units.indexOf(enemy_unit), 1);
 
     }
@@ -131,6 +132,7 @@ export namespace Player {
         if(friendly_unit == null) return
 
         Node.all_nodes[friendly_unit.y][friendly_unit.x].removeUnit();
+
         Player.all_units.splice(Player.all_units.indexOf(friendly_unit), 1);
     }
 

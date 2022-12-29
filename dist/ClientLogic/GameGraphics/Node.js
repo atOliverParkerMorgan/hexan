@@ -75,6 +75,9 @@ var Node = /** @class */ (function () {
         }
         else if (this.is_hidden)
             this.hex.beginFill(Node.HIDDEN, this.opacity);
+        else if (this.opacity === 0.5) {
+            this.hex.beginFill(Node.HOVERED_COLOR, 1);
+        }
         else {
             if (this.canBeHarvested())
                 this.hex.beginFill(Node.CAN_BE_HARVESTED, this.opacity);
@@ -280,6 +283,7 @@ var Node = /** @class */ (function () {
     };
     Node.prototype.removeUnit = function () {
         var _a;
+        console.log("Sprite: ", this.sprite_name);
         (_a = this.unit) === null || _a === void 0 ? void 0 : _a.removeChildren();
         this.unit = null;
         this.update();
@@ -315,6 +319,7 @@ var Node = /** @class */ (function () {
         viewport.addChild(Node.selected_line);
     };
     Node.prototype.setHovered = function () {
+        var _a, _b, _c;
         function set_last_node_hovered(this_node) {
             Node.last_hovered_node = this_node;
             this_node.opacity = .5;
@@ -328,14 +333,15 @@ var Node = /** @class */ (function () {
                 // sets new node (this node) to hovered
                 set_last_node_hovered(this);
                 if (Node.selected_node != null) {
-                    if (Node.selected_node.unit != null && Node.selected_node.unit.is_friendly) {
+                    if (Node.selected_node.unit != null && ((_a = Node.selected_node) === null || _a === void 0 ? void 0 : _a.unit.is_friendly)) {
                         if (Node.movement_hint_lines.length > 0) {
-                            for (var _i = 0, _a = Node.movement_hint_lines; _i < _a.length; _i++) {
-                                var movement_hint_line = _a[_i];
+                            for (var _i = 0, _d = Node.movement_hint_lines; _i < _d.length; _i++) {
+                                var movement_hint_line = _d[_i];
                                 movement_hint_line.clear();
                             }
                             Node.movement_hint_lines = [];
                         }
+                        // draw unit path
                         Node.path = aStar(Node.selected_node, Node.last_hovered_node);
                         if (Node.path == null || Node.path.length === 0)
                             return;
@@ -348,17 +354,28 @@ var Node = /** @class */ (function () {
                             var current_x = Node.path[i].getXInPixels();
                             var current_y = Node.path[i].getYInPixels();
                             var path_color = void 0;
-                            if (Node.last_hovered_node.unit != null) {
-                                // if unit is friendly
-                                if (Node.last_hovered_node.unit.is_friendly)
-                                    return;
-                                // if the unit is out of range don't show any attack or movement hint
-                                if (Node.selected_node.unit.range >= Node.path.length - i) {
-                                    path_color = Node.attack_hint_color;
+                            // if unit is friendly
+                            if ((_b = Node.last_hovered_node.unit) === null || _b === void 0 ? void 0 : _b.is_friendly)
+                                return;
+                            // if the unit is out of range don't show any attack or movement hint
+                            // if(Node.selected_node.unit.range >= Node.path.length - i){
+                            //     path_color =  Node.attack_hint_color;
+                            // }else{
+                            //     path_color =  Node.movement_hint_color;
+                            // }
+                            var is_attacking = false;
+                            for (var j = 0; j < Node.selected_node.unit.range; j++) {
+                                if (j + i >= Node.path.length)
+                                    break;
+                                if (Node.path[j + i].unit == null)
+                                    continue;
+                                if (!((_c = Node.path[j + i].unit) === null || _c === void 0 ? void 0 : _c.is_friendly)) {
+                                    is_attacking = true;
+                                    break;
                                 }
-                                else {
-                                    path_color = Node.movement_hint_color;
-                                }
+                            }
+                            if (is_attacking) {
+                                path_color = Node.attack_hint_color;
                             }
                             else {
                                 path_color = Node.movement_hint_color;
@@ -417,6 +434,23 @@ var Node = /** @class */ (function () {
         if (!this.is_hidden)
             this.setBorder(Node.LAKE, 5, 1, this.line_borders_cords);
     };
+    Node.printGame = function () {
+        var _a;
+        console.log("\n---\n");
+        for (var y = 0; y < Node.all_nodes.length; y++) {
+            var line = "";
+            for (var x = 0; x < Node.all_nodes.length; x++) {
+                if (Node.all_nodes[y][x].unit != null)
+                    line += ((_a = Node.all_nodes[y][x].unit) === null || _a === void 0 ? void 0 : _a.type.charAt(0)) + " ";
+                else if (Node.all_nodes[y][x].city != null)
+                    line += "C ";
+                else
+                    line += Node.all_nodes[y][x].getTypeString().charAt(0) + " ";
+            }
+            console.log(line);
+        }
+        console.log("\n---\n\n");
+    };
     // types of nodes displayed as colors
     Node.OCEAN = 0x0AA3CF;
     Node.LAKE = 0x80C5DE;
@@ -424,6 +458,7 @@ var Node = /** @class */ (function () {
     Node.FOREST = 0x228B22;
     Node.MOUNTAIN = 0xF2F2F2;
     Node.HIDDEN = 0xE0D257;
+    Node.HOVERED_COLOR = 0xFFDB58;
     Node.CAN_BE_HARVESTED = 0xFFBF00;
     Node.HARVESTED = 0xFF7800;
     // if type is null => the node is a city therefore it has not type
