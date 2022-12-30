@@ -153,7 +153,6 @@ export function updateBoard() {
         args[_i] = arguments[_i];
     }
     var response_data = args[0][0];
-    console.log(args);
     var map = response_data.map;
     var cities = response_data.cities;
     initCanvas(map, cities);
@@ -182,7 +181,6 @@ export function updateBoard() {
             node.update();
         }
     }
-    console.log(response_data.production_units);
     Player.production_units = response_data.production_units;
     setupTechTree(response_data.root_tech_tree_node);
     // get star data after game setup is initialized

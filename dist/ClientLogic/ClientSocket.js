@@ -227,6 +227,7 @@ export var ClientSocket;
             else {
                 Player.updateUnitsAfterAttack(response_data.unit_2);
             }
+            Node.printGame();
         });
         ClientSocket.socket.on(ClientSocket.response_types.STARS_DATA_RESPONSE, function () {
             var args = [];

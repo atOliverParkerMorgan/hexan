@@ -574,4 +574,18 @@ export class Node{
         if(!this.is_hidden) this.setBorder(Node.LAKE, 5, 1 , this.line_borders_cords);
     }
 
+    public static printGame(){
+        console.log("\n---\n")
+        for (let y = 0; y < Node.all_nodes.length; y++) {
+            let line = ""
+            for (let x = 0; x < Node.all_nodes.length; x++) {
+                if(Node.all_nodes[y][x].unit != null) line += Node.all_nodes[y][x].unit?.type.charAt(0)+" ";
+                else if(Node.all_nodes[y][x].city != null) line += "C ";
+                else line += Node.all_nodes[y][x].getTypeString().charAt(0)+" ";
+            }
+            console.log(line)
+        }
+        console.log("\n---\n\n")
+    }
+
 }

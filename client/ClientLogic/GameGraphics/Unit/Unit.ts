@@ -14,6 +14,8 @@ export class Unit implements UnitData{
     public static readonly SETTLE: string = "Settle";
     public static readonly BUILD: string = "Build";
 
+    public static readonly MOVEMENT_UPDATE_TIME: number = 30
+
 
     // graphics colors
     private static readonly HEALTH_BAR_COLOR: number = 0x7CFC00;
@@ -123,7 +125,7 @@ export class Unit implements UnitData{
 
     updateUnitOnStage(): void{
         this.removeChildren();
-        this.showMovement(this.background_unit_movement_percentage);
+        this.showMovement();
 
         this.showHealth();
         this.showBackground();
@@ -189,19 +191,20 @@ export class Unit implements UnitData{
         viewport.addChild(this.health_circle);
     }
 
-    showMovement(percentage_of_movement: number): void{
-        if(this.current_path.length === 0){
+    showMovement(): void{
+        if(this.current_path.length === 0 || this.background_unit_movement_percentage === 0){
+            console.log("REMOVED")
             if(this.movement_circle != null){
                 viewport.removeChild(this.movement_circle);
             }
             return;
         }
-
+        console.log("NOT REMOVED")
         this.movement_circle = new Graphics;
         this.movement_circle.beginFill(Unit.MOVEMENT_COLOR);
         this.movement_circle.lineStyle(2, Unit.MOVEMENT_COLOR)
         this.movement_circle.arc(this.getXInPixels()+this.width/2, this.getYInPixels()+this.height/2,
-            HEX_SIDE_SIZE/1.2, 0,2 * Math.PI / (100 / percentage_of_movement));
+            HEX_SIDE_SIZE/1.2, 0,2 * Math.PI / (100 / this.background_unit_movement_percentage));
         this.movement_circle.endFill();
 
         viewport.addChild(this.movement_circle);
@@ -247,26 +250,36 @@ export class Unit implements UnitData{
     updateMovementBackground(current_node: Node, depth: number){
         if(depth === 0){
             this.background_unit_movement_percentage = 0;
+            this.updateUnitOnStage();
             return;
         }
         setTimeout(()=>{
+
             this.background_unit_movement_percentage += 5;
             this.updateUnitOnStage();
             this.updateMovementBackground(current_node, depth - 1);
 
-        }, current_node.getMovementTime() * 1000 / 30);
+        }, current_node.getMovementTime() * 1000 / Unit.MOVEMENT_UPDATE_TIME);
     }
 
     updateUnitMovementBackground(){
-        this.current_path.shift();
 
-        if(this.current_path.length !== 0){
-            const current_node: Node = Node.all_nodes[this.current_path[0][1]][this.current_path[0][0]];
-            this.updateMovementBackground(current_node, 30)
-        }else{
+        // don't update if it's the final node of the path
+        if(this.current_path.length <= 1){
             this.background_unit_movement_percentage = 0;
-            this.updateUnitOnStage()
+            return;
         }
+
+        // don't update if there is a unit in the way
+        if(this.current_path.length >= 2) {
+            if (Node.all_nodes[this.current_path[1][1]][this.current_path[1][0]].unit != null) {
+                return;
+            }
+        }
+
+        this.current_path.shift();
+        const current_node: Node = Node.all_nodes[this.current_path[0][1]][this.current_path[0][0]];
+        this.updateMovementBackground(current_node, Unit.MOVEMENT_UPDATE_TIME)
     }
 }
 

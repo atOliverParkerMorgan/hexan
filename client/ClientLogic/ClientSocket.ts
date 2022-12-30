@@ -205,7 +205,6 @@ export namespace ClientSocket {
         socket.on(ClientSocket.response_types.ATTACK_UNIT_RESPONSE, (...args: any[]) => {
             const response_data = args[0];
             console.log(ClientSocket.response_types.ATTACK_UNIT_RESPONSE);
-
             // updates unit graphics after attack
             if(response_data.is_unit_1_dead) {
                 Player.deleteFriendlyUnit(response_data.unit_1);
@@ -222,6 +221,8 @@ export namespace ClientSocket {
             else{
                 Player.updateUnitsAfterAttack(response_data.unit_2);
             }
+
+            Node.printGame();
         })
 
         socket.on(ClientSocket.response_types.STARS_DATA_RESPONSE, (...args: any[]) => {
@@ -360,6 +361,7 @@ export namespace ClientSocket {
                 unit_id: unit?.id,
                 path: path
             })
+
         unit?.setCurrentPath(path);
     }
 

@@ -62,7 +62,7 @@ var Unit = /** @class */ (function () {
     };
     Unit.prototype.updateUnitOnStage = function () {
         this.removeChildren();
-        this.showMovement(this.background_unit_movement_percentage);
+        this.showMovement();
         this.showHealth();
         this.showBackground();
         this.setSpritePosition();
@@ -114,17 +114,19 @@ var Unit = /** @class */ (function () {
         this.health_circle.endFill();
         viewport.addChild(this.health_circle);
     };
-    Unit.prototype.showMovement = function (percentage_of_movement) {
-        if (this.current_path.length === 0) {
+    Unit.prototype.showMovement = function () {
+        if (this.current_path.length === 0 || this.background_unit_movement_percentage === 0) {
+            console.log("REMOVED");
             if (this.movement_circle != null) {
                 viewport.removeChild(this.movement_circle);
             }
             return;
         }
+        console.log("NOT REMOVED");
         this.movement_circle = new Graphics;
         this.movement_circle.beginFill(Unit.MOVEMENT_COLOR);
         this.movement_circle.lineStyle(2, Unit.MOVEMENT_COLOR);
-        this.movement_circle.arc(this.getXInPixels() + this.width / 2, this.getYInPixels() + this.height / 2, HEX_SIDE_SIZE / 1.2, 0, 2 * Math.PI / (100 / percentage_of_movement));
+        this.movement_circle.arc(this.getXInPixels() + this.width / 2, this.getYInPixels() + this.height / 2, HEX_SIDE_SIZE / 1.2, 0, 2 * Math.PI / (100 / this.background_unit_movement_percentage));
         this.movement_circle.endFill();
         viewport.addChild(this.movement_circle);
     };
@@ -163,24 +165,30 @@ var Unit = /** @class */ (function () {
         var _this = this;
         if (depth === 0) {
             this.background_unit_movement_percentage = 0;
+            this.updateUnitOnStage();
             return;
         }
         setTimeout(function () {
             _this.background_unit_movement_percentage += 5;
             _this.updateUnitOnStage();
             _this.updateMovementBackground(current_node, depth - 1);
-        }, current_node.getMovementTime() * 1000 / 30);
+        }, current_node.getMovementTime() * 1000 / Unit.MOVEMENT_UPDATE_TIME);
     };
     Unit.prototype.updateUnitMovementBackground = function () {
-        this.current_path.shift();
-        if (this.current_path.length !== 0) {
-            var current_node = Node.all_nodes[this.current_path[0][1]][this.current_path[0][0]];
-            this.updateMovementBackground(current_node, 30);
-        }
-        else {
+        // don't update if it's the final node of the path
+        if (this.current_path.length <= 1) {
             this.background_unit_movement_percentage = 0;
-            this.updateUnitOnStage();
+            return;
         }
+        // don't update if there is a unit in the way
+        if (this.current_path.length >= 2) {
+            if (Node.all_nodes[this.current_path[1][1]][this.current_path[1][0]].unit != null) {
+                return;
+            }
+        }
+        this.current_path.shift();
+        var current_node = Node.all_nodes[this.current_path[0][1]][this.current_path[0][0]];
+        this.updateMovementBackground(current_node, Unit.MOVEMENT_UPDATE_TIME);
     };
     // unit types
     Unit.CAVALRY = "Cavalry";
@@ -191,6 +199,7 @@ var Unit = /** @class */ (function () {
     Unit.FORTIFY = "Fortify";
     Unit.SETTLE = "Settle";
     Unit.BUILD = "Build";
+    Unit.MOVEMENT_UPDATE_TIME = 30;
     // graphics colors
     Unit.HEALTH_BAR_COLOR = 0x7CFC00;
     Unit.FRIENDLY_BACKGROUND_COLOR = 0xFF7800;
