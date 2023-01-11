@@ -13,7 +13,7 @@ class Player {
         this.units = [];
         // units that this player can produce
         this.production_units = [Utils_1.Utils.WARRIOR, Utils_1.Utils.SLINGER, Utils_1.Utils.SETTLER_UNIT];
-        this.total_owned_stars = 1000;
+        this.total_owned_stars = 10;
         this.star_production = 10;
         this.star_production_has_started = false;
         this.owned_technology = [];
@@ -54,12 +54,13 @@ class Player {
         return this.getUnit(id) != null;
     }
     // returns true if the unit was successfully removed; false if not
-    removeUnit(id) {
+    removeUnit(id, map) {
         let remove_unit = this.getUnit(id);
         if (remove_unit == null) {
             return false;
         }
         this.units.splice(this.units.indexOf(remove_unit), 1);
+        map.all_nodes[remove_unit.y][remove_unit.x].unit = null;
         return true;
     }
     getUnitType(id) {
@@ -85,12 +86,10 @@ class Player {
         const friendly_died = unit_friendly.health <= 0;
         const enemy_died = unit_enemy.health <= 0;
         if (friendly_died) {
-            map.all_nodes[unit_friendly.y][unit_friendly.x].unit = null;
-            this.units.splice(this.units.indexOf(unit_friendly), 1);
+            this.removeUnit(unit_friendly.id, map);
         }
         if (enemy_died) {
-            map.all_nodes[unit_enemy.y][unit_enemy.x].unit = null;
-            enemy_player.units.splice(enemy_player.units.indexOf(unit_enemy), 1);
+            enemy_player.removeUnit(unit_enemy.id, map);
         }
         return [friendly_died, enemy_died];
     }

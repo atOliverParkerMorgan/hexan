@@ -18,6 +18,7 @@ export var ClientSocket;
         ENEMY_FOUND_RESPONSE: "ENEMY_FOUND_RESPONSE",
         ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
         NEW_CITY: "NEW_CITY",
+        NEW_ENEMY_CITY: "NEW_ENEMY_CITY",
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
         PURCHASED_TECHNOLOGY_RESPONSE: "PURCHASED_TECHNOLOGY_RESPONSE",
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
@@ -27,6 +28,7 @@ export var ClientSocket;
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
         END_GAME_RESPONSE: "END_GAME_RESPONSE",
+        PLAYER_DISCONNECTED: "PLAYER_DISCONNECTED",
         FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
     };
     ClientSocket.request_types = {
@@ -205,6 +207,17 @@ export var ClientSocket;
             }
             Player.deleteFriendlyUnit(current_node.unit);
         });
+        ClientSocket.socket.on(ClientSocket.response_types.NEW_ENEMY_CITY, function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            console.log(ClientSocket.response_types.NEW_ENEMY_CITY);
+            var response_data = args[0];
+            var current_node = Node.all_nodes[response_data.city_y][response_data.city_x];
+            current_node.setCity(response_data.city_node.city_data, response_data.city_node.sprite_name);
+            Player.deleteEnemyVisibleUnit(current_node.unit);
+        });
         ClientSocket.socket.on(ClientSocket.response_types.ATTACK_UNIT_RESPONSE, function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -227,7 +240,6 @@ export var ClientSocket;
             else {
                 Player.updateUnitsAfterAttack(response_data.unit_2);
             }
-            Node.printGame();
         });
         ClientSocket.socket.on(ClientSocket.response_types.STARS_DATA_RESPONSE, function () {
             var args = [];
@@ -298,12 +310,16 @@ export var ClientSocket;
                 args[_i] = arguments[_i];
             }
             var response_data = args[0];
-            if (response_data.won) {
-                gameOver("YOU WON!", "Congrats annihilate all your enemies and won!", "w3-green");
+            gameOver(response_data.title, response_data.message, response_data.title_style);
+        });
+        ClientSocket.socket.on(ClientSocket.response_types.PLAYER_DISCONNECTED, function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
             }
-            else {
-                gameOver("YOU LOST!", "Oh no you got recked and lost better luck next time!", "w3-red");
-            }
+            console.log(ClientSocket.response_types.PLAYER_DISCONNECTED);
+            var response_data = args[0];
+            // showModal()
         });
     }
     ClientSocket.addDataListener = addDataListener;
@@ -329,6 +345,9 @@ export var ClientSocket;
                 // transform unit into ship if on a water node
                 enemy_unit.is_on_water = response_unit.is_on_water;
                 enemy_unit.moveTo(response_unit.x, response_unit.y);
+                // update movement on map
+                Node.all_nodes[enemy_unit.y][enemy_unit.x].update();
+                Node.all_nodes[response_unit.y][response_unit.x].update();
                 return true;
             }
         }

@@ -3,6 +3,7 @@ import {Socket} from "socket.io";
 import GameInterface from "../GameInterface";
 import PlayerInterface from "../PlayerInterface";
 import NodeInterface from "../Map/NodeInterface";
+import MapInterface from "../Map/MapInterface";
 
 export default interface UnitInterface {
     x: number;
@@ -25,6 +26,8 @@ export default interface UnitInterface {
     moveAndSendResponse(path: NodeInterface[], game: GameInterface, player: PlayerInterface, socket: Socket): void;
 
     moveAlongPath(game: GameInterface, player: PlayerInterface, socket: Socket, path: NodeInterface[]): void;
+
+    getClosestHiddenNode(map: MapInterface, owner: PlayerInterface): NodeInterface | undefined;
 
     getId(): string;
 

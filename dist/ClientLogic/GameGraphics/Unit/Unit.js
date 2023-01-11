@@ -116,13 +116,11 @@ var Unit = /** @class */ (function () {
     };
     Unit.prototype.showMovement = function () {
         if (this.current_path.length === 0 || this.background_unit_movement_percentage === 0) {
-            console.log("REMOVED");
             if (this.movement_circle != null) {
                 viewport.removeChild(this.movement_circle);
             }
             return;
         }
-        console.log("NOT REMOVED");
         this.movement_circle = new Graphics;
         this.movement_circle.beginFill(Unit.MOVEMENT_COLOR);
         this.movement_circle.lineStyle(2, Unit.MOVEMENT_COLOR);
@@ -165,7 +163,7 @@ var Unit = /** @class */ (function () {
         var _this = this;
         if (depth === 0) {
             this.background_unit_movement_percentage = 0;
-            this.updateUnitOnStage();
+            //this.updateUnitOnStage();
             return;
         }
         setTimeout(function () {

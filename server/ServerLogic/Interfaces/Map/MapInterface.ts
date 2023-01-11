@@ -42,4 +42,6 @@ export default interface MapInterface {
     getContinent(name: string): Continent | null;
 
     makeNeighbourNodesShown(player: PlayerInterface, node: NodeInterface | undefined): void;
+
+    getNumberOfHiddenNodes(player_token:string): number
 }

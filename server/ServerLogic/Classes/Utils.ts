@@ -68,7 +68,7 @@ export namespace Utils{
 
         attack: 0,
         health: 100,
-        range: 0,
+        range: 1,
         movement: 100,
         cost: 20,
 
@@ -83,7 +83,7 @@ export namespace Utils{
             attack: 25,
             health: 100,
             range: 1,
-            movement: 1000,
+            movement: 100,
             cost: 4,
 
             action: UNIT_ACTIONS.FORTIFY,

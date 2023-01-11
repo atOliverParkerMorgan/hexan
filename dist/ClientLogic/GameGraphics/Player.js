@@ -11,8 +11,8 @@ export var Player;
     Player.all_enemy_visible_units = [];
     Player.all_cities = [];
     // player star production
-    var total_owned_stars = 0;
-    var star_production = 0;
+    var total_owned_stars = 10;
+    var star_production = 10;
     Player.production_units = [];
     Player.owned_technologies = [];
     function containsCity(city_name) {

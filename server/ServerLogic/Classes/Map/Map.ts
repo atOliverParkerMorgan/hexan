@@ -499,4 +499,17 @@ export default class Map implements MapInterface {
         }
     }
 
+    getNumberOfHiddenNodes(player_token: string){
+        let counter: number = 0
+        for (const node_line of this.all_nodes) {
+            for (const node of node_line) {
+                if(!node.is_shown.includes(player_token)){
+                    counter ++;
+                }
+            }
+        }
+
+        return counter;
+    }
+
 }

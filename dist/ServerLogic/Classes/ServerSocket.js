@@ -7,6 +7,7 @@ exports.ServerSocket = void 0;
 const Path_1 = __importDefault(require("./Map/Path"));
 const MatchMaker_1 = require("./MatchMaker");
 const app_1 = require("../../app");
+const Utils_1 = require("./Utils");
 // singleton
 var ServerSocket;
 (function (ServerSocket) {
@@ -22,6 +23,7 @@ var ServerSocket;
         ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
         HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
         NEW_CITY: "NEW_CITY",
+        NEW_ENEMY_CITY: "NEW_ENEMY_CITY",
         CONQUERED_CITY_RESPONSE: "CONQUERED_CITY",
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
         MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
@@ -31,6 +33,7 @@ var ServerSocket;
         INVALID_ATTACK_RESPONSE: "INVALID_ATTACK_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
+        PLAYER_DISCONNECTED: "PLAYER_DISCONNECTED",
         END_GAME_RESPONSE: "END_GAME_RESPONSE",
         FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
     };
@@ -73,6 +76,21 @@ var ServerSocket;
             socket.on('disconnect', function () {
                 MatchMaker_1.MatchMaker.all_players_searching_1v1.delete(socket.id);
                 MatchMaker_1.MatchMaker.all_players_searching_2v2.delete(socket.id);
+                // disconnect player
+                for (const game of MatchMaker_1.MatchMaker.all_games.values()) {
+                    const player = game.getPlayer(socket.id);
+                    if (player != null) {
+                        game.killPlayer(player);
+                        if (game.game_mode === Utils_1.Utils.GAME_MODES.GAME_MODE_1v1) {
+                            ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.END_GAME_RESPONSE, {
+                                won: true,
+                                title: "YOU WON",
+                                message: "Your opponent disconnected. You won!",
+                                title_style: "w3-green"
+                            });
+                        }
+                    }
+                }
             });
             socket.on(ServerSocket.request_types.GET_UNITS, (...args) => {
                 const request_data = args[0];
@@ -172,19 +190,8 @@ var ServerSocket;
                 }
                 unit.moveAndSendResponse(path.path, game, player, socket);
             });
-            // socket.on(ServerSocket.request_types.ATTACK_UNIT, (...args: any[]) => {
-            //     const request_data = args[0];
-            //
-            //     const game_and_player_array = isGameValid(socket, request_data);
-            //     if(game_and_player_array == null) return
-            //
-            //     const game = game_and_player_array[0];
-            //     const player = game_and_player_array[1];
-            //
-            //     ServerSocket.sendUnitAttack(socket, game, player, request_data.attacked_unit_id, request_data.unit_id,  new Path(game, request_data.path));
-            // });
             socket.on(ServerSocket.request_types.SETTLE, (...args) => {
-                var _a;
+                var _a, _b;
                 const request_data = args[0];
                 const game_and_player_array = isGameValid(socket, request_data);
                 if (game_and_player_array == null)
@@ -192,7 +199,8 @@ var ServerSocket;
                 const game = game_and_player_array[0];
                 const player = game_and_player_array[1];
                 let city_node = game.map.getNode(request_data.x, request_data.y);
-                let can_settle = game.canSettle(player, city_node, request_data.id);
+                //
+                let can_settle = game.settle(player, city_node, request_data.id, game.map);
                 if (can_settle) {
                     game.addCity(player, city_node);
                     ServerSocket.sendData(socket, ServerSocket.response_types.NEW_CITY, {
@@ -200,6 +208,16 @@ var ServerSocket;
                         city_y: request_data.y,
                         city_node: (_a = game.map.getNode(request_data.x, request_data.y)) === null || _a === void 0 ? void 0 : _a.getData(player.token)
                     });
+                    // send information to enemy player if this node is discovered
+                    for (const enemy_player of game.getEnemyPlayers(player.token)) {
+                        if (city_node.is_shown.includes(enemy_player.token)) {
+                            ServerSocket.sendDataToPlayer(socket, enemy_player.token, ServerSocket.response_types.NEW_ENEMY_CITY, {
+                                city_x: request_data.x,
+                                city_y: request_data.y,
+                                city_node: (_b = game.map.getNode(request_data.x, request_data.y)) === null || _b === void 0 ? void 0 : _b.getData(enemy_player.token)
+                            });
+                        }
+                    }
                 }
                 else {
                     ServerSocket.somethingWrongResponse(socket, "", "CAN'T SETTLE", "You can't settle this node");
@@ -306,7 +324,10 @@ var ServerSocket;
         if (player.token === city.owner.token) {
             if (!game.playerIsAlive(game.getEnemyPlayers(player.token)[0])) {
                 ServerSocket.sendData(socket, ServerSocket.response_types.END_GAME_RESPONSE, {
-                    won: true
+                    won: true,
+                    title: "YOU WON",
+                    message: "Congrats annihilate all your enemies and won!",
+                    title_style: "w3-green"
                 });
             }
             ServerSocket.sendData(socket, ServerSocket.response_types.CONQUERED_CITY_RESPONSE, {
@@ -317,7 +338,10 @@ var ServerSocket;
         else {
             if (!game.playerIsAlive(player)) {
                 ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.END_GAME_RESPONSE, {
-                    won: false
+                    won: false,
+                    title: "YOU LOST",
+                    message: "Oh no your last city got conquered. This is the end for you.",
+                    title_style: "w3-red"
                 });
             }
             ServerSocket.sendDataToAll(socket, game.token, ServerSocket.response_types.CONQUERED_CITY_RESPONSE, {

@@ -11,6 +11,7 @@ import GameInterface from "../../Interfaces/GameInterface";
 import PlayerInterface from "../../Interfaces/PlayerInterface";
 import {App} from "../../../app";
 import {MatchMaker} from "../MatchMaker";
+import CityInterface from "../../Interfaces/City/CityInterface";
 
 export default class Unit implements UnitInterface{
     x: number;
@@ -99,6 +100,8 @@ export default class Unit implements UnitInterface{
                         path.map((node: NodeInterface) => {
                             path_cords.push([node.x, node.y]);
                         })
+
+                        console.log("here")
                         ServerSocket.sendUnitAttack(socket, game, player, possible_attack_node.unit.id, this.id, new Path(game, path_cords))
 
                         return;
@@ -119,12 +122,13 @@ export default class Unit implements UnitInterface{
 
             let all_discovered_nodes: NodeInterface[] = [];
 
-            for (const node of current_node.neighbors) {
-                if (node != null) {
-                    game.map.makeNeighbourNodesShown(player, node);
+            game.map.makeNeighbourNodesShown(player, current_node);
+            current_node.neighbors.map((node: NodeInterface | undefined)=>{
+                if(node != null) {
                     all_discovered_nodes.push(node.getData(player.token))
                 }
-            }
+
+            })
 
 
             all_discovered_nodes.push(current_node.getData(player.token));
@@ -148,28 +152,34 @@ export default class Unit implements UnitInterface{
             let city_node: NodeInterface = game.map.all_nodes[this.y][this.x];
 
             if (city_node.city != null && city_node?.city?.owner.token != player.token) {
+                const conquered_city_player = city_node.city.owner
+
                 city_node.city.owner = player;
                 let is_conquered = false;
 
                 game.all_players.map((in_game_player: any) => {
                     if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
-                        ServerSocket.sendConqueredCity(socket, game, in_game_player, <any>city_node.city, this);
+                        ServerSocket.sendConqueredCity(socket, game, in_game_player, <any> city_node.city, this);
                         is_conquered = true;
                     }
                 });
-                if (is_conquered) {
+
+                // if all enemy cities are conquered
+                if (is_conquered && !game.playerIsAlive(conquered_city_player)) {
                     // if win condition disconnect players
-                    App.io.sockets.sockets.get(game.getEnemyPlayers(player.token)[0].token).disconnect();
+                    App.io.sockets.sockets.get(conquered_city_player.token).disconnect();
                     socket.disconnect();
 
                     MatchMaker.all_games.delete(game.token)
 
                     return;
+                }else if(is_conquered){
+                    return;
                 }
             }
 
             // show unit to player if the unit steps on a discovered node
-            game.all_players.map((in_game_player: any) => {
+            game.all_players.map((in_game_player: PlayerInterface) => {
                 if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
                     if (in_game_player.token === player.token) {
                         ServerSocket.sendUnitMovementToOwner(socket, this, all_discovered_nodes, in_game_player);
@@ -202,6 +212,26 @@ export default class Unit implements UnitInterface{
 
     getY() {
         return this.y;
+    }
+
+    getClosestHiddenNode(map: MapInterface, owner: PlayerInterface): NodeInterface | undefined{
+
+         let searched_node = [map.all_nodes[this.y][this.x]];
+
+         while (searched_node.length != 0) {
+             let current_node = searched_node.shift();
+             if(current_node == null) continue
+
+             for (const node of current_node.neighbors) {
+                 if(node == null) continue;
+
+                 if(!node.is_shown.includes(owner.token)){
+                     return current_node;
+                 }else{
+                     searched_node.push(current_node)
+                 }
+             }
+         }
     }
 
     // get rid of methods when sending object threw socket

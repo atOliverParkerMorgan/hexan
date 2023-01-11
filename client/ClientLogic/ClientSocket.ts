@@ -1,9 +1,8 @@
 import {Player} from "./GameGraphics/Player.js"
-import {initCanvas, HEX_SIDE_SIZE, setupTechTree, initGame, updateBoard,} from "./GameGraphics/Pixi.js";
+import {HEX_SIDE_SIZE, setupTechTree, initGame, updateBoard,} from "./GameGraphics/Pixi.js";
 import Unit from "./GameGraphics/Unit/Unit.js";
 import {Node} from "./GameGraphics/Node.js";
 import {gameOver, showCityMenu, showModal} from "./UiLogic.js";
-import {City} from "./GameGraphics/City/City.js";
 
 // singleton
 export namespace ClientSocket {
@@ -23,6 +22,7 @@ export namespace ClientSocket {
         ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
 
         NEW_CITY: "NEW_CITY",
+        NEW_ENEMY_CITY: "NEW_ENEMY_CITY",
 
         STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
 
@@ -38,6 +38,7 @@ export namespace ClientSocket {
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
 
         END_GAME_RESPONSE: "END_GAME_RESPONSE",
+        PLAYER_DISCONNECTED: "PLAYER_DISCONNECTED",
         FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
 
     };
@@ -201,6 +202,16 @@ export namespace ClientSocket {
             Player.deleteFriendlyUnit(current_node.unit)
         })
 
+        socket.on(ClientSocket.response_types.NEW_ENEMY_CITY, (...args: any[]) => {
+            console.log(ClientSocket.response_types.NEW_ENEMY_CITY);
+
+            const response_data = args[0];
+            const current_node: Node = Node.all_nodes[response_data.city_y][response_data.city_x];
+
+            current_node.setCity(response_data.city_node.city_data, response_data.city_node.sprite_name);
+            Player.deleteEnemyVisibleUnit(current_node.unit)
+        })
+
 
         socket.on(ClientSocket.response_types.ATTACK_UNIT_RESPONSE, (...args: any[]) => {
             const response_data = args[0];
@@ -222,7 +233,6 @@ export namespace ClientSocket {
                 Player.updateUnitsAfterAttack(response_data.unit_2);
             }
 
-            Node.printGame();
         })
 
         socket.on(ClientSocket.response_types.STARS_DATA_RESPONSE, (...args: any[]) => {
@@ -285,11 +295,14 @@ export namespace ClientSocket {
         socket.on(ClientSocket.response_types.END_GAME_RESPONSE, (...args: any[]) => {
             const response_data = args[0];
 
-            if(response_data.won) {
-                gameOver("YOU WON!", "Congrats annihilate all your enemies and won!", "w3-green");
-            }else{
-                gameOver("YOU LOST!", "Oh no you got recked and lost better luck next time!",  "w3-red");
-            }
+            gameOver(response_data.title, response_data.message, response_data.title_style);
+        })
+
+        socket.on(ClientSocket.response_types.PLAYER_DISCONNECTED, (...args: any[]) => {
+            console.log(ClientSocket.response_types.PLAYER_DISCONNECTED);
+
+            const response_data = args[0];
+            // showModal()
         })
     }
 
@@ -316,6 +329,11 @@ export namespace ClientSocket {
                 // transform unit into ship if on a water node
                 enemy_unit.is_on_water = response_unit.is_on_water;
                 enemy_unit.moveTo(response_unit.x, response_unit.y);
+
+                // update movement on map
+                Node.all_nodes[enemy_unit.y][enemy_unit.x].update();
+                Node.all_nodes[response_unit.y][response_unit.x].update();
+
                 return true;
             }
         }

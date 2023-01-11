@@ -428,6 +428,17 @@ class Map {
             neighbor.is_shown.push(player.token);
         }
     }
+    getNumberOfHiddenNodes(player_token) {
+        let counter = 0;
+        for (const node_line of this.all_nodes) {
+            for (const node of node_line) {
+                if (!node.is_shown.includes(player_token)) {
+                    counter++;
+                }
+            }
+        }
+        return counter;
+    }
 }
 exports.default = Map;
 Map.CONTINENT_NAMES = ["Drolend", "Dritune", "Figith", "Esox", "Okea", "Owrai", "Aneoqeon", "Vliutufor", "Strineaces", "Uaqixesh"];

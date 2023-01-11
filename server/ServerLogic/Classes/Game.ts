@@ -8,17 +8,21 @@ import PlayerInterface from "../Interfaces/PlayerInterface";
 import NodeInterface from "../Interfaces/Map/NodeInterface";
 import UnitInterface from "../Interfaces/Units/UnitInterface";
 import Technology from "./Technology/Technology";
+import CityInterface from "../Interfaces/City/CityInterface";
 
 class Game implements GameInterface {
     token: string;
     all_players: PlayerInterface[];
     all_cities: City[];
-
     map: Map;
-    constructor(token: string, number_of_land_nodes: number, number_of_continents: number) {
+    game_mode: string;
+
+    constructor(token: string, number_of_land_nodes: number, number_of_continents: number, game_mode: string) {
         this.token = token;
         this.all_players = [];
         this.all_cities = [];
+        this.game_mode = game_mode;
+
         this.map = new Map(number_of_land_nodes, number_of_continents);
         this.map.generateIslandMap();
     }
@@ -36,6 +40,24 @@ class Game implements GameInterface {
         }
 
         return false;
+    }
+
+    killPlayer(player: PlayerInterface): void {
+        if(player == null) return;
+
+        let remove_cities: CityInterface[] = []
+        this.all_cities.map((city: CityInterface)=>{
+            if (city.owner.token === player.token){
+                remove_cities.push(city);
+                this.map.all_nodes[city.y][city.x].city = null
+            }
+        });
+
+        remove_cities.map((remove_city: CityInterface)=>{
+            this.all_cities.splice(this.all_cities.indexOf(remove_city), 1)
+        })
+
+        this.all_players.splice(this.all_players.indexOf(player))
     }
 
     placeStartCity(player: PlayerInterface): void {
@@ -125,7 +147,7 @@ class Game implements GameInterface {
         }
     }
 
-    canSettle(player: PlayerInterface, city_node: NodeInterface | undefined, unit_id: string): boolean {
+    settle(player: PlayerInterface, city_node: NodeInterface | undefined, unit_id: string, map: Map): boolean {
         if (city_node == null) {
             return false;
         }
@@ -139,7 +161,7 @@ class Game implements GameInterface {
             return false
         }
 
-        return player.removeUnit(unit_id);
+        return player.removeUnit(unit_id, map);
     }
 
     // return boolean that indicates if the city placement was successful

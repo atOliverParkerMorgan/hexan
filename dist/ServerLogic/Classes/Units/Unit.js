@@ -65,6 +65,7 @@ class Unit {
                         path.map((node) => {
                             path_cords.push([node.x, node.y]);
                         });
+                        console.log("here");
                         ServerSocket_1.ServerSocket.sendUnitAttack(socket, game, player, possible_attack_node.unit.id, this.id, new Path_1.default(game, path_cords));
                         return;
                     }
@@ -77,12 +78,12 @@ class Unit {
             this.x = current_node.x;
             this.y = current_node.y;
             let all_discovered_nodes = [];
-            for (const node of current_node.neighbors) {
+            game.map.makeNeighbourNodesShown(player, current_node);
+            current_node.neighbors.map((node) => {
                 if (node != null) {
-                    game.map.makeNeighbourNodesShown(player, node);
                     all_discovered_nodes.push(node.getData(player.token));
                 }
-            }
+            });
             all_discovered_nodes.push(current_node.getData(player.token));
             // find previously unseen enemy units
             for (const enemy_player of game.getEnemyPlayers(player.token)) {
@@ -101,6 +102,7 @@ class Unit {
             }
             let city_node = game.map.all_nodes[this.y][this.x];
             if (city_node.city != null && ((_a = city_node === null || city_node === void 0 ? void 0 : city_node.city) === null || _a === void 0 ? void 0 : _a.owner.token) != player.token) {
+                const conquered_city_player = city_node.city.owner;
                 city_node.city.owner = player;
                 let is_conquered = false;
                 game.all_players.map((in_game_player) => {
@@ -109,11 +111,15 @@ class Unit {
                         is_conquered = true;
                     }
                 });
-                if (is_conquered) {
+                // if all enemy cities are conquered
+                if (is_conquered && !game.playerIsAlive(conquered_city_player)) {
                     // if win condition disconnect players
-                    app_1.App.io.sockets.sockets.get(game.getEnemyPlayers(player.token)[0].token).disconnect();
+                    app_1.App.io.sockets.sockets.get(conquered_city_player.token).disconnect();
                     socket.disconnect();
                     MatchMaker_1.MatchMaker.all_games.delete(game.token);
+                    return;
+                }
+                else if (is_conquered) {
                     return;
                 }
             }
@@ -147,6 +153,24 @@ class Unit {
     }
     getY() {
         return this.y;
+    }
+    getClosestHiddenNode(map, owner) {
+        let searched_node = [map.all_nodes[this.y][this.x]];
+        while (searched_node.length != 0) {
+            let current_node = searched_node.shift();
+            if (current_node == null)
+                continue;
+            for (const node of current_node.neighbors) {
+                if (node == null)
+                    continue;
+                if (!node.is_shown.includes(owner.token)) {
+                    return current_node;
+                }
+                else {
+                    searched_node.push(current_node);
+                }
+            }
+        }
     }
     // get rid of methods when sending object threw socket
     getData() {

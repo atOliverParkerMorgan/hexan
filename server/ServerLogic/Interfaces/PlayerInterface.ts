@@ -21,7 +21,7 @@ export default interface PlayerInterface {
 
     ownsThisUnit(id: string): boolean;
 
-    removeUnit(id: string): boolean;
+    removeUnit(id: string, map: MapInterface): boolean;
 
     getUnitType(id: string): string | undefined;
 

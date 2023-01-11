@@ -5,7 +5,6 @@ import UnitInterface from "./Units/UnitInterface";
 import TechnologyInterface from "./Technology/TechnologyInterface";
 import PlayerInterface from "./PlayerInterface";
 import NodeInterface from "./Map/NodeInterface";
-import MapInterface from "./Map/MapInterface";
 
 
 export default interface GameInterface {
@@ -13,10 +12,12 @@ export default interface GameInterface {
     all_players: PlayerInterface[];
     all_cities: CityInterface[];
     map: Map;
+    game_mode: string;
 
     startStarProduction(): void;
 
     playerIsAlive(player: PlayerInterface): boolean;
+    killPlayer(player: PlayerInterface): void;
 
     placeStartCity(player: PlayerInterface): void;
 
@@ -30,7 +31,7 @@ export default interface GameInterface {
 
     getCity(city_name: string, city_owner: PlayerInterface): CityInterface | undefined;
 
-    canSettle(player: PlayerInterface, city_node: NodeInterface | undefined, unit_id: string): boolean;
+    settle(player: PlayerInterface, city_node: NodeInterface | undefined, unit_id: string, map: Map): boolean;
 
     addCity(player: PlayerInterface, city_node: NodeInterface | undefined): void;
 

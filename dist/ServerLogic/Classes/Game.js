@@ -8,10 +8,11 @@ const Map_1 = __importDefault(require("./Map/Map"));
 const City_1 = __importDefault(require("./City/City"));
 const Technology_1 = __importDefault(require("./Technology/Technology"));
 class Game {
-    constructor(token, number_of_land_nodes, number_of_continents) {
+    constructor(token, number_of_land_nodes, number_of_continents, game_mode) {
         this.token = token;
         this.all_players = [];
         this.all_cities = [];
+        this.game_mode = game_mode;
         this.map = new Map_1.default(number_of_land_nodes, number_of_continents);
         this.map.generateIslandMap();
     }
@@ -26,6 +27,21 @@ class Game {
                 return true;
         }
         return false;
+    }
+    killPlayer(player) {
+        if (player == null)
+            return;
+        let remove_cities = [];
+        this.all_cities.map((city) => {
+            if (city.owner.token === player.token) {
+                remove_cities.push(city);
+                this.map.all_nodes[city.y][city.x].city = null;
+            }
+        });
+        remove_cities.map((remove_city) => {
+            this.all_cities.splice(this.all_cities.indexOf(remove_city), 1);
+        });
+        this.all_players.splice(this.all_players.indexOf(player));
     }
     placeStartCity(player) {
         let found = false;
@@ -110,7 +126,7 @@ class Game {
             }
         }
     }
-    canSettle(player, city_node, unit_id) {
+    settle(player, city_node, unit_id, map) {
         if (city_node == null) {
             return false;
         }
@@ -121,7 +137,7 @@ class Game {
         if (player.getUnitType(unit_id) != Utils_1.Utils.UNIT_TYPES.SETTLER) {
             return false;
         }
-        return player.removeUnit(unit_id);
+        return player.removeUnit(unit_id, map);
     }
     // return boolean that indicates if the city placement was successful
     addCity(player, city_node) {

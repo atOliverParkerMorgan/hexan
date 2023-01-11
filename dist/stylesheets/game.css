@@ -16,6 +16,39 @@ body, html{
   user-select: none;
 }
 
+/* Load images into cache */
+#preloadedImages{
+  width: 0px;
+  height: 0px;
+  display: inline;
+  background-image: url(../images/archer.png);
+  background-image: url(../images/attack.png);
+  background-image: url(../images/city.png);
+  background-image: url(../images/favicon.png);
+  background-image: url(../images/mountains.png);
+  background-image: url(../images/movement.png);
+  background-image: url(../images/population.png);
+  background-image: url(../images/production.png);
+  background-image: url(../images/range.png);
+  background-image: url(../images/sandbeach.png);
+  background-image: url(../images/settler.png);
+  background-image: url(../images/shield.png);
+  background-image: url(../images/beach.png);
+  background-image: url(../images/boat.png);
+  background-image: url(../images/grass_plane.png);
+  background-image: url(../images/horseman.png);
+  background-image: url(../images/king.png);
+  background-image: url(../images/mountain_1.png);
+  background-image: url(../images/mountain_2.png);
+  background-image: url(../images/mountain_3.png);
+  background-image: url(../images/trees_1.png);
+  background-image: url(../images/trees_2.png);
+  background-image: url(../images/village.png);
+  background-image: url(../images/mountains.png);
+  background-image: url(../images/sandbeach.png);
+  background-image: url(../images/tech_tree.png);
+}
+
 .app {
   padding: var(--gutter) 0;
   display: grid;

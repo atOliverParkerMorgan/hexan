@@ -13,8 +13,8 @@ export namespace Player {
     export let all_cities: City[] = [];
 
     // player star production
-    let total_owned_stars: number = 0;
-    let star_production: number = 0;
+    let total_owned_stars: number = 10;
+    let star_production: number = 10;
 
     export let production_units: any[] = [];
     export let owned_technologies: string[] = [];

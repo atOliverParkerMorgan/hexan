@@ -32,7 +32,7 @@ export namespace MatchMaker {
             if(match_player == undefined) return undefined;
             if(match_player.map_size !== current_player.map_size) return undefined;
 
-            const new_game = new Game(Utils.generateToken(player_token), map_size, 4);
+            const new_game = new Game(Utils.generateToken(player_token), map_size, 4, Utils.GAME_MODES.GAME_MODE_1v1);
 
             new_game.all_players.push(current_player);
             new_game.all_players.push(match_player);
@@ -42,7 +42,7 @@ export namespace MatchMaker {
     }
 
     export function findAiGame(socket: Socket, map_size: number){
-        const game = new Game(Utils.generateToken(socket.id), map_size, 4);
+        const game = new Game(Utils.generateToken(socket.id), map_size, 4, Utils.GAME_MODES.GAME_MODE_AI);
         const player = new Player(socket.id, map_size);
 
         game.all_players.push(player);
@@ -64,7 +64,7 @@ export namespace MatchMaker {
         const player_token = Utils.generateToken(nick_name);
         all_players_searching_2v2.set(player_token, new Player(player_token, map_size));
         if(hasMatchFor1v1()){
-            return [player_token, new Game(Utils.generateToken(player_token), 2500, 4)]
+            return [player_token, new Game(Utils.generateToken(player_token), 2500, 4, Utils.GAME_MODES.GAME_MODE_2v2)]
         }
         return player_token;
     }

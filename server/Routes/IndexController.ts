@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import {Router} from "express/ts4.0";
+import {Router} from "express";
 import {Utils} from "../ServerLogic/Classes/Utils";
 
 export default class IndexController{

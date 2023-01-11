@@ -57,7 +57,7 @@ var Utils;
         name: "Settler",
         attack: 0,
         health: 100,
-        range: 0,
+        range: 1,
         movement: 100,
         cost: 20,
         action: Utils.UNIT_ACTIONS.SETTLE,
@@ -69,7 +69,7 @@ var Utils;
         attack: 25,
         health: 100,
         range: 1,
-        movement: 1000,
+        movement: 100,
         cost: 4,
         action: Utils.UNIT_ACTIONS.FORTIFY,
         type: Utils.UNIT_TYPES.MELEE
