@@ -10,6 +10,7 @@ export var current_node;
 var current_city;
 var is_mouse_on_city_menu = false;
 var are_listeners_added = false;
+var unit_item_menu = loadFile("/views/unit_item.html");
 // hot keys
 document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
@@ -167,7 +168,7 @@ function showCityData(city) {
         var unit = _a[_i];
         var unit_html = document.createElement("li");
         unit_html.className = "w3-bar";
-        unit_html.innerHTML = loadFile("/views/unit_item.html");
+        unit_html.innerHTML = unit_item_menu;
         unit_html = setUnitData(unit_html, unit.name, "/images/" + unit.name.toLowerCase() + ".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
         ul_unit_menu.appendChild(unit_html);
         div_side_menu.appendChild(ul_unit_menu);

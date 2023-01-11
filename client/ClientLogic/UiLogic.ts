@@ -19,6 +19,7 @@ let current_city: any;
 let is_mouse_on_city_menu = false;
 let are_listeners_added = false;
 
+const unit_item_menu = loadFile("/views/unit_item.html");
 // hot keys
 document.addEventListener("keydown", (event)=>{
     if(event.key === "Escape"){
@@ -210,7 +211,7 @@ function showCityData(city: any){
    for(const unit of Player.production_units){
        let unit_html  = document.createElement("li");
        unit_html.className = "w3-bar";
-       unit_html.innerHTML = loadFile("/views/unit_item.html")
+       unit_html.innerHTML = unit_item_menu;
 
        unit_html = setUnitData(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
 

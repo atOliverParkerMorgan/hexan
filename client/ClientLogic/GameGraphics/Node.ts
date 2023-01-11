@@ -204,7 +204,7 @@ export class Node{
         }
 
         // @ts-ignore
-        this.sprite = PIXI.Sprite.from("/images/"+this.sprite_name);
+        this.sprite = PIXI.Sprite.from("/images/"+  this.sprite_name);
 
         this.sprite.width = DISTANCE_BETWEEN_HEX * .7;
         this.sprite.height = DISTANCE_BETWEEN_HEX * .7;

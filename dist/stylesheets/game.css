@@ -17,37 +17,36 @@ body, html{
 }
 
 /* Load images into cache */
-#preloadedImages{
-  width: 0px;
-  height: 0px;
-  display: inline;
-  background-image: url(../images/archer.png);
-  background-image: url(../images/attack.png);
-  background-image: url(../images/city.png);
-  background-image: url(../images/favicon.png);
-  background-image: url(../images/mountains.png);
-  background-image: url(../images/movement.png);
-  background-image: url(../images/population.png);
-  background-image: url(../images/production.png);
-  background-image: url(../images/range.png);
-  background-image: url(../images/sandbeach.png);
-  background-image: url(../images/settler.png);
-  background-image: url(../images/shield.png);
-  background-image: url(../images/beach.png);
-  background-image: url(../images/boat.png);
-  background-image: url(../images/grass_plane.png);
-  background-image: url(../images/horseman.png);
-  background-image: url(../images/king.png);
-  background-image: url(../images/mountain_1.png);
-  background-image: url(../images/mountain_2.png);
-  background-image: url(../images/mountain_3.png);
-  background-image: url(../images/trees_1.png);
-  background-image: url(../images/trees_2.png);
-  background-image: url(../images/village.png);
-  background-image: url(../images/mountains.png);
-  background-image: url(../images/sandbeach.png);
-  background-image: url(../images/tech_tree.png);
+
+body:after{
+  position:absolute; z-index:-1;
+  content: url(../images/attack.png);
+  url(../images/city.png);
+  url(../images/favicon.png);
+  url(../images/mountains.png);
+  url(../images/movement.png);
+  url(../images/population.png);
+  url(../images/production.png);
+  url(../images/range.png);
+  url(../images/sandbeach.png);
+  url(../images/settler.png);
+  url(../images/shield.png);
+  url(../images/beach.png);
+  url(../images/boat.png);
+  url(../images/grass_plane.png);
+  url(../images/horseman.png);
+  url(../images/king.png);
+  url(../images/mountain_1.png);
+  url(../images/mountain_2.png);
+  url(../images/mountain_3.png);
+  url(../images/trees_1.png);
+  url(../images/trees_2.png);
+  url(../images/village.png);
+  url(../images/mountains.png);
+  url(../images/sandbeach.png);
+  url(../images/tech_tree.png);
 }
+
 
 .app {
   padding: var(--gutter) 0;
