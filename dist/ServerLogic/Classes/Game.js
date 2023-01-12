@@ -43,49 +43,30 @@ class Game {
         });
         this.all_players.splice(this.all_players.indexOf(player));
     }
-    placeStartCity(player) {
-        let found = false;
-        for (const continent of this.map.all_continents) {
-            if (!continent.has_player) {
-                let starting_node;
-                if (continent.river_nodes.length > 0) {
-                    starting_node = continent.getRandomRiverNode();
+    placeStartCity1v1(player, first_city) {
+        // returns true if successfully placed starting city
+        function setCity(x, y, map, game) {
+            const starting_node = map.all_nodes[x][y];
+            if (!starting_node.isWater() && starting_node.city == null) {
+                game.addCity(player, starting_node);
+                return true;
+            }
+            return false;
+        }
+        if (first_city) {
+            for (let x = 0; x < this.map.all_nodes.length - 1; x++) {
+                for (let y = 0; y < this.map.all_nodes.length - 1; y++) {
+                    if (setCity(x, y, this.map, this))
+                        return;
                 }
-                else if (continent.beach_nodes.length > 0) {
-                    starting_node = continent.getRandomBeachNode();
-                }
-                else if (continent.grass_nodes.length > 0) {
-                    starting_node = continent.getRandomNodeOfType(Utils_1.Utils.GRASS);
-                }
-                else if (continent.mountain_nodes.length > 0) {
-                    starting_node = continent.getRandomNodeOfType(Utils_1.Utils.MOUNTAIN);
-                }
-                else {
-                    continue;
-                }
-                this.addCity(player, starting_node);
-                continent.has_player = true;
-                found = true;
-                break;
             }
         }
-        // if all continents are used up choose a random node on a already used continent
-        if (!found) {
-            for (const continent of this.map.all_continents) {
-                let starting_node = continent.getRandomNode();
-                let i = 0;
-                while (starting_node == null || starting_node.city != null) {
-                    starting_node = continent.getRandomNode();
-                    i++;
-                    if (continent.all_nodes.length < i) {
-                        break;
-                    }
+        else {
+            for (let x = this.map.all_nodes.length - 1; x >= 0; x--) {
+                for (let y = this.map.all_nodes.length - 1; y >= 0; y--) {
+                    if (setCity(x, y, this.map, this))
+                        return;
                 }
-                if (starting_node == null) {
-                    continue;
-                }
-                this.addCity(player, starting_node);
-                continent.has_player = true;
             }
         }
     }

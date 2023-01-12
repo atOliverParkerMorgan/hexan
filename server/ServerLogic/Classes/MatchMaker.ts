@@ -45,9 +45,11 @@ export namespace MatchMaker {
         const game = new Game(Utils.generateToken(socket.id), map_size, 4, Utils.GAME_MODES.GAME_MODE_AI);
         const player = new Player(socket.id, map_size);
 
+        if(map_size)
+
         game.all_players.push(player);
         all_games.set(game.token, game);
-        game.placeStartCity(player);
+        game.placeStartCity1v1(player, false);
 
         ServerSocket.sendData(socket, ServerSocket.response_types.FOUND_GAME_RESPONSE,
             {
@@ -92,8 +94,8 @@ export namespace MatchMaker {
 
                 }
 
-                game.placeStartCity(player);
-                game.placeStartCity(enemy_player);
+                game.placeStartCity1v1(player, true);
+                game.placeStartCity1v1(enemy_player, false);
 
                 all_players_searching_1v1.delete(player.token);
                 all_players_searching_1v1.delete(enemy_player.token);

@@ -19,7 +19,7 @@ export default interface GameInterface {
     playerIsAlive(player: PlayerInterface): boolean;
     killPlayer(player: PlayerInterface): void;
 
-    placeStartCity(player: PlayerInterface): void;
+    placeStartCity1v1(player: PlayerInterface, first_city: boolean): void;
 
     getPlayer(token: string): PlayerInterface | undefined;
 

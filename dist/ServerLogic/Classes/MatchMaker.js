@@ -45,9 +45,10 @@ var MatchMaker;
     function findAiGame(socket, map_size) {
         const game = new Game_1.default(Utils_1.Utils.generateToken(socket.id), map_size, 4, Utils_1.Utils.GAME_MODES.GAME_MODE_AI);
         const player = new Player_1.default(socket.id, map_size);
-        game.all_players.push(player);
+        if (map_size)
+            game.all_players.push(player);
         MatchMaker.all_games.set(game.token, game);
-        game.placeStartCity(player);
+        game.placeStartCity1v1(player, false);
         ServerSocket_1.ServerSocket.sendData(socket, ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE, {
             game_token: game.token
         });
@@ -82,8 +83,8 @@ var MatchMaker;
                     });
                     return;
                 }
-                game.placeStartCity(player);
-                game.placeStartCity(enemy_player);
+                game.placeStartCity1v1(player, true);
+                game.placeStartCity1v1(enemy_player, false);
                 MatchMaker.all_players_searching_1v1.delete(player.token);
                 MatchMaker.all_players_searching_1v1.delete(enemy_player.token);
                 ServerSocket_1.ServerSocket.sendData(socket, ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE, {
