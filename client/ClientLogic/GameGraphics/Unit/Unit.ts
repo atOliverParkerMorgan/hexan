@@ -82,10 +82,12 @@ export class Unit implements UnitData{
 
         switch (this.type) {
             case Unit.MELEE:
-                this.texture_path = "/images/warrior.png";
+                if(this.attack == 40) this.texture_path = "/images/spearman.png";
+                else this.texture_path = "/images/warrior.png";
                 break;
             case Unit.RANGE:
-                this.texture_path = "/images/slinger.png";
+                if(this.range == 1) this.texture_path = "/images/slinger.png";
+                else this.texture_path = "/images/archer.png";
                 break;
             case Unit.SETTLER:
                 this.texture_path = "/images/settler.png";

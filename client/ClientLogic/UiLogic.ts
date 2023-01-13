@@ -5,7 +5,7 @@ import {Player} from "./GameGraphics/Player.js";
 import {Technology, graph,interaction_nodes_values} from "./GameGraphics/Technology/Technology.js";
 import {
     DISTANCE_BETWEEN_HEX,
-    HEX_SIDE_SIZE,
+    HEX_SIDE_SIZE, tech_tree_root,
     viewport,
     WORLD_HEIGHT,
     WORLD_WIDTH
@@ -57,11 +57,20 @@ export function showNodeInfo(node: Node){
 }
 
 function updateNodeActionButtonAndInformation(node: Node){
+    // check if player owns mining or construction technology
+    let production_stars = node.production_stars.toString();
+    console.log("Mining ",Technology.ownsTechnology(tech_tree_root,"Mining"));
+    if(Technology.ownsTechnology(tech_tree_root, "Mining") && node.type === Node.MOUNTAIN){
+        production_stars = "2";
+    }else if(Technology.ownsTechnology(tech_tree_root, "Construction") && node.type === Node.FOREST){
+        production_stars = "2";
+    }
+
     (<HTMLInputElement>document.getElementById("harvest_cost")).innerText = node.harvest_cost.toString();
-    (<HTMLInputElement>document.getElementById("gain_stars")).innerText = node.production_stars.toString();
+    (<HTMLInputElement>document.getElementById("gain_stars")).innerText = production_stars;
     switch(node.type) {
         case Node.FOREST:
-            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/grass_plane.png";
+            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/forest.png";
             break;
         case Node.MOUNTAIN:
             (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/mountains.png";
@@ -260,7 +269,6 @@ export function updateProgressBar(total_owned_stars: number){
 }
 
 export function createTechTree(){
-    hideCityMenu();
     //add canvas element
 
     const TECH_TREE_CANVAS_WIDTH: number = document.body.clientWidth;
@@ -485,6 +493,9 @@ export function setupTechTreeButton(){
 }
 
 export function showTechTree(){
+    hideNodeInfo();
+    hideCityMenu();
+
     document.getElementsByTagName("canvas")[0].style.visibility = "hidden";
     (<HTMLInputElement>document.getElementById("star_info")).style.color = "white"
     createTechTree();

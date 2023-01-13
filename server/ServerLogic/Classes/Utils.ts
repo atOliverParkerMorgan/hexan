@@ -31,6 +31,8 @@ export namespace Utils{
     export const NORMAL_MOUNTAIN: number = 0;
     export const SNOWY_MOUNTAIN: number = 1;
 
+    export const ALLOWED_MAP_SIZES: number[] = [400, 900, 1600, 2500];
+
     export const NODE_TYPES = {
         OCEAN: 0x0AA3CF,
         LAKE: 0x80C5DE,

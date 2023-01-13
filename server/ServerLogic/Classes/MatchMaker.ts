@@ -13,6 +13,10 @@ export namespace MatchMaker {
     export let all_games= new Map<string, Game>();
 
     export function addPlayer1v1(socket: Socket, map_size: number){
+        if(!Utils.ALLOWED_MAP_SIZES.indexOf(map_size)){
+            return;
+        }
+
         all_players_searching_1v1.set(socket.id, new Player(socket.id, map_size));
         findMatchFor1v1(socket, map_size);
     }
@@ -45,7 +49,9 @@ export namespace MatchMaker {
         const game = new Game(Utils.generateToken(socket.id), map_size, 4, Utils.GAME_MODES.GAME_MODE_AI);
         const player = new Player(socket.id, map_size);
 
-        if(map_size)
+        if(!Utils.ALLOWED_MAP_SIZES.indexOf(map_size)){
+            return;
+        }
 
         game.all_players.push(player);
         all_games.set(game.token, game);

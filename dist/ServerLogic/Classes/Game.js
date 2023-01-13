@@ -44,12 +44,25 @@ class Game {
         this.all_players.splice(this.all_players.indexOf(player));
     }
     placeStartCity1v1(player, first_city) {
+        let all_possible_city_nodes = [];
         // returns true if successfully placed starting city
         function setCity(x, y, map, game) {
             const starting_node = map.all_nodes[x][y];
             if (!starting_node.isWater() && starting_node.city == null) {
-                game.addCity(player, starting_node);
-                return true;
+                all_possible_city_nodes.push(starting_node);
+                // if x in 1/4 of the map
+                if (first_city) {
+                    if (all_possible_city_nodes.length != 0 && x >= map.all_nodes.length / 4) {
+                        game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)]);
+                        return true;
+                    }
+                }
+                else {
+                    if (all_possible_city_nodes.length != 0 && x <= 3 * map.all_nodes.length / 4) {
+                        game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)]);
+                        return true;
+                    }
+                }
             }
             return false;
         }

@@ -3,7 +3,7 @@ import Unit from "./GameGraphics/Unit/Unit.js";
 import { Node } from "./GameGraphics/Node.js";
 import { Player } from "./GameGraphics/Player.js";
 import { Technology, graph, interaction_nodes_values } from "./GameGraphics/Technology/Technology.js";
-import { DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, viewport, WORLD_HEIGHT, WORLD_WIDTH } from "./GameGraphics/Pixi.js";
+import { DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, tech_tree_root, viewport, WORLD_HEIGHT, WORLD_WIDTH } from "./GameGraphics/Pixi.js";
 import { Interval } from "./GameGraphics/Interval.js";
 export var renderer;
 export var current_node;
@@ -45,11 +45,20 @@ export function showNodeInfo(node) {
     }
 }
 function updateNodeActionButtonAndInformation(node) {
+    // check if player owns mining or construction technology
+    var production_stars = node.production_stars.toString();
+    console.log("Mining ", Technology.ownsTechnology(tech_tree_root, "Mining"));
+    if (Technology.ownsTechnology(tech_tree_root, "Mining") && node.type === Node.MOUNTAIN) {
+        production_stars = "2";
+    }
+    else if (Technology.ownsTechnology(tech_tree_root, "Construction") && node.type === Node.FOREST) {
+        production_stars = "2";
+    }
     document.getElementById("harvest_cost").innerText = node.harvest_cost.toString();
-    document.getElementById("gain_stars").innerText = node.production_stars.toString();
+    document.getElementById("gain_stars").innerText = production_stars;
     switch (node.type) {
         case Node.FOREST:
-            document.getElementById("node_info_image").src = "/images/grass_plane.png";
+            document.getElementById("node_info_image").src = "/images/forest.png";
             break;
         case Node.MOUNTAIN:
             document.getElementById("node_info_image").src = "/images/mountains.png";
@@ -208,9 +217,8 @@ export function updateProgressBar(total_owned_stars) {
     document.getElementById("star_loading_bar").innerText = bars;
 }
 export function createTechTree() {
-    var _a;
-    hideCityMenu();
     //add canvas element
+    var _a;
     var TECH_TREE_CANVAS_WIDTH = document.body.clientWidth;
     var TECH_TREE_CANVAS_HEIGHT = document.body.clientHeight;
     var SPACE_BETWEEN_NODES_X = 160;
@@ -393,6 +401,8 @@ export function setupTechTreeButton() {
     };
 }
 export function showTechTree() {
+    hideNodeInfo();
+    hideCityMenu();
     document.getElementsByTagName("canvas")[0].style.visibility = "hidden";
     document.getElementById("star_info").style.color = "white";
     createTechTree();

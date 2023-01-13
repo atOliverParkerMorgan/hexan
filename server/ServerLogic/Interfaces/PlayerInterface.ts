@@ -14,6 +14,8 @@ export default interface PlayerInterface {
     star_production: number;
     owned_technology: String[];
     star_production_has_started: boolean;
+    mountain_harvest: number;
+    forest_harvest: number;
 
     addUnit(x: number, y: number, name: string, map: Map): UnitInterface;
 
@@ -36,6 +38,7 @@ export default interface PlayerInterface {
     payStars(payment: number): void;
 
     increaseProduction(star_increment: number): void;
+
 
     getData(): { production_unit_types: any };
 }

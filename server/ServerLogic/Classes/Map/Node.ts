@@ -265,7 +265,16 @@ export default class Node implements NodeInterface {
 
         if (player.isPaymentValid(this.harvest_cost)) {
             player.payStars(this.harvest_cost);
-            player.increaseProduction(this.production_stars);
+
+            // increase production with technologies
+            let production_stars = this.production_stars;
+            if(this.type === Utils.MOUNTAIN){
+                production_stars += player.mountain_harvest;
+            }else if(this.type === Utils.FOREST){
+                production_stars += player.forest_harvest;
+            }
+
+            player.increaseProduction(production_stars);
 
             this.is_harvested = true;
 

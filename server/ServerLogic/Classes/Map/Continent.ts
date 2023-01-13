@@ -41,7 +41,7 @@ export default class Continent implements ContinentInterface {
 
     addForestNode(node: NodeInterface): void {
         node.type = Utils.FOREST;
-        node.production_stars = 2;
+        node.production_stars = 1;
 
         node.sprite_name = "trees_" + Utils.randomInt(1, 2) + ".png";
 
@@ -72,7 +72,7 @@ export default class Continent implements ContinentInterface {
 
     addMountainNode(node: NodeInterface, mountain_type: number): void {
         node.type = Utils.MOUNTAIN;
-        node.production_stars = 3;
+        node.production_stars = 1;
 
         node.sprite_name = "mountain_" + Utils.randomInt(1, 3) + ".png"
 

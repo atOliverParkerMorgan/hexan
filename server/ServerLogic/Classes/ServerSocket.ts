@@ -320,7 +320,7 @@ export namespace ServerSocket {
                 }else{
                     ServerSocket.sendData(socket, ServerSocket.response_types.SOMETHING_WRONG_RESPONSE, {
                         title: "Cannot purchase "+ request_data.tech_name,
-                        message: "You don't have enough stars to purchase this technology"
+                        message: "You don't have enough stars to purchase this technology or it's too advanced to purchase."
                     });
                 }
             });

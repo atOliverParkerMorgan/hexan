@@ -16,6 +16,9 @@ var MatchMaker;
     MatchMaker.all_players_searching_2v2 = new Map();
     MatchMaker.all_games = new Map();
     function addPlayer1v1(socket, map_size) {
+        if (!Utils_1.Utils.ALLOWED_MAP_SIZES.indexOf(map_size)) {
+            return;
+        }
         MatchMaker.all_players_searching_1v1.set(socket.id, new Player_1.default(socket.id, map_size));
         findMatchFor1v1(socket, map_size);
     }
@@ -45,8 +48,10 @@ var MatchMaker;
     function findAiGame(socket, map_size) {
         const game = new Game_1.default(Utils_1.Utils.generateToken(socket.id), map_size, 4, Utils_1.Utils.GAME_MODES.GAME_MODE_AI);
         const player = new Player_1.default(socket.id, map_size);
-        if (map_size)
-            game.all_players.push(player);
+        if (!Utils_1.Utils.ALLOWED_MAP_SIZES.indexOf(map_size)) {
+            return;
+        }
+        game.all_players.push(player);
         MatchMaker.all_games.set(game.token, game);
         game.placeStartCity1v1(player, false);
         ServerSocket_1.ServerSocket.sendData(socket, ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE, {

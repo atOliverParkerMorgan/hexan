@@ -63,14 +63,28 @@ class Game implements GameInterface {
 
     placeStartCity1v1(player: PlayerInterface, first_city: boolean){
 
+        let all_possible_city_nodes: NodeInterface[] = []
+
         // returns true if successfully placed starting city
         function setCity(x: number, y: number, map: MapInterface, game: GameInterface): boolean{
 
             const starting_node: NodeInterface = map.all_nodes[x][y];
 
             if(!starting_node.isWater() && starting_node.city == null){
-                game.addCity(player, starting_node);
-                return true
+                all_possible_city_nodes.push(starting_node);
+
+                // if x in 1/4 of the map
+                if(first_city) {
+                    if (all_possible_city_nodes.length != 0 && x >= map.all_nodes.length / 4) {
+                        game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)]);
+                        return true;
+                    }
+                }else {
+                    if (all_possible_city_nodes.length != 0 && x <= 3*map.all_nodes.length / 4) {
+                        game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)]);
+                        return true;
+                    }
+                }
             }
 
             return false

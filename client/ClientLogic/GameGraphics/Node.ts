@@ -379,11 +379,11 @@ export class Node{
     getTypeString(): string{
         switch (this.type){
             case Node.FOREST:
-                return "Planes"
+                return "Forest"
             case Node.MOUNTAIN:
                 return "Mountains";
             case Node.GRASS:
-                return "Beach";
+                return "Planes";
             case Node.LAKE:
                 return "Lake";
             case Node.OCEAN:

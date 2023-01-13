@@ -25,7 +25,7 @@ export default class Technology implements TechnologyInterface {
 
     // creates a link list of all technologies
     static init_tech_tree(): Technology{
-        const mining = new Technology(null, "Mining", "", "Unlock the the ability to harvest mountains", 10, false)
+        const mining = new Technology(null, "Mining", "", "Add an additional 1 star production per minute on harvested mountains", 10, false)
 
         const ship_building = new Technology(null, "Ship Building", "", "Unlock the ability to build battle ship \n and to move on ocean tiles", 10, false)
         const construction = new Technology(null, "Construction", "", "Enables the construction of walls and keeps. \n It also allow to extract production from forests", 10, false)
@@ -47,14 +47,18 @@ export default class Technology implements TechnologyInterface {
                 node.is_owned = true;
 
                 // technology logic
+
                 if(tech_name === "Archery"){
                     player.production_units.push(Utils.ARCHER);
                 }else if(tech_name === "Horseman"){
                     player.production_units.push(Utils.HORSEMAN);
                 }else if(tech_name === "Spearman"){
                     player.production_units.push(Utils.SPEARMAN);
+                }else if(tech_name === "Mining"){
+                    player.mountain_harvest = 1;
+                }else if(tech_name === "Construction"){
+                    player.forest_harvest = 1;
                 }
-                player.owned_technology.push(tech_name);
 
 
                 return true;

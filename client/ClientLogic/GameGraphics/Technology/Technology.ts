@@ -25,6 +25,23 @@ export class Technology{
     }
 
 
+    static ownsTechnology(root: Technology, technology_name: string): boolean{
+        let all_children = [root]
+        while (root.name != technology_name){
+            const current_node = all_children.shift();
+
+            if(all_children.length === 0) return false;
+            if(current_node?.children == null) continue;
+
+            for (const child of current_node?.children) {
+                all_children.push(child)
+            }
+        }
+
+        return true
+
+    }
+
     static initGraphArrays(){
 
         // @ts-ignore
