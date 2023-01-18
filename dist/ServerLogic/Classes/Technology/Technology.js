@@ -28,7 +28,8 @@ class Technology {
             if (node.cost <= player.total_owned_stars) {
                 player.total_owned_stars -= node.cost;
                 node.is_owned = true;
-                // technology logic
+                player.owned_technology.push(tech_name);
+                // technology special logic
                 if (tech_name === "Archery") {
                     player.production_units.push(Utils_1.Utils.ARCHER);
                 }

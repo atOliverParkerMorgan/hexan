@@ -270,7 +270,7 @@ class Node {
         let sprite_name = this.sprite_name;
         // hide the hidden node and cites
         if (!this.is_shown.includes(player_token)) {
-            // type = Utils.HIDDEN;
+            type = Utils_1.Utils.HIDDEN;
             sprite_name = "";
             city_data = null;
         }
