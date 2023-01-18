@@ -2,7 +2,7 @@ import { Player } from "./GameGraphics/Player.js";
 import { HEX_SIDE_SIZE, setupTechTree, initGame, updateBoard, } from "./GameGraphics/Pixi.js";
 import Unit from "./GameGraphics/Unit/Unit.js";
 import { Node } from "./GameGraphics/Node.js";
-import { gameOver, showCityMenu, showModal } from "./UiLogic.js";
+import { friendTokenNotFound, gameOver, showCityMenu, showModal } from "./UiLogic.js";
 // singleton
 export var ClientSocket;
 (function (ClientSocket) {
@@ -17,19 +17,22 @@ export var ClientSocket;
         ENEMY_UNIT_DISAPPEARED: "ENEMY_UNIT_DISAPPEARED",
         ENEMY_FOUND_RESPONSE: "ENEMY_FOUND_RESPONSE",
         ATTACK_UNIT_RESPONSE: "ATTACK_UNIT_RESPONSE",
+        HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
         NEW_CITY: "NEW_CITY",
         NEW_ENEMY_CITY: "NEW_ENEMY_CITY",
-        STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
-        PURCHASED_TECHNOLOGY_RESPONSE: "PURCHASED_TECHNOLOGY_RESPONSE",
-        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
         CONQUERED_CITY_RESPONSE: "CONQUERED_CITY",
+        STARS_DATA_RESPONSE: "STARS_DATA_RESPONSE",
+        MENU_INFO_RESPONSE: "MENU_INFO_RESPONSE",
         HARVEST_NODE_RESPONSE: "HARVEST_NODE_RESPONSE",
-        HARVEST_COST_RESPONSE: "HARVEST_COST_RESPONSE",
+        HARVEST_NODE: "HARVEST_NODE",
+        PURCHASED_TECHNOLOGY_RESPONSE: "PURCHASED_TECHNOLOGY_RESPONSE",
+        INVALID_ATTACK_RESPONSE: "INVALID_ATTACK_RESPONSE",
         INVALID_MOVE_RESPONSE: "INVALID_MOVE_RESPONSE",
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
-        END_GAME_RESPONSE: "END_GAME_RESPONSE",
         PLAYER_DISCONNECTED: "PLAYER_DISCONNECTED",
-        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
+        END_GAME_RESPONSE: "END_GAME_RESPONSE",
+        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE",
+        FRIEND_CODE_NOT_FOUND: "FRIEND_CODE_NOT_FOUND",
     };
     ClientSocket.request_types = {
         // game play
@@ -39,16 +42,18 @@ export var ClientSocket;
         GET_MENU_INFO: "GET_MENU_INFO",
         GET_STARS_DATA: "GET_STARS_DATA",
         PRODUCE_UNIT: "PRODUCE_UNIT",
-        HARVEST_NODE: "HARVEST_NODE",
-        HARVEST_COST: "HARVEST_COST",
         PURCHASE_TECHNOLOGY: "PURCHASE_TECHNOLOGY",
         MOVE_UNITS: "MOVE_UNITS",
+        HARVEST_NODE: "HARVEST_NODE",
+        HARVEST_COST: "HARVEST_COST",
         SETTLE: "SETTLE",
         ATTACK_UNIT: "ATTACK_UNIT",
         // match making
         FIND_AI_OPPONENT: "FIND_AI_OPPONENT",
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
+        GENERATE_FRIEND_TOKEN: "GENERATE_FRIEND_TOKEN",
+        CONNECT_WITH_FRIEND: "CONNECT_WITH_FRIEND"
     };
     console.log("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port));
     function connect() {
@@ -80,6 +85,14 @@ export var ClientSocket;
             console.log(ClientSocket.response_types.FOUND_GAME_RESPONSE);
             var response_data = args[0];
             initGame(ClientSocket.socket.id, response_data.game_token);
+        });
+        ClientSocket.socket.on(ClientSocket.response_types.FRIEND_CODE_NOT_FOUND, function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            console.log(ClientSocket.response_types.FOUND_GAME_RESPONSE);
+            friendTokenNotFound();
         });
         ClientSocket.socket.on(ClientSocket.response_types.MENU_INFO_RESPONSE, function () {
             var args = [];

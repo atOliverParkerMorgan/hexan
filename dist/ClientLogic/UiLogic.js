@@ -16,8 +16,12 @@ document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
         hideCityMenu();
         hideUnitInfo();
+        hideNodeInfo();
     }
 });
+export function friendTokenNotFound() {
+    document.getElementById("error_msg").innerText = "Friend code doesn't exist";
+}
 export function showNodeInfo(node) {
     var _a, _b, _c, _d;
     if (node.type === Node.HIDDEN)
@@ -65,6 +69,12 @@ function updateNodeActionButtonAndInformation(node) {
             break;
         case Node.GRASS:
             document.getElementById("node_info_image").src = "/images/grass_plane.png";
+            break;
+        case Node.OCEAN:
+            document.getElementById("node_info_image").src = "/images/ocean.png";
+            break;
+        case Node.LAKE:
+            document.getElementById("node_info_image").src = "/images/lake.png";
             break;
     }
 }
@@ -153,6 +163,7 @@ export function gameOver(title, message, w3_color_classname) {
     };
     document.getElementById("view_game").onclick = function () {
         document.getElementById("game_over_modal").style.display = "none";
+        document.getElementById("star_info").innerHTML = "<div class=\"w3-container w3-center\"><button onclick='window.location.reload();' id=\"play_again\" class=\"w3-button w3-round w3-padding-32 w3-yellow w3-display-topleft\">Play Again</button>";
     };
 }
 function showCityData(city) {

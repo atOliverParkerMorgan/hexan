@@ -25,8 +25,13 @@ document.addEventListener("keydown", (event)=>{
     if(event.key === "Escape"){
         hideCityMenu();
         hideUnitInfo();
+        hideNodeInfo();
     }
 })
+
+export function friendTokenNotFound(){
+    (<HTMLElement>document.getElementById("error_msg")).innerText = "Friend code doesn't exist";
+}
 
 export function showNodeInfo(node: Node){
     if(node.type === Node.HIDDEN) return;
@@ -78,12 +83,19 @@ function updateNodeActionButtonAndInformation(node: Node){
         case Node.GRASS:
             (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/grass_plane.png";
             break;
+        case Node.OCEAN:
+            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/ocean.png";
+            break;
+        case Node.LAKE:
+            (<HTMLInputElement>document.getElementById("node_info_image")).src = "/images/lake.png";
+            break;
+
     }
 }
 
 export function hideNodeInfo(){
     (<HTMLInputElement>document.getElementById("harvest_button")).style.visibility = "hidden";
-    (<HTMLInputElement >document.getElementById("node_info_menu")).style.visibility = "hidden";
+    (<HTMLInputElement>document.getElementById("node_info_menu")).style.visibility = "hidden";
 }
 
 export function showUnitInfo(unit: Unit){
@@ -188,7 +200,7 @@ export function gameOver(title: string, message: string, w3_color_classname: str
 
     (<HTMLInputElement>document.getElementById("view_game")).onclick = ()=>{
         (<HTMLInputElement>document.getElementById("game_over_modal")).style.display = "none";
-
+        (<HTMLInputElement>document.getElementById("star_info")).innerHTML = "<div class=\"w3-container w3-center\"><button onclick='window.location.reload();' id=\"play_again\" class=\"w3-button w3-round w3-padding-32 w3-yellow w3-display-topleft\">Play Again</button>";
     }
 
 }

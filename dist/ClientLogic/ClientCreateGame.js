@@ -80,6 +80,43 @@ export function settingsLogicInit() {
         game_mode = GAME_MODE_FRIEND;
         game_mode_to_FRIEND_button.classList.remove("w3-red");
         game_mode_to_FRIEND_button.classList.add("w3-green");
+        var friend_code;
+        var main_div = document.getElementById("app");
+        main_div.innerHTML = loadFile("/views/friendSettings.html");
+        // connect
+        ClientSocket.connect();
+        ClientSocket.socket.on("connect", function () {
+            friend_code = ClientSocket.socket.id.substring(0, 5);
+            document.getElementById("code").innerText = ClientSocket.socket.id.substring(0, 5);
+            ;
+            ClientSocket.sendData(ClientSocket.request_types.GENERATE_FRIEND_TOKEN, {
+                map_size: map_size
+            });
+            ClientSocket.addDataListener();
+        });
+        var copy_button = document.getElementById("copy_button");
+        if (copy_button != null) {
+            copy_button.onclick = function () {
+                // Copy the text inside the text field
+                navigator.clipboard.writeText(friend_code);
+                // change icon
+                copy_button.classList.remove("fa-copy");
+                copy_button.classList.add("fa-check");
+            };
+        }
+        var connect_button = document.getElementById("connect_button");
+        connect_button.onclick = function () {
+            var friend_code = document.getElementById("friend_code").value;
+            if (friend_code.length != 5) {
+                document.getElementById("error_msg").innerText = "Invalid friend code! Must be 5 characters long.";
+            }
+            else {
+                document.getElementById("error_msg").innerText = "";
+                ClientSocket.sendData(ClientSocket.request_types.CONNECT_WITH_FRIEND, {
+                    friend_code: friend_code
+                });
+            }
+        };
     });
     var edit_nickname_button = document.getElementById("edit_nickname");
     edit_nickname_button.onclick = function () {

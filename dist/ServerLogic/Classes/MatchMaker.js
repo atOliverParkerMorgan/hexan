@@ -14,15 +14,54 @@ var MatchMaker;
 (function (MatchMaker) {
     MatchMaker.all_players_searching_1v1 = new Map();
     MatchMaker.all_players_searching_2v2 = new Map();
+    MatchMaker.friend_codes = new Map();
     MatchMaker.all_games = new Map();
     function addPlayer1v1(socket, map_size) {
-        if (!Utils_1.Utils.ALLOWED_MAP_SIZES.indexOf(map_size)) {
+        if (!Utils_1.Utils.ALLOWED_MAP_SIZES.includes(map_size)) {
             return;
         }
         MatchMaker.all_players_searching_1v1.set(socket.id, new Player_1.default(socket.id, map_size));
         findMatchFor1v1(socket, map_size);
     }
     MatchMaker.addPlayer1v1 = addPlayer1v1;
+    function generateFriendToken(socket_id) {
+        return socket_id.substring(0, 5);
+    }
+    MatchMaker.generateFriendToken = generateFriendToken;
+    function saveFriendToken(socket_id, map_size) {
+        if (map_size == null)
+            return;
+        if (!Utils_1.Utils.ALLOWED_MAP_SIZES.includes(map_size))
+            return;
+        MatchMaker.friend_codes.set(MatchMaker.generateFriendToken(socket_id), new Player_1.default(socket_id, map_size));
+    }
+    MatchMaker.saveFriendToken = saveFriendToken;
+    function getGameWithFriendCode(socket, friend_code) {
+        if (friend_code == null) {
+            return null;
+        }
+        if (friend_code.length != 5) {
+            return null;
+        }
+        if (friend_code == MatchMaker.generateFriendToken(socket.id)) {
+            return null;
+        }
+        const friend_player = MatchMaker.friend_codes.get(friend_code);
+        if (friend_player == null) {
+            return null;
+        }
+        const current_player = new Player_1.default(socket.id, friend_player.map_size);
+        const game = new Game_1.default(Utils_1.Utils.generateToken(friend_player.token), friend_player.map_size, 4, Utils_1.Utils.GAME_MODES.GAME_MODE_1v1);
+        game.all_players.push(friend_player);
+        game.all_players.push(current_player);
+        MatchMaker.all_games.set(game.token, game);
+        game.placeStartCity1v1(friend_player, true);
+        game.placeStartCity1v1(current_player, false);
+        MatchMaker.friend_codes.delete(friend_code);
+        MatchMaker.friend_codes.delete(current_player.token.substring(0, 5));
+        return game;
+    }
+    MatchMaker.getGameWithFriendCode = getGameWithFriendCode;
     // matches a player with another player if possible
     function getGame1v1WithPlayer(player_token, map_size) {
         let current_player = MatchMaker.all_players_searching_1v1.get(player_token);
@@ -48,7 +87,7 @@ var MatchMaker;
     function findAiGame(socket, map_size) {
         const game = new Game_1.default(Utils_1.Utils.generateToken(socket.id), map_size, 4, Utils_1.Utils.GAME_MODES.GAME_MODE_AI);
         const player = new Player_1.default(socket.id, map_size);
-        if (!Utils_1.Utils.ALLOWED_MAP_SIZES.indexOf(map_size)) {
+        if (!Utils_1.Utils.ALLOWED_MAP_SIZES.includes(map_size)) {
             return;
         }
         game.all_players.push(player);
@@ -92,6 +131,8 @@ var MatchMaker;
                 game.placeStartCity1v1(enemy_player, false);
                 MatchMaker.all_players_searching_1v1.delete(player.token);
                 MatchMaker.all_players_searching_1v1.delete(enemy_player.token);
+                MatchMaker.friend_codes.delete(player.token.substring(0, 5));
+                MatchMaker.friend_codes.delete(enemy_player.token.substring(0, 5));
                 ServerSocket_1.ServerSocket.sendData(socket, ServerSocket_1.ServerSocket.response_types.FOUND_GAME_RESPONSE, {
                     game_token: game.token
                 });

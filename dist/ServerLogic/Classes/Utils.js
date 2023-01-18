@@ -26,7 +26,7 @@ var Utils;
     Utils.VERTICAL = 1;
     Utils.NORMAL_MOUNTAIN = 0;
     Utils.SNOWY_MOUNTAIN = 1;
-    Utils.ALLOWED_MAP_SIZES = [400, 900, 1600, 2500];
+    Utils.ALLOWED_MAP_SIZES = [400, 900, 1225, 1600, 2500];
     Utils.NODE_TYPES = {
         OCEAN: 0x0AA3CF,
         LAKE: 0x80C5DE,

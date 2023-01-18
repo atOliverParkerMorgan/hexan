@@ -15,10 +15,13 @@ class AiPLayer {
     player: PlayerInterface;
     are_all_nodes_searched: boolean;
     number_enemy_cities_found: number;
+
+    enemy_city_cords: number[][];
     constructor(player: PlayerInterface) {
         this.player = player;
         this.are_all_nodes_searched = false;
         this.number_enemy_cities_found = 0;
+        this.enemy_city_cords = []
     }
 
     /*  AI logic
@@ -79,26 +82,27 @@ class AiPLayer {
 
         // get closest node
         let closest_distance = Number.MAX_VALUE;
-        let closest_node;
+        let closest_node_hidden;
 
         // you must have at least one unit
         this.player.units.map((unit: UnitInterface)=>{
             
-            let closest_node = unit.getClosestHiddenNode(map, this.player);
-            if(closest_node == null){
+            let closest_node_hidden = unit.getClosestHiddenNode(map, this.player);
+            if(closest_node_hidden == null){
                 this.are_all_nodes_searched = true;
                 return
             }
 
             const current_node: NodeInterface = <NodeInterface> map.getNode(unit.x, unit.y)
-            const current_distance = closest_node.getDistanceToNode(current_node)
+            const current_distance = closest_node_hidden.getDistanceToNode(current_node)
             if(closest_distance > current_distance){
                 closest_distance = current_distance;
-                closest_node = current_node;
+                closest_node_hidden = current_node;
             }
         })
 
         console.log(closest_distance);
+
     }
 
     conscriptStrategy(){

@@ -13,11 +13,13 @@ class Player {
         this.units = [];
         // units that this player can produce
         this.production_units = [Utils_1.Utils.WARRIOR, Utils_1.Utils.SLINGER, Utils_1.Utils.SETTLER_UNIT];
-        this.total_owned_stars = 10;
+        this.total_owned_stars = 100;
         this.star_production = 10;
         this.star_production_has_started = false;
         this.owned_technology = [];
         this.root_tech_tree_node = Technology_1.default.init_tech_tree();
+        this.mountain_harvest = 0;
+        this.forest_harvest = 0;
     }
     addUnit(x, y, name, map) {
         let new_unit;

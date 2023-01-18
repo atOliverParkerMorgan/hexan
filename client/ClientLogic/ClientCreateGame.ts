@@ -1,5 +1,6 @@
 import {XMLHttpRequest} from "aws-sdk/lib/http_response";
 import {ClientSocket} from "./ClientSocket.js";
+import socket = ClientSocket.socket;
 
 const REQUEST_TYPES = {
     GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
@@ -98,6 +99,51 @@ export function settingsLogicInit(){
             game_mode = GAME_MODE_FRIEND;
             game_mode_to_FRIEND_button.classList.remove("w3-red");
             game_mode_to_FRIEND_button.classList.add("w3-green");
+
+            let friend_code: any;
+            const main_div: any = document.getElementById("app");
+            main_div.innerHTML = loadFile("/views/friendSettings.html");
+
+
+            // connect
+            ClientSocket.connect();
+            ClientSocket.socket.on("connect", ()=>{
+                friend_code = ClientSocket.socket.id.substring(0, 5);
+                (<HTMLInputElement>document.getElementById("code")).innerText =  ClientSocket.socket.id.substring(0, 5);;
+                ClientSocket.sendData(ClientSocket.request_types.GENERATE_FRIEND_TOKEN,
+                    {
+                        map_size: map_size
+                    })
+                ClientSocket.addDataListener();
+            })
+
+        const copy_button: HTMLElement | null = document.getElementById("copy_button");
+        if(copy_button != null) {
+            copy_button.onclick = () => {
+                // Copy the text inside the text field
+                navigator.clipboard.writeText(friend_code);
+
+                // change icon
+                copy_button.classList.remove("fa-copy")
+                copy_button.classList.add("fa-check")
+            }
+        }
+
+        const connect_button: any = document.getElementById("connect_button");
+        connect_button.onclick = ()=>{
+            const friend_code: any = (<HTMLInputElement>document.getElementById("friend_code")).value;
+            if(friend_code.length != 5){
+                (<HTMLInputElement>document.getElementById("error_msg")).innerText = "Invalid friend code! Must be 5 characters long.";
+            }
+            else {
+                (<HTMLInputElement>document.getElementById("error_msg")).innerText = "";
+
+                ClientSocket.sendData(ClientSocket.request_types.CONNECT_WITH_FRIEND, {
+                    friend_code: friend_code
+
+                })
+            }
+        }
         }
     )
 
@@ -148,8 +194,6 @@ export function settingsLogicInit(){
                     map_size: map_size
                 });
         }
-
-
     };
 }
 

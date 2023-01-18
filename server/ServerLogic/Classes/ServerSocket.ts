@@ -9,6 +9,7 @@ import NodeInterface from "../Interfaces/Map/NodeInterface";
 import PlayerInterface from "../Interfaces/PlayerInterface";
 import CityInterface from "../Interfaces/City/CityInterface";
 import {Utils} from "./Utils";
+import game from "./Game";
 // singleton
 export namespace ServerSocket {
 
@@ -46,7 +47,9 @@ export namespace ServerSocket {
 
         PLAYER_DISCONNECTED: "PLAYER_DISCONNECTED",
         END_GAME_RESPONSE: "END_GAME_RESPONSE",
-        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
+        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE",
+        FRIEND_CODE_NOT_FOUND: "FRIEND_CODE_NOT_FOUND",
+
 
     };
 
@@ -72,6 +75,8 @@ export namespace ServerSocket {
         FIND_AI_OPPONENT: "FIND_AI_OPPONENT",
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
+        GENERATE_FRIEND_TOKEN: "GENERATE_FRIEND_TOKEN",
+        CONNECT_WITH_FRIEND: "CONNECT_WITH_FRIEND"
     };
 
     export function sendData(socket: Socket, response_type: string, response_data: any): void{
@@ -96,15 +101,16 @@ export namespace ServerSocket {
         App.io.on("connection", (socket: Socket) => {
 
             socket.on('disconnect', function () {
+               // MatchMaker.friend_codes.delete(socket.id.substring(0, 5));
                 MatchMaker.all_players_searching_1v1.delete(socket.id);
                 MatchMaker.all_players_searching_2v2.delete(socket.id);
 
                 // disconnect player
                 for (const game of MatchMaker.all_games.values()) {
                     const player = game.getPlayer(socket.id);
-                    if(player != null){
+                    if (player != null) {
                         game.killPlayer(player);
-                        if(game.game_mode === Utils.GAME_MODES.GAME_MODE_1v1){
+                        if (game.game_mode === Utils.GAME_MODES.GAME_MODE_1v1) {
                             ServerSocket.sendDataToAll(socket, game.token, response_types.END_GAME_RESPONSE,
                                 {
                                     won: true,
@@ -123,7 +129,7 @@ export namespace ServerSocket {
                 const request_data = args[0];
 
                 const game_and_player_array = isGameValid(socket, request_data);
-                if(game_and_player_array == null) return
+                if (game_and_player_array == null) return
 
                 const player = game_and_player_array[1];
 
@@ -142,7 +148,7 @@ export namespace ServerSocket {
                 const request_data = args[0];
 
                 const game_and_player_array = isGameValid(socket, request_data);
-                if(game_and_player_array == null) return
+                if (game_and_player_array == null) return
 
                 const game = game_and_player_array[0];
                 const player = game_and_player_array[1];
@@ -167,7 +173,7 @@ export namespace ServerSocket {
                 const request_data = args[0];
 
                 const game_and_player_array = isGameValid(socket, request_data);
-                if(game_and_player_array == null) return
+                if (game_and_player_array == null) return
 
                 const player = game_and_player_array[1];
 
@@ -185,12 +191,12 @@ export namespace ServerSocket {
                 const request_data = args[0];
 
                 const game_and_player_array = isGameValid(socket, request_data);
-                if(game_and_player_array == null) return
+                if (game_and_player_array == null) return
 
                 const game = game_and_player_array[0];
                 const player = game_and_player_array[1];
 
-                if(!socket.rooms.has(game.token)){
+                if (!socket.rooms.has(game.token)) {
                     socket.join(game.token);
                 }
 
@@ -200,7 +206,33 @@ export namespace ServerSocket {
             socket.on(ServerSocket.request_types.FIND_1v1_OPPONENT, (...args: any[]) => {
                 const request_data = args[0];
                 MatchMaker.addPlayer1v1(socket, request_data.map_size);
+            });
 
+            socket.on(ServerSocket.request_types.GENERATE_FRIEND_TOKEN, (...args: any[]) => {
+                const request_data = args[0];
+                MatchMaker.saveFriendToken(socket.id, request_data.map_size);
+            });
+
+            socket.on(ServerSocket.request_types.CONNECT_WITH_FRIEND, (...args: any[]) => {
+                const request_data = args[0];
+
+                const found_game = MatchMaker.getGameWithFriendCode(socket, request_data.friend_code);
+                if(found_game == null) {
+                    ServerSocket.sendData(socket, ServerSocket.response_types.FRIEND_CODE_NOT_FOUND,
+                        {});
+
+                }
+                else{
+                    ServerSocket.sendDataToPlayer(socket, found_game.getEnemyPlayers(socket.id)[0].token, ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                        {
+                            game_token: found_game.token
+                        })
+
+                    ServerSocket.sendData(socket, ServerSocket.response_types.FOUND_GAME_RESPONSE,
+                        {
+                            game_token: found_game.token
+                        });
+                }
             });
 
             socket.on(ServerSocket.request_types.FIND_AI_OPPONENT, (...args: any[]) => {

@@ -16,7 +16,7 @@ class Continent {
     }
     addForestNode(node) {
         node.type = Utils_1.Utils.FOREST;
-        node.production_stars = 2;
+        node.production_stars = 1;
         node.sprite_name = "trees_" + Utils_1.Utils.randomInt(1, 2) + ".png";
         if (!this.forest_nodes.includes(node))
             this.forest_nodes.push(node);
@@ -43,7 +43,7 @@ class Continent {
     }
     addMountainNode(node, mountain_type) {
         node.type = Utils_1.Utils.MOUNTAIN;
-        node.production_stars = 3;
+        node.production_stars = 1;
         node.sprite_name = "mountain_" + Utils_1.Utils.randomInt(1, 3) + ".png";
         if (!this.mountain_nodes.includes(node))
             this.mountain_nodes.push(node);

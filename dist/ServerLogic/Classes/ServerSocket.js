@@ -35,7 +35,8 @@ var ServerSocket;
         SOMETHING_WRONG_RESPONSE: "SOMETHING_WRONG_RESPONSE",
         PLAYER_DISCONNECTED: "PLAYER_DISCONNECTED",
         END_GAME_RESPONSE: "END_GAME_RESPONSE",
-        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE"
+        FOUND_GAME_RESPONSE: "FOUND_GAME_RESPONSE",
+        FRIEND_CODE_NOT_FOUND: "FRIEND_CODE_NOT_FOUND",
     };
     ServerSocket.request_types = {
         // game play
@@ -55,6 +56,8 @@ var ServerSocket;
         FIND_AI_OPPONENT: "FIND_AI_OPPONENT",
         FIND_1v1_OPPONENT: "FIND_1v1_OPPONENT",
         FIND_2v2_OPPONENTS: "FIND_2v2_OPPONENTS",
+        GENERATE_FRIEND_TOKEN: "GENERATE_FRIEND_TOKEN",
+        CONNECT_WITH_FRIEND: "CONNECT_WITH_FRIEND"
     };
     function sendData(socket, response_type, response_data) {
         socket.emit(response_type, response_data);
@@ -74,6 +77,7 @@ var ServerSocket;
         });
         app_1.App.io.on("connection", (socket) => {
             socket.on('disconnect', function () {
+                // MatchMaker.friend_codes.delete(socket.id.substring(0, 5));
                 MatchMaker_1.MatchMaker.all_players_searching_1v1.delete(socket.id);
                 MatchMaker_1.MatchMaker.all_players_searching_2v2.delete(socket.id);
                 // disconnect player
@@ -155,6 +159,25 @@ var ServerSocket;
             socket.on(ServerSocket.request_types.FIND_1v1_OPPONENT, (...args) => {
                 const request_data = args[0];
                 MatchMaker_1.MatchMaker.addPlayer1v1(socket, request_data.map_size);
+            });
+            socket.on(ServerSocket.request_types.GENERATE_FRIEND_TOKEN, (...args) => {
+                const request_data = args[0];
+                MatchMaker_1.MatchMaker.saveFriendToken(socket.id, request_data.map_size);
+            });
+            socket.on(ServerSocket.request_types.CONNECT_WITH_FRIEND, (...args) => {
+                const request_data = args[0];
+                const found_game = MatchMaker_1.MatchMaker.getGameWithFriendCode(socket, request_data.friend_code);
+                if (found_game == null) {
+                    ServerSocket.sendData(socket, ServerSocket.response_types.FRIEND_CODE_NOT_FOUND, {});
+                }
+                else {
+                    ServerSocket.sendDataToPlayer(socket, found_game.getEnemyPlayers(socket.id)[0].token, ServerSocket.response_types.FOUND_GAME_RESPONSE, {
+                        game_token: found_game.token
+                    });
+                    ServerSocket.sendData(socket, ServerSocket.response_types.FOUND_GAME_RESPONSE, {
+                        game_token: found_game.token
+                    });
+                }
             });
             socket.on(ServerSocket.request_types.FIND_AI_OPPONENT, (...args) => {
                 const request_data = args[0];
@@ -249,7 +272,7 @@ var ServerSocket;
                 else {
                     ServerSocket.sendData(socket, ServerSocket.response_types.SOMETHING_WRONG_RESPONSE, {
                         title: "Cannot purchase " + request_data.tech_name,
-                        message: "You don't have enough stars to purchase this technology"
+                        message: "You don't have enough stars to purchase this technology or it's too advanced to purchase."
                     });
                 }
             });

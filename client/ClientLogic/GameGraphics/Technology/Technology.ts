@@ -27,18 +27,21 @@ export class Technology{
 
     static ownsTechnology(root: Technology, technology_name: string): boolean{
         let all_children = [root]
-        while (root.name != technology_name){
-            const current_node = all_children.shift();
+        let current_node;
 
-            if(all_children.length === 0) return false;
+        do{
+            current_node = all_children.shift();
+
+            if(current_node == null) return false;
             if(current_node?.children == null) continue;
 
             for (const child of current_node?.children) {
                 all_children.push(child)
             }
         }
+        while (current_node.name !== technology_name)
 
-        return true
+        return current_node.is_owned;
 
     }
 

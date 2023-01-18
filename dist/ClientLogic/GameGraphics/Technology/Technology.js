@@ -13,6 +13,22 @@ var Technology = /** @class */ (function () {
         this.cost = cost;
         this.is_owned = is_owned;
     }
+    Technology.ownsTechnology = function (root, technology_name) {
+        var all_children = [root];
+        var current_node;
+        do {
+            current_node = all_children.shift();
+            if (current_node == null)
+                return false;
+            if ((current_node === null || current_node === void 0 ? void 0 : current_node.children) == null)
+                continue;
+            for (var _i = 0, _a = current_node === null || current_node === void 0 ? void 0 : current_node.children; _i < _a.length; _i++) {
+                var child = _a[_i];
+                all_children.push(child);
+            }
+        } while (current_node.name !== technology_name);
+        return current_node.is_owned;
+    };
     Technology.initGraphArrays = function () {
         var _a;
         // @ts-ignore

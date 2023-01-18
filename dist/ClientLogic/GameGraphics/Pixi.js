@@ -125,9 +125,9 @@ export function initCanvas(map, cities) {
         .snap(city_x, city_y, { removeOnComplete: true })
         .wheel()
         .clampZoom({ minWidth: 4 * HEX_SIDE_SIZE, minHeight: 4 * HEX_SIDE_SIZE, maxWidth: WORLD_WIDTH, maxHeight: WORLD_HEIGHT })
-        .clamp({ top: -WORLD_HEIGHT / 2 - HEX_SIDE_SIZE - 70, left: -WORLD_WIDTH / 2 - HEX_SIDE_SIZE,
-        right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE + 400,
-        bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2 });
+        .clamp({ top: -WORLD_HEIGHT / 2 - HEX_SIDE_SIZE - 80, left: -WORLD_WIDTH / 2 - HEX_SIDE_SIZE - 20,
+        right: WORLD_WIDTH / 2 + DISTANCE_BETWEEN_HEX - HEX_SIDE_SIZE + 450,
+        bottom: WORLD_HEIGHT / 2 - HEX_SIDE_SIZE / 2 + HEX_SIDE_SIZE / 2 + 80 });
     document.body.appendChild(app.view);
     // @ts-ignore
     app.ticker.add(function (delta) { return loop(delta); });

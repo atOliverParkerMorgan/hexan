@@ -12,7 +12,7 @@ class Technology {
     }
     // creates a link list of all technologies
     static init_tech_tree() {
-        const mining = new Technology(null, "Mining", "", "Unlock the the ability to harvest mountains", 10, false);
+        const mining = new Technology(null, "Mining", "", "Add an additional 1 star production per minute on harvested mountains", 10, false);
         const ship_building = new Technology(null, "Ship Building", "", "Unlock the ability to build battle ship \n and to move on ocean tiles", 10, false);
         const construction = new Technology(null, "Construction", "", "Enables the construction of walls and keeps. \n It also allow to extract production from forests", 10, false);
         const archery = new Technology([construction], "Archery", "/images/archer.png", "Unlocks new range unit: Archers \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
@@ -38,7 +38,12 @@ class Technology {
                 else if (tech_name === "Spearman") {
                     player.production_units.push(Utils_1.Utils.SPEARMAN);
                 }
-                player.owned_technology.push(tech_name);
+                else if (tech_name === "Mining") {
+                    player.mountain_harvest = 1;
+                }
+                else if (tech_name === "Construction") {
+                    player.forest_harvest = 1;
+                }
                 return true;
             }
             return false;
