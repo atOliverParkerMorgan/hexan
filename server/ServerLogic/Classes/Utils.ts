@@ -109,9 +109,9 @@ export namespace Utils{
     export const SLINGER: UnitInitData = {
             name: "Slinger",
 
-            attack: 10,
+            attack: 5,
             health: 100,
-            range: 2,
+            range: 1,
             movement: 120,
             cost: 6,
 

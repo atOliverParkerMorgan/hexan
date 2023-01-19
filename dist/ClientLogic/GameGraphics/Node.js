@@ -54,9 +54,12 @@ var Node = /** @class */ (function () {
         var valid_movement_neighbours = [];
         var neighbours = this.getNeighbours();
         neighbours.map(function (neighbour) {
+            var _a;
             if (neighbour == null)
                 return;
             if ((neighbour.type === Node.OCEAN || neighbour.type === Node.LAKE) && !Player.owned_technologies.includes("Ship Building"))
+                return;
+            if ((_a = neighbour === null || neighbour === void 0 ? void 0 : neighbour.unit) === null || _a === void 0 ? void 0 : _a.is_friendly)
                 return;
             valid_movement_neighbours.push(neighbour);
         });
@@ -137,10 +140,6 @@ var Node = /** @class */ (function () {
     };
     Node.prototype.getYInPixels = function () {
         return (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
-    };
-    Node.prototype.get_unit_id = function () {
-        var _a;
-        return (_a = this.unit) === null || _a === void 0 ? void 0 : _a.id;
     };
     Node.prototype.setBorder = function (color, thickness, opacity, borders) {
         this.line_borders.forEach(function (line) { return line.clear(); });
@@ -320,7 +319,7 @@ var Node = /** @class */ (function () {
     };
     Node.prototype.setHovered = function () {
         var _a, _b, _c;
-        function set_last_node_hovered(this_node) {
+        function setLastNodeHovered(this_node) {
             Node.last_hovered_node = this_node;
             this_node.opacity = .5;
             this_node.update();
@@ -331,7 +330,7 @@ var Node = /** @class */ (function () {
                 Node.last_hovered_node.opacity = 1;
                 Node.last_hovered_node.update();
                 // sets new node (this node) to hovered
-                set_last_node_hovered(this);
+                setLastNodeHovered(this);
                 if (Node.selected_node != null) {
                     if (Node.selected_node.unit != null && ((_a = Node.selected_node) === null || _a === void 0 ? void 0 : _a.unit.is_friendly)) {
                         if (Node.movement_hint_lines.length > 0) {
@@ -357,12 +356,6 @@ var Node = /** @class */ (function () {
                             // if unit is friendly
                             if ((_b = Node.last_hovered_node.unit) === null || _b === void 0 ? void 0 : _b.is_friendly)
                                 return;
-                            // if the unit is out of range don't show any attack or movement hint
-                            // if(Node.selected_node.unit.range >= Node.path.length - i){
-                            //     path_color =  Node.attack_hint_color;
-                            // }else{
-                            //     path_color =  Node.movement_hint_color;
-                            // }
                             var is_attacking = false;
                             for (var j = 0; j < Node.selected_node.unit.range; j++) {
                                 if (j + i >= Node.path.length)
@@ -401,7 +394,7 @@ var Node = /** @class */ (function () {
         }
         // initial hover - no previous node
         else {
-            set_last_node_hovered(this);
+            setLastNodeHovered(this);
         }
     };
     Node.prototype.canBeHarvested = function () {

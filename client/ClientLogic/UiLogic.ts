@@ -26,6 +26,7 @@ document.addEventListener("keydown", (event)=>{
         hideCityMenu();
         hideUnitInfo();
         hideNodeInfo();
+        hideModal();
     }
 })
 
@@ -200,7 +201,7 @@ export function gameOver(title: string, message: string, w3_color_classname: str
 
     (<HTMLInputElement>document.getElementById("view_game")).onclick = ()=>{
         (<HTMLInputElement>document.getElementById("game_over_modal")).style.display = "none";
-        (<HTMLInputElement>document.getElementById("star_info")).innerHTML = "<div class=\"w3-container w3-center\"><button onclick='window.location.reload();' id=\"play_again\" class=\"w3-button w3-round w3-padding-32 w3-yellow w3-display-topleft\">Play Again</button>";
+        (<HTMLInputElement>document.getElementById("star_info")).innerHTML = "<button onclick='window.location.reload();' id=\"play_again\" class=\"w3-button w3-round w3-padding-64 w3-green\">Play Again</button>";
     }
 
 }
@@ -519,6 +520,9 @@ export function hideTechTree(){
     document.getElementById("tech_tree_container")?.removeChild(<HTMLInputElement>document.getElementById("tech_tree"))
 }
 
+export function hideModal(){
+    (<HTMLInputElement>document.getElementById('modal')).style.display='none'
+}
 
 export function showModal(title: string, message: string, w3_color_classname: string){
     (<HTMLInputElement>document.getElementById("modal")).style.display = "block";

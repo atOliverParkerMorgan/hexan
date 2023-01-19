@@ -17,6 +17,7 @@ document.addEventListener("keydown", function (event) {
         hideCityMenu();
         hideUnitInfo();
         hideNodeInfo();
+        hideModal();
     }
 });
 export function friendTokenNotFound() {
@@ -163,7 +164,7 @@ export function gameOver(title, message, w3_color_classname) {
     };
     document.getElementById("view_game").onclick = function () {
         document.getElementById("game_over_modal").style.display = "none";
-        document.getElementById("star_info").innerHTML = "<div class=\"w3-container w3-center\"><button onclick='window.location.reload();' id=\"play_again\" class=\"w3-button w3-round w3-padding-32 w3-yellow w3-display-topleft\">Play Again</button>";
+        document.getElementById("star_info").innerHTML = "<button onclick='window.location.reload();' id=\"play_again\" class=\"w3-button w3-round w3-padding-64 w3-yellow\">Play Again</button>";
     };
 }
 function showCityData(city) {
@@ -423,6 +424,9 @@ export function hideTechTree() {
     document.getElementsByTagName("canvas")[1].style.visibility = "visible";
     document.getElementById("star_info").style.color = "black";
     (_a = document.getElementById("tech_tree_container")) === null || _a === void 0 ? void 0 : _a.removeChild(document.getElementById("tech_tree"));
+}
+export function hideModal() {
+    document.getElementById('modal').style.display = 'none';
 }
 export function showModal(title, message, w3_color_classname) {
     document.getElementById("modal").style.display = "block";

@@ -3,7 +3,7 @@ import MapInterface from "../../Interfaces/Map/MapInterface";
 import UnitInterface from "../../Interfaces/Units/UnitInterface";
 import NodeInterface from "../../Interfaces/Map/NodeInterface";
 
-class AiPLayer {
+class AiPlayer {
 
     // constants
     static ATTACK_STRATEGY_CONST: number = 0.1;
@@ -55,15 +55,15 @@ class AiPLayer {
 
     exploreStrategyScore(map_state: MapInterface){
         let number_hidden_nodes = map_state.getNumberOfHiddenNodes(this.player.token);
-        return map_state.getNumberOfHiddenNodes(this.player.token) * AiPLayer.EXPLORE_STRATEGY_CONST;
+        return map_state.getNumberOfHiddenNodes(this.player.token) * AiPlayer.EXPLORE_STRATEGY_CONST;
     }
 
     developStrategyScore(map_state: MapInterface){
-        return AiPLayer.DEVELOP_STRATEGY_CONST / this.player.star_production;
+        return AiPlayer.DEVELOP_STRATEGY_CONST / this.player.star_production;
     }
 
     conscriptStrategyScore(map_state: MapInterface){
-        return AiPLayer.CONSCRIPT_STRATEGY_CONST / this.player.units.length;
+        return AiPlayer.CONSCRIPT_STRATEGY_CONST / this.player.units.length;
     }
 
     attackStrategy(){

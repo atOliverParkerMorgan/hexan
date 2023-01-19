@@ -142,8 +142,9 @@ export class Node{
         let valid_movement_neighbours: Node[] = []
         let neighbours = this.getNeighbours();
         neighbours.map((neighbour)=> {
-            if (neighbour == null) return;
-            if ((neighbour.type === Node.OCEAN || neighbour.type === Node.LAKE) && !Player.owned_technologies.includes("Ship Building")) return;
+            if(neighbour == null) return;
+            if((neighbour.type === Node.OCEAN || neighbour.type === Node.LAKE) && !Player.owned_technologies.includes("Ship Building")) return;
+            if(neighbour?.unit?.is_friendly) return;
 
             valid_movement_neighbours.push(neighbour);
         });
@@ -243,9 +244,6 @@ export class Node{
        return  (this.y * 1.5 * HEX_SIDE_SIZE) - WORLD_HEIGHT / 2;
     }
 
-    get_unit_id(): string | undefined{
-        return this.unit?.id;
-    }
 
     setBorder(color: number, thickness: number, opacity: number, borders: number[]){
         this.line_borders.forEach(line => line.clear())
@@ -447,7 +445,7 @@ export class Node{
     }
 
     setHovered(){
-        function set_last_node_hovered(this_node: Node){
+        function setLastNodeHovered(this_node: Node){
             Node.last_hovered_node = this_node;
             this_node.opacity = .5;
             this_node.update();
@@ -461,7 +459,7 @@ export class Node{
                 Node.last_hovered_node.update();
 
                 // sets new node (this node) to hovered
-                set_last_node_hovered(this);
+                setLastNodeHovered(this);
                 if (Node.selected_node != null) {
                     if (Node.selected_node.unit != null && Node.selected_node?.unit.is_friendly) {
 
@@ -493,12 +491,6 @@ export class Node{
                                 // if unit is friendly
                                 if(Node.last_hovered_node.unit?.is_friendly) return;
 
-                                // if the unit is out of range don't show any attack or movement hint
-                                // if(Node.selected_node.unit.range >= Node.path.length - i){
-                                //     path_color =  Node.attack_hint_color;
-                                // }else{
-                                //     path_color =  Node.movement_hint_color;
-                                // }
                                 let is_attacking = false;
 
                                 for (let j = 0; j < Node.selected_node.unit.range; j++) {
@@ -541,7 +533,7 @@ export class Node{
         }
         // initial hover - no previous node
         else {
-            set_last_node_hovered(this);
+            setLastNodeHovered(this);
         }
     }
 
