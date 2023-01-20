@@ -37,7 +37,7 @@
     "redis": "^4.1.0",
     "sigma": "^2.3.1",
     "socket.io": "^4.4.1",
-    "socket.io-client": "^4.4.1",
+    "socket.io-client": "^2.1.1",
     "socket.io-emitter": "^1.1.0",
     "springy": "^2.8.0",
     "startup": "^1.0.3",

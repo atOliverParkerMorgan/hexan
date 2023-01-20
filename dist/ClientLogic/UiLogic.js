@@ -164,7 +164,7 @@ export function gameOver(title, message, w3_color_classname) {
     };
     document.getElementById("view_game").onclick = function () {
         document.getElementById("game_over_modal").style.display = "none";
-        document.getElementById("star_info").innerHTML = "<button onclick='window.location.reload();' id=\"play_again\" class=\"w3-button w3-round w3-padding-64 w3-yellow\">Play Again</button>";
+        document.getElementById("star_info").innerHTML = "<button onclick='window.location.reload();' id=\"play_again\" class=\"w3-button w3-round w3-padding-64 w3-green\">Play Again</button>";
     };
 }
 function showCityData(city) {
