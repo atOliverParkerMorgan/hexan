@@ -98,10 +98,15 @@ export function settingsLogicInit() {
         if (copy_button != null) {
             copy_button.onclick = function () {
                 // Copy the text inside the text field
-                navigator.clipboard.writeText(friend_code);
-                // change icon
-                copy_button.classList.remove("fa-copy");
-                copy_button.classList.add("fa-check");
+                navigator.clipboard.writeText(friend_code)
+                    .then(function () {
+                    // change icon
+                    copy_button.classList.remove("fa-copy");
+                    copy_button.classList.add("fa-check");
+                })
+                    .catch(function () {
+                    console.error("Error, something went wrong");
+                });
             };
         }
         var connect_button = document.getElementById("connect_button");
