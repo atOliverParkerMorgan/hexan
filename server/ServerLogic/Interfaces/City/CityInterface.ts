@@ -2,6 +2,7 @@ import {Socket} from "socket.io";
 import Player from "../../Classes/Player";
 import Game from "../../Classes/Game";
 import NodeInterface from "../Map/NodeInterface";
+import GameInterface from "../GameInterface";
 
 export default interface CityInterface {
     owner: Player;
@@ -16,7 +17,7 @@ export default interface CityInterface {
     population: number;
     number_of_harvested_nodes: number;
 
-    produceUnitAndSendResponse(socket: Socket, unit_name: string, game: Game): void;
+    produceUnitAndSendResponse(socket: Socket, unit_name: string, game: GameInterface): void;
 
     getXInPixels(): number;
 

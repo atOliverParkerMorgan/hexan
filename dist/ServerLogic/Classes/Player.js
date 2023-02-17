@@ -7,9 +7,10 @@ const Technology_1 = __importDefault(require("./Technology/Technology"));
 const Utils_1 = require("./Utils");
 const Unit_1 = __importDefault(require("./Units/Unit"));
 class Player {
-    constructor(token, map_size) {
+    constructor(token, map_size, is_ai) {
         this.token = token;
         this.map_size = map_size;
+        this.is_ai = is_ai;
         this.units = [];
         // units that this player can produce
         this.production_units = [Utils_1.Utils.WARRIOR, Utils_1.Utils.SLINGER, Utils_1.Utils.SETTLER_UNIT];

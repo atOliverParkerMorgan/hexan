@@ -117,6 +117,7 @@ var Utils;
         action: Utils.UNIT_ACTIONS.FORTIFY,
         type: Utils.UNIT_TYPES.CAVALRY
     };
+    Utils.all_player_logic = new Map();
     function generateToken(nick_name) {
         return (0, crypto_1.createHash)('sha256').update(nick_name + String(Math.random() + performance.now())).digest('hex');
     }

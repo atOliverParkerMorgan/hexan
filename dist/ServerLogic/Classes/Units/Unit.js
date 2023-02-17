@@ -7,6 +7,7 @@ const ServerSocket_1 = require("../ServerSocket");
 const Path_1 = __importDefault(require("../Map/Path"));
 const app_1 = require("../../../app");
 const MatchMaker_1 = require("../MatchMaker");
+const Technology_1 = __importDefault(require("../Technology/Technology"));
 class Unit {
     constructor(x, y, id, map, unit_init_data) {
         this.x = x;
@@ -43,7 +44,7 @@ class Unit {
                 return;
             }
             const current_node = path[0];
-            if (current_node.isWater() && !player.owned_technology.includes("Ship Building")) {
+            if (current_node.isWater() && !player.owned_technology.includes(Technology_1.default.SHIP_BUILDING)) {
                 ServerSocket_1.ServerSocket.somethingWrongResponse(socket, player.token, "INVALID MOVE", "You cannot move over water tiles without owning the Ship Building technology");
                 return;
             }
@@ -65,7 +66,6 @@ class Unit {
                         path.map((node) => {
                             path_cords.push([node.x, node.y]);
                         });
-                        console.log("here");
                         ServerSocket_1.ServerSocket.sendUnitAttack(socket, game, player, possible_attack_node.unit.id, this.id, new Path_1.default(game, path_cords));
                         return;
                     }

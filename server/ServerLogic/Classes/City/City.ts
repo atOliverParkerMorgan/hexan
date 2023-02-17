@@ -8,6 +8,7 @@ import NodeInterface from "../../Interfaces/Map/NodeInterface";
 import UnitInterface from "../../Interfaces/Units/UnitInterface";
 import PlayerInterface from "../../Interfaces/PlayerInterface";
 import GameInterface from "../../Interfaces/GameInterface";
+import player from "../Player";
 
 
 export default class City implements CityInterface {
@@ -87,13 +88,15 @@ export default class City implements CityInterface {
         }
         this.owner.payStars(cost);
 
-
         let unit: UnitInterface = this.owner.addUnit(this.x, this.y, unit_name, game.map);
 
         game.all_players.map((in_game_player: PlayerInterface) => {
             if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
-                console.log("player+token ", in_game_player.token)
-                ServerSocket.sendUnitProducedResponse(socket, <City>this, unit, in_game_player, game.token);
+
+                // player is not AI
+                if(! in_game_player.is_ai) {
+                    ServerSocket.sendUnitProducedResponse(socket, <City>this, unit, in_game_player, game.token);
+                }
             }
         });
     }

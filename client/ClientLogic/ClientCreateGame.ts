@@ -121,11 +121,16 @@ export function settingsLogicInit(){
         if(copy_button != null) {
             copy_button.onclick = () => {
                 // Copy the text inside the text field
-                navigator.clipboard.writeText(friend_code);
+                navigator.clipboard.writeText(friend_code)
+                    .then(() => {
+                        // change icon
+                        copy_button.classList.remove("fa-copy")
+                        copy_button.classList.add("fa-check")
+                })
+                    .catch(()=>{
+                        console.error("Error, something went wrong")
+                });
 
-                // change icon
-                copy_button.classList.remove("fa-copy")
-                copy_button.classList.add("fa-check")
             }
         }
 

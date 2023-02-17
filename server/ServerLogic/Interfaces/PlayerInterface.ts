@@ -6,6 +6,7 @@ import MapInterface from "./Map/MapInterface";
 
 export default interface PlayerInterface {
     token: string;
+    is_ai: boolean;
     map_size: number;
     units: UnitInterface[];
     production_units: any[];

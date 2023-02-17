@@ -1,5 +1,6 @@
 import {createHash} from "crypto";
 import UnitInitData from "./Units/UnitInitData";
+import AiPlayerLogic from "./AI/AiPlayerLogic";
 
 
 export namespace Utils{
@@ -143,6 +144,8 @@ export namespace Utils{
         action: UNIT_ACTIONS.FORTIFY,
         type: UNIT_TYPES.CAVALRY
     }
+
+    export let all_player_logic = new Map<string, AiPlayerLogic>();
 
 
     export function generateToken(nick_name: string){

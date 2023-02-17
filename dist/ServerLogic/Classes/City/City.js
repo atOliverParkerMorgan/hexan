@@ -40,8 +40,10 @@ class City {
         let unit = this.owner.addUnit(this.x, this.y, unit_name, game.map);
         game.all_players.map((in_game_player) => {
             if (game.map.all_nodes[this.y][this.x].is_shown.includes(in_game_player.token)) {
-                console.log("player+token ", in_game_player.token);
-                ServerSocket_1.ServerSocket.sendUnitProducedResponse(socket, this, unit, in_game_player, game.token);
+                // player is not AI
+                if (!in_game_player.is_ai) {
+                    ServerSocket_1.ServerSocket.sendUnitProducedResponse(socket, this, unit, in_game_player, game.token);
+                }
             }
         });
     }

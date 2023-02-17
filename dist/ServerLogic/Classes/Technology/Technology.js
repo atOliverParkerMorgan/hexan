@@ -12,12 +12,12 @@ class Technology {
     }
     // creates a link list of all technologies
     static init_tech_tree() {
-        const mining = new Technology(null, "Mining", "", "Add an additional 1 star production per minute on harvested mountains", 10, false);
-        const ship_building = new Technology(null, "Ship Building", "", "Unlock the ability to build battle ship \n and to move on ocean tiles", 10, false);
-        const construction = new Technology(null, "Construction", "", "Enables the construction of walls and keeps. \n It also allow to extract production from forests", 10, false);
-        const archery = new Technology([construction], "Archery", "/images/archer.png", "Unlocks new range unit: Archers \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
-        const spearman = new Technology([mining], "Spearman", "", "Unlocks new melee unit: Spearman \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
-        const horseman = new Technology(null, "Horseman", "", "Unlocks new cavalry unit: Horseman \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
+        const mining = new Technology(null, Technology.MINING, "", "Add an additional 1 star production per minute on harvested mountains", 10, false);
+        const ship_building = new Technology(null, Technology.SHIP_BUILDING, "", "Unlock the ability to build battle ship \n and to move on ocean tiles", 10, false);
+        const construction = new Technology(null, Technology.CONSTRUCTION, "", "Enables the construction of walls and keeps. \n It also allow to extract production from forests", 10, false);
+        const archery = new Technology([construction], Technology.ARCHERY, "/images/archer.png", "Unlocks new range unit: Archers \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
+        const spearman = new Technology([mining], Technology.SPEARMAN, "", "Unlocks new melee unit: Spearman \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
+        const horseman = new Technology(null, Technology.HORSEMAN, "", "Unlocks new cavalry unit: Horseman \n(attack: 15; health: 100; range: 2; cost: 5) ", 10, false);
         return new Technology([archery, spearman, horseman, ship_building], "", "/images/king.png", "", 0, true);
     }
     // works only on root node!
@@ -30,19 +30,19 @@ class Technology {
                 node.is_owned = true;
                 player.owned_technology.push(tech_name);
                 // technology special logic
-                if (tech_name === "Archery") {
+                if (tech_name === Technology.ARCHERY) {
                     player.production_units.push(Utils_1.Utils.ARCHER);
                 }
-                else if (tech_name === "Horseman") {
+                else if (tech_name === Technology.HORSEMAN) {
                     player.production_units.push(Utils_1.Utils.HORSEMAN);
                 }
-                else if (tech_name === "Spearman") {
+                else if (tech_name === Technology.SPEARMAN) {
                     player.production_units.push(Utils_1.Utils.SPEARMAN);
                 }
-                else if (tech_name === "Mining") {
+                else if (tech_name === Technology.MINING) {
                     player.mountain_harvest = 1;
                 }
-                else if (tech_name === "Construction") {
+                else if (tech_name === Technology.CONSTRUCTION) {
                     player.forest_harvest = 1;
                 }
                 return true;
@@ -64,3 +64,9 @@ class Technology {
     }
 }
 exports.default = Technology;
+Technology.MINING = "Mining";
+Technology.SHIP_BUILDING = "Ship Building";
+Technology.CONSTRUCTION = "Construction";
+Technology.ARCHERY = "Archery";
+Technology.SPEARMAN = "Spearman";
+Technology.HORSEMAN = "Horseman";
