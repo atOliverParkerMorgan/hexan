@@ -5,6 +5,7 @@ import {Utils} from "./Utils";
 import {ServerSocket} from "./ServerSocket";
 import {Socket} from "socket.io";
 import GameInterface from "../Interfaces/GameInterface";
+import AiPlayerLogic from "./AI/AiPlayerLogic";
 
 // Singleton
 export namespace MatchMaker {
@@ -20,7 +21,7 @@ export namespace MatchMaker {
             return;
         }
 
-        all_players_searching_1v1.set(socket.id, new Player(socket.id, map_size));
+        all_players_searching_1v1.set(socket.id, new Player(socket.id, map_size, false));
         findMatchFor1v1(socket, map_size);
     }
 
@@ -31,7 +32,7 @@ export namespace MatchMaker {
     export function saveFriendToken(socket_id: string, map_size: number | null){
         if(map_size == null) return;
         if(!Utils.ALLOWED_MAP_SIZES.includes(map_size)) return;
-        friend_codes.set(MatchMaker.generateFriendToken(socket_id), new Player(socket_id, map_size)
+        friend_codes.set(MatchMaker.generateFriendToken(socket_id), new Player(socket_id, map_size, false)
         )
     }
 
@@ -54,7 +55,7 @@ export namespace MatchMaker {
             return null;
         }
 
-        const current_player: Player | undefined = new Player(socket.id, friend_player.map_size)
+        const current_player: Player | undefined = new Player(socket.id, friend_player.map_size, false)
 
         const game: Game | undefined = new Game(Utils.generateToken(friend_player.token), friend_player.map_size, 4, Utils.GAME_MODES.GAME_MODE_1v1);
 
@@ -99,12 +100,13 @@ export namespace MatchMaker {
 
     export function findAiGame(socket: Socket, map_size: number){
         const game = new Game(Utils.generateToken(socket.id), map_size, 4, Utils.GAME_MODES.GAME_MODE_AI);
-        const player = new Player(socket.id, map_size);
+        const player = new Player(socket.id, map_size, false);
 
         if(!Utils.ALLOWED_MAP_SIZES.includes(map_size)){
             return;
         }
-
+        const player_ai = new Player(socket.id, map_size, true);
+        Utils.all_player_logic.set(socket.id, new AiPlayerLogic(player_ai, game, socket))
         game.all_players.push(player);
         all_games.set(game.token, game);
         game.placeStartCity1v1(player, false);
@@ -122,7 +124,7 @@ export namespace MatchMaker {
 
     export function addPlayer2v2(nick_name: string, map_size: number){
         const player_token = Utils.generateToken(nick_name);
-        all_players_searching_2v2.set(player_token, new Player(player_token, map_size));
+        all_players_searching_2v2.set(player_token, new Player(player_token, map_size, false));
         if(hasMatchFor1v1()){
             return [player_token, new Game(Utils.generateToken(player_token), 2500, 4, Utils.GAME_MODES.GAME_MODE_2v2)]
         }

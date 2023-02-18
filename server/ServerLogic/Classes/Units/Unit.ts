@@ -12,6 +12,7 @@ import PlayerInterface from "../../Interfaces/PlayerInterface";
 import {App} from "../../../app";
 import {MatchMaker} from "../MatchMaker";
 import CityInterface from "../../Interfaces/City/CityInterface";
+import Technology from "../Technology/Technology";
 
 export default class Unit implements UnitInterface{
     x: number;
@@ -75,7 +76,7 @@ export default class Unit implements UnitInterface{
             const current_node: NodeInterface = path[0];
 
 
-            if (current_node.isWater() && !player.owned_technology.includes("Ship Building")) {
+            if (current_node.isWater() && !player.owned_technology.includes(Technology.SHIP_BUILDING)) {
                 ServerSocket.somethingWrongResponse(socket, player.token, "INVALID MOVE", "You cannot move over water tiles without owning the Ship Building technology");
                 return
             }
@@ -101,7 +102,6 @@ export default class Unit implements UnitInterface{
                             path_cords.push([node.x, node.y]);
                         })
 
-                        console.log("here")
                         ServerSocket.sendUnitAttack(socket, game, player, possible_attack_node.unit.id, this.id, new Path(game, path_cords))
 
                         return;

@@ -9,6 +9,7 @@ const Player_1 = __importDefault(require("./Player"));
 const Game_1 = __importDefault(require("./Game"));
 const Utils_1 = require("./Utils");
 const ServerSocket_1 = require("./ServerSocket");
+const AiPlayerLogic_1 = __importDefault(require("./AI/AiPlayerLogic"));
 // Singleton
 var MatchMaker;
 (function (MatchMaker) {
@@ -20,7 +21,7 @@ var MatchMaker;
         if (!Utils_1.Utils.ALLOWED_MAP_SIZES.includes(map_size)) {
             return;
         }
-        MatchMaker.all_players_searching_1v1.set(socket.id, new Player_1.default(socket.id, map_size));
+        MatchMaker.all_players_searching_1v1.set(socket.id, new Player_1.default(socket.id, map_size, false));
         findMatchFor1v1(socket, map_size);
     }
     MatchMaker.addPlayer1v1 = addPlayer1v1;
@@ -33,7 +34,7 @@ var MatchMaker;
             return;
         if (!Utils_1.Utils.ALLOWED_MAP_SIZES.includes(map_size))
             return;
-        MatchMaker.friend_codes.set(MatchMaker.generateFriendToken(socket_id), new Player_1.default(socket_id, map_size));
+        MatchMaker.friend_codes.set(MatchMaker.generateFriendToken(socket_id), new Player_1.default(socket_id, map_size, false));
     }
     MatchMaker.saveFriendToken = saveFriendToken;
     function getGameWithFriendCode(socket, friend_code) {
@@ -50,7 +51,7 @@ var MatchMaker;
         if (friend_player == null) {
             return null;
         }
-        const current_player = new Player_1.default(socket.id, friend_player.map_size);
+        const current_player = new Player_1.default(socket.id, friend_player.map_size, false);
         const game = new Game_1.default(Utils_1.Utils.generateToken(friend_player.token), friend_player.map_size, 4, Utils_1.Utils.GAME_MODES.GAME_MODE_1v1);
         game.all_players.push(friend_player);
         game.all_players.push(current_player);
@@ -86,10 +87,12 @@ var MatchMaker;
     MatchMaker.getGame1v1WithPlayer = getGame1v1WithPlayer;
     function findAiGame(socket, map_size) {
         const game = new Game_1.default(Utils_1.Utils.generateToken(socket.id), map_size, 4, Utils_1.Utils.GAME_MODES.GAME_MODE_AI);
-        const player = new Player_1.default(socket.id, map_size);
+        const player = new Player_1.default(socket.id, map_size, false);
         if (!Utils_1.Utils.ALLOWED_MAP_SIZES.includes(map_size)) {
             return;
         }
+        const player_ai = new Player_1.default(socket.id, map_size, true);
+        Utils_1.Utils.all_player_logic.set(socket.id, new AiPlayerLogic_1.default(player_ai, game, socket));
         game.all_players.push(player);
         MatchMaker.all_games.set(game.token, game);
         game.placeStartCity1v1(player, false);
@@ -104,7 +107,7 @@ var MatchMaker;
     MatchMaker.getGame = getGame;
     function addPlayer2v2(nick_name, map_size) {
         const player_token = Utils_1.Utils.generateToken(nick_name);
-        MatchMaker.all_players_searching_2v2.set(player_token, new Player_1.default(player_token, map_size));
+        MatchMaker.all_players_searching_2v2.set(player_token, new Player_1.default(player_token, map_size, false));
         if (hasMatchFor1v1()) {
             return [player_token, new Game_1.default(Utils_1.Utils.generateToken(player_token), 2500, 4, Utils_1.Utils.GAME_MODES.GAME_MODE_2v2)];
         }

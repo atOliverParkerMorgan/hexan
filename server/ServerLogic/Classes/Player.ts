@@ -8,6 +8,7 @@ import Unit from "./Units/Unit";
 
 class Player implements PlayerInterface {
     token: string;
+    is_ai: boolean;
     map_size: number;
     units: UnitInterface[];
     production_units: any[];
@@ -23,10 +24,10 @@ class Player implements PlayerInterface {
 
     mountain_harvest;
     forest_harvest;
-
-    constructor(token: string, map_size: number) {
+    constructor(token: string, map_size: number, is_ai: boolean) {
         this.token = token;
         this.map_size = map_size;
+        this.is_ai = is_ai;
 
         this.units = [];
         // units that this player can produce

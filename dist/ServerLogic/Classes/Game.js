@@ -200,5 +200,11 @@ class Game {
             root_tech_tree_node: player.root_tech_tree_node,
         };
     }
+    getAIPLayer() {
+        for (const player of this.all_players) {
+            if (player.is_ai)
+                return player;
+        }
+    }
 }
 exports.default = Game;

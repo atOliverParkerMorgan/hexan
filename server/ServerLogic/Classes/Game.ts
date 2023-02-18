@@ -242,6 +242,13 @@ class Game implements GameInterface {
             root_tech_tree_node: player.root_tech_tree_node,
         }
     }
+
+    getAIPLayer(): PlayerInterface | undefined{
+        for( const player of this.all_players){
+            if(player.is_ai)
+                return player;
+        }
+    }
 }
 
 export default Game;

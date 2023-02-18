@@ -4,14 +4,6 @@ import {Utils} from "../ServerLogic/Classes/Utils";
 
 export default class IndexController{
 
-  public readonly REQUEST_TYPES = {
-    GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
-    FIND_MATCH: "FIND_MATCH",
-    START_GAME: "START_GAME"
-  }
-
-  private player_token: string = "";
-
   public router: Router = express.Router();
 
   constructor() {
@@ -30,12 +22,7 @@ export default class IndexController{
   // creates a new Game object and send the appropriate response
   handle_post_request = (req: Request, res: Response) => {
     const nick_name = req.body.nick_name
-    const player_token = req.body.player_token; // null if the request is GENERATE_PLAYER_TOKEN
-    const map_size = req.body.map_size;
     const game_mode = req.body.game_mode;
-    const game_token = req.body.game_token;
-    const request_type = req.body.request_type;
-    // const current_player: Player = MatchMaker.add_player_1v1(nick_name);
 
     // handle invalid request bodies
     if(nick_name=== "" || nick_name == null){
