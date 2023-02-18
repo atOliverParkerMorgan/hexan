@@ -1,13 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Technology_1 = __importDefault(require("../Technology/Technology"));
 class AiPlayer {
-    constructor(player, game_instance) {
+    constructor(player) {
         this.player = player;
-        this.game_instance = game_instance;
         this.are_all_nodes_searched = false;
         this.number_enemy_cities_found = 0;
         this.enemy_city_cords = [];
@@ -46,40 +41,9 @@ class AiPlayer {
     }
     attackStrategy() {
     }
-    economicStrategy(command) {
-        // buy ship building
-        switch (command) {
-            case AiPlayer.COMMANDS.ECONOMIC.DO_NOTHING:
-                return;
-            case AiPlayer.COMMANDS.ECONOMIC.PURCHASE_ARCHER_TECH:
-                if (!this.player.owned_technology.includes(Technology_1.default.ARCHERY)) {
-                    this.game_instance.purchaseTechnology(this.player.token, Technology_1.default.ARCHERY);
-                }
-                break;
-            case AiPlayer.COMMANDS.ECONOMIC.PURCHASE_SHIPPING_TECH:
-                if (!this.player.owned_technology.includes(Technology_1.default.SHIP_BUILDING)) {
-                    this.game_instance.purchaseTechnology(this.player.token, Technology_1.default.SHIP_BUILDING);
-                }
-                break;
-            case AiPlayer.COMMANDS.ECONOMIC.PURCHASE_MINING_TECH:
-                if (!this.player.owned_technology.includes(Technology_1.default.MINING)) {
-                    this.game_instance.purchaseTechnology(this.player.token, Technology_1.default.MINING);
-                }
-                break;
-            case AiPlayer.COMMANDS.ECONOMIC.PURCHASE_CONSTRUCTION_TECH:
-                if (!this.player.owned_technology.includes(Technology_1.default.CONSTRUCTION)) {
-                    this.game_instance.purchaseTechnology(this.player.token, Technology_1.default.CONSTRUCTION);
-                }
-                break;
-            case AiPlayer.COMMANDS.ECONOMIC.PURCHASE_SPEARMAN_TECH:
-                if (!this.player.owned_technology.includes(Technology_1.default.SPEARMAN)) {
-                    this.game_instance.purchaseTechnology(this.player.token, Technology_1.default.SPEARMAN);
-                }
-                break;
-        }
+    economicStrategy() {
     }
     exploreStrategy(map) {
-        // must buy shipping technology
         if (this.are_all_nodes_searched) {
             return;
         }
