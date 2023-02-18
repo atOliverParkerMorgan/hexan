@@ -11,7 +11,7 @@ import {ServerSocket} from "./ServerLogic/Classes/ServerSocket";
 
 export namespace App {
   export const app: Application = express();
-  const port: string | number = process.env.PORT || 8000;
+  const port: string | number = process.env.PORT || 80;
   const controller: Controller =  new IndexController()
   export let httpServer: any;
   export let io: any;

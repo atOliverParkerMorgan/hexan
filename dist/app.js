@@ -39,7 +39,7 @@ const ServerSocket_1 = require("./ServerLogic/Classes/ServerSocket");
 var App;
 (function (App) {
     App.app = (0, express_1.default)();
-    const port = process.env.PORT || 8000;
+    const port = process.env.PORT || 80;
     const controller = new IndexController_1.default();
     function init() {
         App.httpServer = (0, http_1.createServer)(App.app);
