@@ -15,13 +15,6 @@ export namespace App {
 
   let port: string | number;
 
-  if(Utils.ENV === "PRODUCTION"){
-    port = process.env.PORT || 80; // heroku production
-  }else {
-    port = process.env.PORT || 8000; // localhost
-
-  }
-
   const controller: Controller =  new IndexController()
   export let httpServer: any;
   export let io: any;
@@ -29,8 +22,15 @@ export namespace App {
 
 
   export function init() {
+    if(process.env.NODE_ENV !== "development"){
+      port = process.env.PORT || 80; // heroku production
+    }else {
+      port = process.env.PORT || 8000; // localhost
+    }
+
     httpServer = createServer(app);
     io = new Server(httpServer);
+
     initViewEngine();
     initStaticRoutes();
     initControllers();
@@ -43,6 +43,7 @@ export namespace App {
 
   function initViewEngine() {
     app.engine('html', renderFile);
+
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'html');
 
@@ -52,6 +53,14 @@ export namespace App {
   }
 
   function initControllers() {
+    app.use(function(request, response, next) {
+
+      if (process.env.NODE_ENV !== "development" && !request.secure) {
+        return response.redirect("https://" + request.headers.host + request.url);
+      }
+      next();
+    })
+
     // use all controller routers
     app.use('/', controller.router);
 
@@ -102,6 +111,9 @@ export namespace App {
     console.log(`hexan is running at http://${host}${port}`);
   }
 }
+
+// !!! DO NOT USE 'development' IN PRODUCTION !!!
+process.env.NODE_ENV = "production"
 
 App.init();
 App.handleError();

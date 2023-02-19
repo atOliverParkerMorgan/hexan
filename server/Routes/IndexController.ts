@@ -10,17 +10,6 @@ export default class IndexController{
     this.initializeRoutes()
   }
   public initializeRoutes() {
-     if(Utils.ENV === "PRODUCTION") {
-
-
-          this.router.get('*', function (req, res, next) {
-              if (req.headers['x-forwarded-proto'] != 'https')
-                  res.redirect("https://" + req.hostname + req.url)
-              else
-                  next() /* Continue to other routes if we're not redirecting */
-          })
-     }
-
      this.router.get("/", this.handle_get_request);
      this.router.post("/", this.handle_post_request);
 

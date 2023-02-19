@@ -36,19 +36,18 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const http_1 = require("http");
 const socket_io_1 = require("socket.io");
 const ServerSocket_1 = require("./ServerLogic/Classes/ServerSocket");
-const Utils_1 = require("./ServerLogic/Classes/Utils");
 var App;
 (function (App) {
     App.app = (0, express_1.default)();
     let port;
-    if (Utils_1.Utils.ENV === "PRODUCTION") {
-        port = process.env.PORT || 80; // heroku production
-    }
-    else {
-        port = process.env.PORT || 8000; // localhost
-    }
     const controller = new IndexController_1.default();
     function init() {
+        if (process.env.NODE_ENV !== "development") {
+            port = process.env.PORT || 80; // heroku production
+        }
+        else {
+            port = process.env.PORT || 8000; // localhost
+        }
         App.httpServer = (0, http_1.createServer)(App.app);
         App.io = new socket_io_1.Server(App.httpServer);
         initViewEngine();
@@ -67,6 +66,12 @@ var App;
         App.app.use(express_1.default.urlencoded({ extended: false }));
     }
     function initControllers() {
+        App.app.use(function (request, response, next) {
+            if (process.env.NODE_ENV !== "development" && !request.secure) {
+                return response.redirect("https://" + request.headers.host + request.url);
+            }
+            next();
+        });
         // use all controller routers
         App.app.use('/', controller.router);
     }
@@ -109,6 +114,8 @@ var App;
     }
     App.serverInfo = serverInfo;
 })(App = exports.App || (exports.App = {}));
+// !!! DO NOT USE 'development' IN PRODUCTION !!!
+process.env.NODE_ENV = "production";
 App.init();
 App.handleError();
 App.serverInfo();
