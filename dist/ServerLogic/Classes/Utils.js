@@ -4,6 +4,8 @@ exports.Utils = void 0;
 const crypto_1 = require("crypto");
 var Utils;
 (function (Utils) {
+    Utils.ENV = "DEV";
+    // export const ENV = "PRODUCTION";
     Utils.HEX_SIDE_SIZE = Math.pow(25000, .5);
     Utils.MOUNTAIN_TRAVEL_BIAS = 10;
     Utils.OCEAN = 0x0AA3CF;

@@ -5,6 +5,8 @@ import AiPlayerLogic from "./AI/AiPlayerLogic";
 
 export namespace Utils{
 
+    export const ENV: string = "DEV";
+    // export const ENV = "PRODUCTION";
     export const HEX_SIDE_SIZE = 25000 ** .5;
     export const MOUNTAIN_TRAVEL_BIAS = 10;
 

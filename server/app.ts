@@ -8,10 +8,20 @@ import cookieParser from "cookie-parser";
 import {createServer} from "http";
 import {Server} from "socket.io";
 import {ServerSocket} from "./ServerLogic/Classes/ServerSocket";
+import {Utils} from "./ServerLogic/Classes/Utils";
 
 export namespace App {
   export const app: Application = express();
-  const port: string | number = process.env.PORT || 80;
+
+  let port: string | number;
+
+  if(Utils.ENV === "PRODUCTION"){
+    port = process.env.PORT || 80; // heroku production
+  }else {
+    port = process.env.PORT || 8000; // localhost
+
+  }
+
   const controller: Controller =  new IndexController()
   export let httpServer: any;
   export let io: any;
@@ -19,7 +29,6 @@ export namespace App {
 
 
   export function init() {
-
     httpServer = createServer(app);
     io = new Server(httpServer);
     initViewEngine();

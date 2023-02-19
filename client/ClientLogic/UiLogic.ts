@@ -235,7 +235,7 @@ function showCityData(city: any){
        unit_html.className = "w3-bar";
        unit_html.innerHTML = unit_item_menu;
 
-       unit_html = setUnitData(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.damage, unit.health, unit.movement, unit.cost);
+       unit_html = setUnitData(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.attack, unit.health, unit.movement, unit.cost);
 
        ul_unit_menu.appendChild(unit_html);
        div_side_menu.appendChild(ul_unit_menu)
