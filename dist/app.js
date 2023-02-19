@@ -50,6 +50,13 @@ var App;
         }
         App.httpServer = (0, http_1.createServer)(App.app);
         App.io = new socket_io_1.Server(App.httpServer);
+        App.app.get('*', function (req, res) {
+            if (process.env.NODE_ENV !== "development" && !req.secure) {
+                res.redirect('https://' + req.headers.host + req.url);
+            }
+            // Or, if you don't want to automatically detect the domain name from the request header, you can hard code it:
+            // res.redirect('https://example.com' + req.url);
+        });
         initViewEngine();
         initStaticRoutes();
         initControllers();
@@ -66,12 +73,6 @@ var App;
         App.app.use(express_1.default.urlencoded({ extended: false }));
     }
     function initControllers() {
-        App.app.use(function (request, response, next) {
-            if (process.env.NODE_ENV !== "development" && !request.secure) {
-                return response.redirect("https://" + request.headers.host + request.url);
-            }
-            next();
-        });
         // use all controller routers
         App.app.use('/', controller.router);
     }

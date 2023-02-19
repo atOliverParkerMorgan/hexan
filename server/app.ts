@@ -31,6 +31,16 @@ export namespace App {
     httpServer = createServer(app);
     io = new Server(httpServer);
 
+    app.get('*', function(req, res) {
+      if (process.env.NODE_ENV !== "development" && !req.secure) {
+        res.redirect('https://' + req.headers.host + req.url);
+      }
+
+      // Or, if you don't want to automatically detect the domain name from the request header, you can hard code it:
+      // res.redirect('https://example.com' + req.url);
+    })
+
+
     initViewEngine();
     initStaticRoutes();
     initControllers();
@@ -38,16 +48,6 @@ export namespace App {
     httpServer.listen(port);
 
     ServerSocket.addListener();
-
-    app.enable('trust proxy')
-    app.use(function(request, response, next) {
-
-      if (process.env.NODE_ENV !== "development" && !request.secure) {
-        return response.redirect("https://" + request.headers.host + request.url);
-      }
-      next();
-    })
-
   }
 
   function initViewEngine() {
