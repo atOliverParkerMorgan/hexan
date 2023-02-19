@@ -39,6 +39,15 @@ export namespace App {
 
     ServerSocket.addListener();
 
+    app.enable('trust proxy')
+    app.use(function(request, response, next) {
+
+      if (process.env.NODE_ENV !== "development" && !request.secure) {
+        return response.redirect("https://" + request.headers.host + request.url);
+      }
+      next();
+    })
+
   }
 
   function initViewEngine() {
@@ -53,14 +62,6 @@ export namespace App {
   }
 
   function initControllers() {
-    app.use(function(request, response, next) {
-
-      if (process.env.NODE_ENV !== "development" && !request.secure) {
-        return response.redirect("https://" + request.headers.host + request.url);
-      }
-      next();
-    })
-
     // use all controller routers
     app.use('/', controller.router);
 
