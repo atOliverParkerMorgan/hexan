@@ -114,8 +114,6 @@ var App;
     }
     App.serverInfo = serverInfo;
 })(App = exports.App || (exports.App = {}));
-// !!! DO NOT USE 'development' IN PRODUCTION !!!
-process.env.NODE_ENV = "production";
 App.init();
 App.handleError();
 App.serverInfo();

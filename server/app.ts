@@ -112,9 +112,6 @@ export namespace App {
   }
 }
 
-// !!! DO NOT USE 'development' IN PRODUCTION !!!
-process.env.NODE_ENV = "production"
-
 App.init();
 App.handleError();
 App.serverInfo();
