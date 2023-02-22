@@ -17,7 +17,6 @@
     <script type="text/javascript" src="/springy/springy.js"></script>
     <script type="text/javascript" src="/springy/springyui.js"></script>
 
-
     <script type="module" src="/GameGraphics/Pixi.js"></script>
     <script type="module" src="/ClientCreateGame.js"></script>
     <script type="module" src="/ClientSocket.js"></script>
@@ -28,6 +27,7 @@
     <script type="module" src="/UiLogic.js"></script>
     <script>
         // disable context menu
+        // for better game flow
         document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
 </head>
@@ -41,8 +41,8 @@
     <input type="text" class="form__input" id="nick_input" maxlength="20" placeholder="nickname"/>
     <label for="nick_input" class="form__label">Press enter to play</label>
 
-
 </div>
+
 </body>
 
 </html>

@@ -1,0 +1,68 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+
+body {
+    height: 100%;
+    width: 100%;
+    background: #0f2027; /* fallback for old browsers */
+    background: linear-gradient(to right,#2c5364, #203a43, #0f2027);
+    color: #fff;
+    font-family: Montserrat, serif;
+}
+
+h1{
+    border-bottom: 3px solid #73AD21;
+    width: 50%;
+    text-align: center;
+    font-size: 50px;
+    padding-top: 45px;
+    margin: auto auto 45px;
+}
+
+h2{
+    margin-left: 26%;
+    display: inline-block;
+    border-bottom: 2px solid #FFFFFF;
+    margin-top: 30px;
+    margin-bottom: 20px;
+
+}
+
+ul{
+    margin-left: 26%;
+    padding: 16px;
+    font-size: 20px
+}
+
+.arrow {
+    font-size:40px;
+    position: absolute;
+    top: 26px;
+    left: 48px;
+    color: white
+}
+
+table {
+    margin: 30px auto;
+    border-collapse: collapse;
+    width: 50%;
+}
+
+table td, table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+table th {
+    background-color: darkslateblue;
+    color: white;
+}

@@ -172,8 +172,6 @@ export namespace MatchMaker {
                     {
                         game_token: game.token
                     });
-
-
             }
         }
     }

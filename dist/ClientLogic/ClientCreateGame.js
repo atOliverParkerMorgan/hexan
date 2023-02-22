@@ -1,9 +1,4 @@
 import { ClientSocket } from "./ClientSocket.js";
-var REQUEST_TYPES = {
-    GENERATE_PLAYER_TOKEN: "GENERATE_PLAYER_TOKEN",
-    FIND_MATCH: "FIND_MATCH",
-    START_GAME: "START_GAME"
-};
 export var interval_id_timer;
 export function settingsLogicInit() {
     // setup nickname
@@ -30,7 +25,7 @@ export function settingsLogicInit() {
     // game mode button logic
     var GAME_MODE_1v1 = "1v1";
     var GAME_MODE_2v2 = "2v2";
-    var GAME_MODE_AI = "AI";
+    // const GAME_MODE_AI = "AI";
     var GAME_MODE_FRIEND = "FRIEND";
     var game_mode = GAME_MODE_1v1;
     function changeLastSelectedButtonToRed() {
@@ -42,10 +37,6 @@ export function settingsLogicInit() {
             case GAME_MODE_2v2:
                 game_mode_to_2v2_button === null || game_mode_to_2v2_button === void 0 ? void 0 : game_mode_to_2v2_button.classList.add("w3-red");
                 game_mode_to_2v2_button === null || game_mode_to_2v2_button === void 0 ? void 0 : game_mode_to_2v2_button.classList.remove("w3-green");
-                break;
-            case GAME_MODE_AI:
-                game_mode_to_AI_button === null || game_mode_to_AI_button === void 0 ? void 0 : game_mode_to_AI_button.classList.add("w3-red");
-                game_mode_to_AI_button === null || game_mode_to_AI_button === void 0 ? void 0 : game_mode_to_AI_button.classList.remove("w3-green");
                 break;
             case GAME_MODE_FRIEND:
                 game_mode_to_FRIEND_button === null || game_mode_to_FRIEND_button === void 0 ? void 0 : game_mode_to_FRIEND_button.classList.add("w3-red");
@@ -67,12 +58,34 @@ export function settingsLogicInit() {
         game_mode_to_2v2_button.classList.remove("w3-red");
         game_mode_to_2v2_button.classList.add("w3-green");
     });
-    var game_mode_to_AI_button = document.getElementById("game_mode_to_AI_button");
-    game_mode_to_AI_button === null || game_mode_to_AI_button === void 0 ? void 0 : game_mode_to_AI_button.addEventListener("click", function onEvent() {
-        changeLastSelectedButtonToRed();
-        game_mode = GAME_MODE_AI;
-        game_mode_to_AI_button.classList.remove("w3-red");
-        game_mode_to_AI_button.classList.add("w3-green");
+    var game_mode_rules = document.getElementById("game_mode_rules");
+    game_mode_rules === null || game_mode_rules === void 0 ? void 0 : game_mode_rules.addEventListener("click", function onEvent() {
+        var main_div = document.getElementById("app");
+        main_div.innerHTML = loadFile("/views/gameRules.html");
+        var rulesBackArrow = document.getElementById("rulesBackArrow");
+        rulesBackArrow.onclick = function () {
+            var main_div = document.getElementById("app");
+            main_div.innerHTML = loadFile("/views/gameSettings.html");
+            settingsLogicInit();
+        };
+        var enButton = document.getElementById("enButton");
+        var czButton = document.getElementById("czButton");
+        enButton.onclick = function () {
+            document.getElementById('cs').style.display = 'none';
+            document.getElementById('en').style.display = 'block';
+            enButton.classList.remove("w3-red");
+            enButton.classList.add("w3-green");
+            czButton.classList.remove("w3-green");
+            czButton.classList.add("w3-red");
+        };
+        czButton.onclick = function () {
+            document.getElementById('cs').style.display = 'block';
+            document.getElementById('en').style.display = 'none';
+            czButton.classList.remove("w3-red");
+            czButton.classList.add("w3-green");
+            enButton.classList.remove("w3-green");
+            enButton.classList.add("w3-red");
+        };
     });
     var game_mode_to_FRIEND_button = document.getElementById("game_mode_to_FRIEND_button");
     game_mode_to_FRIEND_button === null || game_mode_to_FRIEND_button === void 0 ? void 0 : game_mode_to_FRIEND_button.addEventListener("click", function onEvent() {
@@ -83,6 +96,13 @@ export function settingsLogicInit() {
         var friend_code;
         var main_div = document.getElementById("app");
         main_div.innerHTML = loadFile("/views/friendSettings.html");
+        // arrow back logic
+        var friendSettingsBackArrow = document.getElementById("friendBackArrow");
+        friendSettingsBackArrow.onclick = function () {
+            var main_div = document.getElementById("app");
+            main_div.innerHTML = loadFile("/views/gameSettings.html");
+            settingsLogicInit();
+        };
         // connect
         ClientSocket.connect();
         ClientSocket.socket.on("connect", function () {
@@ -123,10 +143,14 @@ export function settingsLogicInit() {
             }
         };
     });
-    var edit_nickname_button = document.getElementById("edit_nickname");
+    var edit_nickname_button = document.getElementById("editNicknameButton");
     edit_nickname_button.onclick = function () {
+        var currentNickname = localStorage.getItem("nickname");
         localStorage.removeItem("nickname");
-        window.location.reload();
+        var main_div = document.getElementById("app");
+        main_div.innerHTML = loadFile("/views/nicknameSettings.html");
+        document.getElementById("nick_input").value = currentNickname;
+        checkForNicknameInput();
     };
     // play button logic
     var play_button = document.getElementById("play_button");
@@ -144,15 +168,17 @@ export function settingsLogicInit() {
         // update the timer about every second
         interval_id_timer = setInterval(function () { return updateTimer(main_div, start); }, 1000);
         ClientSocket.connect();
-        if (game_mode === GAME_MODE_AI) {
-            document.querySelector("#title").textContent = "LOADING AI";
-            console.log("LOADING AI");
-            ClientSocket.addDataListener();
-            ClientSocket.sendData(ClientSocket.request_types.FIND_AI_OPPONENT, {
-                map_size: map_size
-            });
-        }
-        else if (game_mode === GAME_MODE_1v1) {
+        // if (game_mode === GAME_MODE_AI) {
+        //     (<HTMLInputElement>document.querySelector("#title")).textContent = "LOADING AI";
+        //
+        //     console.log("LOADING AI");
+        //     ClientSocket.addDataListener()
+        //     ClientSocket.sendData(ClientSocket.request_types.FIND_AI_OPPONENT,
+        //         {
+        //             map_size: map_size
+        //         });
+        // }
+        if (game_mode === GAME_MODE_1v1) {
             console.log("LOADING 1v1");
             ClientSocket.addDataListener();
             ClientSocket.sendData(ClientSocket.request_types.FIND_1v1_OPPONENT, {
@@ -170,22 +196,24 @@ function updateTimer(main_div, start) {
     var minute_text = minutes === 0 ? "" : (minutes) + " " + minute_string + "  :  ";
     main_div.querySelector("span").innerText = minute_text + (seconds % 60) + " " + seconds_string;
 }
-// load right away if a nickname exists
-if (localStorage.getItem("nickname") != null) {
-    var main_div = document.getElementById("app");
-    main_div.innerHTML = loadFile("/views/gameSettings.html");
-    settingsLogicInit();
-}
-var nick_input = document.getElementById("nick_input");
-if (nick_input != null) {
-    nick_input.addEventListener("keypress", function onEvent(event) {
-        if (event.key === "Enter" && nick_input.value.length > 0) {
-            localStorage.setItem("nickname", nick_input.value);
-            var main_div = document.getElementById("app");
-            main_div.innerHTML = loadFile("/views/gameSettings.html");
-            settingsLogicInit();
-        }
-    });
+function checkForNicknameInput() {
+    // load right away if a nickname exists
+    if (localStorage.getItem("nickname") != null) {
+        var main_div = document.getElementById("app");
+        main_div.innerHTML = loadFile("/views/gameSettings.html");
+        settingsLogicInit();
+    }
+    var nick_input = document.getElementById("nick_input");
+    if (nick_input != null) {
+        nick_input.addEventListener("keypress", function onEvent(event) {
+            if (event.key === "Enter" && nick_input.value.length > 0) {
+                localStorage.setItem("nickname", nick_input.value);
+                var main_div = document.getElementById("app");
+                main_div.innerHTML = loadFile("/views/gameSettings.html");
+                settingsLogicInit();
+            }
+        });
+    }
 }
 export function loadFile(filePath) {
     var result = null;
@@ -197,3 +225,5 @@ export function loadFile(filePath) {
     }
     return result;
 }
+// check for input by default because index page starts on nickname input
+checkForNicknameInput();

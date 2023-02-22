@@ -120,3 +120,19 @@ body {
     background-color: #4CAF50;
     color: white;
 }
+
+.arrow {
+    font-size:40px;
+    position: absolute;
+    top: 26px;
+    left: 48px;
+    color: white
+}
+
+.edit_icon{
+    color: white;
+    font-size:40px;
+    position: absolute;
+    top: 26px;
+    right: 48px;
+}

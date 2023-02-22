@@ -112,7 +112,7 @@ var Utils;
         attack: 20,
         health: 100,
         range: 1,
-        movement: 25,
+        movement: 200,
         cost: 8,
         action: Utils.UNIT_ACTIONS.FORTIFY,
         type: Utils.UNIT_TYPES.CAVALRY

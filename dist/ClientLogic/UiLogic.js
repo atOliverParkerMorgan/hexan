@@ -190,12 +190,12 @@ function showCityData(city) {
         var unit_html = document.createElement("li");
         unit_html.className = "w3-bar";
         unit_html.innerHTML = unit_item_menu;
-        unit_html = setUnitData(unit_html, unit.name, "/images/" + unit.name.toLowerCase() + ".png", unit.type, unit.attack, unit.health, unit.movement, unit.cost);
+        unit_html = setUnitData(unit_html, unit.name, "/images/" + unit.name.toLowerCase() + ".png", unit.type, unit.attack, unit.health, unit.range, unit.movement, unit.cost);
         ul_unit_menu.appendChild(unit_html);
         div_side_menu.appendChild(ul_unit_menu);
     }
 }
-function setUnitData(unit_html, unit_name, src, type, damage, health, movement, cost) {
+function setUnitData(unit_html, unit_name, src, type, attack, health, range, movement, cost) {
     unit_html.querySelector("#image").src = src;
     unit_html.querySelector("#produce").src = "/images/production.png";
     unit_html.querySelector("#produce").onclick = function () {
@@ -204,7 +204,8 @@ function setUnitData(unit_html, unit_name, src, type, damage, health, movement, 
     unit_html.querySelector("#name").innerText = unit_name;
     unit_html.querySelector("#type").innerText = type;
     unit_html.querySelector("#cost").innerText = cost;
-    unit_html.querySelector("#damage").innerText = damage;
+    unit_html.querySelector("#attack").innerText = attack;
+    unit_html.querySelector("#range").innerText = range;
     unit_html.querySelector("#health").innerText = health;
     unit_html.querySelector("#movement").innerText = movement;
     return unit_html;

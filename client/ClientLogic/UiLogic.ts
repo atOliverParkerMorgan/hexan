@@ -206,7 +206,6 @@ export function gameOver(title: string, message: string, w3_color_classname: str
 
 }
 
-
 function showCityData(city: any){
     // move info menu
    (<HTMLInputElement >document.getElementById("unit_info_menu")).style.right = "420px";
@@ -235,14 +234,14 @@ function showCityData(city: any){
        unit_html.className = "w3-bar";
        unit_html.innerHTML = unit_item_menu;
 
-       unit_html = setUnitData(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.attack, unit.health, unit.movement, unit.cost);
+       unit_html = setUnitData(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.attack, unit.health, unit.range, unit.movement, unit.cost);
 
        ul_unit_menu.appendChild(unit_html);
        div_side_menu.appendChild(ul_unit_menu)
    }
 }
 
-function setUnitData(unit_html: any, unit_name: string, src: string, type: string, damage: number, health: number, movement: number, cost: number){
+function setUnitData(unit_html: any, unit_name: string, src: string, type: string, attack: number, health: number, range: number, movement: number, cost: number){
     unit_html.querySelector("#image").src = src
     unit_html.querySelector("#produce").src = "/images/production.png"
     unit_html.querySelector("#produce").onclick = function () {
@@ -251,7 +250,8 @@ function setUnitData(unit_html: any, unit_name: string, src: string, type: strin
     unit_html.querySelector("#name").innerText = unit_name;
     unit_html.querySelector("#type").innerText = type;
     unit_html.querySelector("#cost").innerText = cost;
-    unit_html.querySelector("#damage").innerText = damage;
+    unit_html.querySelector("#attack").innerText = attack;
+    unit_html.querySelector("#range").innerText = range;
     unit_html.querySelector("#health").innerText = health;
     unit_html.querySelector("#movement").innerText = movement;
 
@@ -541,6 +541,5 @@ function loadFile(filePath: string):string {
     }else{
         return ""
     }
-
     return result;
 }

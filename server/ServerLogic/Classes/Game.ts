@@ -179,7 +179,7 @@ class Game implements GameInterface {
         city_node.sprite_name = "village.png";
 
         this.all_cities.push(city_node.city);
-        city_node.neighbors.forEach((node) => this.map.makeNeighbourNodesShown(player, node));
+        city_node.neighbors.forEach((node: NodeInterface | undefined) => this.map.makeNeighbourNodesShown(player, node));
     }
 
     getVisibleUnits(player: PlayerInterface): UnitInterface[] {
@@ -187,7 +187,7 @@ class Game implements GameInterface {
         if (player_from_game_object == null) {
             return [];
         }
-        let output: UnitInterface[] = [];
+        let output: UnitInterface[] = [];1
 
         // check visible player for other players
         for (const player_ of this.all_players) {

@@ -71,7 +71,7 @@ export namespace Utils{
         attack: 0,
         health: 100,
         range: 1,
-        movement: 100,
+        movement: 50,
         cost: 20,
 
         action: UNIT_ACTIONS.SETTLE,
@@ -82,8 +82,8 @@ export namespace Utils{
     export const WARRIOR: UnitInitData = {
             name: "Warrior",
 
-            attack: 25,
-            health: 100,
+            attack: 20,
+            health: 120,
             range: 1,
             movement: 100,
             cost: 4,
@@ -95,11 +95,11 @@ export namespace Utils{
     export const  SPEARMAN: UnitInitData = {
             name: "Spearman",
 
-            attack: 40,
-            health: 100,
+            attack: 5,
+            health: 250,
             range: 1,
             movement: 100,
-            cost: 4,
+            cost: 8,
 
             action: UNIT_ACTIONS.FORTIFY,
             type: UNIT_TYPES.MELEE
@@ -109,11 +109,11 @@ export namespace Utils{
     export const SLINGER: UnitInitData = {
             name: "Slinger",
 
-            attack: 5,
-            health: 100,
+            attack: 15,
+            health: 80,
             range: 1,
             movement: 120,
-            cost: 6,
+            cost: 5,
 
             action: UNIT_ACTIONS.FORTIFY,
             type: UNIT_TYPES.RANGE
@@ -121,11 +121,11 @@ export namespace Utils{
     export const  ARCHER: UnitInitData = {
             name: "Archer",
 
-            attack: 10,
+            attack: 20,
             health: 100,
             range: 2,
             movement: 120,
-            cost: 6,
+            cost: 8,
 
             action: UNIT_ACTIONS.FORTIFY,
             type: UNIT_TYPES.RANGE
@@ -134,10 +134,10 @@ export namespace Utils{
     // CAVALRY
     export const  HORSEMAN: UnitInitData = {
         name: "Horseman",
-        attack: 20,
-        health: 100,
+        attack: 40,
+        health: 115,
         range: 1,
-        movement: 25,
+        movement: 200,
         cost: 8,
 
         action: UNIT_ACTIONS.FORTIFY,

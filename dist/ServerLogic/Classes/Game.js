@@ -154,6 +154,7 @@ class Game {
             return [];
         }
         let output = [];
+        1;
         // check visible player for other players
         for (const player_ of this.all_players) {
             const raw_unit_data = player_.getUnitData();
