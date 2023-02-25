@@ -41,7 +41,6 @@ export default class City implements CityInterface {
 
     can_be_harvested_nodes: NodeInterface[];
     harvested_nodes: NodeInterface[];
-    stars_per_a_minute: number;
     population: number;
     number_of_harvested_nodes: number;
 
@@ -68,7 +67,6 @@ export default class City implements CityInterface {
         this.name = City.city_names[Utils.randomInt(0, City.city_names.length - 1)];
         City.city_names.splice(City.city_names.indexOf(this.name));
 
-        this.stars_per_a_minute = 20;
         this.population = 3;
     }
 
@@ -152,7 +150,7 @@ export default class City implements CityInterface {
             cords_in_pixels_x: this.cords_in_pixels_x,
             cords_in_pixels_y: this.cords_in_pixels_y,
             name: this.name,
-            stars_per_a_minute: this.stars_per_a_minute,
+            number_of_harvested_nodes: this.number_of_harvested_nodes,
             population: this.population,
             is_friendly: this.owner.token === player_token
         }

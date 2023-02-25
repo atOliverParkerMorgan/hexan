@@ -19,7 +19,6 @@ class City {
         });
         this.name = City.city_names[Utils_1.Utils.randomInt(0, City.city_names.length - 1)];
         City.city_names.splice(City.city_names.indexOf(this.name));
-        this.stars_per_a_minute = 20;
         this.population = 3;
     }
     produceUnitAndSendResponse(socket, unit_name, game) {
@@ -91,7 +90,7 @@ class City {
             cords_in_pixels_x: this.cords_in_pixels_x,
             cords_in_pixels_y: this.cords_in_pixels_y,
             name: this.name,
-            stars_per_a_minute: this.stars_per_a_minute,
+            number_of_harvested_nodes: this.number_of_harvested_nodes,
             population: this.population,
             is_friendly: this.owner.token === player_token
         };

@@ -1,4 +1,4 @@
-<button id="rulesBackArrow"><i id="left_arrow" class='fa fa-arrow-left arrow' style="color: white"></i></button>
+<i id="rulesBackArrow" class='fa fa-arrow-left arrow' style="color: white"></i>
 <div class="w3-display-topright" style="padding: 16px">
 <button id="enButton" class="w3-button w3-round-xxlarge w3-green w3-large" style="margin-left: 25px">EN</button>
 <button id="czButton" class="w3-button w3-round-xxlarge w3-red w3-large" >CZ</button>
@@ -29,8 +29,8 @@
     <h2>Herní pole</h2>
     <ul>
         <li>Herní plocha se skládá z jednotlivých herních polí ve tvaru pravidelného šestiúhelníku (hexagonu).</li>
-        <li>Hra obsahuje pět druhů herních polí: Louka, Les, Hory, Océan, Jezero</li>
-        <li>K pohybu přes pole typu Jezero či Océan je zapotřebí vlastnit technologii “Výroba lodí”.</li>
+        <li>Hra obsahuje pět druhů herních polí: Louka, Les, Hory, Oceán, Jezero</li>
+        <li>K pohybu přes pole typu Jezero či Oceán je zapotřebí vlastnit technologii “Výroba lodí”.</li>
         <li> Pohyb přes Hory trvá 4 krát délé než pohyb Louka </li>
         <li> Pohyb přes Les trvá 2 krát délé než pohyb Louku </li>
         <li> Pohyb přes Oceán a Jezera trvá stejně dlohuo jako pohyb přes Louku</li>
@@ -70,10 +70,10 @@
             <td>1 hvězda / min</td>
         </tr>
         <tr>
-            <td>Océan</td>
+            <td>Oceán</td>
             <td style="background: #0AA3CF; color: black">#0AA3CF</td>
             <td><img src="/images/ocean.png" width="100px"></td>
-            <td><a>Výroba lodí</a></td>
+            <td><a href="#Sh">Výroba lodí</a></td>
             <td>-</td>
             <td>1 hvězda / min</td>
         </tr>
@@ -104,7 +104,7 @@
         <li>Jednotky Bojovník s prakem, Lučešníka nestracejí zdraví při střetu</li>
     </ul>
     <table>
-        <tr style="background: red">
+        <tr>
             <th>Jméno</th>
             <th>Ikona</th>
             <th>Technologie potřebné k výrobě</th>
@@ -138,9 +138,9 @@
         <tr>
             <td> Lučešník</td>
             <td><img src="/images/archer.png" width="100px"></td>
-            <td>-</td>
+            <td>Lučištnictví</td>
             <td>20</td>
-            <td>100</td>
+            <td>80</td>
             <td>2</td>
             <td>120 / min</td>
             <td>8 hvězd</td>
@@ -148,9 +148,9 @@
         <tr>
             <td>Jezdec</td>
             <td><img src="/images/horseman.png" width="100px"></td>
-            <td>-</td>
+            <td>Jezdectví</td>
             <td>40</td>
-            <td>115</td>
+            <td>85</td>
             <td>1</td>
             <td>200 / min</td>
             <td>8 hvězd</td>
@@ -158,8 +158,8 @@
         <tr>
             <td>Oštěpař</td>
             <td><img src="/images/spearman.png" width="100px"></td>
-            <td>-</td>
-            <td>5</td>
+            <td>Oštěpařství</td>
+            <td>20</td>
             <td>250</td>
             <td>1</td>
             <td>100 / min</td>
@@ -182,7 +182,51 @@
     <ul>
         <li>technologie odemikájí různé benefity posané v technologickém stomu</li>
     </ul>
-
+    <table>
+        <tr>
+            <th>Název</th>
+            <th>Cena</th>
+            <th>Popis</th>
+            <th>Rodičovská technologie</th>
+        </tr>
+        <tr>
+            <td>Těžba</td>
+            <td>10 hvězd</td>
+            <td>Přidá další produkci 1 hvězdy za minutu na těžených horách</td>
+            <td><a href="#Spearman">Oštěpař</a></td>
+        </tr>
+        <tr>
+            <td>Stavebnictví</td>
+            <td>10 hvězd</td>
+            <td>Umožňuje stavbu hradeb a pevností.
+                Také umožňuje vytěžit produkci z lesů</td>
+            <td><a href="#Archery">Lučištnictví</a></td>
+        </tr>
+        <tr>
+            <td>Stavba lodí</td>
+            <td>10 hvězd</td>
+            <td>Odemkne schopnost stavět bitevní lodě a pohybovat se na oceánských polích</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Lučištnictví</td>
+            <td>10 hvězd</td>
+            <td>Odemkne novou jednotku na dálku: Lučištníky (útok: 20; zdraví: 80; dosah: 2; cena: 8)</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Oštěpařství</td>
+            <td>10 hvězd</td>
+            <td>Odemkne novou útočnou jednotku: Oštěpaře (útok: 5; zdraví: 250; dosah: 2; cena: 8)</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Jezdectví</td>
+            <td>10 hvězd</td>
+            <td>Odemkne novou jízdní jednotku: Jezdce (útok: 40; zdraví: 85; dosah: 2; cena: 8)</td>
+            <td>-</td>
+        </tr>
+    </table>
 </div>
 
 <div id="en">
@@ -213,6 +257,58 @@
         <li>It takes 2 times longer to move across Forest fields than Meadow fields.</li>
         <li>It takes the same amount of time to move across Ocean and Lake fields as it does to move across Meadow fields.</li>
     </ul>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Color</th>
+            <th>Image</th>
+            <th>Required Technology for Movement</th>
+            <th>Movement Speed</th>
+            <th>Earnings for Purchase</th>
+        </tr>
+        <tr>
+            <td>Meadow</td>
+            <td style="background: #7FFF55; color: black">#7FFF55</td>
+            <td><img src="/images/grass_plane.png" width="100px"></td>
+            <td>-</td>
+            <td>-</td>
+            <td>1 star/min</td>
+        </tr>
+        <tr>
+            <td>Forest</td>
+            <td style="background: #228B22; color: black">#228B22</td>
+            <td><img src="/images/forest.png" width="100px"></td>
+            <td>-</td>
+            <td><b>2 times</b> slower than movement through meadow</td>
+            <td>1 star/min</td>
+        </tr>
+        <tr>
+            <td>Mountains</td>
+            <td style="background: #F2F2F2; color: black">#F2F2F2</td>
+            <td><img src="/images/mountains.png" width="100px"></td>
+            <td>-</td>
+            <td><b>4 times</b> slower than movement through meadow</td>
+            <td>1 star/min</td>
+        </tr>
+        <tr>
+            <td>Ocean</td>
+            <td style="background: #0AA3CF; color: black">#0AA3CF</td>
+            <td><img src="/images/ocean.png" width="100px"></td>
+            <td><a>Ship production</a></td>
+            <td>-</td>
+            <td>1 star/min</td>
+        </tr>
+        <tr>
+            <td>Lake</td>
+            <td style="background: #80C5DE; color: black">#80C5DE</td>
+            <td><img src="/images/lake.png" width="100px"></td>
+            <td><a>Ship production</a></td>
+            <td>-</td>
+            <td>1 star/min</td>
+        </tr>
+    </table>
+
     <h2>Units</h2>
     <ul>
         <li>The game has six types of units: Warrior, Slinger, Archer, Horseman, Spearman, Settler</li>
@@ -227,8 +323,129 @@
         <li>Only a Settler can found a new cities</li>
         <li>Slinger and Archer units do not lose health in battle</li>
     </ul>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Icon</th>
+            <th>Required technology</th>
+            <th>Attack</th>
+            <th>Health</th>
+            <th>Range</th>
+            <th>Movement</th>
+            <th>Price</th>
+        </tr>
+        <tr>
+            <td>Warrior</td>
+            <td><img src="/images/warrior.png" width="100px"></td>
+            <td>-</td>
+            <td>20</td>
+            <td>120</td>
+            <td>1</td>
+            <td>100 / min</td>
+            <td>4 stars</td>
+        </tr>
+        <tr>
+            <td>Slinger</td>
+            <td><img src="/images/slinger.png" width="100px"></td>
+            <td>-</td>
+            <td>15</td>
+            <td>80</td>
+            <td>1</td>
+            <td>120 / min</td>
+            <td>5 stars</td>
+        </tr>
+        <tr>
+            <td>Archer</td>
+            <td><img src="/images/archer.png" width="100px"></td>
+            <td>Archery</td>
+            <td>20</td>
+            <td>80</td>
+            <td>2</td>
+            <td>120 / min</td>
+            <td>8 stars</td>
+        </tr>
+        <tr>
+            <td>Horseman</td>
+            <td><img src="/images/horseman.png" width="100px"></td>
+            <td>Horseman</td>
+            <td>40</td>
+            <td>85</td>
+            <td>1</td>
+            <td>200 / min</td>
+            <td>8 stars</td>
+        </tr>
+        <tr>
+            <td>Spearman</td>
+            <td><img src="/images/spearman.png" width="100px"></td>
+            <td>Spearman</td>
+            <td>20</td>
+            <td>250</td>
+            <td>1</td>
+            <td>100 / min</td>
+            <td>8 stars</td>
+        </tr>
+        <tr>
+            <td>Settler</td>
+            <td><img src="/images/settler.png" width="100px"></td>
+            <td>-</td>
+            <td>0</td>
+            <td>100</td>
+            <td>1</td>
+            <td>50 / min</td>
+            <td>20 stars</td>
+        </tr>
+
+    </table>
+
     <h2>TECHNOLOGY</h2>
     <ul>
         <li>Technology unlocks various benefits specified in the technology tree</li>
     </ul>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Cost</th>
+            <th>Description</th>
+            <th>Parent technology</th>
+        </tr>
+        <tr>
+            <td>Mining</td>
+            <td>10 stars</td>
+            <td>Add an additional 1 star production per minute on harvested mountains</td>
+            <td><a href="#Spearman">Spearman</a></td>
+        </tr>
+        <tr>
+            <td>Construction</td>
+            <td>10 stars</td>
+            <td>Enables the construction of walls and keeps.
+                It also allow to extract production from forests</td>
+            <td><a href="#Archery">Archery</a></td>
+        </tr>
+        <tr>
+            <td>Ship Building</td>
+            <td>10 stars</td>
+            <td>Unlock the ability to build battleship and to move on ocean tiles</td>
+            <td>-</td>
+        </tr>
+        <tr id="Archery">
+            <td>Archery</td>
+            <td>10 stars</td>
+            <td>Unlocks new range unit: Archers (attack: 20; health: 80; range: 2; cost: 8)</td>
+            <td>-</td>
+        </tr>
+        <tr id="Spearman">
+            <td>Spearman</td>
+            <td>10 stars</td>
+            <td>Unlocks new melee unit: Spearman (attack: 20; health: 250; range: 2; cost: 8)</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Horseman</td>
+            <td>10 stars</td>
+            <td>Unlocks new cavalry unit: Horseman (attack: 40; health: 85; range: 2; cost: 8)</td>
+            <td>-</td>
+        </tr>
+
+    </table>
 </div>

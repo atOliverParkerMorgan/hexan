@@ -59,7 +59,7 @@ var Utils;
         attack: 0,
         health: 100,
         range: 1,
-        movement: 100,
+        movement: 50,
         cost: 20,
         action: Utils.UNIT_ACTIONS.SETTLE,
         type: Utils.UNIT_TYPES.SETTLER
@@ -67,8 +67,8 @@ var Utils;
     // Melee
     Utils.WARRIOR = {
         name: "Warrior",
-        attack: 25,
-        health: 100,
+        attack: 20,
+        health: 120,
         range: 1,
         movement: 100,
         cost: 4,
@@ -77,40 +77,40 @@ var Utils;
     };
     Utils.SPEARMAN = {
         name: "Spearman",
-        attack: 40,
-        health: 100,
+        attack: 5,
+        health: 250,
         range: 1,
         movement: 100,
-        cost: 4,
+        cost: 8,
         action: Utils.UNIT_ACTIONS.FORTIFY,
         type: Utils.UNIT_TYPES.MELEE
     };
     // Range
     Utils.SLINGER = {
         name: "Slinger",
-        attack: 5,
-        health: 100,
+        attack: 15,
+        health: 80,
         range: 1,
         movement: 120,
-        cost: 6,
+        cost: 5,
         action: Utils.UNIT_ACTIONS.FORTIFY,
         type: Utils.UNIT_TYPES.RANGE
     };
     Utils.ARCHER = {
         name: "Archer",
-        attack: 10,
+        attack: 20,
         health: 100,
         range: 2,
         movement: 120,
-        cost: 6,
+        cost: 8,
         action: Utils.UNIT_ACTIONS.FORTIFY,
         type: Utils.UNIT_TYPES.RANGE
     };
     // CAVALRY
     Utils.HORSEMAN = {
         name: "Horseman",
-        attack: 20,
-        health: 100,
+        attack: 40,
+        health: 115,
         range: 1,
         movement: 200,
         cost: 8,

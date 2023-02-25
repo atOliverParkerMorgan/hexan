@@ -13,7 +13,6 @@ export default interface CityInterface {
     name: string;
     can_be_harvested_nodes: NodeInterface[];
     harvested_nodes: NodeInterface[];
-    stars_per_a_minute: number;
     population: number;
     number_of_harvested_nodes: number;
 

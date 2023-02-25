@@ -171,7 +171,7 @@ function showCityData(city) {
     // move info menu
     document.getElementById("unit_info_menu").style.right = "420px";
     document.getElementById("city_name").innerText = city.name;
-    document.getElementById("city_stars_per_min").innerText = city.stars_per_a_minute;
+    document.getElementById("number_of_harvested_nodes").innerText = city.number_of_harvested_nodes;
     // (<HTMLInputElement >document.getElementById("city_population")).innerText = city.population;
     // show units that can be produced
     // create html menu with javascript
