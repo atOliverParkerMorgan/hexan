@@ -57,7 +57,8 @@ export namespace MatchMaker {
 
         const current_player: Player | undefined = new Player(socket.id, friend_player.map_size, false)
 
-        const game: Game | undefined = new Game(Utils.generateToken(friend_player.token), friend_player.map_size, 4, Utils.GAME_MODES.GAME_MODE_1v1);
+        const game: Game | undefined = new Game(Utils.generateToken(friend_player.token), friend_player.map_size,
+            4, Utils.GAME_MODES.GAME_MODE_1v1);
 
 
         game.all_players.push(friend_player);

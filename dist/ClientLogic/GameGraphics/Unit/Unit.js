@@ -18,12 +18,11 @@ var Unit = /** @class */ (function () {
         this.health = unit.health;
         this.range = unit.range;
         this.movement = unit.movement;
-        this.max_health = 100;
+        this.max_health = this.health;
         this.current_path = [];
-        // TODO create player class with current MELEE RANGE ... units
         switch (this.type) {
             case Unit.MELEE:
-                if (this.attack == 40)
+                if (this.attack == 5)
                     this.texture_path = "/images/spearman.png";
                 else
                     this.texture_path = "/images/warrior.png";
