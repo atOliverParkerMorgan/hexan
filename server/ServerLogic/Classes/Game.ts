@@ -75,13 +75,13 @@ class Game implements GameInterface {
 
                 // if x in 1/4 of the map
                 if(first_city) {
-                    if (all_possible_city_nodes.length != 0 && x >= map.all_nodes.length / 4) {
-                        game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)]);
+                    if (all_possible_city_nodes.length != 0 && x >= map.all_nodes.length / 2.3) {
+                       game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)])
                         return true;
                     }
                 }else {
-                    if (all_possible_city_nodes.length != 0 && x <= 3*map.all_nodes.length / 4) {
-                        game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)]);
+                    if (all_possible_city_nodes.length != 0 && x <= map.all_nodes.length / 2.3) {
+                        game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)])
                         return true;
                     }
                 }
@@ -166,11 +166,8 @@ class Game implements GameInterface {
     }
 
     // return boolean that indicates if the city placement was successful
-    addCity(player: PlayerInterface, city_node: NodeInterface | undefined): void {
-        if (city_node == null) {
-            console.error("Error, city node was null");
-            return
-        }
+    addCity(player: PlayerInterface, city_node: NodeInterface): void {
+
         // create a new city for a player
         city_node.city = new City(player, city_node);
         city_node.is_harvested = true;
@@ -180,6 +177,7 @@ class Game implements GameInterface {
 
         this.all_cities.push(city_node.city);
         city_node.neighbors.forEach((node: NodeInterface | undefined) => this.map.makeNeighbourNodesShown(player, node));
+
     }
 
     getVisibleUnits(player: PlayerInterface): UnitInterface[] {
