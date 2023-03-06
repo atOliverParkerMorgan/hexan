@@ -18,7 +18,6 @@ class City {
             }
         });
         this.name = City.city_names[Utils_1.Utils.randomInt(0, City.city_names.length - 1)];
-        City.city_names.splice(City.city_names.indexOf(this.name));
         this.population = 3;
     }
     produceUnitAndSendResponse(socket, unit_name, game) {
@@ -112,6 +111,14 @@ City.city_names = [
     "Shentol", "Shegan", "Saemond", "Tousmery", "Flaarith", "Iglane", "Vrodon", "Vralo", "Edonard", "Oragend",
     "Bucville", "Jeepving", "Higinia", "Bidiff", "Slosas", "Zlouver", "Frok", "Pita", "Arcridge", "Alepool",
     "Yrausburgh", "Evota", "Cloyvine", "Tuta", "Kloygend", "Xinas", "Ovand", "Flane", "Idobury", "Uryburgh",
-    "Rohull", "Cudwood", "Vruhgow", "Trerough", "Muuburgh", "Nia", "Vlale", "Clery", "Ensmouth", "Agosmore"
+    "Rohull", "Cudwood", "Vruhgow", "Trerough", "Muuburgh", "Nia", "Vlale", "Clery", "Ensmouth", "Agosmore",
+    "Hardside", "Eastburg", "Rosehampton", "Middleport", "West Fauxkarta", "Pailtown", "Freeley", "Buoystead Island",
+    "Northport", "Bellness", "Manborough Beach", "New Winkarta", "Saybrough", "Elburg", "Clamkarta", "Sweethampton",
+    "New Melworth", "Daypool", "Saltby", "Dodgeburg", "Highcaster Falls", "Sugarworth", "Great Beachview", "Springcester",
+    "Hosborough", "Middlemouth Falls", "East Parkness", "Seabury", "Baycaster City", "Eggville", "Southingmouth", "Winterland",
+    "Waltworth", "South Saystead", "Kingport", "Weirbrough", "Jamesbrough", "Clamburg", "Lunaside", "Hapland", "Fishgrad", "Hapfolk",
+    "North Backdale", "Northworth", "Prodale", "Westley", "Middleworth", "North Factford", "Tallbury Hills", "Sugarburg", "Bayham",
+    "Farmingborough", "Angerport", "Cloudstead", "New Fairfield", "Hogview", "Sweettown", "Lunport", "Luntown", "Farmland", "Sweetfield",
+    "Angerdol", "Halldale", "Sugardale", "New Saltcaster", "Melwich", "Gilby", "Hallham", "Daydale City", "Sugarwich", "East Valenkarta", "Buoyworth"
 ];
 City.BASE_HARVEST_COST = 5;
