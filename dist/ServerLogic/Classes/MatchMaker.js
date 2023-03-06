@@ -132,6 +132,7 @@ var MatchMaker;
                 }
                 game.placeStartCity1v1(player, true);
                 game.placeStartCity1v1(enemy_player, false);
+                console.log("");
                 MatchMaker.all_players_searching_1v1.delete(player.token);
                 MatchMaker.all_players_searching_1v1.delete(enemy_player.token);
                 MatchMaker.friend_codes.delete(player.token.substring(0, 5));

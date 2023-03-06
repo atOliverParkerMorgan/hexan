@@ -50,7 +50,7 @@ class Game {
             const starting_node = map.all_nodes[x][y];
             if (!starting_node.isWater() && starting_node.city == null) {
                 all_possible_city_nodes.push(starting_node);
-                // if x in 1/4 of the map
+                // if x in 1/42of the map
                 if (first_city) {
                     if (all_possible_city_nodes.length != 0 && x >= map.all_nodes.length / 4) {
                         game.addCity(player, all_possible_city_nodes[Math.floor(Math.random() * all_possible_city_nodes.length)]);
@@ -135,10 +135,6 @@ class Game {
     }
     // return boolean that indicates if the city placement was successful
     addCity(player, city_node) {
-        if (city_node == null) {
-            console.error("Error, city node was null");
-            return;
-        }
         // create a new city for a player
         city_node.city = new City_1.default(player, city_node);
         city_node.is_harvested = true;
@@ -146,6 +142,7 @@ class Game {
         city_node.sprite_name = "village.png";
         this.all_cities.push(city_node.city);
         city_node.neighbors.forEach((node) => this.map.makeNeighbourNodesShown(player, node));
+        console.log("City node: " + JSON.stringify(city_node.getData(player.token)));
     }
     getVisibleUnits(player) {
         var _a;
