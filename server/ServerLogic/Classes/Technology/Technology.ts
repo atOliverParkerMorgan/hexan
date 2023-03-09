@@ -31,7 +31,7 @@ export default class Technology implements TechnologyInterface {
     }
 
     // creates a link list of all technologies
-    static init_tech_tree(): Technology{
+    static initTechTree(): Technology{
         const mining = new Technology(null, Technology.MINING, "", "Add an additional 1 star production per minute on harvested mountains", 10, false)
 
         const ship_building = new Technology(null, Technology.SHIP_BUILDING, "", "Unlock the ability to build battle ship \n and to move on ocean tiles", 10, false)

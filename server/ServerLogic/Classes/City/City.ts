@@ -8,7 +8,6 @@ import NodeInterface from "../../Interfaces/Map/NodeInterface";
 import UnitInterface from "../../Interfaces/Units/UnitInterface";
 import PlayerInterface from "../../Interfaces/PlayerInterface";
 import GameInterface from "../../Interfaces/GameInterface";
-import player from "../Player";
 
 
 export default class City implements CityInterface {

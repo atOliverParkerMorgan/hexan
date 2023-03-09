@@ -93,7 +93,7 @@ export namespace ServerSocket {
 
     export function addListener(): void{
         App.io.on("connect_error", (err: any) => {
-            console.log(`connect_error due to ${err.message}`);
+            console.error(`connect_error due to ${err.message}`);
         });
 
 

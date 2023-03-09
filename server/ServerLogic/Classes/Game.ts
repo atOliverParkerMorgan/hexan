@@ -176,7 +176,6 @@ class Game implements GameInterface {
 
         this.all_cities.push(city_node.city);
         city_node.neighbors.forEach((node: NodeInterface | undefined) => this.map.makeNeighbourNodesShown(player, node));
-        console.log("City node: "+ JSON.stringify(city_node.getData(player.token)))
 
     }
 

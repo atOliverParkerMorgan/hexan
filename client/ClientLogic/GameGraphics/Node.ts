@@ -407,7 +407,6 @@ export class Node{
     }
 
     removeUnit(){
-        console.log("Sprite: ", this.sprite_name);
         this.unit?.removeChildren();
         this.unit = null
         this.update();

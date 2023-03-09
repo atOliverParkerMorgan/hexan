@@ -1,6 +1,4 @@
 import {ServerSocket} from "../ServerSocket";
-
-import Map from "./Map"
 import City from "../City/City";
 
 import NodeInterface from "../../Interfaces/Map/NodeInterface";
@@ -9,8 +7,6 @@ import UnitInterface from "../../Interfaces/Units/UnitInterface";
 import PlayerInterface from "../../Interfaces/PlayerInterface";
 import GameInterface from "../../Interfaces/GameInterface";
 import {Utils} from "../Utils";
-
-// used for node.get_data()
 
 
 export default class Node implements NodeInterface {

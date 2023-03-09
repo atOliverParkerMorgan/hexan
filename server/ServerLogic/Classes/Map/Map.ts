@@ -23,7 +23,7 @@ export default class Map implements MapInterface {
 
     constructor(number_of_land_nodes: number, number_of_continents: number){
         // number must be even for a symmetrical grid
-        if(number_of_land_nodes ** .5 % 1 !== 0) console.log("Warning, the square root of number of nodes should be a whole number ");
+        if(number_of_land_nodes ** .5 % 1 !== 0) console.error("Warning, the square root of number of nodes should be a whole number ");
         this.number_of_land_nodes = number_of_land_nodes;
         this.continent_size = (number_of_land_nodes / number_of_continents);
         this.continent_size /= 3;

@@ -1,6 +1,5 @@
 import {Socket} from "socket.io";
 import Player from "../../Classes/Player";
-import Game from "../../Classes/Game";
 import NodeInterface from "../Map/NodeInterface";
 import GameInterface from "../GameInterface";
 

@@ -11,7 +11,6 @@ import GameInterface from "../../Interfaces/GameInterface";
 import PlayerInterface from "../../Interfaces/PlayerInterface";
 import {App} from "../../../app";
 import {MatchMaker} from "../MatchMaker";
-import CityInterface from "../../Interfaces/City/CityInterface";
 import Technology from "../Technology/Technology";
 
 export default class Unit implements UnitInterface{

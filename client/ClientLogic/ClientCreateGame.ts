@@ -9,7 +9,6 @@ async function preloadHtmlFiles(urls: string[]){
             // Cache the HTML in the browser
             const cache = await window.caches.open("html-preload");
             await cache.put(url, new Response(html));
-            console.log(`HTML file ${url} preloaded successfully.`);
 
         } catch (error: any) {
             console.error(`Error preloading HTML file ${url}: ${error.message}`);
@@ -220,7 +219,6 @@ export function settingsLogicInit(){
 
     play_button.onclick = () => {
         const nickname = localStorage.getItem("nickname");
-        console.log("Nick Name: ", nickname)
         if (nickname == null) return;
 
         const main_div: any = document.getElementById("app");
@@ -238,7 +236,6 @@ export function settingsLogicInit(){
             ClientSocket.connect();
 
             if (game_mode === GAME_MODE_1v1) {
-                console.log("LOADING 1v1");
                 ClientSocket.addDataListener()
                 ClientSocket.sendData(ClientSocket.request_types.FIND_1v1_OPPONENT,
                     {
@@ -306,12 +303,10 @@ export async function loadFile(url: string){
         const cache = await window.caches.open('html-preload');
         const cachedResponse = await cache.match(url);
         if (!cachedResponse) {
-            console.log(`HTML file ${url} not found in cache.`);
             return null;
         }
         // Return the HTML data
         const htmlData = await cachedResponse.text();
-        console.log(`HTML file ${url} retrieved successfully from cache.`);
         return htmlData;
     } catch (error: any) {
         console.error(`Error retrieving HTML file ${url} from cache: ${error.message}`);

@@ -39,7 +39,7 @@ class Player implements PlayerInterface {
         this.star_production_has_started = false;
 
         this.owned_technology = [];
-        this.root_tech_tree_node = Technology.init_tech_tree();
+        this.root_tech_tree_node = Technology.initTechTree();
 
         this.mountain_harvest = 0;
         this.forest_harvest = 0;

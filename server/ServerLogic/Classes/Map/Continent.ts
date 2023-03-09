@@ -7,8 +7,6 @@ import MapInterface from "../../Interfaces/Map/MapInterface";
 
 export default class Continent implements ContinentInterface {
 
-    private static readonly NUMBER_OF_MOUNTAIN_SPRITES = 5;
-
     name: string;
     map: MapInterface;
     has_player: boolean;

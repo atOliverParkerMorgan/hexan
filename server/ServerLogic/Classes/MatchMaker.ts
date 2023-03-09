@@ -158,8 +158,6 @@ export namespace MatchMaker {
                 game.placeStartCity1v1(player, true);
                 game.placeStartCity1v1(enemy_player, false);
 
-                console.log("")
-
                 all_players_searching_1v1.delete(player.token);
                 all_players_searching_1v1.delete(enemy_player.token);
 
