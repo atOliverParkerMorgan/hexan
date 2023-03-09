@@ -73,7 +73,7 @@ var ServerSocket;
     ServerSocket.sendDataToPlayer = sendDataToPlayer;
     function addListener() {
         app_1.App.io.on("connect_error", (err) => {
-            console.log(`connect_error due to ${err.message}`);
+            console.error(`connect_error due to ${err.message}`);
         });
         app_1.App.io.on("connection", (socket) => {
             socket.on('disconnect', function () {

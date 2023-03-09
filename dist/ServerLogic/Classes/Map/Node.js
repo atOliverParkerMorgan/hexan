@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ServerSocket_1 = require("../ServerSocket");
 const City_1 = __importDefault(require("../City/City"));
 const Utils_1 = require("../Utils");
-// used for node.get_data()
 class Node {
     constructor(x, y) {
         this.neighbors = [];

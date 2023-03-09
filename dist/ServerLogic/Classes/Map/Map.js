@@ -13,7 +13,7 @@ class Map {
         this.all_beach_nodes = [];
         // number must be even for a symmetrical grid
         if (Math.pow(number_of_land_nodes, .5) % 1 !== 0)
-            console.log("Warning, the square root of number of nodes should be a whole number ");
+            console.error("Warning, the square root of number of nodes should be a whole number ");
         this.number_of_land_nodes = number_of_land_nodes;
         this.continent_size = (number_of_land_nodes / number_of_continents);
         this.continent_size /= 3;

@@ -18,7 +18,7 @@ class Player {
         this.star_production = 10;
         this.star_production_has_started = false;
         this.owned_technology = [];
-        this.root_tech_tree_node = Technology_1.default.init_tech_tree();
+        this.root_tech_tree_node = Technology_1.default.initTechTree();
         this.mountain_harvest = 0;
         this.forest_harvest = 0;
     }

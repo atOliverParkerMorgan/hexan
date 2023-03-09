@@ -52,7 +52,6 @@ export function showNodeInfo(node) {
 function updateNodeActionButtonAndInformation(node) {
     // check if player owns mining or construction technology
     var production_stars = node.production_stars.toString();
-    console.log("Mining ", Technology.ownsTechnology(tech_tree_root, "Mining"));
     if (Technology.ownsTechnology(tech_tree_root, "Mining") && node.type === Node.MOUNTAIN) {
         production_stars = "2";
     }
@@ -351,7 +350,6 @@ export function createTechTree() {
             var rect_height_1 = 100 + 20 * lines.length;
             interaction_nodes_values.map(function (node_cords) {
                 if (node_cords[0] === node.data.name) {
-                    // console.log("update")
                     node_cords[1] = rect_x_1;
                     node_cords[2] = rect_y_1;
                     node_cords[3] = rect_x_1 + rect_width_1;

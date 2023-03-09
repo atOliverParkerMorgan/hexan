@@ -62,7 +62,6 @@ function preloadHtmlFiles(urls) {
                     return [4 /*yield*/, cache.put(url, new Response(html))];
                 case 6:
                     _a.sent();
-                    console.log("HTML file ".concat(url, " preloaded successfully."));
                     return [3 /*break*/, 8];
                 case 7:
                     error_1 = _a.sent();
@@ -242,7 +241,6 @@ export function settingsLogicInit() {
     var play_button = document.getElementById("play_button");
     play_button.onclick = function () {
         var nickname = localStorage.getItem("nickname");
-        console.log("Nick Name: ", nickname);
         if (nickname == null)
             return;
         var main_div = document.getElementById("app");
@@ -256,7 +254,6 @@ export function settingsLogicInit() {
             interval_id_timer = setInterval(function () { return updateTimer(main_div, start); }, 1000);
             ClientSocket.connect();
             if (game_mode === GAME_MODE_1v1) {
-                console.log("LOADING 1v1");
                 ClientSocket.addDataListener();
                 ClientSocket.sendData(ClientSocket.request_types.FIND_1v1_OPPONENT, {
                     map_size: map_size
@@ -322,13 +319,11 @@ export function loadFile(url) {
                 case 2:
                     cachedResponse = _a.sent();
                     if (!cachedResponse) {
-                        console.log("HTML file ".concat(url, " not found in cache."));
                         return [2 /*return*/, null];
                     }
                     return [4 /*yield*/, cachedResponse.text()];
                 case 3:
                     htmlData = _a.sent();
-                    console.log("HTML file ".concat(url, " retrieved successfully from cache."));
                     return [2 /*return*/, htmlData];
                 case 4:
                     error_2 = _a.sent();

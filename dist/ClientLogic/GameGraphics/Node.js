@@ -286,7 +286,6 @@ var Node = /** @class */ (function () {
     };
     Node.prototype.removeUnit = function () {
         var _a;
-        console.log("Sprite: ", this.sprite_name);
         (_a = this.unit) === null || _a === void 0 ? void 0 : _a.removeChildren();
         this.unit = null;
         this.update();

@@ -133,4 +133,3 @@ class Continent {
     }
 }
 exports.default = Continent;
-Continent.NUMBER_OF_MOUNTAIN_SPRITES = 5;
