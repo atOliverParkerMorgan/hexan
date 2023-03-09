@@ -132,8 +132,24 @@
 
 .edit_icon{
     color: white;
-    font-size:40px;
+    font-size:28px;
     position: absolute;
     top: 26px;
     right: 48px;
+}
+
+@media only screen and (max-width: 600px) {
+    .edit_icon{
+        color: white;
+        font-size:24px;
+        position: absolute;
+        top: 8px;
+        right: 12px;
+    }
+    #nickname{
+        font-size:24px;
+        position: absolute;
+        top: 8px;
+        right: 45px;
+    }
 }

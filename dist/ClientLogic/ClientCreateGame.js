@@ -307,7 +307,7 @@ function checkForNicknameInput() {
 // Get the HTML data from cache
 export function loadFile(url) {
     return __awaiter(this, void 0, void 0, function () {
-        var cache, cachedResponse, htmlData, error_2;
+        var cache, cachedResponse, error_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -322,9 +322,9 @@ export function loadFile(url) {
                         return [2 /*return*/, null];
                     }
                     return [4 /*yield*/, cachedResponse.text()];
-                case 3:
-                    htmlData = _a.sent();
-                    return [2 /*return*/, htmlData];
+                case 3: 
+                // Return the HTML data
+                return [2 /*return*/, _a.sent()];
                 case 4:
                     error_2 = _a.sent();
                     console.error("Error retrieving HTML file ".concat(url, " from cache: ").concat(error_2.message));

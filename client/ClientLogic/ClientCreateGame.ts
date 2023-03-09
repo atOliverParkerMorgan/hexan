@@ -304,8 +304,7 @@ export async function loadFile(url: string){
             return null;
         }
         // Return the HTML data
-        const htmlData = await cachedResponse.text();
-        return htmlData;
+        return await cachedResponse.text();
     } catch (error: any) {
         console.error(`Error retrieving HTML file ${url} from cache: ${error.message}`);
         return null;
