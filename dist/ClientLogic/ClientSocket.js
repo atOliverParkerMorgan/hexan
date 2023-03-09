@@ -55,7 +55,6 @@ export var ClientSocket;
         GENERATE_FRIEND_TOKEN: "GENERATE_FRIEND_TOKEN",
         CONNECT_WITH_FRIEND: "CONNECT_WITH_FRIEND"
     };
-    console.log("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port));
     function connect() {
         // @ts-ignore
         ClientSocket.socket = io("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port), { transports: ['websocket', 'polling'] });
@@ -324,15 +323,6 @@ export var ClientSocket;
             }
             var response_data = args[0];
             gameOver(response_data.title, response_data.message, response_data.title_style);
-        });
-        ClientSocket.socket.on(ClientSocket.response_types.PLAYER_DISCONNECTED, function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
-            console.log(ClientSocket.response_types.PLAYER_DISCONNECTED);
-            var response_data = args[0];
-            // showModal()
         });
     }
     ClientSocket.addDataListener = addDataListener;

@@ -72,8 +72,6 @@ export namespace ClientSocket {
     };
 
     export let socket: any;
-    console.log(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`)
-
     export function connect(){
         // @ts-ignore
         socket = io(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`, {transports: ['websocket', 'polling']});
@@ -306,15 +304,7 @@ export namespace ClientSocket {
 
         socket.on(ClientSocket.response_types.END_GAME_RESPONSE, (...args: any[]) => {
             const response_data = args[0];
-
             gameOver(response_data.title, response_data.message, response_data.title_style);
-        })
-
-        socket.on(ClientSocket.response_types.PLAYER_DISCONNECTED, (...args: any[]) => {
-            console.log(ClientSocket.response_types.PLAYER_DISCONNECTED);
-
-            const response_data = args[0];
-            // showModal()
         })
     }
 
