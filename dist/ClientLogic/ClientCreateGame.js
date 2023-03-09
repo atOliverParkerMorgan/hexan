@@ -50,7 +50,7 @@ function preloadHtmlFiles(urls) {
                     _a.label = 2;
                 case 2:
                     _a.trys.push([2, 7, , 8]);
-                    console.log("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port, "/").concat(url));
+                    console.log("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port, ":").concat(window.location.port, "/").concat(url));
                     return [4 /*yield*/, fetch("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port, "/").concat(url))];
                 case 3:
                     response = _a.sent();

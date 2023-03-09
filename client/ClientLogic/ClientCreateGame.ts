@@ -4,7 +4,7 @@ import {ClientSocket} from "./ClientSocket.js";
 async function preloadHtmlFiles(urls: string[]){
     for (const url of urls) {
         try {
-            console.log(`${window.location.protocol}//${window.location.hostname}:${window.location.port}/${url}`)
+            console.log(`${window.location.protocol}//${window.location.hostname}:${window.location.port}:${window.location.port}/${url}`)
             const response = await fetch(`${window.location.protocol}//${window.location.hostname}:${window.location.port}/${url}`);
             const html = await response.text();
             // Cache the HTML in the browser
