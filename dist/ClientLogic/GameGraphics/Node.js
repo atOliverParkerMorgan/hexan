@@ -93,10 +93,14 @@ var Node = /** @class */ (function () {
         this.hex.endFill();
         this.hex.interactive = true;
         this.hex.button = true;
+        this.hex.on('mouseover', function () { _this.setHovered(false); });
         this.hex.on('click', function () {
             _this.onClick();
         });
-        this.hex.on('mouseover', function () { _this.setHovered(); });
+        this.hex.on('tap', function () {
+            _this.setHovered(true);
+            _this.onClick();
+        });
         viewport.addChild(this.hex);
         this.showCity(this.city);
         // draw node sprite
@@ -317,11 +321,13 @@ var Node = /** @class */ (function () {
         }
         viewport.addChild(Node.selected_line);
     };
-    Node.prototype.setHovered = function () {
+    Node.prototype.setHovered = function (is_mobile) {
         var _a, _b, _c;
         function setLastNodeHovered(this_node) {
             Node.last_hovered_node = this_node;
-            this_node.opacity = .5;
+            if (!is_mobile) {
+                this_node.opacity = .5;
+            }
             this_node.update();
         }
         // restores last node to original value
