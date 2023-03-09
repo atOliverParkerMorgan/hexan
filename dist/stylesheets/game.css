@@ -1,13 +1,9 @@
-*{
+
+
+.bodyGame, .htmlGame{
+  --gutter: 5px;
   padding: 0;
   overflow:hidden;
-}
-:root {
-  --gutter: 5px;
-}
-
-body, html{
-  background: #0880a1; /* fallback for old browsers */
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -18,9 +14,9 @@ body, html{
 
 /* Load images into cache */
 
-body:after{
-  position:absolute; z-index:-1;
-  content: url(../images/attack.png);
+.bodyGame:after{
+  content:"";
+  url(../images/attack.png);
   url(../images/city.png);
   url(../images/favicon.png);
   url(../images/mountains.png);
@@ -49,10 +45,7 @@ body:after{
 
 
 .app {
-  padding: var(--gutter) 0;
   display: grid;
-  grid-gap: var(--gutter) 0;
-  grid-template-columns: var(--gutter) 1fr var(--gutter);
   align-content: start;
 }
 
@@ -66,14 +59,11 @@ body:after{
 
 .hs {
   display: grid;
-  grid-gap: calc(var(--gutter) / 2);
-  grid-template-columns: 10px repeat(6, calc(50% - var(--gutter) * 2)) 10px;
   grid-template-rows: minmax(100px, 1fr);
 
   overflow-x: scroll;
   scroll-snap-type: x proximity;
-  padding-bottom: calc(.75 * var(--gutter));
-  margin-bottom: calc(-.5 * var(--gutter));
+
 }
 
 .hs:before,
@@ -84,7 +74,6 @@ body:after{
 /* Hide scrollbar */
 .hide-scroll {
   overflow-y: hidden;
-  margin-bottom: calc(-.1 * var(--gutter));
 }
 
 
@@ -102,7 +91,6 @@ h3 {
 .hs > li,
 .item {
   scroll-snap-align: center;
-  padding: calc(var(--gutter) / 2 * 1.5);
   display: flex;
   flex-direction: column;
   justify-content: center;

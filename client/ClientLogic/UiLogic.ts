@@ -10,6 +10,7 @@ import {
     WORLD_HEIGHT,
     WORLD_WIDTH
 } from "./GameGraphics/Pixi.js";
+import {loadFile} from "./ClientCreateGame.js";
 import {Interval} from "./GameGraphics/Interval.js";
 
 export let renderer: any;
@@ -19,7 +20,6 @@ let current_city: any;
 let is_mouse_on_city_menu = false;
 let are_listeners_added = false;
 
-const unit_item_menu = loadFile("/views/unit_item.html");
 // hot keys
 document.addEventListener("keydown", (event)=>{
     if(event.key === "Escape"){
@@ -232,12 +232,17 @@ function showCityData(city: any){
    for(const unit of Player.production_units){
        let unit_html  = document.createElement("li");
        unit_html.className = "w3-bar";
-       unit_html.innerHTML = unit_item_menu;
+       loadFile("/views/unit_item.html").then((html_file)=>{
+           if (html_file != null) {
+               unit_html.innerHTML = html_file;
+           }
 
-       unit_html = setUnitData(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.attack, unit.health, unit.range, unit.movement, unit.cost);
+           unit_html = setUnitData(unit_html, unit.name, "/images/"+unit.name.toLowerCase()+".png", unit.type, unit.attack, unit.health, unit.range, unit.movement, unit.cost);
 
-       ul_unit_menu.appendChild(unit_html);
-       div_side_menu.appendChild(ul_unit_menu)
+           ul_unit_menu.appendChild(unit_html);
+           div_side_menu.appendChild(ul_unit_menu)
+       });
+
    }
 }
 
@@ -529,17 +534,4 @@ export function showModal(title: string, message: string, w3_color_classname: st
     (<HTMLInputElement>document.getElementById("modal_title")).innerText = title;
     (<HTMLInputElement>document.getElementById("modal_message")).innerText = message;
     (<HTMLInputElement>document.getElementById("modal_header")).classList.add(w3_color_classname);
-}
-
-function loadFile(filePath: string):string {
-    let result: string | null = null;
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", filePath, false);
-    xhr.send();
-    if (xhr.status===200) {
-        result = xhr.responseText;
-    }else{
-        return ""
-    }
-    return result;
 }

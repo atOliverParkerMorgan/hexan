@@ -1,16 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
 
-*,
-*::after,
-*::before {
-    margin: 0;
-    padding: 0;
-    box-sizing: inherit;
-    font-size: 62.5%;
-}
 
-
-body {
+.bodyIndex {
     height: 100vh;
     width: 100%;
     background: #0f2027; /* fallback for old browsers */

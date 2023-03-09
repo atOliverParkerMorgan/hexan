@@ -182,10 +182,17 @@ export class Node{
         this.hex.interactive = true;
         this.hex.button = true;
 
+
+        this.hex.on('mouseover', () => { this.setHovered(false) });
+
         this.hex.on('click', () => {
             this.onClick();
         });
-        this.hex.on('mouseover', () => { this.setHovered() });
+
+        this.hex.on('tap', () => {
+            this.setHovered(true);
+            this.onClick();
+        })
 
         viewport.addChild(this.hex);
 
@@ -444,10 +451,12 @@ export class Node{
         viewport.addChild(Node.selected_line);
     }
 
-    setHovered(){
+    setHovered(is_mobile: boolean){
         function setLastNodeHovered(this_node: Node){
             Node.last_hovered_node = this_node;
-            this_node.opacity = .5;
+            if(!is_mobile) {
+                this_node.opacity = .5;
+            }
             this_node.update();
 
         }

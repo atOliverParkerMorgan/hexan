@@ -1,5 +1,22 @@
-import {XMLHttpRequest} from "aws-sdk/lib/http_response";
 import {ClientSocket} from "./ClientSocket.js";
+
+// Preload the HTML file
+async function preloadHtmlFiles(urls: string[]){
+    for (const url of urls) {
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            // Cache the HTML in the browser
+            const cache = await window.caches.open("html-preload");
+            await cache.put(url, new Response(html));
+            console.log(`HTML file ${url} preloaded successfully.`);
+
+        } catch (error: any) {
+            console.error(`Error preloading HTML file ${url}: ${error.message}`);
+        }
+    }
+}
+
 
 export let interval_id_timer: any;
 export function settingsLogicInit(){
@@ -76,37 +93,41 @@ export function settingsLogicInit(){
     const game_mode_rules = document.getElementById("game_mode_rules");
     game_mode_rules?.addEventListener("click",  function onEvent() {
             const main_div: any = document.getElementById("app");
-            main_div.innerHTML = loadFile("/views/gameRules.html");
-            const rulesBackArrow: any = document.getElementById("rulesBackArrow");
+            loadFile("/views/gameRules.html").then((html_file)=>{
+                main_div.innerHTML = html_file;
+                const rulesBackArrow: any = document.getElementById("rulesBackArrow");
 
-            (<HTMLInputElement>rulesBackArrow).onclick = () => {
-                const main_div: any = document.getElementById("app");
-                main_div.innerHTML = loadFile("/views/gameSettings.html");
-                settingsLogicInit()
-            }
+                (<HTMLInputElement>rulesBackArrow).onclick = () => {
+                    const main_div: any = document.getElementById("app");
+                    loadFile("/views/gameSettings.html").then((html_file)=>{
+                            main_div.innerHTML = html_file;
+                            settingsLogicInit()
+                    });
+                }
 
-            const enButton: any = document.getElementById("enButton");
-            const czButton: any = document.getElementById("czButton");
+                const enButton: any = document.getElementById("enButton");
+                const czButton: any = document.getElementById("czButton");
 
 
-            enButton.onclick = () =>{
-                (<any> document).getElementById('cs').style.display='none';
-                (<any> document).getElementById('en').style.display='block';
-                enButton.classList.remove("w3-red");
-                enButton.classList.add("w3-green");
-                czButton.classList.remove("w3-green");
-                czButton.classList.add("w3-red");
-            }
+                enButton.onclick = () =>{
+                    (<any> document).getElementById('cs').style.display='none';
+                    (<any> document).getElementById('en').style.display='block';
+                    enButton.classList.remove("w3-red");
+                    enButton.classList.add("w3-green");
+                    czButton.classList.remove("w3-green");
+                    czButton.classList.add("w3-red");
+                }
 
-            czButton.onclick = () => {
-                (<any> document).getElementById('cs').style.display='block';
-                (<any> document).getElementById('en').style.display='none';
-                czButton.classList.remove("w3-red");
-                czButton.classList.add("w3-green");
-                enButton.classList.remove("w3-green");
-                enButton.classList.add("w3-red");
+                czButton.onclick = () => {
+                    (<any> document).getElementById('cs').style.display='block';
+                    (<any> document).getElementById('en').style.display='none';
+                    czButton.classList.remove("w3-red");
+                    czButton.classList.add("w3-green");
+                    enButton.classList.remove("w3-green");
+                    enButton.classList.add("w3-red");
 
-            }
+                }
+            });
         }
     )
 
@@ -120,28 +141,32 @@ export function settingsLogicInit(){
 
             let friend_code: any;
             const main_div: any = document.getElementById("app");
-            main_div.innerHTML = loadFile("/views/friendSettings.html");
+           loadFile("/views/friendSettings.html").then((html_file)=>{
+               main_div.innerHTML = html_file;
+                // arrow back logic
+                const friendSettingsBackArrow: any = document.getElementById("friendBackArrow");
+                (<HTMLInputElement>friendSettingsBackArrow).onclick = () => {
+                    const main_div: any = document.getElementById("app");
+                    loadFile("/views/gameSettings.html").then((html_file)=>{
+                        main_div.innerHTML = html_file;
+                        settingsLogicInit();
+                    });
 
-            // arrow back logic
-            const friendSettingsBackArrow: any = document.getElementById("friendBackArrow");
-            (<HTMLInputElement>friendSettingsBackArrow).onclick = () => {
-                const main_div: any = document.getElementById("app");
-                main_div.innerHTML = loadFile("/views/gameSettings.html");
-                settingsLogicInit()
-            }
+                }
 
 
-            // connect
-            ClientSocket.connect();
-            ClientSocket.socket.on("connect", ()=>{
-                friend_code = ClientSocket.socket.id.substring(0, 5);
-                (<HTMLInputElement>document.getElementById("code")).innerText =  ClientSocket.socket.id.substring(0, 5);;
-                ClientSocket.sendData(ClientSocket.request_types.GENERATE_FRIEND_TOKEN,
-                    {
-                        map_size: map_size
-                    })
-                ClientSocket.addDataListener();
-            })
+                // connect
+                ClientSocket.connect();
+                ClientSocket.socket.on("connect", ()=>{
+                    friend_code = ClientSocket.socket.id.substring(0, 5);
+                    (<HTMLInputElement>document.getElementById("code")).innerText =  ClientSocket.socket.id.substring(0, 5);
+                    ClientSocket.sendData(ClientSocket.request_types.GENERATE_FRIEND_TOKEN,
+                        {
+                            map_size: map_size
+                        })
+                    ClientSocket.addDataListener();
+                })
+            });
 
         const copy_button: HTMLElement | null = document.getElementById("copy_button");
         if(copy_button != null) {
@@ -156,7 +181,6 @@ export function settingsLogicInit(){
                     .catch(()=>{
                         console.error("Error, something went wrong")
                 });
-
             }
         }
 
@@ -184,9 +208,11 @@ export function settingsLogicInit(){
         localStorage.removeItem("nickname");
 
         const main_div: any = document.getElementById("app");
-        main_div.innerHTML = loadFile("/views/nicknameSettings.html");
-        (<any>document.getElementById("nick_input")).value = currentNickname;
-        checkForNicknameInput();
+        loadFile("/views/nicknameSettings.html").then((html_file)=>{
+            main_div.innerHTML = html_file;
+            (<any>document.getElementById("nick_input")).value = currentNickname;
+            checkForNicknameInput();
+        });
     }
 
     // play button logic
@@ -200,36 +226,26 @@ export function settingsLogicInit(){
         const main_div: any = document.getElementById("app");
 
         // replace index.html with findingAnOpponent.html
-        main_div.innerHTML = loadFile("/views/findingAnOpponent.html");
+        loadFile("/views/findingAnOpponent.html").then((html_file)=>{
+            main_div.innerHTML = html_file;
+            // starting time
+            const start = Date.now();
+            updateTimer(main_div, start);
 
-        // starting time
-        const start = Date.now();
-        updateTimer(main_div, start);
+            // update the timer about every second
+            interval_id_timer = setInterval(() => updateTimer(main_div, start), 1000);
 
-        // update the timer about every second
-        interval_id_timer = setInterval(() => updateTimer(main_div, start), 1000);
+            ClientSocket.connect();
 
-        ClientSocket.connect();
-
-        // if (game_mode === GAME_MODE_AI) {
-        //     (<HTMLInputElement>document.querySelector("#title")).textContent = "LOADING AI";
-        //
-        //     console.log("LOADING AI");
-        //     ClientSocket.addDataListener()
-        //     ClientSocket.sendData(ClientSocket.request_types.FIND_AI_OPPONENT,
-        //         {
-        //             map_size: map_size
-        //         });
-        // }
-
-        if (game_mode === GAME_MODE_1v1) {
-            console.log("LOADING 1v1");
-            ClientSocket.addDataListener()
-            ClientSocket.sendData(ClientSocket.request_types.FIND_1v1_OPPONENT,
-                {
-                    map_size: map_size
-                });
-        }
+            if (game_mode === GAME_MODE_1v1) {
+                console.log("LOADING 1v1");
+                ClientSocket.addDataListener()
+                ClientSocket.sendData(ClientSocket.request_types.FIND_1v1_OPPONENT,
+                    {
+                        map_size: map_size
+                    });
+            }
+        });
     };
 }
 
@@ -250,8 +266,10 @@ function checkForNicknameInput() {
     // load right away if a nickname exists
     if(localStorage.getItem("nickname") != null){
         const main_div: any = document.getElementById("app");
-        main_div.innerHTML = loadFile("/views/gameSettings.html");
-        settingsLogicInit()
+        loadFile("/views/gameSettings.html").then((html_file)=> {
+           main_div.innerHTML = html_file;
+           settingsLogicInit();
+        });
     }
 
     const nick_input: any = document.getElementById("nick_input");
@@ -260,23 +278,51 @@ function checkForNicknameInput() {
             if (event.key === "Enter" && nick_input.value.length > 0) {
                 localStorage.setItem("nickname", nick_input.value);
                 const main_div: any = document.getElementById("app");
-                main_div.innerHTML = loadFile("/views/gameSettings.html");
-                settingsLogicInit()
+                loadFile("/views/gameSettings.html").then((html_file)=> {
+                    main_div.innerHTML = html_file;
+                    settingsLogicInit();
+                });
+
             }
         });
     }
 }
 
-export function loadFile(filePath: string) {
-    let result = null;
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", filePath, false);
-    xhr.send();
-    if (xhr.status===200) {
-        result = xhr.responseText;
+// export function loadFile(filePath: string) {
+//     let result = null;
+//     let xhr = new XMLHttpRequest();
+//     xhr.open("GET", filePath, false);
+//     xhr.send();
+//     if (xhr.status===200) {
+//         result = xhr.responseText;
+//     }
+//     return result;
+// }
+
+// Get the HTML data from cache
+export async function loadFile(url: string){
+    try {
+        // Search for the cached HTML file
+        const cache = await window.caches.open('html-preload');
+        const cachedResponse = await cache.match(url);
+        if (!cachedResponse) {
+            console.log(`HTML file ${url} not found in cache.`);
+            return null;
+        }
+        // Return the HTML data
+        const htmlData = await cachedResponse.text();
+        console.log(`HTML file ${url} retrieved successfully from cache.`);
+        return htmlData;
+    } catch (error: any) {
+        console.error(`Error retrieving HTML file ${url} from cache: ${error.message}`);
+        return null;
     }
-    return result;
 }
 
-// check for input by default because index page starts on nickname input
-checkForNicknameInput();
+// preload all files
+preloadHtmlFiles(['/views/gameSettings.html', '/views/friendSettings.html', '/views/gameRules.html', '/views/findingAnOpponent.html', '/views/nicknameSettings.html', '/views/unit_item.html', '/views/game.html']).then(()=>{
+    (<any>document.getElementById("loading")).style.display = 'none';
+    (<any>document.getElementById("nick_input_form")).style.display = 'block';
+    // check for input by default because index page starts on nickname input
+    checkForNicknameInput();
+})

@@ -1,131 +1,129 @@
-<!-- technology tree -->
-
-
-<link rel="stylesheet" href="/stylesheets/game.css">
-
-<div id="city_side_menu" class="w3-sidebar w3-container" onclick="" style="width:400px; right:0; visibility: hidden">
-    <button id="hide_city_menu_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
-    <h1 id="city_name" class="w3-center w3-container w3-card w3-wide w3-padding-16"></h1>
-    <div class="w3-container w3-card w3-center w3-padding-8">
-        <div class="w3-center">
-            <br>
-            <img src="/images/city.png" width="300px" alt="City image">
-            <hr>
-            <h5>Harvested nodes: <span  id="number_of_harvested_nodes"></span></h5>
-            <div style="height: 8px"></div>
-        </div>
-    </div>
-    <br>
-    <h3 id="unit_title" class="w3-center w3-container w3-card ">Units: </h3>
-    <ul id="unit_menu"></ul>
-</div>
-
-<div id="unit_info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 200px; visibility: hidden">
-    <button id="hide_unit_info_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
-    <div class="w3-row">
-        <div class="w3-container w3-col s6 m6 l6">
-            <div class="w3-center" style="padding-top: 8px">
-                <img id="unit_info_image" class="w3-round-large" style="width: 90px; margin-bottom: 20px" alt="Unit image">
-                <div>
-                    <div class="w3-container" >
-                        <div id="action_button" class="w3-button w3-ripple w3-white w3-border w3-border-black w3-round-large">
-                            <div><img id="action_image" style='vertical-align: middle; width: 30px' /> <span class="w3-text-black" id="action_button_text"></span></div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        <div class="w3-container w3-col s6 m6 l6" style="padding-top: 24px">
-            <div id="unit_info_title" class="w3-wide" ><h2>Warrior</h2></div>
-            <div id="unit_info_information" style="padding-top: 16px"><h5>stats: </h5></div>
-            <img id="unit_info_attack_image" src="/images/attack.png" width="25px">: <span id="unit_info_attack_data"></span>
-            <img id="unit_info_health_image" src="/images/health.png" style="padding-left: 8px" width="28px">: <span id="unit_info_health_data"></span>
-            <div></div>
-            <img id="unit_info_range_image" src="/images/range.png" width="25px">: <span id="unit_info_range_data"></span>
-            <img id="unit_info_movement_image" src="/images/movement.png" style="padding-left: 4px" width="25px">: <span id="unit_info_movement_data"></span>
-
-
-        </div>
-    </div>
-</div>
-
-<div id="node_info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 250px; visibility: hidden">
-    <button id="hide_node_info_button" class="w3-xxlarge w3-button" style="position: absolute; right: 0; top: 0; padding: 5px">×</button>
-    <div class="w3-row">
-        <div class="w3-container w3-col s6 m6 l6">
-            <div class="w3-center" style="padding-top: 8px">
-                <img id="node_info_image" style="width: 150px; margin-bottom: 10px" alt="Unit image">
-                <div>
-                    <div class="w3-container" >
-                        <div id="harvest_button" class="w3-button w3-ripple  w3-border w3-border-black w3-round-large">
-                            <div><span class="w3-text-white" id="harvest_button_text">Pay <img src="/images/star.png" style="width: 20px; padding-bottom: 5px; padding-left: 5px;: 5px;padding-right: 5px" alt="stars image"><span id="harvest_cost"></span></span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="w3-container w3-col s6 m6 l6" style="padding-top: 24px; padding-right: 10px">
-            <div id="node_info_title" class="w3-wide" ><h2></h2></div>
-            <div id="node_info_information" style="padding-top: 16px">
-                Gain <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"> <span id="gain_stars"></span> / min by harvesting
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<div class="w3-display-topleft w3-bar-block" id="star_info" style="width: auto; visibility: hidden">
-    <h3 class="w3-container">
-        Total stars: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-right: 5px; padding-bottom: 5px;" alt="star image"><span  id="total_owned_stars" style="padding-right: 5px"></span> <span style="padding-left: 6px; padding-right: 6px"></span> Productivity: <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"><span id="star_production" style="padding-right: 5px"></span> / min <br>
-        <span id="star_loading_bar"></span> <span style="position: absolute; top: 34px; left: 180px ">|</span>
-    </h3>
-
-</div>
-
-<!-- Tech tree image -->
-<div class="w3-display-bottomleft w3-bar-block" id="tech_button" style="width: auto">
-    <span><span class="w3-button w3-round w3-padding-8 w3-blue"><img src="/images/tech_tree.png"></span></span>
-</div>
-
-<div id="tech_tree_container"></div>
-
-
-<!-- Modal -->
-<div class="w3-container">
-    <div id="modal" class="w3-modal w3-display-middle">
-        <div class="w3-modal-content w3-animate-top w3-card-4">
-            <header id="modal_header" class="w3-container w3-center w3-padding-16">
-            <span onclick="document.getElementById('modal').style.display='none'"
-                  class="w3-button w3-display-topright">&times;</span>
-                <h2 id="modal_title" class="w3-wide w3-center"></h2>
+<div class="bodyGame">
+    <!-- technology tree -->
+    <div id="city_side_menu" class="w3-sidebar w3-container" onclick="" style="width:400px; right:0; visibility: hidden">
+        <button id="hide_city_menu_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
+        <h1 id="city_name" class="w3-center w3-container w3-card w3-wide w3-padding-16"></h1>
+        <div class="w3-container w3-card w3-center w3-padding-8">
+            <div class="w3-center">
+                <br>
+                <img src="/images/city.png" width="300px" alt="City image">
                 <hr>
-            </header>
-            <br>
-            <div class="w3-container w3-center" id="modal_message">
+                <h5>Harvested nodes: <span  id="number_of_harvested_nodes"></span></h5>
+                <div style="height: 8px"></div>
             </div>
-            <br>
+        </div>
+        <br>
+        <h3 id="unit_title" class="w3-center w3-container w3-card ">Units: </h3>
+        <ul id="unit_menu"></ul>
+    </div>
+
+    <div id="unit_info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 200px; visibility: hidden">
+        <button id="hide_unit_info_button" class="w3-xxlarge w3-button" style="position: absolute; right:15px; top: 0">×</button>
+        <div class="w3-row">
+            <div class="w3-container w3-col s6 m6 l6">
+                <div class="w3-center" style="padding-top: 8px">
+                    <img id="unit_info_image" class="w3-round-large" style="width: 90px; margin-bottom: 20px" alt="Unit image">
+                    <div>
+                        <div class="w3-container" >
+                            <div id="action_button" class="w3-button w3-ripple w3-white w3-border w3-border-black w3-round-large">
+                                <div><img id="action_image" style='vertical-align: middle; width: 30px' /> <span class="w3-text-black" id="action_button_text"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="w3-container w3-col s6 m6 l6" style="padding-top: 24px">
+                <div id="unit_info_title" class="w3-wide" ><h2>Warrior</h2></div>
+                <div id="unit_info_information" style="padding-top: 16px"><h5>stats: </h5></div>
+                <img id="unit_info_attack_image" src="/images/attack.png" width="25px">: <span id="unit_info_attack_data"></span>
+                <img id="unit_info_health_image" src="/images/health.png" style="padding-left: 8px" width="28px">: <span id="unit_info_health_data"></span>
+                <div></div>
+                <img id="unit_info_range_image" src="/images/range.png" width="25px">: <span id="unit_info_range_data"></span>
+                <img id="unit_info_movement_image" src="/images/movement.png" style="padding-left: 4px" width="25px">: <span id="unit_info_movement_data"></span>
+
+
+            </div>
         </div>
     </div>
-</div>
+
+    <div id="node_info_menu" class="w3-container w3-card w3-white w3-round-large" style="position: absolute; right: 0; bottom: 0; width: 400px; height: 250px; visibility: hidden">
+        <button id="hide_node_info_button" class="w3-xxlarge w3-button" style="position: absolute; right: 0; top: 0; padding: 5px">×</button>
+        <div class="w3-row">
+            <div class="w3-container w3-col s6 m6 l6">
+                <div class="w3-center" style="padding-top: 8px">
+                    <img id="node_info_image" style="width: 150px; margin-bottom: 10px" alt="Unit image">
+                    <div>
+                        <div class="w3-container" >
+                            <div id="harvest_button" class="w3-button w3-ripple  w3-border w3-border-black w3-round-large">
+                                <div><span class="w3-text-white" id="harvest_button_text">Pay <img src="/images/star.png" style="width: 20px; padding-bottom: 5px; padding-left: 5px;: 5px;padding-right: 5px" alt="stars image"><span id="harvest_cost"></span></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-container w3-col s6 m6 l6" style="padding-top: 24px; padding-right: 10px">
+                <div id="node_info_title" class="w3-wide" ><h2></h2></div>
+                <div id="node_info_information" style="padding-top: 16px">
+                    Gain <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"> <span id="gain_stars"></span> / min by harvesting
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="w3-display-topleft w3-bar-block" id="star_info" style="width: auto; visibility: hidden">
+        <h3 class="w3-container">
+            Total stars: <img src="/images/star.png" style="width: 25px; padding-left: 5px; padding-right: 5px; padding-bottom: 5px;" alt="star image"><span  id="total_owned_stars" style="padding-right: 5px"></span> <span style="padding-left: 6px; padding-right: 6px"></span> Productivity: <img src="/images/star.png" style="width: 25px;padding-left: 5px; padding-right: 5px; padding-bottom: 5px; " alt="star image"><span id="star_production" style="padding-right: 5px"></span> / min <br>
+            <span id="star_loading_bar"></span> <span style="position: absolute; top: 34px; left: 180px ">|</span>
+        </h3>
+
+    </div>
+
+    <!-- Tech tree image -->
+    <div class="w3-display-bottomleft w3-bar-block" id="tech_button" style="width: auto">
+        <span><span class="w3-button w3-round w3-padding-8 w3-blue"><img src="/images/tech_tree.png"></span></span>
+    </div>
+
+    <div id="tech_tree_container"></div>
 
 
-<!-- Game over modal -->
-<div class="w3-container">
-    <div id="game_over_modal" class="w3-modal w3-display-middle">
-        <div class="w3-modal-content w3-animate-top">
-            <header id="game_over_modal_header" class="w3-container w3-center w3-padding-16">
-                <h1 id="game_over_modal_title" class="w3-wide w3-center"></h1>
-            </header>
-            <br>
-            <br>
-            <h5 class="w3-container w3-center" id="game_over_modal_message">
-            </h5>
-            <br>
-            <br>
-            <br>
-            <div class="w3-container w3-center"><button id="play_again" class="w3-button w3-round w3-green">Play Again</button><button id="view_game" class="w3-button w3-round w3-indigo">View Game</button></div>
+    <!-- Modal -->
+    <div class="w3-container">
+        <div id="modal" class="w3-modal w3-display-middle">
+            <div class="w3-modal-content w3-animate-top w3-card-4">
+                <header id="modal_header" class="w3-container w3-center w3-padding-16">
+                <span onclick="document.getElementById('modal').style.display='none'"
+                      class="w3-button w3-display-topright">&times;</span>
+                    <h2 id="modal_title" class="w3-wide w3-center"></h2>
+                    <hr>
+                </header>
+                <br>
+                <div class="w3-container w3-center" id="modal_message">
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
 
+
+    <!-- Game over modal -->
+    <div class="w3-container">
+        <div id="game_over_modal" class="w3-modal w3-display-middle">
+            <div class="w3-modal-content w3-animate-top">
+                <header id="game_over_modal_header" class="w3-container w3-center w3-padding-16">
+                    <h1 id="game_over_modal_title" class="w3-wide w3-center"></h1>
+                </header>
+                <br>
+                <br>
+                <h5 class="w3-container w3-center" id="game_over_modal_message">
+                </h5>
+                <br>
+                <br>
+                <br>
+                <div class="w3-container w3-center"><button id="play_again" class="w3-button w3-round w3-green">Play Again</button><button id="view_game" class="w3-button w3-round w3-indigo">View Game</button></div>
+
+            </div>
         </div>
     </div>
 </div>

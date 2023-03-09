@@ -93,7 +93,6 @@ export function aStar(start_node, goal_node) {
     return null;
 }
 export function initCanvas(map, cities) {
-    setupTechTreeButton();
     if (viewport != null) {
         Node.all_nodes = [];
         return;
@@ -136,16 +135,20 @@ export function initGame(player_token, game_token) {
     // init game
     var main_div = document.getElementById("app");
     //replace index.html with game.html
-    main_div.innerHTML = loadFile("/views/game.html");
-    localStorage.setItem("player_token", player_token);
-    localStorage.setItem("game_token", game_token);
-    clearInterval(Interval.update_stars_interval_id);
-    clearInterval(interval_id_timer);
-    // the typescript hasn't provided a token for the public
-    if (player_token == null || game_token == null) {
-        return;
-    }
-    ClientSocket.sendData(ClientSocket.request_types.GET_ALL, {});
+    loadFile("/views/game.html").then(function (html_file) {
+        main_div.innerHTML = html_file;
+        localStorage.setItem("player_token", player_token);
+        localStorage.setItem("game_token", game_token);
+        clearInterval(Interval.update_stars_interval_id);
+        clearInterval(interval_id_timer);
+        // the typescript hasn't provided a token for the public
+        if (player_token == null || game_token == null) {
+            return;
+        }
+        setupTechTreeButton();
+        main_div.style.background = "#0880a1";
+        ClientSocket.sendData(ClientSocket.request_types.GET_ALL, {});
+    });
 }
 export function updateBoard() {
     var args = [];

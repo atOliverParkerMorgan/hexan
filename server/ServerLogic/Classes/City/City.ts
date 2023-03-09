@@ -34,8 +34,8 @@ export default class City implements CityInterface {
         "Hosborough","Middlemouth Falls","East Parkness","Seabury","Baycaster City","Eggville","Southingmouth","Winterland",
         "Waltworth","South Saystead","Kingport","Weirbrough","Jamesbrough","Clamburg","Lunaside","Hapland","Fishgrad","Hapfolk",
         "North Backdale","Northworth","Prodale","Westley","Middleworth","North Factford","Tallbury Hills","Sugarburg","Bayham",
-        "Farmingborough","Angerport","Cloudstead","New Fairfield","Hogview","Sweettown","Lunport","Luntown","Farmland","Sweetfield"
-        ,"Angerdol","Halldale","Sugardale","New Saltcaster","Melwich","Gilby","Hallham","Daydale City","Sugarwich","East Valenkarta","Buoyworth"
+        "Farmingborough","Angerport","Cloudstead","New Fairfield","Hogview","Sweettown","Lunport","Luntown","Farmland","Sweetfield",
+        "Angerdol","Halldale","Sugardale","New Saltcaster","Melwich","Gilby","Hallham","Daydale City","Sugarwich","East Valenkarta","Buoyworth"
     ];
 
 

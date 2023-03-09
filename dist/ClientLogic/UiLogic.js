@@ -4,13 +4,13 @@ import { Node } from "./GameGraphics/Node.js";
 import { Player } from "./GameGraphics/Player.js";
 import { Technology, graph, interaction_nodes_values } from "./GameGraphics/Technology/Technology.js";
 import { DISTANCE_BETWEEN_HEX, HEX_SIDE_SIZE, tech_tree_root, viewport, WORLD_HEIGHT, WORLD_WIDTH } from "./GameGraphics/Pixi.js";
+import { loadFile } from "./ClientCreateGame.js";
 import { Interval } from "./GameGraphics/Interval.js";
 export var renderer;
 export var current_node;
 var current_city;
 var is_mouse_on_city_menu = false;
 var are_listeners_added = false;
-var unit_item_menu = loadFile("/views/unit_item.html");
 // hot keys
 document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
@@ -184,15 +184,22 @@ function showCityData(city) {
     if (Player.production_units.length === 0) {
         div_side_menu.querySelector("#unit_title").visibility = "hidden";
     }
+    var _loop_1 = function (unit) {
+        var unit_html = document.createElement("li");
+        unit_html.className = "w3-bar";
+        loadFile("/views/unit_item.html").then(function (html_file) {
+            if (html_file != null) {
+                unit_html.innerHTML = html_file;
+            }
+            unit_html = setUnitData(unit_html, unit.name, "/images/" + unit.name.toLowerCase() + ".png", unit.type, unit.attack, unit.health, unit.range, unit.movement, unit.cost);
+            ul_unit_menu.appendChild(unit_html);
+            div_side_menu.appendChild(ul_unit_menu);
+        });
+    };
     // unit item
     for (var _i = 0, _a = Player.production_units; _i < _a.length; _i++) {
         var unit = _a[_i];
-        var unit_html = document.createElement("li");
-        unit_html.className = "w3-bar";
-        unit_html.innerHTML = unit_item_menu;
-        unit_html = setUnitData(unit_html, unit.name, "/images/" + unit.name.toLowerCase() + ".png", unit.type, unit.attack, unit.health, unit.range, unit.movement, unit.cost);
-        ul_unit_menu.appendChild(unit_html);
-        div_side_menu.appendChild(ul_unit_menu);
+        _loop_1(unit);
     }
 }
 function setUnitData(unit_html, unit_name, src, type, attack, health, range, movement, cost) {
@@ -434,17 +441,4 @@ export function showModal(title, message, w3_color_classname) {
     document.getElementById("modal_title").innerText = title;
     document.getElementById("modal_message").innerText = message;
     document.getElementById("modal_header").classList.add(w3_color_classname);
-}
-function loadFile(filePath) {
-    var result = null;
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", filePath, false);
-    xhr.send();
-    if (xhr.status === 200) {
-        result = xhr.responseText;
-    }
-    else {
-        return "";
-    }
-    return result;
 }

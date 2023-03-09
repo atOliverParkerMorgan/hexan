@@ -7,7 +7,14 @@
     <title>HEXAN</title>
     <!--Preload images -->
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+    <!-- Style Images -->
     <link rel="stylesheet" href="/stylesheets/w3.css">
+    <link rel="stylesheet" href="/stylesheets/index.css">
+    <link rel="stylesheet" href="/stylesheets/game.css">
+    <link rel="stylesheet" href="/stylesheets/findingAnOpponent.css">
+    <link rel="stylesheet" href="/stylesheets/gameRules.css">
+
     <script src="https://kit.fontawesome.com/d72c9a3ca1.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="/pixi/pixi.min.js"></script>
     <script type="text/javascript" src="/pixi_extras/graphics-extras.min.js"></script>
@@ -33,15 +40,30 @@
 </head>
 
 <body id="app">
+    <div class="bodyIndex">
+        <div id="loading">
+            <link rel="stylesheet" href="/stylesheets/findingAnOpponent.css">
 
-<div class="form__group">
-    <link rel="stylesheet" href="/stylesheets/index.css">
+            <div class="wrap">
+                <div class="loading">
+                    <div class="bounceball1"></div>
+                    <div class="bounceball2"></div>
+                    <div class="bounceball3"></div>
+                    <div id="title" class="text">LOADING..</div>
+                    <hr><br>
+                </div>
+            </div>
+        </div>
 
-    <div class="title">HEXAN</div>
-    <input type="text" class="form__input" id="nick_input" maxlength="20" placeholder="nickname"/>
-    <label for="nick_input" class="form__label">Press enter to play</label>
+        <div id="nick_input_form" class="form__group" style="display: none">
+            <link rel="stylesheet" href="/stylesheets/index.css">
 
-</div>
+            <div class="title">HEXAN</div>
+            <input type="text" class="form__input" id="nick_input" maxlength="20" placeholder="nickname"/>
+            <label for="nick_input" class="form__label">Press enter to play</label>
+
+        </div>
+    </div>
 
 </body>
 

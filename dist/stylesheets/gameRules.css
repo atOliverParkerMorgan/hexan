@@ -9,7 +9,7 @@
 }
 
 
-body {
+.bodyGameRules {
     height: 100%;
     width: 100%;
     background: #0f2027; /* fallback for old browsers */
@@ -18,7 +18,7 @@ body {
     font-family: Montserrat, serif;
 }
 
-h1{
+.titleRules{
     border-bottom: 3px solid #73AD21;
     width: 50%;
     text-align: center;
@@ -27,7 +27,7 @@ h1{
     margin: auto auto 45px;
 }
 
-h2{
+.subtitleRules{
     margin-left: 26%;
     display: inline-block;
     border-bottom: 2px solid #FFFFFF;
