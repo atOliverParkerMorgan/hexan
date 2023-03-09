@@ -4,14 +4,15 @@ import {ClientSocket} from "./ClientSocket.js";
 async function preloadHtmlFiles(urls: string[]){
     for (const url of urls) {
         try {
-            const response = await fetch(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`+url);
+            console.log(`${window.location.protocol}//${window.location.hostname}:${window.location.port}/${url}`)
+            const response = await fetch(`${window.location.protocol}//${window.location.hostname}:${window.location.port}/${url}`);
             const html = await response.text();
             // Cache the HTML in the browser
             const cache = await window.caches.open("html-preload");
             await cache.put(url, new Response(html));
 
         } catch (error: any) {
-            console.error(`Error preloading HTML file ${url}: ${error.message}`);
+            console.error(`Error preloading HTML file ${window.location.protocol}//${window.location.hostname}:${window.location.port}: ${error.message}`);
         }
     }
 }
@@ -315,7 +316,7 @@ export async function loadFile(url: string){
 }
 
 // preload all files
-preloadHtmlFiles(['/views/gameSettings.html', '/views/friendSettings.html', '/views/gameRules.html', '/views/findingAnOpponent.html', '/views/nicknameSettings.html', '/views/unit_item.html', '/views/game.html']).then(()=>{
+preloadHtmlFiles(['views/gameSettings.html', 'views/friendSettings.html', 'views/gameRules.html', 'views/findingAnOpponent.html', 'views/nicknameSettings.html', 'views/unit_item.html',  'views/game.html']).then(()=>{
     (<any>document.getElementById("loading")).style.display = 'none';
     (<any>document.getElementById("nick_input_form")).style.display = 'block';
     // check for input by default because index page starts on nickname input

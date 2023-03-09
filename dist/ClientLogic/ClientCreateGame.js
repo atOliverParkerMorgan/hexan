@@ -50,7 +50,8 @@ function preloadHtmlFiles(urls) {
                     _a.label = 2;
                 case 2:
                     _a.trys.push([2, 7, , 8]);
-                    return [4 /*yield*/, fetch("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port) + url)];
+                    console.log("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port, "/").concat(url));
+                    return [4 /*yield*/, fetch("".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port, "/").concat(url))];
                 case 3:
                     response = _a.sent();
                     return [4 /*yield*/, response.text()];
@@ -65,7 +66,7 @@ function preloadHtmlFiles(urls) {
                     return [3 /*break*/, 8];
                 case 7:
                     error_1 = _a.sent();
-                    console.error("Error preloading HTML file ".concat(url, ": ").concat(error_1.message));
+                    console.error("Error preloading HTML file ".concat(window.location.protocol, "//").concat(window.location.hostname, ":").concat(window.location.port, ": ").concat(error_1.message));
                     return [3 /*break*/, 8];
                 case 8:
                     _i++;
@@ -335,7 +336,7 @@ export function loadFile(url) {
     });
 }
 // preload all files
-preloadHtmlFiles(['/views/gameSettings.html', '/views/friendSettings.html', '/views/gameRules.html', '/views/findingAnOpponent.html', '/views/nicknameSettings.html', '/views/unit_item.html', '/views/game.html']).then(function () {
+preloadHtmlFiles(['views/gameSettings.html', 'views/friendSettings.html', 'views/gameRules.html', 'views/findingAnOpponent.html', 'views/nicknameSettings.html', 'views/unit_item.html', 'views/game.html']).then(function () {
     document.getElementById("loading").style.display = 'none';
     document.getElementById("nick_input_form").style.display = 'block';
     // check for input by default because index page starts on nickname input
