@@ -41,6 +41,20 @@ ul{
     padding: 16px;
     font-size: 20px
 }
+@media only screen and (max-width: 600px) {
+    ul{
+        margin-left: 8px;
+        padding: 16px;
+        font-size: 20px
+    }
+    .subtitleRules{
+        margin-left: initial;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+}
 
 .arrow {
     font-size:40px;
