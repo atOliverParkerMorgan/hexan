@@ -158,7 +158,6 @@ export function settingsLogicInit(){
             // connect
             ClientSocket.connect();
             ClientSocket.socket.on("connect", ()=>{
-                friend_code = ClientSocket.socket.id.substring(0, 5);
                 (<HTMLInputElement>document.getElementById("code")).innerText =  ClientSocket.socket.id.substring(0, 5);
                 ClientSocket.sendData(ClientSocket.request_types.GENERATE_FRIEND_TOKEN,
                     {
