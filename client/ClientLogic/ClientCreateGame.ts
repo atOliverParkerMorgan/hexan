@@ -134,73 +134,71 @@ export function settingsLogicInit(){
     const game_mode_to_FRIEND_button = document.getElementById("game_mode_to_FRIEND_button");
 
     game_mode_to_FRIEND_button?.addEventListener("click",  function onEvent() {
-            changeLastSelectedButtonToRed();
-            game_mode = GAME_MODE_FRIEND;
-            game_mode_to_FRIEND_button.classList.remove("w3-red");
-            game_mode_to_FRIEND_button.classList.add("w3-green");
+        changeLastSelectedButtonToRed();
+        game_mode = GAME_MODE_FRIEND;
+        game_mode_to_FRIEND_button.classList.remove("w3-red");
+        game_mode_to_FRIEND_button.classList.add("w3-green");
 
-            let friend_code: any;
-            const main_div: any = document.getElementById("app");
-           loadFile("/views/friendSettings.html").then((html_file)=>{
-               main_div.innerHTML = html_file;
-                // arrow back logic
-                const friendSettingsBackArrow: any = document.getElementById("friendBackArrow");
-                (<HTMLInputElement>friendSettingsBackArrow).onclick = () => {
-                    const main_div: any = document.getElementById("app");
-                    loadFile("/views/gameSettings.html").then((html_file)=>{
-                        main_div.innerHTML = html_file;
-                        settingsLogicInit();
-                    });
-
-                }
-
-
-                // connect
-                ClientSocket.connect();
-                ClientSocket.socket.on("connect", ()=>{
-                    friend_code = ClientSocket.socket.id.substring(0, 5);
-                    (<HTMLInputElement>document.getElementById("code")).innerText =  ClientSocket.socket.id.substring(0, 5);
-                    ClientSocket.sendData(ClientSocket.request_types.GENERATE_FRIEND_TOKEN,
-                        {
-                            map_size: map_size
-                        })
-                    ClientSocket.addDataListener();
-                })
-            });
-
-        const copy_button: HTMLElement | null = document.getElementById("copy_button");
-        if(copy_button != null) {
-            copy_button.onclick = () => {
-                // Copy the text inside the text field
-                navigator.clipboard.writeText(friend_code)
-                    .then(() => {
-                        // change icon
-                        copy_button.classList.remove("fa-copy")
-                        copy_button.classList.add("fa-check")
-                })
-                    .catch(()=>{
-                        console.error("Error, something went wrong")
+        let friend_code: any;
+        const main_div: any = document.getElementById("app");
+        loadFile("/views/friendSettings.html").then((html_file)=>{
+            main_div.innerHTML = html_file;
+            // arrow back logic
+            const friendSettingsBackArrow: any = document.getElementById("friendBackArrow");
+            (<HTMLInputElement>friendSettingsBackArrow).onclick = () => {
+                const main_div: any = document.getElementById("app");
+                loadFile("/views/gameSettings.html").then((html_file)=>{
+                    main_div.innerHTML = html_file;
+                    settingsLogicInit();
                 });
-            }
-        }
 
-        const connect_button: any = document.getElementById("connect_button");
-        connect_button.onclick = ()=>{
-            const friend_code: any = (<HTMLInputElement>document.getElementById("friend_code")).value;
-            if(friend_code.length != 5){
-                (<HTMLInputElement>document.getElementById("error_msg")).innerText = "Invalid friend code! Must be 5 characters long.";
             }
-            else {
-                (<HTMLInputElement>document.getElementById("error_msg")).innerText = "";
 
-                ClientSocket.sendData(ClientSocket.request_types.CONNECT_WITH_FRIEND, {
-                    friend_code: friend_code
 
-                })
+            // connect
+            ClientSocket.connect();
+            ClientSocket.socket.on("connect", ()=>{
+                friend_code = ClientSocket.socket.id.substring(0, 5);
+                (<HTMLInputElement>document.getElementById("code")).innerText =  ClientSocket.socket.id.substring(0, 5);
+                ClientSocket.sendData(ClientSocket.request_types.GENERATE_FRIEND_TOKEN,
+                    {
+                        map_size: map_size
+                    })
+                ClientSocket.addDataListener();
+            });
+            const copy_button: HTMLElement | null = document.getElementById("copy_button");
+            if(copy_button != null) {
+                copy_button.onclick = () => {
+                    // Copy the text inside the text field
+                    navigator.clipboard.writeText(friend_code)
+                        .then(() => {
+                            // change icon
+                            copy_button.classList.remove("fa-copy")
+                            copy_button.classList.add("fa-check")
+                        })
+                        .catch(()=>{
+                            console.error("Error, something went wrong")
+                        });
+                }
             }
-        }
-        }
-    )
+
+            const connect_button: any = document.getElementById("connect_button");
+            connect_button.onclick = ()=>{
+                const friend_code: any = (<HTMLInputElement>document.getElementById("friend_code")).value;
+                if(friend_code.length != 5){
+                    (<HTMLInputElement>document.getElementById("error_msg")).innerText = "Invalid friend code! Must be 5 characters long.";
+                }
+                else {
+                    (<HTMLInputElement>document.getElementById("error_msg")).innerText = "";
+
+                    ClientSocket.sendData(ClientSocket.request_types.CONNECT_WITH_FRIEND, {
+                        friend_code: friend_code
+
+                    })
+                }
+            }
+        });
+    })
 
     const edit_nickname_button: any = document.getElementById("editNicknameButton");
     edit_nickname_button.onclick = ()=>{

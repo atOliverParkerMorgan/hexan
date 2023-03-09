@@ -50,12 +50,13 @@ var App;
         }
         App.httpServer = (0, http_1.createServer)(App.app);
         App.io = new socket_io_1.Server(App.httpServer);
-        // app.enable('trust proxy');
-        // app.use(function(req, res) {
-        //   if (process.env.NODE_ENV !== "development" && !req.secure) {
-        //     res.redirect('https://' + req.headers.host + req.url);
-        //   }
-        // })
+        App.app.enable('trust proxy');
+        App.app.use(function (req, res, next) {
+            if (process.env.NODE_ENV != "development" && !req.secure) {
+                res.redirect('https://' + req.headers.host + req.url);
+            }
+            next();
+        });
         initViewEngine();
         initStaticRoutes();
         initControllers();

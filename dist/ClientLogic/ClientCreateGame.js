@@ -197,35 +197,35 @@ export function settingsLogicInit() {
                 });
                 ClientSocket.addDataListener();
             });
-        });
-        var copy_button = document.getElementById("copy_button");
-        if (copy_button != null) {
-            copy_button.onclick = function () {
-                // Copy the text inside the text field
-                navigator.clipboard.writeText(friend_code)
-                    .then(function () {
-                    // change icon
-                    copy_button.classList.remove("fa-copy");
-                    copy_button.classList.add("fa-check");
-                })
-                    .catch(function () {
-                    console.error("Error, something went wrong");
-                });
+            var copy_button = document.getElementById("copy_button");
+            if (copy_button != null) {
+                copy_button.onclick = function () {
+                    // Copy the text inside the text field
+                    navigator.clipboard.writeText(friend_code)
+                        .then(function () {
+                        // change icon
+                        copy_button.classList.remove("fa-copy");
+                        copy_button.classList.add("fa-check");
+                    })
+                        .catch(function () {
+                        console.error("Error, something went wrong");
+                    });
+                };
+            }
+            var connect_button = document.getElementById("connect_button");
+            connect_button.onclick = function () {
+                var friend_code = document.getElementById("friend_code").value;
+                if (friend_code.length != 5) {
+                    document.getElementById("error_msg").innerText = "Invalid friend code! Must be 5 characters long.";
+                }
+                else {
+                    document.getElementById("error_msg").innerText = "";
+                    ClientSocket.sendData(ClientSocket.request_types.CONNECT_WITH_FRIEND, {
+                        friend_code: friend_code
+                    });
+                }
             };
-        }
-        var connect_button = document.getElementById("connect_button");
-        connect_button.onclick = function () {
-            var friend_code = document.getElementById("friend_code").value;
-            if (friend_code.length != 5) {
-                document.getElementById("error_msg").innerText = "Invalid friend code! Must be 5 characters long.";
-            }
-            else {
-                document.getElementById("error_msg").innerText = "";
-                ClientSocket.sendData(ClientSocket.request_types.CONNECT_WITH_FRIEND, {
-                    friend_code: friend_code
-                });
-            }
-        };
+        });
     });
     var edit_nickname_button = document.getElementById("editNicknameButton");
     edit_nickname_button.onclick = function () {

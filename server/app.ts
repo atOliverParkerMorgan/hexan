@@ -31,12 +31,13 @@ export namespace App {
     httpServer = createServer(app);
     io = new Server(httpServer);
 
-    // app.enable('trust proxy');
-    // app.use(function(req, res) {
-    //   if (process.env.NODE_ENV !== "development" && !req.secure) {
-    //     res.redirect('https://' + req.headers.host + req.url);
-    //   }
-    // })
+    app.enable('trust proxy');
+    app.use(function(req, res, next) {
+      if (process.env.NODE_ENV != "development" && !req.secure) {
+        res.redirect('https://' + req.headers.host + req.url);
+      }
+      next();
+    })
 
 
     initViewEngine();
