@@ -285,6 +285,7 @@ export function updateProgressBar(total_owned_stars: number){
     (<HTMLInputElement>document.getElementById("star_loading_bar")).innerText = bars;
 }
 
+
 export function createTechTree(){
     //add canvas element
 
@@ -308,29 +309,56 @@ export function createTechTree(){
 
     tech_tree_canvas.width =  TECH_TREE_CANVAS_WIDTH;
     tech_tree_canvas.height = TECH_TREE_CANVAS_HEIGHT;
+    tech_tree_canvas.style.overflow = "hidden"
     tech_tree_canvas.style.border = "solid 1px black";
     tech_tree_canvas.style.borderRadius = "border-radius: 10px";
 
-
-    tech_tree_canvas.onmousedown = ()=>{
+    function onDown(event: any){
         mouse_held = true;
+
         interaction_nodes_values.map((node_cords: (string | number | boolean)[])=>{
             // make sure that user is hovering over this node and that it isn't already purchased
             if(node_cords[5] && !node_cords[6]){
                 ClientSocket.requestBuyTechnology(<string> node_cords[0])
                 mouse_held = false;
-                return
+                return;
             }
         });
     }
 
-    tech_tree_canvas.onmousemove = (event: any)=>{
-        mouse_x = event.clientX;
-        mouse_y = event.clientY;
+    tech_tree_canvas.onmousedown = (event:any)=>{
+       onDown(event);
+    }
 
-        if (mouse_held) {
+    tech_tree_canvas.ontouchstart = (event:any)=>{
+        event.preventDefault();
+        onDown(event);
+
+    }
+
+    // ing
+    function onMove(event: any){
+        if(event.type === "touchmove"){
+            console.log("touchmove");
+            mouse_held = true;
+            let touch = event.touches[0];
+            mouse_x = touch.clientX;
+            mouse_y = touch.clientY;
+
+            console.log(touch);
+
             pan_x += old_mouse_x - mouse_x;
             pan_y += old_mouse_y - mouse_y;
+            console.log(`pan_x: ${pan_x}`)
+            console.log(`pan_y: ${pan_y}`)
+        }else{
+            mouse_x = event.clientX;
+            mouse_y = event.clientY;
+
+            if (mouse_held) {
+                pan_x += old_mouse_x - mouse_x;
+                pan_y += old_mouse_y - mouse_y;
+            }
         }
         const x = mouse_x - TECH_TREE_CANVAS_WIDTH/2;
         const y = mouse_y - TECH_TREE_CANVAS_HEIGHT/2;
@@ -339,7 +367,8 @@ export function createTechTree(){
         interaction_nodes_values.map((node_cords: (string | number | boolean)[])=>{
             if(node_cords[1] < x && node_cords[2] < y && node_cords[3] > x && node_cords[4] > y){
                 node_cords[5] = true;
-                return
+                console.log("here")
+                return;
             }else{
                 node_cords[5] = false;
             }
@@ -347,13 +376,27 @@ export function createTechTree(){
 
         old_mouse_x = mouse_x;
         old_mouse_y = mouse_y;
-
         renderer.start();
     }
+
+
+    tech_tree_canvas.onmousemove = (event: any)=>{
+        onMove(event);
+    }
+
+    tech_tree_canvas.ontouchmove = (event: any)=>{
+        onMove(event);
+    }
+
 
     tech_tree_canvas.onmouseup = ()=>{
         mouse_held = false;
     }
+
+    tech_tree_canvas.ontouchend = (event: any)=>{
+        event.preventDefault()
+    }
+
     document.getElementById("tech_tree_container")?.appendChild(tech_tree_canvas);
 
     // make a new graph

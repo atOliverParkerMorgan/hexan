@@ -110,3 +110,10 @@ h3 {
   background: #fff;
   border-radius: 8px;
 }
+
+.tech_tree_container{
+  height: 100%;
+  position:fixed;
+  overflow:hidden;
+}
+
