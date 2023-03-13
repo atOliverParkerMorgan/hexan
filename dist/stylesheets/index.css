@@ -45,14 +45,12 @@
     padding-bottom: 16px;
 }
 
-@media only screen and (max-width: 600px) {
-    .title{
-        font-family: 'Roboto', sans-serif;
-        letter-spacing: 6px;
-        color: white;
-        font-size: 5.2rem;
-        padding-bottom: 16px;
-    }
+.play_with_friend_title{
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 6px;
+    color: white;
+    font-size: 3.9rem;
+    padding-bottom: 16px;
 }
 
 .slidecontainer {
@@ -152,4 +150,20 @@
         top: 8px;
         right: 45px;
     }
+    .play_with_friend_title{
+        font-family: 'Roboto', sans-serif;
+        letter-spacing: 6px;
+        color: white;
+        font-size: 2.2rem;
+        padding-bottom: 16px;
+    }
+    .title{
+        font-family: 'Roboto', sans-serif;
+        letter-spacing: 6px;
+        color: white;
+        font-size: 5.2rem;
+        padding-bottom: 16px;
+    }
+
+
 }
